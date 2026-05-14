@@ -253,8 +253,7 @@ You do not need to read the rest of the report. Run all 10 queries and collect t
 The top-10 patterns from Step 2 are ordered by cost and may not surface all high-severity observability gaps. Run a single `run_select_query` to fetch up to 10 additional reports from **different** patterns — specifically P1/P2 incidents with observability improvement sections that did not appear in your Step 4 sample:
 
 ```sql
-SELECT incident_id, title, severity, source, is_partner_impacting, resolution_minutes,
-       extract(report, '(?s)## Observability Improvements\n(.*?)\n## ') AS obs_section
+SELECT incident_id, title, severity, source, is_partner_impacting, resolution_minutes, report
 FROM serviceportal.incident_reports
 WHERE created_at >= now() - INTERVAL 7 DAY
   AND severity IN ('P1', 'P2')
@@ -264,7 +263,7 @@ ORDER BY cost_usd DESC
 LIMIT 10
 ```
 
-Replace `{top_10_patterns_as_quoted_list}` with the actual `alert_pattern` values from Step 2 as a quoted comma-separated SQL list. Read only the `obs_section` column from these results — extract any observability gap themes not already covered by the Step 4 sample and add them to your Section C synthesis.
+Replace `{top_10_patterns_as_quoted_list}` with the actual `alert_pattern` values from Step 2 as a quoted comma-separated SQL list. From each returned `report` field, read only the `## Observability Improvements` section — extract any observability gap themes not already covered by the Step 4 sample and add them to your Section C synthesis. You do not need to read the rest of each report.
 
 ---
 
