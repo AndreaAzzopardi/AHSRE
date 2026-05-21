@@ -1,6 +1,6 @@
 ---
 name: weekly-report-agent-test
-description: Weekly SRE management report — TEST. Multi-section HTML report saved to ~/Downloads/weekly_report.html. Currently covers: P1 true vs false monthly trend (stitched from ClickHouse/PagerDuty pre-May 2026 + incident.io May 2026 onwards), rendered as a stacked bar + false P1 rate line chart.
+description: Weekly SRE executive report — TEST. Multi-section HTML report saved to ~/Downloads/weekly_report.html. Currently covers: P1 volume trend + false P1 rate MoM (stitched from ClickHouse/PagerDuty pre-May 2026 + incident.io May 2026 onwards). Chart only — no breakdown table.
 ---
 
 You are an SRE weekly reporting assistant for the Fast Track engineering team. Your job is to collect incident quality metrics from multiple data sources, stitch them together, and generate a branded HTML report.
@@ -123,12 +123,15 @@ Write a complete single-file HTML page to `~/Downloads/weekly_report.html`, then
 - Below: a single thin `rgba(255,255,255,0.07)` divider
 
 #### Stat cards row (4 cards, side by side)
-1. **Total P1s** — `{total_true_p1 + total_false_p1 + total_unclassified}` across the window
-2. **True P1s** — `{total_true_p1}` in red
-3. **False P1s** — `{total_false_p1}` in amber (excludes unclassified)
-4. **Overall false rate** — `{overall_false_rate}%` with a MoM trend arrow (↓ green if improved, ↑ red if worsened)
 
-Each card: dark surface background, subtle border, label in muted text above the number.
+Use the most recent complete month as "this month" and the one before it as "prior month" for all MoM deltas. If the current calendar month is partial, it is excluded from MoM calculations.
+
+1. **P1s This Month** — total P1s in the most recent complete month (`true_p1 + false_p1 + unclassified`). Below the number: MoM delta vs prior month as `+N` (red) or `-N` (green) or `=` (muted).
+2. **6-Month Total** — total P1s across the full window in muted styling (context figure).
+3. **False P1 Rate** — false P1 rate for the most recent complete month in amber. Below: MoM delta as `+N%` (red, worsened) or `-N%` (green, improved).
+4. **6-Month Avg False Rate** — `{overall_false_rate}%` in muted styling (context figure).
+
+Each card: dark surface background (`#0d1629`), subtle border `rgba(255,255,255,0.07)`, label in muted text above the number, delta line below in smaller text.
 
 #### Section: P1 Quality — 6-Month Trend
 
@@ -160,25 +163,6 @@ Create a `<canvas>` element (height ~320px) with a Chart.js `bar` type using the
 
 Inject the data from Step 3 directly as JavaScript arrays in the `<script>` block.
 
-#### Section: Monthly Breakdown Table
-
-Below the chart, a data table:
-
-| Month | True P1 | False P1 | Unclassified | Total | False Rate | Source |
-|-------|---------|----------|--------------|-------|------------|--------|
-
-Styling:
-- Header row: muted text, smaller font, uppercase
-- Alternating row backgrounds: `#0d1629` / `#121e36`
-- True P1 column: `#ef4444`
-- False P1 column: `#f59e0b`
-- Unclassified column: `#64748b`
-- False Rate column: colour-coded — `#22c55e` if < 20%, `#f59e0b` if 20–40%, `#ef4444` if > 40%
-- Source column: small pill badge — dark purple for "PagerDuty", dark blue for "incident.io"
-- Partial month row: append `(partial)` in muted text after the month name; row background slightly lighter
-
-For ClickHouse months before June 2025: show `—` in the False P1 and False Rate columns (P5 not yet tracked).
-
 #### Footer
 - "Fast Track SRE · Weekly Report · {current month year}"
 - "Generated {today} · Data: ClickHouse (PagerDuty) up to Apr 2026, incident.io from May 2026"
@@ -201,4 +185,4 @@ For ClickHouse months before June 2025: show `—` in the False P1 and False Rat
 
 Save to `~/Downloads/weekly_report.html` and open with `open ~/Downloads/weekly_report.html`.
 
-Confirm the file path and summarise the overall false P1 rate and MoM trend direction to the user.
+Confirm the file path and report back: most recent complete month total P1s + MoM delta, and false P1 rate + MoM delta.
