@@ -174,6 +174,7 @@ Inject the data from Step 3 directly as JavaScript arrays in the `<script>` bloc
 - Inject all data as JavaScript constants derived from Step 3 — no placeholders, real numbers only
 - Max content width: 1100px, centred, padding 40px top / 80px bottom
 - The report must render correctly offline except for Google Fonts and Chart.js CDN
+- Do NOT use `text-transform: uppercase` on stat card labels or any element containing "P1s" — the lowercase "s" must be preserved exactly as written
 
 ### Error handling
 - If ClickHouse returned no rows (Step 1 failed): include the chart and table using incident.io data only; add an amber banner at the top of the section: "⚠️ PagerDuty historical data unavailable — showing incident.io data only"
