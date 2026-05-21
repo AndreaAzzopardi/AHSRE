@@ -124,14 +124,19 @@ Write a complete single-file HTML page to `~/Downloads/weekly_report.html`, then
 
 #### Stat cards row (4 cards, side by side)
 
-Use the most recent complete month as "this month" and the one before it as "prior month" for all MoM deltas. If the current calendar month is partial, it is excluded from MoM calculations.
+Definitions:
+- `last_complete_month` = the most recent calendar month that has fully elapsed (never the current in-progress month)
+- `prior_month` = the month immediately before `last_complete_month`
+- MoM delta = `last_complete_month value − prior_month value`
 
-1. **P1s This Month** — total P1s in the most recent complete month (`true_p1 + false_p1 + unclassified`). Below the number: MoM delta vs prior month as `+N` (red) or `-N` (green) or `=` (muted).
-2. **6-Month Total** — total P1s across the full window in muted styling (context figure).
-3. **False P1 Rate** — false P1 rate for the most recent complete month in amber. Below: MoM delta as `+N%` (red, worsened) or `-N%` (green, improved).
-4. **6-Month Avg False Rate** — `{overall_false_rate}%` in muted styling (context figure).
+Card labels must name the actual month in parentheses so there is no ambiguity (e.g. "Last Month (Apr)").
 
-Each card: dark surface background (`#0d1629`), subtle border `rgba(255,255,255,0.07)`, label in muted text above the number, delta line below in smaller text.
+1. **P1s Last Month (MMM)** — `last_complete_month.total_p1`. Below: MoM delta as `+N` red or `-N` green or `=` muted, labelled "vs {prior_month name}".
+2. **6-Month Total** — sum of `total_p1` across all months in the window (complete + partial). Muted styling.
+3. **False P1 Rate (MMM)** — `last_complete_month.false_p1_rate`% in amber. Below: MoM delta as `+N%` red or `-N%` green, labelled "vs {prior_month name}".
+4. **6-Month Avg False Rate** — `overall_false_rate`% in muted styling.
+
+Each card: background `#0d1629`, border `rgba(255,255,255,0.07)`, label in muted text above the number, delta line in smaller text below. Do NOT use `text-transform: uppercase` on any label containing "P1s" — lowercase "s" must be preserved.
 
 #### Section: P1 Quality — 6-Month Trend
 
