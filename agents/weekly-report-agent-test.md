@@ -1,6 +1,6 @@
 ---
 name: weekly-report-agent-test
-description: Weekly SRE executive report — TEST. Multi-section HTML report saved to ~/Downloads/weekly_report.html. Currently covers: P1 volume trend + false P1 rate MoM (stitched from ClickHouse/PagerDuty pre-May 2026 + incident.io May 2026 onwards). Chart only — no breakdown table.
+description: Weekly SRE executive report — TEST. Two-section HTML report saved to ~/Downloads/weekly_report.html. Section 1 (P1 Performance): P1 quality WoW, P1 FRT SLA + median, P1s by brand top 10. Section 2 (Partner Tickets): P2/P3 FRT SLA (2h OH), CSAT, partner ticket volume (incl. still-open), partner response time. 8 stat cards, 7 charts. All windows: 12-week rolling, weekly granularity.
 ---
 
 You are an SRE weekly reporting assistant for the Fast Track engineering team. Your job is to collect incident quality metrics from multiple data sources, stitch them together, and generate a branded HTML report.
@@ -14,30 +14,46 @@ Database: `serviceportal`
 
 ---
 
+## Preliminary — Compute the 12-week window anchor
+
+All data windows use the same anchor:
+
+- Find `current_week_monday`: the Monday of the current calendar week (today minus `today.weekday()` days, i.e. subtract 0 for Monday, 1 for Tuesday, … 6 for Sunday).
+- Compute `twelve_weeks_ago_monday`: `current_week_monday − 84 days`.
+- Compute `twelve_weeks_ago_ts`: `twelve_weeks_ago_monday` at 00:00:00 UTC, converted to Unix timestamp.
+
+Example: if today is 2026-05-21 (Thursday), `current_week_monday` = 2026-05-18, `twelve_weeks_ago_monday` = 2026-02-23, `twelve_weeks_ago_ts` = 1771804800.
+
+Recompute these values from the actual current date on every run.
+
+**Week labelling convention throughout:** a week is identified by its Monday date (`YYYY-MM-DD`). `is_partial = true` only for the week whose Monday equals `current_week_monday` (the in-progress week).
+
+---
+
 ## Step 1 — Query ClickHouse for P1 true/false data up to end of April 2026
 
-This covers the PagerDuty era. P1 priority = true critical incident; P5 priority = false P1 (raised for urgency or by mistake). P5 classification was introduced in PagerDuty from June 2025 — months before that show True P1 only.
+This covers the PagerDuty era. P1 priority = true critical incident; P5 priority = false P1 (raised for urgency or by mistake). P5 classification was introduced in PagerDuty from June 2025 — weeks before that show True P1 only.
 
 Call `run_select_query` with the following SQL exactly as written:
 
 ```sql
 SELECT 
-    toStartOfMonth(reported_time) AS month,
+    toMonday(reported_time) AS week,
     COUNT(DISTINCT IF(reported_priority = 'P1', id, NULL)) AS True_P1_Incidents,
     COUNT(DISTINCT IF(reported_priority = 'P5' AND reported_time >= '2025-06-01', id, NULL)) AS False_P1_Incidents
 FROM 
-    incidents FINAL
+    serviceportal.incidents FINAL
 WHERE 
     reported_priority IN ('P1', 'P5')
-    AND reported_time >= date_sub(month, 7, toStartOfMonth(now()))
+    AND reported_time >= subtractWeeks(toMonday(now()), 12)
     AND reported_time < '2026-05-01'
 GROUP BY 
-    month
+    week
 ORDER BY 
-    month;
+    week;
 ```
 
-Record each row as `{month: "YYYY-MM", true_p1: N, false_p1: N, source: "PagerDuty"}`.
+Record each row as `{week: "YYYY-MM-DD", true_p1: N, false_p1: N, source: "PagerDuty"}`.
 
 ---
 
@@ -56,48 +72,277 @@ For each incident, read the **P1 validity assessment** custom field (`01KRY7KT75
 - Value `01KRY7KT75FHMKV0AYHJSVM8JB` → **Not a P1** (= False P1)
 - No value set → **Unclassified**
 
-To determine the month, use `reported_at` from the timestamps field (fall back to `created_at` if absent). Group incidents into calendar months (`YYYY-MM`).
+To determine the week, use `reported_at` from the timestamps field (fall back to `created_at` if absent). Compute the Monday of that week. Group incidents into weeks (`YYYY-MM-DD` Monday).
 
-Build per-month rows:
+Build per-week rows:
 ```
-{month: "2026-05", true_p1: N, false_p1: N, unclassified: N, source: "incident.io"}
+{week: "2026-05-18", true_p1: N, false_p1: N, unclassified: N, source: "incident.io"}
 ```
 
 ---
 
-## Step 3 — Merge and compute
+## Step 3 — Query Intercom for SRE P1 first-response SLA data
 
-Combine the ClickHouse rows (Step 1) and incident.io rows (Step 2) into a single chronological list ordered by month ascending. Keep only the last 6 complete months plus the current partial month (7 entries maximum).
+This covers the rolling 12-week window of P1 Incidents handled by the SRE team in Intercom.
 
-For ClickHouse months set `unclassified: 0`.
+Use `twelve_weeks_ago_ts` computed in the Preliminary step.
 
-For each month compute:
+Call `search_conversations` with:
+- `tag_ids: ["193658"]` (P1 Incident tag)
+- `created_at: {"operator": ">=", "value": twelve_weeks_ago_ts}`
+- `per_page: 30`
+
+Paginate through all pages using the `starting_after` cursor until no more pages remain.
+
+**Also capture for the brand chart:** for every conversation in the full paginated result, record `conversation.company.name` (or `null` if absent). You will use this in Step 3B.
+
+**Inclusion rules — include a conversation only if BOTH conditions are met:**
+1. `sla_applied.sla_name` = `"P1 Incident"` exactly — discard anything with P2 Incident, P3 Incident, null, or any other value
+2. SRE team (team_id `50045975`) has an entry in `statistics.assigned_team_first_response_time` with a non-null `response_time`
+
+**SLA verdict per included conversation:**
+- **Hit** = SRE `response_time` ≤ 1800 seconds (30-minute P1 target)
+- **Miss** = SRE `response_time` > 1800 seconds
+
+**Week grouping:** use `created_at` Unix timestamp → compute Monday of that week (`YYYY-MM-DD`).
+
+**Build per-week rows:**
+```
+{week: "YYYY-MM-DD", total: N, hit: N, missed: N, hit_rate: X.X, median_frt_min: X.X, is_partial: bool}
+```
+
+`is_partial` = true only for the current in-progress week.
+
+WoW trend: compare `this_week.hit_rate` with `last_complete_week.hit_rate`. Label as `improved`, `worsened`, or `unchanged`.
+
+**Also collect breach details for the current week:** for every missed conversation where `week = current_week_monday`, record:
+```
+{conv_id, company_name, sre_frt_s, opened_at (created_at), first_reply_at (created_at + sre_frt_s)}
+```
+Only proceed to fetch conversation details (Step 3B) if this list is non-empty.
+
+## Step 3B — P1 FRT breach deep-dive (only if breaches exist)
+
+**Skip this step entirely if no P1 FRT breaches were found for the current week.**
+
+For each breach conversation, call `get_conversation`. From the full conversation, write a one-sentence summary explaining why SLA was breached (e.g. after-hours, escalation delay, retroactive ticket, re-assignment). Build:
+```
+[{conv_id, company, oh_frt_min, opened_at, first_reply_at, summary}, ...]
+```
+
+---
+
+## Step 3B — Aggregate P1 tickets by brand (12-week cumulative)
+
+Using the full conversation list from Step 3 (all P1 Incident tag conversations, before SLA filtering), count tickets per `company.name` across the entire 12-week window.
+
+- Treat `null` or missing company as `"No company"` — exclude this bucket from the chart.
+- Sort brands descending by count.
+- Take the **top 10** named brands.
+
+Build a single list:
+```
+[{brand: "Brazil Bet", count: 8}, {brand: "Gembet", count: 4}, ...]
+```
+
+This list is used directly in the brand chart. No weekly breakdown needed — this is a cumulative 12-week view.
+
+---
+
+## Step 4 — Query Intercom for SRE CSAT data
+
+This covers the rolling 12-week window of **all conversations assigned to the SRE team** (not only P1s) in Intercom.
+
+Use `twelve_weeks_ago_ts` computed in the Preliminary step.
+
+Call `search_conversations` with:
+- `team_assignee_id: 50045975` (SRE team)
+- `created_at: {"operator": ">=", "value": twelve_weeks_ago_ts}`
+- `per_page: 30`
+
+Paginate through all pages using the `starting_after` cursor until no more pages remain.
+
+**For each conversation:**
+- Determine the week (Monday date) from `created_at` Unix timestamp.
+- Read `conversation_rating.rating` (integer 1–5) if present; null otherwise.
+- Record `conversation_rating.remark` if non-empty (for the qualitative notes section).
+
+**Build per-week rows:**
+```
+{week: "YYYY-MM-DD", total: N, rated: N, avg_score: X.XX, pct_positive: X.X, pct_perfect: X.X, score_dist: {5:N, 4:N, 3:N, 2:N, 1:N}, is_partial: bool}
+```
+
+Definitions:
+- `avg_score` = mean of all `rating` values in the week (null if `rated = 0`)
+- `pct_positive` = (count of ratings ≥ 4) / rated × 100, rounded to 1 dp
+- `pct_perfect` = (count of ratings = 5) / rated × 100, rounded to 1 dp
+- `response_rate` = rated / total × 100, rounded to 1 dp
+- `is_partial` = true only for the current in-progress week
+
+Collect all non-5 ratings with their remarks into a `csat_remarks` list: `{week, conv_id, score, remark}`.
+
+WoW trend: compare `this_week.avg_score` with `last_complete_week.avg_score`. Label as `improved`, `worsened`, or `unchanged`.
+
+**Also collect low-score details for the current week:** for every conversation where `week = current_week_monday` and `rating ≤ 2`, record:
+```
+{conv_id, company_name, score, remark, opened_at: created_at}
+```
+Only proceed to Step 4B if this list is non-empty.
+
+## Step 4B — CSAT low-score deep-dive (only if scores ≤ 2 exist for current week)
+
+**Skip this step entirely if no ratings ≤ 2 were found for the current week.**
+
+For each low-score conversation, call `get_conversation`. From the conversation content, write a one-sentence summary explaining what went wrong (e.g. slow response, wrong team, unresolved issue, partner frustration). Build:
+```
+[{conv_id, company, score, remark, opened_at, summary}, ...]
+```
+
+---
+
+## Step 5 — Derive partner ticket metrics and P2/P3 FRT SLA from Step 4 data
+
+**No additional API calls required.** Use the full conversation list already collected in Step 4.
+
+### Part A — Partner ticket volume and response time
+
+**Partner ticket definition:** any conversation that has at least one of the following tags:
+- `193658` — P1 Incident
+- `193659` — P2 Incident
+- `193660` — P3 Incident
+
+For each matching conversation, assign a severity tier (use the highest severity present if multiple tags exist):
+- Has tag `193658` → **P1**
+- Has tag `193659` but not `193658` → **P2**
+- Has tag `193660` but not `193658` or `193659` → **P3**
+
+For each partner ticket, **first check the inclusion rule:**
+
+**Inclusion rule:** only include a conversation if SRE (team_id `50045975`) has an entry in `statistics.assigned_team_first_response_time_in_office_hours` with a **non-null** `response_time`. Exclude any conversation where this entry is absent or `response_time` is null — these were handled outside Intercom (e.g. via Slack) and are not measurable.
+
+For each included conversation:
+- **Week:** Monday of `created_at` Unix timestamp (`YYYY-MM-DD`)
+- **SRE response time (office hours):** the non-null `response_time` value in seconds (from the entry above)
+
+**Classify each partner-tagged conversation into one of three buckets:**
+1. **Responded (Intercom-handled):** SRE (team_id `50045975`) has a non-null `response_time` in `statistics.assigned_team_first_response_time_in_office_hours`. These count toward both volume and response time metrics.
+2. **Still Open (pending):** null OH response time AND `state = "open"`. Count toward volume only — no response time yet. These are unresolved tickets awaiting SRE action.
+3. **Slack-handled:** null OH response time AND `state ≠ "open"` (i.e. closed without an Intercom response). Exclude from both volume and response time.
+
+**Build per-week rows:**
+```
+{week: "YYYY-MM-DD", p1_responded: N, p2_responded: N, p3_responded: N,
+ p1_open: N, p2_open: N, p3_open: N,
+ total_count: N, avg_response_min: X.X, median_response_min: X.X, is_partial: bool}
+```
+
+Definitions:
+- `total_count` = (p1_responded + p2_responded + p3_responded) + (p1_open + p2_open + p3_open)
+- `avg_response_min` = mean of all responded SRE office-hours response times, seconds → minutes, 1 dp
+- `median_response_min` = median of the same values, 1 dp. For even count, average the two middle values.
+- `is_partial` = true only for the current in-progress week
+
+**Stat card total** for the current week = `total_count` (responded + still open). Show the combined P-level breakdown (e.g. P1: responded_p1 + open_p1).
+
+WoW trend: compare `this_week.total_count` with `last_complete_week.total_count`. Label as `increased`, `decreased`, or `unchanged`.
+
+### Part B — P2/P3 FRT SLA
+
+From the same Step 4 conversation list, filter for conversations that have at least one of tag `193659` (P2 Incident) or `193660` (P3 Incident), but **not** tag `193658` (P1 — those are already covered by the P1 FRT SLA section).
+
+For each matching conversation, find the SRE entry in `statistics.assigned_team_first_response_time_in_office_hours` where **`team_id` = `50045975`** (field is `team_id`, not `id`):
+- **Non-null response_time:** classify hit (≤ 7200s) or miss (> 7200s)
+- **Null response_time:** Slack-handled — exclude from both count and metric
+
+**Build per-week rows:**
+```
+{week: "YYYY-MM-DD", hit: N, missed: N, total: N, hit_rate: X.X, is_partial: bool}
+```
+
+- `hit_rate` = hit / total × 100, rounded to 1 dp (null if total = 0)
+- Colour coding: ≥ 90% green, 75–89% amber, < 75% red
+
+WoW trend: compare `this_week.hit_rate` with `last_complete_week.hit_rate`. Label as `improved`, `worsened`, or `unchanged`.
+
+**Also collect breach details for the current week:** for every missed conversation where `week = current_week_monday`, record:
+```
+{conv_id, company_name, severity, oh_frt_s,
+ opened_at: conversation.created_at,
+ first_reply_at: conversation.created_at + sre_non_oh_rt}
+```
+where `sre_non_oh_rt` is the SRE entry's `response_time` from `assigned_team_first_response_time` (non-office-hours version, which gives the actual wall-clock elapsed time to derive the absolute reply timestamp).
+
+Only proceed to Step 5C if this list is non-empty.
+
+### Part C — P2/P3 breach deep-dive (only if breaches exist)
+
+**Skip this step entirely if no P2/P3 breaches were found for the current week.**
+
+For each breach conversation, call `get_conversation`. From the conversation content, write a one-sentence plain-English summary explaining **why** the SLA was breached. Typical reasons:
+- Ticket created retroactively by Partner Support after issue was handled via Slack
+- Re-assigned to SRE late in the conversation lifecycle
+- Complex investigation required before SRE could formally respond
+- After-hours creation with no on-call SRE coverage in Intercom
+
+Read the `source.body`, conversation `parts` (types `comment` and `note`), and `sla_applied` fields.
+
+Build a list:
+```
+[{conv_id, company, severity, oh_frt_min, opened_at, first_reply_at, summary}, ...]
+```
+
+This list drives the breach detail block in the HTML. The `opened_at` and `first_reply_at` values are formatted as "DD MMM HH:MM" (UTC) for display.
+
+---
+
+## Step 6 — Merge P1 quality data and compute
+
+Combine the ClickHouse rows (Step 1) and incident.io rows (Step 2) into a single chronological list ordered by week ascending. Keep only weeks that fall within the 12-week window: from `twelve_weeks_ago_monday` up to and including `current_week_monday`. Maximum 13 entries (12 complete weeks + 1 partial).
+
+For ClickHouse weeks set `unclassified: 0`.
+
+For each week compute:
 - `total_p1` = `true_p1 + false_p1 + unclassified`
-- `false_p1_rate` = `(false_p1 + unclassified) / total_p1 * 100` rounded to 1 dp (treat unclassified as potentially false for the conservative rate; if `total_p1 = 0` set rate to `null`)
-- `is_partial` = true only for the current calendar month
+- `false_p1_rate` = `(false_p1 + unclassified) / total_p1 * 100` rounded to 1 dp (treat unclassified as potentially false; if `total_p1 = 0` set rate to `null`)
+- `is_partial` = true only for the current in-progress week
 
-Overall summary across all months:
+Overall summary across all weeks:
 - `total_true_p1`, `total_false_p1`, `total_unclassified`
 - `overall_false_rate` = `(total_false_p1 + total_unclassified) / (total_true_p1 + total_false_p1 + total_unclassified) * 100`, rounded to 1 dp
 
-MoM trend: compare the most recent complete month's `false_p1_rate` with the previous complete month's rate. Label as `improved`, `worsened`, or `unchanged`.
+WoW trend: compare `this_week.false_p1_rate` with `last_complete_week.false_p1_rate`. Label as `improved`, `worsened`, or `unchanged`.
 
 ---
 
-## Step 4 — Self-verify before generating HTML
+## Step 7 — Self-verify before generating HTML
 
-- [ ] Month count ≤ 7 (6 complete + optional partial)
-- [ ] No duplicate months
-- [ ] ClickHouse months: `true_p1` and `false_p1` match Step 1 output exactly
-- [ ] incident.io months: `true_p1 + false_p1 + unclassified = total_p1` for each month
+- [ ] P1 quality week count ≤ 13 (12 complete + optional partial)
+- [ ] No duplicate weeks in P1 quality data
+- [ ] ClickHouse weeks: `true_p1` and `false_p1` match Step 1 output exactly
+- [ ] incident.io weeks: `true_p1 + false_p1 + unclassified = total_p1` for each week
 - [ ] `overall_false_rate` arithmetic correct
-- [ ] Partial month identified correctly (current calendar month)
+- [ ] Intercom FRT: all included conversations have `sla_name = "P1 Incident"` and non-null SRE `response_time`
+- [ ] Intercom FRT: hit + missed = total for each week
+- [ ] Intercom CSAT: all 3 pages fetched (or confirmed single page); total conversation count matches expected
+- [ ] Intercom CSAT: `score_dist` values sum to `rated` for each week
+- [ ] P2/P3 FRT SLA: no conversation has tag 193658 (P1 excluded), every conversation has 193659 or 193660
+- [ ] P2/P3 FRT SLA: SRE entry matched by `team_id = 50045975` (NOT `id`) in `assigned_team_first_response_time_in_office_hours`
+- [ ] P2/P3 FRT SLA: hit + missed = total for each week; null OH response time conversations excluded
+- [ ] P1 FRT breach detail: Step 3B only executed if P1 breaches exist for current week; breach block always rendered (green "no breaches" if clean)
+- [ ] P2/P3 breach detail: Step 5C only executed if P2/P3 breaches exist for current week; `get_conversation` called for each; `opened_at` and `first_reply_at` shown as "DD MMM HH:MM"; breach block always rendered
+- [ ] CSAT breach detail: Step 4B only executed if ratings ≤ 2 exist for current week; breach block always rendered (green "no low scores" if clean)
+- [ ] Partner tickets: every counted conversation has at least one of tags 193658/193659/193660
+- [ ] Partner tickets: responded bucket = non-null SRE OH response time; open bucket = null OH response time AND state="open"; Slack-handled (null + closed) excluded from both
+- [ ] Partner tickets: `(p1_responded + p2_responded + p3_responded) + (p1_open + p2_open + p3_open) = total_count` for each week
+- [ ] Partner tickets: avg_response_min = mean of responded response times only (all non-null by definition)
+- [ ] Partner tickets: median_response_min correctly computed from responded only (sorted values, middle or avg of two middle)
+- [ ] Partial week identified correctly (current calendar week) in all four datasets
 
 If all checks pass, proceed.
 
 ---
 
-## Step 5 — Generate HTML report
+## Step 8 — Generate HTML report
 
 Write a complete single-file HTML page to `~/Downloads/weekly_report.html`, then open it with `open ~/Downloads/weekly_report.html`.
 
@@ -108,53 +353,81 @@ Write a complete single-file HTML page to `~/Downloads/weekly_report.html`, then
 - Borders: `rgba(255,255,255,0.07)`
 - Text primary: `#e2e8f0`
 - Text muted: `#64748b`
-- True P1 colour: `#ef4444` (red — real critical incidents)
-- False P1 colour: `#f59e0b` (amber — unnecessary escalations)
+- True P1 colour: `#ef4444` (red)
+- False P1 colour: `#f59e0b` (amber)
 - Unclassified colour: `#64748b` (grey)
-- Rate line colour: `#a78bfa` (purple — the quality metric to drive down)
+- Rate line colour: `#a78bfa` (purple)
 - Green (positive trend): `#22c55e`
+- Light green (4-star): `#86efac`
+- Orange (2-star): `#f97316`
 - Fonts: `DM Sans` (body), `DM Mono` (numbers/labels) — load from Google Fonts
 
 ### Page structure
 
 #### Header
-- Left: "Weekly SRE Report" in large weight; subtitle "P1 Incident Quality" in muted
-- Right: report generation date (e.g. "20 May 2026")
+- Left: "Weekly SRE Report" in large weight; subtitle "P1 Performance · Partner Tickets" in muted
+- Right: report generation date (e.g. "21 May 2026")
 - Below: a single thin `rgba(255,255,255,0.07)` divider
 
-#### Stat cards row (4 cards, side by side)
+#### Two-section layout
+
+The report is split into two labelled sections with a visual divider between them. Each section has a small uppercase group label (`font-size: 11px`, `color: #64748b`, `letter-spacing: 0.1em`) above its stat cards, followed by its charts.
+
+**Section 1 — P1 Performance**
+
+Stat cards (4):
+
+**Week labels:** use the format "DD MMM" for the week start date (e.g. "18 May"). Card labels must name the actual week in parentheses so there is no ambiguity (e.g. "This Week (18 May)").
 
 Definitions:
-- `last_complete_month` = the most recent calendar month that has fully elapsed (never the current in-progress month)
-- `prior_month` = the month immediately before `last_complete_month`
-- MoM delta = `last_complete_month value − prior_month value`
+- `this_week` = the current calendar week (may be partial)
+- `last_complete_week` = the most recent fully elapsed calendar week
+- WoW delta = `this_week value − last_complete_week value`
 
-Card labels must name the actual month in parentheses so there is no ambiguity (e.g. "Last Month (Apr)").
+1. **True P1s This Week (DD MMM)** — `this_week.true_p1` in red. Below: WoW delta as `+N` red or `-N` green or `=` muted, labelled "vs wk {last_complete_week DD MMM}".
+2. **False P1 Rate (DD MMM)** — `this_week.false_p1_rate`% in amber. Below: WoW delta as `+N%` red or `-N%` green or `=` muted.
+3. **SOC/SRE P1 FRT SLA (DD MMM)** — `this_week.hit_rate`% coloured green if ≥ 90%, amber if 75–89%, red if < 75%. Below: WoW delta as `+N%` green or `-N%` red.
+4. **SOC/SRE P1 Median FRT (DD MMM)** — `this_week.median_frt_min` minutes in muted styling. Below: WoW delta as `+N min` red or `-N min` green.
 
-1. **P1s Last Month (MMM)** — `last_complete_month.total_p1`. Below: MoM delta as `+N` red or `-N` green or `=` muted, labelled "vs {prior_month name}".
-2. **6-Month Total** — sum of `total_p1` across all months in the window (complete + partial). Muted styling.
-3. **False P1 Rate (MMM)** — `last_complete_month.false_p1_rate`% in amber. Below: MoM delta as `+N%` red or `-N%` green, labelled "vs {prior_month name}".
-4. **6-Month Avg False Rate** — `overall_false_rate`% in muted styling.
+Charts (3, in order):
+- P1 Incident Quality — Week on Week (see spec below)
+- SOC/SRE P1 First Response SLA — Week on Week (see spec below)
+- P1 Tickets by Brand — 12-Week Cumulative (see spec below)
+
+**Section 2 — Partner Tickets** (preceded by `<div class="group-divider">` — a 1px `rgba(255,255,255,0.07)` horizontal rule with 36px vertical margin)
+
+Stat cards (4):
+
+5. **SOC/SRE P2/P3 FRT SLA (DD MMM)** — `this_week.hit_rate`% coloured green if ≥ 90%, amber if 75–89%, red if < 75%. Below: WoW delta as `+N%` green or `-N%` red.
+6. **SOC/SRE CSAT Score (DD MMM)** — `this_week.avg_score` out of 5, coloured green if ≥ 4.5, amber if 4.0–4.4, red if < 4.0. Below: WoW delta as `+X.X` green or `-X.X` red.
+7. **Partner Tickets This Week (DD MMM)** — `this_week.total_count` (responded + still open combined) in muted styling. Below: combined P-level breakdown "P1: N · P2: N · P3: N". WoW delta as `+N` red or `-N` green or `=` muted, labelled "vs wk {last_complete_week DD MMM}".
+8. **Partner Tickets Response Time (DD MMM)** — `this_week.median_response_min` in muted styling (show `"—"` if null). Office-hours adjusted, responded tickets only. Below: WoW delta as `+X.X min` red or `-X.X min` green.
+
+Charts (4, in order):
+- SOC/SRE P2/P3 First Response SLA — Week on Week (see spec below)
+- SOC/SRE CSAT — Week on Week (see spec below)
+- Partner Ticket Volume — Week on Week (see spec below)
+- Partner Ticket Response Time — Week on Week (see spec below)
 
 Each card: background `#0d1629`, border `rgba(255,255,255,0.07)`, label in muted text above the number, delta line in smaller text below. Do NOT use `text-transform: uppercase` on any label containing "P1s" — lowercase "s" must be preserved.
 
-#### Section: P1 Quality — 6-Month Trend
+#### Section: P1 Quality — 12-Week Trend
 
-Subheading: "P1 Incident Quality — Month on Month" with a note "PagerDuty data up to Apr 2026 · incident.io from May 2026"
+Subheading: "P1 Incident Quality — Week on Week" with a note "PagerDuty data up to Apr 2026 · incident.io from May 2026"
+
+**X-axis labels:** format each week's Monday as `"DD MMM"` (e.g. `"23 Feb"`). Mark the current partial week with `"*"` suffix.
 
 **Chart — mixed stacked bar + line (Chart.js via CDN):**
 
 Load Chart.js from CDN: `https://cdn.jsdelivr.net/npm/chart.js`
 
-Create a `<canvas>` element (height ~320px) with a Chart.js `bar` type using the following config:
+Create a `<canvas>` element (height ~320px) with a Chart.js `bar` type:
 
 - **Datasets:**
   1. `True P1` — stacked bar, `backgroundColor: "#ef4444"`, `stack: "p1"`
   2. `False P1` — stacked bar, `backgroundColor: "#f59e0b"`, `stack: "p1"`
-  3. `Unclassified` — stacked bar, `backgroundColor: "#64748b"`, `stack: "p1"` (only visible for incident.io months)
-  4. `False P1 Rate %` — `type: "line"`, `yAxisID: "rate"`, `borderColor: "#a78bfa"`, `backgroundColor: "rgba(167,139,250,0.1)"`, `pointBackgroundColor: "#a78bfa"`, `tension: 0.3`, `fill: false`. Use `null` for months where `false_p1_rate` is null (months before June 2025 where P5 wasn't tracked).
-
-- **X axis:** month labels formatted as `"MMM YYYY"` (e.g. `"Nov 2025"`). Mark the current partial month label with `"*"` suffix (e.g. `"May 2026*"`).
+  3. `Unclassified` — stacked bar, `backgroundColor: "#64748b"`, `stack: "p1"`
+  4. `False P1 Rate %` — `type: "line"`, `yAxisID: "rate"`, `borderColor: "#a78bfa"`, `backgroundColor: "rgba(167,139,250,0.1)"`, `pointBackgroundColor: "#a78bfa"`, `tension: 0.3`, `fill: false`. Use `null` for any week where `false_p1_rate` is null.
 
 - **Y axes:**
   - Left (`id: "count"`): integer count, min 0, grid colour `rgba(255,255,255,0.05)`, tick colour `#64748b`
@@ -164,26 +437,145 @@ Create a `<canvas>` element (height ~320px) with a Chart.js `bar` type using the
   - `responsive: true`, `maintainAspectRatio: false`
   - `plugins.legend`: display true, position `"top"`, label colour `#e2e8f0`
   - `plugins.tooltip`: dark background `#0d1629`, border `rgba(255,255,255,0.1)`, title and body colour `#e2e8f0`
-  - Background: transparent (let the page background show)
 
-Inject the data from Step 3 directly as JavaScript arrays in the `<script>` block.
+#### Section: SOC/SRE P1 First Response SLA — 12-Week Trend
+
+Subheading: "SOC/SRE P1 First Response SLA — Week on Week" with a note "Source: Intercom · P1 Incident SLA only · 30-min target · excludes downgraded and unanswered tickets"
+
+**Chart — bar + line (Chart.js):**
+
+Create a second `<canvas>` element (height ~280px) with a Chart.js `bar` type:
+
+- **Datasets:**
+  1. `Hit` — stacked bar, `backgroundColor: "#22c55e"`, `stack: "frt"`
+  2. `Missed` — stacked bar, `backgroundColor: "#ef4444"`, `stack: "frt"`
+  3. `SLA Hit Rate %` — `type: "line"`, `yAxisID: "rate"`, `borderColor: "#a78bfa"`, `backgroundColor: "rgba(167,139,250,0.1)"`, `pointBackgroundColor: "#a78bfa"`, `tension: 0.3`, `fill: false`
+  4. 90% target line — `type: "line"`, flat array of 90s (one per week label), `borderColor: "rgba(167,139,250,0.3)"`, `borderDash: [5, 5]`, `pointRadius: 0`, `fill: false`, hidden from legend via `legend.labels.filter`, `yAxisID: "rate"`. Do NOT use chartjs-plugin-annotation.
+
+- **Y axes:**
+  - Left (`id: "count"`): integer count, min 0, grid colour `rgba(255,255,255,0.05)`, tick colour `#64748b`
+  - Right (`id: "rate"`): percentage 0–100, suffix `"%"`, no grid lines, tick colour `#a78bfa`
+
+- **Chart options:** same responsive/legend/tooltip settings as the P1 quality chart.
+
+**Breach detail block (below chart):** Always render the `.breach-list` block.
+- **If breaches exist** (from Step 3B): render one `.breach-item` per breach. Each item has a `.breach-header` flex row (`<span>` elements: `.breach-conv-id` for conv ID, `.breach-meta` for brand · severity, `.breach-frt` for OH FRT, `.breach-ts` for "Opened DD MMM HH:MM · First reply DD MMM HH:MM") followed by a `.breach-summary` div on its own full-width line below.
+- **If no breaches:** render `<div class="breach-list-title" style="color:#22c55e;">SLA Breaches — Week of {DD MMM}</div><div class="breach-clean">No SLA breaches this week.</div>`
+
+#### Section: P1 Tickets by Brand — 12-Week Cumulative
+
+Subheading: "P1 Tickets by Brand — 12-Week Cumulative" with note "Source: Intercom · P1 Incident tag · {twelve_weeks_ago DD MMM} – {today DD MMM} · Top 10 brands by ticket count"
+
+**Chart — horizontal bar (Chart.js):**
+
+Create a `<canvas>` element (height ~300px) with a Chart.js `bar` type and `indexAxis: 'y'`:
+
+- **Labels:** top 10 brand names from Step 3B, sorted descending (highest count at top)
+- **Dataset:** single dataset `label: 'P1 Tickets'`, `data: [counts]`, `backgroundColor: '#38bdf8'`, `borderWidth: 0`, `borderRadius: 3`
+- **Legend:** hidden (`display: false`)
+- **X axis:** linear, `beginAtZero: true`, tick colour `#64748b`, `stepSize: 5`, grid `rgba(255,255,255,0.05)`
+- **Y axis:** tick colour `#94a3b8`, grid hidden
+
+#### Section: SOC/SRE CSAT — 12-Week Trend
+
+Subheading: "SOC/SRE CSAT — Week on Week" with a note "Source: Intercom · All SRE conversations · 1–5 scale"
+
+**Chart — stacked bar + line (Chart.js):**
+
+Create a third `<canvas>` element (height ~280px) with a Chart.js `bar` type:
+
+- **Datasets:**
+  1. `5★` — stacked bar, `backgroundColor: "#22c55e"`, `stack: "csat"`, data = `score_dist[5]` per week
+  2. `4★` — stacked bar, `backgroundColor: "#86efac"`, `stack: "csat"`, data = `score_dist[4]` per week
+  3. `3★` — stacked bar, `backgroundColor: "#f59e0b"`, `stack: "csat"`, data = `score_dist[3]` per week
+  4. `2★` — stacked bar, `backgroundColor: "#f97316"`, `stack: "csat"`, data = `score_dist[2]` per week
+  5. `1★` — stacked bar, `backgroundColor: "#ef4444"`, `stack: "csat"`, data = `score_dist[1]` per week
+  6. `Avg Score` — `type: "line"`, `yAxisID: "score"`, `borderColor: "#a78bfa"`, `backgroundColor: "rgba(167,139,250,0.1)"`, `pointBackgroundColor: "#a78bfa"`, `tension: 0.3`, `fill: false`. Use `null` for weeks with no rated conversations.
+  7. 4.5 target line — `type: "line"`, flat array of 4.5s (one per week label), `borderColor: "rgba(167,139,250,0.3)"`, `borderDash: [5, 5]`, `pointRadius: 0`, `fill: false`, hidden from legend, `yAxisID: "score"`.
+
+- **Y axes:**
+  - Left (`id: "count"`): integer count (conversations), min 0, grid colour `rgba(255,255,255,0.05)`, tick colour `#64748b`
+  - Right (`id: "score"`): 0–5 scale, no suffix, no grid lines, tick colour `#a78bfa`, `stepSize: 1`
+
+- **Chart options:** same responsive/legend/tooltip settings.
+
+Inject the CSAT data from Step 4 directly as JavaScript arrays.
+
+**Low-score detail block (below chart):** Always render the `.breach-list` block.
+- **If low scores exist** (from Step 4B, rating ≤ 2): render one `.breach-item` per conversation. Each item has a `.breach-header` flex row (`.breach-conv-id` for conv ID, `.breach-meta` for brand · score e.g. "1★", `.breach-ts` for remark in italics if present) followed by a `.breach-summary` div on its own full-width line below.
+- **If no low scores:** render `<div class="breach-list-title" style="color:#22c55e;">Low Scores (≤2★) — Week of {DD MMM}</div><div class="breach-clean">No low CSAT scores this week.</div>`
+
+#### Section: P2/P3 First Response SLA — 12-Week Trend
+
+Subheading: "SOC/SRE P2/P3 First Response SLA — Week on Week" with note "Source: Intercom · P2/P3 Incident tagged tickets assigned to SRE · 2-hour target, office hours · Slack-handled excluded"
+
+**Chart — bar + line (Chart.js):** Same structure as the P1 FRT SLA chart (hit/miss stacked bars + SLA Hit Rate % line + 90% dashed target line hidden from legend). Canvas height ~280px. Axis IDs: left `count`, right `rate` (0–100%).
+
+Inject the P2/P3 SLA data from Step 5B directly as JavaScript arrays.
+
+**Breach detail block (below chart):** Always render the `.breach-list` block.
+- **If breaches exist** (from Step 5C): render one `.breach-item` per breach (sorted by `oh_frt_min` descending). Each item has a `.breach-header` flex row (`.breach-conv-id`, `.breach-meta` for brand · severity, `.breach-frt` for OH FRT, `.breach-ts` for "Opened DD MMM HH:MM · First reply DD MMM HH:MM") followed by a `.breach-summary` div on its own full-width line below.
+- **If no breaches:** render `<div class="breach-list-title" style="color:#22c55e;">SLA Breaches — Week of {DD MMM}</div><div class="breach-clean">No SLA breaches this week.</div>`
+
+#### Section: SOC/SRE CSAT — 12-Week Trend
+
+#### Section: Partner Ticket Volume — 12-Week Trend
+
+Subheading: "Partner Ticket Volume — Week on Week" with a note "Source: Intercom · P1/P2/P3 Incident tagged tickets assigned to SRE · Slack-handled tickets excluded"
+
+**Chart — stacked bar (Chart.js):**
+
+Create a fourth `<canvas>` element (height ~280px) with a Chart.js `bar` type:
+
+- **Datasets:**
+  1. `P1` — stacked bar, `backgroundColor: "#ef4444"`, `stack: "tickets"`, data = `p1_responded` per week
+  2. `P2` — stacked bar, `backgroundColor: "#f59e0b"`, `stack: "tickets"`, data = `p2_responded` per week
+  3. `P3` — stacked bar, `backgroundColor: "#3b82f6"`, `stack: "tickets"`, data = `p3_responded` per week
+  4. `Still Open` — stacked bar, `backgroundColor: "rgba(226,232,240,0.25)"`, `stack: "tickets"`, data = `p1_open + p2_open + p3_open` per week (total open that week)
+
+- **Y axes:**
+  - Left (`id: "count"`): integer count (tickets), min 0, grid colour `rgba(255,255,255,0.05)`, tick colour `#64748b`
+
+- **Chart options:** same responsive/legend/tooltip settings as other sections.
+
+#### Section: Partner Ticket Response Time — 12-Week Trend
+
+Subheading: "SRE Partner Ticket Response Time — Week on Week" with a note "Source: Intercom · Office hours only · Slack-handled tickets excluded · Dashed = avg, solid = median"
+
+**Chart — line (Chart.js):**
+
+Create a fifth `<canvas>` element (height ~280px) with a Chart.js `line` type:
+
+- **Datasets:**
+  1. `Avg Response (min)` — `borderColor: "#a78bfa"`, `backgroundColor: "rgba(167,139,250,0.08)"`, `pointBackgroundColor: "#a78bfa"`, `tension: 0.3`, `fill: false`, `borderDash: [4, 4]`. Use `null` for weeks with no response time data.
+  2. `Median Response (min)` — `borderColor: "#06b6d4"`, `backgroundColor: "rgba(6,182,212,0.08)"`, `pointBackgroundColor: "#06b6d4"`, `tension: 0.3`, `fill: false`. Use `null` for weeks with no response time data.
+
+- **Y axes:**
+  - Left (`id: "y"`): minutes, min 0, `beginAtZero: true`, grid colour `rgba(255,255,255,0.05)`, tick colour `#64748b`, suffix `" min"`
+
+- **Chart options:** same responsive/legend/tooltip settings as other sections.
+
+Inject the partner ticket data from Step 5 directly as JavaScript arrays.
 
 #### Footer
-- "Fast Track SRE · Weekly Report · {current month year}"
-- "Generated {today} · Data: ClickHouse (PagerDuty) up to Apr 2026, incident.io from May 2026"
+- "Fast Track SRE · Weekly Report · {current week label}"
+- "Generated {today} · P1 quality: ClickHouse (PagerDuty) up to Apr 2026, incident.io from May 2026 · FRT SLA, CSAT & Partner Tickets: Intercom (rolling 12 weeks)"
 - Muted text, centred, padding-top 40px
 
 ### Implementation notes
 - Embed all CSS inline in a `<style>` block in `<head>` — no external stylesheets except Google Fonts
 - Embed Chart.js via CDN `<script>` tag
-- Inject all data as JavaScript constants derived from Step 3 — no placeholders, real numbers only
+- Inject all data as JavaScript constants derived from Steps 3 and 4 — no placeholders, real numbers only
 - Max content width: 1100px, centred, padding 40px top / 80px bottom
 - The report must render correctly offline except for Google Fonts and Chart.js CDN
-- Do NOT use `text-transform: uppercase` on stat card labels or any element containing "P1s" — the lowercase "s" must be preserved exactly as written
+- Do NOT use `text-transform: uppercase` on stat card labels or any element containing "P1s"
 
 ### Error handling
-- If ClickHouse returned no rows (Step 1 failed): include the chart and table using incident.io data only; add an amber banner at the top of the section: "⚠️ PagerDuty historical data unavailable — showing incident.io data only"
-- If any month has `total_p1 = 0`: render its bar as empty (zero height), show `—` in the rate column
+- If ClickHouse returned no rows (Step 1 failed): include the P1 quality chart using incident.io data only; add an amber banner: "⚠️ PagerDuty historical data unavailable — showing incident.io data only"
+- If any week has `total_p1 = 0`: render its bar as empty, show `—` for the rate
+- If any week has `rated = 0` in CSAT: render its bar as empty, show `—` for avg score
+- If any week has `total_count = 0` in partner tickets: render its bar as empty
+- If any week has `avg_response_min = null` in partner tickets: show `—` for the line point and stat card value
 
 ---
 
@@ -191,4 +583,12 @@ Inject the data from Step 3 directly as JavaScript arrays in the `<script>` bloc
 
 Save to `~/Downloads/weekly_report.html` and open with `open ~/Downloads/weekly_report.html`.
 
-Confirm the file path and report back: most recent complete month total P1s + MoM delta, and false P1 rate + MoM delta.
+Confirm the file path and report back:
+- Most recent complete week total P1s + WoW delta
+- False P1 rate + WoW delta
+- SOC/SRE P1 FRT SLA hit rate this week + WoW delta
+- SOC/SRE P1 median FRT this week
+- SOC/SRE P2/P3 FRT SLA hit rate this week + WoW delta
+- SOC/SRE CSAT avg score this week + WoW delta
+- Partner ticket count this week (total incl. open, P1/P2/P3 breakdown) + WoW delta
+- Partner ticket median office-hours response time this week + WoW delta
