@@ -39,6 +39,8 @@ The cache is a JSON object keyed by week Monday (`YYYY-MM-DD`). Each week entry 
 
 `p1_quality_clickhouse`, `p1_quality_incidentio`, `p1_frt_sla`, `p1_brands`, `csat`, `partner_tickets`, `p2p3_frt_sla`, `mtta`, `incident_volume`, `alert_volume`
 
+SOC member MTTA is stored in a **separate file** `~/Downloads/soc_mtta_cache.json` (ISO-week keyed, per-person). See Step 2D.
+
 **Cache rule:** for any **complete** week, if a data source key is present in the cache, treat it as authoritative — do not re-fetch. For the **current week** (partial), always re-fetch all sources and overwrite the cache entry.
 
 For each data source, identify the **oldest uncached week**: the earliest complete week in `window_weeks` that is missing that source's key. If all complete weeks are already cached for a source, set oldest uncached week = `current_week_monday` (fetch current week only).
@@ -377,6 +379,80 @@ WoW trends: `total_count` and `hit_rate` vs last complete week.
 
 ---
 
+## Step 2D — SOC member MTTA from escalation_show (incremental, cache-aware)
+
+Cache file: `~/Downloads/soc_mtta_cache.json`  
+Escalation path: SOC & SRE (`01KQ7HJWR2P3J4R23RYZ68W364`)
+
+**Target persons:**
+| Name | ID |
+|---|---|
+| Joachim Farrugia | `01K56F8W06T0B6WTZ0A87WBQEA` |
+| Matteo Rapisarda | `01JW601NZQVX4SSMVEHQ19S6JW` |
+| Gérard E. Pelayo | `01JNZFJMS845S6KV5ENT41CFR0` |
+| Nazareno Scibilia | `01JR7V0PFCQKEXP63X96GXT5YE` |
+
+Valid ack reasons: `user_acked`, `incident_triaged`. Any other acker (including Simon Brown `01K56BHY17AP8M8SEFM0GG78RE`, stephen.riolo `01HKQ8YWMSDY335EYJGVXQ1HA6`, Andrea Envall `01HM8WF0T1Q1FAHTVHNY3SVHZE`, Giancarlo Laferla `01HKQ8YX3GE5FK5GYM9D847KCW`) does not count toward that person's MTTA.
+
+**Read cache:** load `~/Downloads/soc_mtta_cache.json`. If it doesn't exist, start with `{"meta": {...}, "weeks": {}}`.
+
+**ISO week key:** compute current ISO week as `YYYY-WXX` (e.g. `2026-W21`). A week is **complete** if it ended before the current Monday.
+
+**Complete past weeks:** treat as authoritative — do not re-fetch coverage or escalation data.
+
+**Current ISO week — coverage stats:** for each target person, call `escalation_stats` with:
+- `escalation_path_id: "01KQ7HJWR2P3J4R23RYZ68W364"`
+- `person_id: <target_id>`
+- date range = current ISO week Monday 00:00 UTC to now
+- `max_escalation_ids_per_group: 300`
+
+Record `resolved`, `expired`, `cancelled` counts and the full list of resolved escalation IDs returned. Recompute `miss_rate = expired / (resolved + expired)` (null if denom = 0). Always overwrite coverage stats for the current week (they grow throughout the week).
+
+**Current ISO week — incremental MTTA fetch:**
+
+For each target person:
+1. Collect already-fetched IDs: `fetched_ids = {r['escalation_id'] for r in cache[week][person]['mtta']['raw_records']}` (empty set if no cache entry yet).
+2. `new_ids = resolved_ids_from_stats − fetched_ids`
+3. For each ID in `new_ids`, call `escalation_show`.
+4. In the returned `transitions` array, find the **first** transition where `reason` is `user_acked` or `incident_triaged`.
+5. If that transition's `actor.id == target_person_id`: compute `mtta_seconds = acked_at − created_at` (integer seconds), append a record to `raw_records`:
+   ```json
+   {"escalation_id": "...", "created_at": "...", "acked_at": "...", "acked_reason": "...", "mtta_seconds": N}
+   ```
+6. If acked by someone else (or no ack transition found): skip — do not add to raw_records.
+
+**Recompute aggregates** from all `raw_records` for that person:
+- `acked_count` = len(raw_records)
+- `sample_size` = `resolved` count from coverage stats
+- `sampled` = false (full population — all resolved IDs are fetched)
+- `median_mtta_min` = median of `mtta_seconds` values ÷ 60, rounded to 2 dp (null if empty)
+- `mean_mtta_min` = mean of `mtta_seconds` values ÷ 60, rounded to 2 dp (null if empty)
+
+**Write back** the updated week entry for each person:
+```json
+cache["weeks"]["2026-WXX"]["Person Name"] = {
+  "pages_targeted": resolved + expired + cancelled,
+  "resolved": N,
+  "expired": N,
+  "cancelled": N,
+  "miss_rate": X.XX,
+  "mtta": {
+    "acked_count": N,
+    "sample_size": N,
+    "sampled": false,
+    "median_mtta_min": X.XX,
+    "mean_mtta_min": X.XX,
+    "raw_records": [...]
+  }
+}
+```
+
+**Save** `~/Downloads/soc_mtta_cache.json` after updating the current week. Log: `"SOC cache: N new escalations fetched for week YYYY-WXX (X Joachim, X Matteo, X Gérard, X Nazareno)"`
+
+**In-memory:** all ISO weeks in the cache are read directly by the HTML generator from `soc_mtta_cache.json` — no separate in-memory pass needed.
+
+---
+
 ## Step 5C — P2/P3 breach deep-dive (current week only, no cache)
 
 **Skip entirely if no P2/P3 breaches for the current week.**
@@ -443,6 +519,11 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] MTTA WoW delta only shown when both this week and last complete week have data
 - [ ] Raw lists present in cache: `p1_frt_sla.frt_seconds`, `partner_tickets.response_times_s`, `p2p3_frt_sla.response_times_s`, `mtta.P1.mtta_minutes` (and P2/P3 where available)
 - [ ] Raw list medians match stored `median_*` values (spot check 1–2 weeks)
+- [ ] SOC MTTA: `new_ids = resolved_ids_from_stats − fetched_ids` — no duplicate fetches
+- [ ] SOC MTTA: ack only counted when `actor.id == target_person_id`; other ackers silently skipped
+- [ ] SOC MTTA: `sampled = false`; `sample_size` = resolved count from escalation_stats
+- [ ] SOC MTTA: coverage stats (miss_rate) always overwritten for current week; past weeks untouched
+- [ ] SOC MTTA chart: only ISO weeks with ≥1 person having non-null `median_mtta_min` are shown — no null-only weeks on x-axis
 - [ ] Incident volume: W19+ only; severity labels match org config
 - [ ] Alert volume: W19+ only; source names taken from API response
 - [ ] Conversion rate: null shown as `"—"` when `alert_total = 0`
@@ -473,7 +554,9 @@ import subprocess
 subprocess.run(["open", "/Users/andrea/Downloads/weekly_report.html"])
 ```
 
-The script reads `~/Downloads/weekly_report_cache.json` and produces `~/Downloads/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, and breach detail blocks. Do not generate HTML inline — use the script.
+The script reads both `~/Downloads/weekly_report_cache.json` and `~/Downloads/soc_mtta_cache.json` and produces `~/Downloads/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, and breach detail blocks. Do not generate HTML inline — use the script.
+
+The script handles missing `soc_mtta_cache.json` gracefully (empty Section 4). The SOC MTTA chart only shows ISO weeks that have at least one person with MTTA data — it starts from the first fetched week and expands automatically.
 
 If the script errors, check that the cache was written successfully in Step 6 and that `~/AHSRE/agents/generate_weekly_report.py` exists.
 
@@ -499,3 +582,4 @@ Report back:
 - Incidents this week (total + severity breakdown) + WoW delta
 - Alerts this week (total) + WoW delta
 - Alert→Incident conversion rate + WoW delta
+- SOC member MTTA per person (median, miss rate, acked/resolved) + WoW MTTA delta

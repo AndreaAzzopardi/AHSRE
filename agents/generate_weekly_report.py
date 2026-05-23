@@ -8,6 +8,14 @@ OUTPUT_FILE = "/Users/andrea/Downloads/weekly_report.html"
 with open(CACHE_FILE) as f:
     cache = json.load(f)
 
+SOC_CACHE_FILE = "/Users/andrea/Downloads/soc_mtta_cache.json"
+try:
+    with open(SOC_CACHE_FILE) as f:
+        soc_cache = json.load(f)
+    soc_weeks_data = soc_cache.get("weeks", {})
+except FileNotFoundError:
+    soc_weeks_data = {}
+
 WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")]
 today = datetime.now(tz=timezone.utc)
 today_str = today.strftime("%-d %B %Y")
@@ -148,6 +156,35 @@ ptP3_arr   = [get(wk, "partner_tickets", "p3_responded", default=0) + get(wk, "p
 ptMed_arr  = [get(wk, "partner_tickets", "median_response_min") for wk in WEEK_KEYS]
 ptAvg_arr  = [get(wk, "partner_tickets", "avg_response_min") for wk in WEEK_KEYS]
 
+# ── SECTION 4 — SOC MEMBER PERFORMANCE ──────────────────────────────────────
+SOC_PERSONS = ["Joachim Farrugia", "Matteo Rapisarda", "Gérard E. Pelayo", "Nazareno Scibilia"]
+SOC_SHORT   = {"Joachim Farrugia": "Joachim", "Matteo Rapisarda": "Matteo",
+               "Gérard E. Pelayo": "Gérard",  "Nazareno Scibilia": "Nazareno"}
+SOC_WEEK_KEYS = sorted(soc_weeks_data.keys())
+
+cw_dt   = datetime.strptime(current_week, "%Y-%m-%d")
+cw_iso  = f"{cw_dt.isocalendar()[0]}-W{cw_dt.isocalendar()[1]:02d}"
+pw_dt   = cw_dt - timedelta(weeks=1)
+pw_iso  = f"{pw_dt.isocalendar()[0]}-W{pw_dt.isocalendar()[1]:02d}"
+pw_iso_label = pw_iso.split("-")[1]  # "W20"
+
+def soc_get(iso_week, person, *keys, default=None):
+    obj = soc_weeks_data.get(iso_week, {}).get(person, {})
+    for k in keys:
+        if obj is None: return default
+        obj = obj.get(k) if isinstance(obj, dict) else None
+    return obj if obj is not None else default
+
+SOC_WK = [w.split("-")[1] for w in SOC_WEEK_KEYS]  # ["W19","W20","W21"]
+
+# MTTA chart: only show weeks where at least one person has data
+SOC_MTTA_WEEK_KEYS = [w for w in SOC_WEEK_KEYS
+    if any(soc_get(w, p, "mtta", "median_mtta_min") is not None for p in SOC_PERSONS)]
+SOC_MTTA_WK = [w.split("-")[1] for w in SOC_MTTA_WEEK_KEYS]
+
+soc_mtta_arr  = {p: [soc_get(w, p, "mtta", "median_mtta_min") for w in SOC_MTTA_WEEK_KEYS] for p in SOC_PERSONS}
+soc_miss_arr  = {p: [round((soc_get(w, p, "miss_rate") or 0) * 100, 1) for w in SOC_WEEK_KEYS] for p in SOC_PERSONS}
+
 # ── SECTION 3 — INCIDENT OPERATIONS ─────────────────────────────────────────
 iP1_arr = [get(wk, "incident_volume", "P1", default=0) for wk in WEEK_KEYS]
 iP2_arr = [get(wk, "incident_volume", "P2", default=0) for wk in WEEK_KEYS]
@@ -237,6 +274,52 @@ else:
 cw_conv_rate = round(cw_inc_total / cw_alerts * 100, 1) if cw_alerts else None
 pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
 conv_delta_cls, conv_delta = delta_str(cw_conv_rate, pw_conv_rate, "%", higher_is_better=False)
+
+# S4 SOC stat card values
+def color_mtta(v):
+    if v is None: return "c-muted"
+    if v <= 2: return "c-green"
+    if v <= 5: return "c-amber"
+    return "c-red"
+
+def color_miss(mr_pct):
+    if mr_pct is None: return "c-muted"
+    if mr_pct <= 5: return "c-green"
+    if mr_pct <= 15: return "c-amber"
+    return "c-red"
+
+def soc_delta(current, prev, unit="", higher_is_better=False, decimals=1):
+    if current is None or prev is None:
+        return ("d-muted", "—")
+    diff = current - prev
+    if abs(diff) < 0.05:
+        return ("d-muted", f"0{unit} vs {pw_iso_label}")
+    sign = "+" if diff > 0 else "−"
+    fmt_diff = str(int(round(abs(diff)))) if decimals == 0 else f"{abs(diff):.{decimals}f}"
+    good = diff > 0 if higher_is_better else diff < 0
+    return ("d-green" if good else "d-red", f"{sign}{fmt_diff}{unit} vs {pw_iso_label}")
+
+soc_cards = {}
+for p in SOC_PERSONS:
+    cw_mtta  = soc_get(cw_iso, p, "mtta", "median_mtta_min")
+    pw_mtta  = soc_get(pw_iso, p, "mtta", "median_mtta_min")
+    cw_miss  = soc_get(cw_iso, p, "miss_rate")
+    pw_miss  = soc_get(pw_iso, p, "miss_rate")
+    cw_miss_pct = round(cw_miss * 100, 1) if cw_miss is not None else None
+    pw_miss_pct = round(pw_miss * 100, 1) if pw_miss is not None else None
+    acked   = soc_get(cw_iso, p, "mtta", "acked_count", default=0)
+    sample  = soc_get(cw_iso, p, "mtta", "sample_size", default=0)
+    mtta_d_cls, mtta_d  = soc_delta(cw_mtta, pw_mtta, " min", higher_is_better=False)
+    miss_d_cls, miss_d  = soc_delta(cw_miss_pct, pw_miss_pct, "%", higher_is_better=False)
+    soc_cards[p] = {
+        "mtta_val": f"{cw_mtta:.2f}" if cw_mtta is not None else "—",
+        "mtta_cls": color_mtta(cw_mtta),
+        "miss_pct": f"{cw_miss_pct:.1f}%" if cw_miss_pct is not None else "—",
+        "miss_cls": color_miss(cw_miss_pct),
+        "subnote":  f"Miss: {cw_miss_pct:.1f}% &middot; {acked}/{sample} acked" if cw_miss_pct is not None else "No data",
+        "mtta_d_cls": mtta_d_cls, "mtta_d": mtta_d,
+        "miss_d_cls": miss_d_cls, "miss_d": miss_d,
+    }
 
 # ── BREACH BLOCKS ────────────────────────────────────────────────────────────
 week_label_long = f"Week of {fmt_date_dmy(current_week)} {datetime.strptime(current_week, '%Y-%m-%d').year}"
@@ -625,6 +708,35 @@ html = f'''<!DOCTYPE html>
     <div class="chart-container" style="height:280px"><canvas id="cMTTA"></canvas></div>
   </div>
 
+  <div class="group-divider"></div>
+
+  <!-- ═══ SECTION 4 — SOC MEMBER PERFORMANCE ══════════════════════════ -->
+  <div class="group-label">
+    SOC Member Performance
+    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; escalation acknowledgment &middot; {cw_iso}</span>
+  </div>
+
+  <div class="stat-grid-4">
+{''.join(f"""    <div class="stat-card">
+      <div class="card-label">{SOC_SHORT[p]} &middot; Median MTTA ({cw_date})</div>
+      <div class="card-value {soc_cards[p]['mtta_cls']}">{soc_cards[p]['mtta_val']} <span class="unit">min</span></div>
+      <div class="card-subnote {soc_cards[p]['miss_cls']}">{soc_cards[p]['subnote']}</div>
+      <div class="card-delta {soc_cards[p]['mtta_d_cls']}">{soc_cards[p]['mtta_d']}</div>
+    </div>
+""" for p in SOC_PERSONS)}  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">SOC Member Miss Rate — Week on Week</div>
+    <div class="chart-note">Source: incident.io &middot; SOC &amp; SRE escalation path &middot; Miss rate = expired / (resolved + expired)</div>
+    <div class="chart-container" style="height:260px"><canvas id="cSOCMiss"></canvas></div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">SOC Member Median MTTA — Week on Week</div>
+    <div class="chart-note">Source: incident.io &middot; escalation_show &middot; Median minutes from escalation created to ack &middot; Full population (not sampled)</div>
+    <div class="chart-container" style="height:260px"><canvas id="cSOCMTTA"></canvas></div>
+  </div>
+
   <div class="footer">
     Generated {today_str} &middot; Fast Track SRE &middot; Data: ClickHouse &middot; incident.io &middot; Intercom<br>
     12-week rolling window ({fmt_date_dmy(WEEK_KEYS[0])} – {fmt_week_label(current_week, True)}) &middot; All times UTC
@@ -764,6 +876,31 @@ new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datas
   {{label:'Intercom',     data:aIcom.slice(-WK19.length),backgroundColor:'#64748b',stack:'a'}},
   {{label:'HTTP DMS FTML',data:aFTML.slice(-WK19.length),backgroundColor:'#818cf8',stack:'a'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
+
+const SOCWK     = {js_str_arr(SOC_WK)};
+const SOCMTTAWK = {js_str_arr(SOC_MTTA_WK)};
+const socMissJ = {js_arr(soc_miss_arr["Joachim Farrugia"])};
+const socMissM = {js_arr(soc_miss_arr["Matteo Rapisarda"])};
+const socMissG = {js_arr(soc_miss_arr["Gérard E. Pelayo"])};
+const socMissN = {js_arr(soc_miss_arr["Nazareno Scibilia"])};
+const socMttaJ = {js_arr(soc_mtta_arr["Joachim Farrugia"])};
+const socMttaM = {js_arr(soc_mtta_arr["Matteo Rapisarda"])};
+const socMttaG = {js_arr(soc_mtta_arr["Gérard E. Pelayo"])};
+const socMttaN = {js_arr(soc_mtta_arr["Nazareno Scibilia"])};
+
+new Chart(document.getElementById('cSOCMiss'),{{type:'bar',data:{{labels:SOCWK,datasets:[
+  {{label:'Joachim', data:socMissJ,backgroundColor:'#ef4444',barPercentage:0.6}},
+  {{label:'Matteo',  data:socMissM,backgroundColor:'#22c55e',barPercentage:0.6}},
+  {{label:'Gérard',  data:socMissG,backgroundColor:'#64748b',barPercentage:0.6}},
+  {{label:'Nazareno',data:socMissN,backgroundColor:'#3b82f6',barPercentage:0.6}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+'%'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
+
+new Chart(document.getElementById('cSOCMTTA'),{{type:'line',data:{{labels:SOCMTTAWK,datasets:[
+  {{label:'Joachim', data:socMttaJ,borderColor:'#ef4444',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:4,pointBackgroundColor:'#ef4444'}},
+  {{label:'Matteo',  data:socMttaM,borderColor:'#22c55e',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:4,pointBackgroundColor:'#22c55e'}},
+  {{label:'Gérard',  data:socMttaG,borderColor:'#64748b',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:4,pointBackgroundColor:'#64748b'}},
+  {{label:'Nazareno',data:socMttaN,borderColor:'#3b82f6',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:4,pointBackgroundColor:'#3b82f6'}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 </script>
 </body>
 </html>'''
