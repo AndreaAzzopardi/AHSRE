@@ -32,8 +32,8 @@ PW = cache[prev_week]
 
 # Week labels
 WK = [fmt_week_label(k, k == current_week) for k in WEEK_KEYS]
-# WK19 = weeks that have mtta data (incident.io era from 2026-05-04)
-WK19_KEYS = [k for k in WEEK_KEYS if "mtta" in cache[k]]
+# WK19 = incident.io era, fixed from 2026-05-04 regardless of cache completeness
+WK19_KEYS = [k for k in WEEK_KEYS if k >= "2026-05-04"]
 WK19 = [fmt_week_label(k, k == current_week) for k in WK19_KEYS]
 
 def js_arr(vals):
@@ -142,19 +142,18 @@ def pt_responded(week):
     pt = cache[week].get("partner_tickets", {})
     return pt.get("p1_responded", 0) + pt.get("p2_responded", 0) + pt.get("p3_responded", 0)
 
-ptP1_arr   = [get(wk, "partner_tickets", "p1_responded", default=0) for wk in WEEK_KEYS]
-ptP2_arr   = [get(wk, "partner_tickets", "p2_responded", default=0) for wk in WEEK_KEYS]
-ptP3_arr   = [get(wk, "partner_tickets", "p3_responded", default=0) for wk in WEEK_KEYS]
-ptOpen_arr = [sum([get(wk, "partner_tickets", "p1_open", default=0),
-                   get(wk, "partner_tickets", "p2_open", default=0),
-                   get(wk, "partner_tickets", "p3_open", default=0)]) for wk in WEEK_KEYS]
+ptP1_arr   = [get(wk, "partner_tickets", "p1_responded", default=0) + get(wk, "partner_tickets", "p1_open", default=0) for wk in WEEK_KEYS]
+ptP2_arr   = [get(wk, "partner_tickets", "p2_responded", default=0) + get(wk, "partner_tickets", "p2_open", default=0) for wk in WEEK_KEYS]
+ptP3_arr   = [get(wk, "partner_tickets", "p3_responded", default=0) + get(wk, "partner_tickets", "p3_open", default=0) for wk in WEEK_KEYS]
 ptMed_arr  = [get(wk, "partner_tickets", "median_response_min") for wk in WEEK_KEYS]
+ptAvg_arr  = [get(wk, "partner_tickets", "avg_response_min") for wk in WEEK_KEYS]
 
 # ── SECTION 3 — INCIDENT OPERATIONS ─────────────────────────────────────────
 iP1_arr = [get(wk, "incident_volume", "P1", default=0) for wk in WEEK_KEYS]
 iP2_arr = [get(wk, "incident_volume", "P2", default=0) for wk in WEEK_KEYS]
 iP3_arr = [get(wk, "incident_volume", "P3", default=0) for wk in WEEK_KEYS]
 iP4_arr = [get(wk, "incident_volume", "P4", default=0) for wk in WEEK_KEYS]
+iUnk_arr = [get(wk, "incident_volume", "Unknown", default=0) for wk in WEEK_KEYS]
 
 aDMS_arr  = [get(wk, "alert_volume", "by_source", "DMS", default=0) for wk in WEEK_KEYS]
 aSOC_arr  = [get(wk, "alert_volume", "by_source", "Grafana SOC", default=0) for wk in WEEK_KEYS]
@@ -336,6 +335,31 @@ p1_breach_html  = render_p1_breach_block(current_week)
 p23_breach_html = render_p23_breach_block(current_week)
 csat_breach_html = render_csat_breach_block(current_week)
 
+# ── Partner RT callout (weeks where median or avg > 120 min) ─────────────────
+def render_prt_callout():
+    flags = []
+    for wk in WEEK_KEYS:
+        pt = cache[wk].get('partner_tickets', {})
+        med = pt.get('median_response_min')
+        avg = pt.get('avg_response_min')
+        wk_label = fmt_week_label(wk, wk == current_week)
+        if med is not None and med > 120:
+            flags.append(f"<li><strong>{wk_label}</strong> — median {med:.0f} min</li>")
+        elif avg is not None and avg > 120:
+            flags.append(f"<li><strong>{wk_label}</strong> — avg {avg:.0f} min (median {med:.0f} min)</li>")
+    if not flags:
+        return '''    <div class="breach-block">
+      <div class="breach-list-title" style="color:#22c55e">Response Time Callouts</div>
+      <div class="breach-clean c-green">No weeks above 2-hour threshold.</div>
+    </div>'''
+    items = "\n".join(flags)
+    return f'''    <div class="breach-block">
+      <div class="breach-list-title">Response Time Callouts — weeks above 2-hr threshold</div>
+      <ul style="font-size:12px;color:#94a3b8;margin:4px 0 0 16px;line-height:1.8">{items}</ul>
+    </div>'''
+
+prt_callout_html = render_prt_callout()
+
 # ── P1 quality note ──────────────────────────────────────────────────────────
 ch_last = next((k for k in reversed(WEEK_KEYS) if "p1_quality_clickhouse" in cache[k]), None)
 io_first = next((k for k in WEEK_KEYS if "p1_quality_incidentio" in cache[k]), None)
@@ -437,13 +461,13 @@ html = f'''<!DOCTYPE html>
   <div class="header">
     <div class="header-left">
       <h1>Weekly SRE Report</h1>
-      <div class="subtitle">P1 Performance &middot; Partner Tickets &middot; Incident Operations</div>
+      <div class="subtitle">Partner P1 Tickets &middot; Partner Tickets &middot; Incident Operations</div>
     </div>
     <div class="header-right">{today_str}</div>
   </div>
 
-  <!-- ═══ SECTION 1 — P1 PERFORMANCE ═══════════════════════════════ -->
-  <div class="group-label">P1 Performance</div>
+  <!-- ═══ SECTION 1 — PARTNER P1 TICKETS ══════════════════════════ -->
+  <div class="group-label">Partner P1 Tickets</div>
 
   <div class="stat-grid-5">
     <div class="stat-card">
@@ -457,12 +481,13 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {fp_rate_delta_cls}">{fp_rate_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">SOC/SRE P1 FRT SLA ({cw_date})</div>
+      <div class="card-label">SOC & SRE P1 FRT SLA ({cw_date})</div>
       <div class="card-value {color_pct(cw_p1_frt_rate)}">{fmt_rate(cw_p1_frt_rate, 0) if cw_p1_frt_rate is not None else '—'}</div>
+      <div class="card-subnote">Target: 30 min</div>
       <div class="card-delta {p1_frt_delta_cls}">{p1_frt_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">SOC/SRE P1 Median FRT ({cw_date})</div>
+      <div class="card-label">SOC & SRE P1 Median FRT ({cw_date})</div>
       <div class="card-value c-muted">{fmt_min(cw_p1_med_frt)} <span class="unit">min</span></div>
       <div class="card-delta {p1_med_delta_cls}">{p1_med_delta}</div>
     </div>
@@ -481,16 +506,10 @@ html = f'''<!DOCTYPE html>
   </div>
 
   <div class="chart-section">
-    <div class="chart-title">SOC/SRE P1 First Response SLA — Week on Week</div>
+    <div class="chart-title">SOC & SRE P1 First Response SLA — Week on Week</div>
     <div class="chart-note">Source: Intercom &middot; P1 Incident SLA only &middot; 30-min target &middot; excludes downgraded and unanswered tickets</div>
     <div class="chart-container" style="height:280px"><canvas id="cP1F"></canvas></div>
 {p1_breach_html}
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">P1 MTTA — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 ({wk19_first_dt.day if wk19_first_dt else '4'} {wk19_first_dt.strftime('%b %Y') if wk19_first_dt else 'May 2026'}) onwards &middot; Median minutes from incident reported to acknowledged</div>
-    <div class="chart-container" style="height:280px"><canvas id="cMTTA"></canvas></div>
   </div>
 
   <div class="chart-section">
@@ -506,12 +525,13 @@ html = f'''<!DOCTYPE html>
 
   <div class="stat-grid-4">
     <div class="stat-card">
-      <div class="card-label">SOC/SRE P2/P3 FRT SLA ({cw_date})</div>
+      <div class="card-label">SOC & SRE P2/P3 FRT SLA ({cw_date})</div>
       <div class="card-value {color_pct(cw_p23_rate)}">{fmt_rate(cw_p23_rate, 1) if cw_p23_rate is not None else '—'}</div>
+      <div class="card-subnote">Target: 2 hr · office hours</div>
       <div class="card-delta {p23_delta_cls}">{p23_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">SOC/SRE CSAT Score ({cw_date})</div>
+      <div class="card-label">SOC & SRE CSAT Score ({cw_date})</div>
       <div class="card-value {color_csat(cw_csat_avg)}">{fmt_csat(cw_csat_avg)}<span class="unit">/5</span></div>
       <div class="card-delta {csat_delta_cls}">{csat_delta}</div>
     </div>
@@ -529,14 +549,14 @@ html = f'''<!DOCTYPE html>
   </div>
 
   <div class="chart-section">
-    <div class="chart-title">SOC/SRE P2/P3 First Response SLA — Week on Week</div>
+    <div class="chart-title">SOC & SRE P2/P3 First Response SLA — Week on Week</div>
     <div class="chart-note">Source: Intercom &middot; P2/P3 Incident tagged tickets assigned to SRE &middot; 2-hour target, office hours &middot; Slack-handled excluded</div>
     <div class="chart-container" style="height:280px"><canvas id="cP23F"></canvas></div>
 {p23_breach_html}
   </div>
 
   <div class="chart-section">
-    <div class="chart-title">SOC/SRE CSAT — Week on Week</div>
+    <div class="chart-title">SOC & SRE CSAT — Week on Week</div>
     <div class="chart-note">Source: Intercom &middot; All SRE conversations &middot; 1–5 scale</div>
     <div class="chart-container" style="height:280px"><canvas id="cCSAT"></canvas></div>
 {csat_breach_html}
@@ -544,14 +564,15 @@ html = f'''<!DOCTYPE html>
 
   <div class="chart-section">
     <div class="chart-title">Partner Ticket Volume — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; P1/P2/P3 Incident tagged tickets assigned to SRE &middot; Slack-handled excluded</div>
+    <div class="chart-note">Source: Intercom &middot; All P1/P2/P3 Incident tagged tickets created and assigned to SRE</div>
     <div class="chart-container" style="height:280px"><canvas id="cPVol"></canvas></div>
   </div>
 
   <div class="chart-section">
     <div class="chart-title">Partner Ticket Response Time — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; Office hours only &middot; Slack-handled excluded &middot; Solid = median</div>
+    <div class="chart-note">Source: Intercom &middot; Office hours only &middot; Slack-handled excluded &middot; Solid line = median &middot; Dashed line = average &middot; 2-hr reference shown</div>
     <div class="chart-container" style="height:280px"><canvas id="cPRT"></canvas></div>
+{prt_callout_html}
   </div>
 
   <div class="group-divider"></div>
@@ -598,6 +619,12 @@ html = f'''<!DOCTYPE html>
     <div class="chart-container" style="height:280px"><canvas id="cAVol"></canvas></div>
   </div>
 
+  <div class="chart-section">
+    <div class="chart-title">MTTA by Severity — Week on Week</div>
+    <div class="chart-note">Source: incident.io &middot; W19 ({wk19_first_dt.day if wk19_first_dt else '4'} {wk19_first_dt.strftime('%b %Y') if wk19_first_dt else 'May 2026'}) onwards &middot; Median minutes from incident reported to acknowledged &middot; P1/P2/P3</div>
+    <div class="chart-container" style="height:280px"><canvas id="cMTTA"></canvas></div>
+  </div>
+
   <div class="footer">
     Generated {today_str} &middot; Fast Track SRE &middot; Data: ClickHouse &middot; incident.io &middot; Intercom<br>
     12-week rolling window ({fmt_date_dmy(WEEK_KEYS[0])} – {fmt_week_label(current_week, True)}) &middot; All times UTC
@@ -639,13 +666,15 @@ const csA  = {js_arr(csA_arr)};
 const ptP1   = {js_arr(ptP1_arr)};
 const ptP2   = {js_arr(ptP2_arr)};
 const ptP3   = {js_arr(ptP3_arr)};
-const ptOpen = {js_arr(ptOpen_arr)};
 const ptMed  = {js_arr(ptMed_arr)};
+const ptAvg  = {js_arr(ptAvg_arr)};
+const T120 = Array(WK.length).fill(120);
 
 const iP1 = {js_arr(iP1_arr)};
 const iP2 = {js_arr(iP2_arr)};
 const iP3 = {js_arr(iP3_arr)};
 const iP4 = {js_arr(iP4_arr)};
+const iUnk = {js_arr(iUnk_arr)};
 
 const aDMS  = {js_arr(aDMS_arr)};
 const aSOC  = {js_arr(aSOC_arr)};
@@ -681,13 +710,13 @@ new Chart(document.getElementById('cMTTA'),{{type:'line',data:{{labels:WK19,data
   {{label:'P1 Median',data:mP1.slice(-WK19.length),borderColor:'#ef4444',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#ef4444'}},
   {{label:'P2 Median',data:mP2.slice(-WK19.length),borderColor:'#f59e0b',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#f59e0b'}},
   {{label:'P3 Median',data:mP3.slice(-WK19.length),borderColor:'#3b82f6',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#3b82f6'}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}});
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
 new Chart(document.getElementById('cBrand'),{{type:'bar',data:{{labels:bL,datasets:[
   {{label:'P1 Tickets',data:bC,backgroundColor:'#38bdf8',borderWidth:0,borderRadius:3}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:{{display:false}},tooltip:TT}},scales:{{
   x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
-  y:{{reverse:true,ticks:{{color:'#94a3b8'}},grid:{{display:false}}}}
+  y:{{ticks:{{color:'#94a3b8'}},grid:{{display:false}}}}
 }}}}}});
 
 new Chart(document.getElementById('cP23F'),{{type:'bar',data:{{labels:WK,datasets:[
@@ -708,21 +737,23 @@ new Chart(document.getElementById('cCSAT'),{{type:'bar',data:{{labels:WK,dataset
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{...LG,labels:{{...LG.labels,filter:no45}}}},tooltip:TT}},scales:{{x:XA,y:YL(true),rate:{{type:'linear',position:'right',min:0,max:5,ticks:{{color:'#a78bfa',callback:v=>v.toFixed(1)}},grid:{{display:false}}}}}}}}}});
 
 new Chart(document.getElementById('cPVol'),{{type:'bar',data:{{labels:WK,datasets:[
-  {{label:'P1',        data:ptP1,  backgroundColor:'#ef4444',stack:'t'}},
-  {{label:'P2',        data:ptP2,  backgroundColor:'#f59e0b',stack:'t'}},
-  {{label:'P3',        data:ptP3,  backgroundColor:'#3b82f6',stack:'t'}},
-  {{label:'Still Open',data:ptOpen,backgroundColor:'rgba(226,232,240,0.25)',stack:'t'}}
+  {{label:'P1',data:ptP1,backgroundColor:'#ef4444',stack:'t'}},
+  {{label:'P2',data:ptP2,backgroundColor:'#f59e0b',stack:'t'}},
+  {{label:'P3',data:ptP3,backgroundColor:'#3b82f6',stack:'t'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 new Chart(document.getElementById('cPRT'),{{type:'line',data:{{labels:WK,datasets:[
-  {{label:'Median Response (min)',data:ptMed,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.1)',tension:0.3,fill:true,pointRadius:3,pointBackgroundColor:'#38bdf8',spanGaps:false}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}});
+  {{label:'Median (min)',data:ptMed,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',tension:0.3,fill:true,pointRadius:3,pointBackgroundColor:'#38bdf8',spanGaps:false}},
+  {{label:'Average (min)',data:ptAvg,borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,4],tension:0.3,fill:false,pointRadius:3,pointBackgroundColor:'#f59e0b',spanGaps:false}},
+  {{label:'2-hr limit',type:'line',data:T120,borderColor:'rgba(239,68,68,0.4)',borderDash:[4,4],pointRadius:0,fill:false}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
 new Chart(document.getElementById('cIVol'),{{type:'bar',data:{{labels:WK19,datasets:[
   {{label:'P1',data:iP1.slice(-WK19.length),backgroundColor:'#ef4444',stack:'i'}},
   {{label:'P2',data:iP2.slice(-WK19.length),backgroundColor:'#f59e0b',stack:'i'}},
   {{label:'P3',data:iP3.slice(-WK19.length),backgroundColor:'#3b82f6',stack:'i'}},
-  {{label:'P4',data:iP4.slice(-WK19.length),backgroundColor:'#64748b',stack:'i'}}
+  {{label:'P4',data:iP4.slice(-WK19.length),backgroundColor:'#64748b',stack:'i'}},
+  {{label:'Unknown',data:iUnk.slice(-WK19.length),backgroundColor:'#475569',stack:'i'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datasets:[

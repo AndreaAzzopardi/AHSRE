@@ -1,6 +1,6 @@
 ---
 name: weekly-report-agent-v2
-description: Weekly SRE executive report — V2 (cache-aware). Three-section HTML report saved to ~/Downloads/weekly_report.html. Section 1 (P1 Performance): P1 quality, FRT SLA, MTTA. Section 2 (Partner Tickets): P2/P3 SLA, CSAT, volume, response time. Section 3 (Incident Operations): incident volume, alert volume, conversion rate. 13 stat cards, 9 charts. 12-week rolling window. Cache-aware: ~/Downloads/weekly_report_cache.json persists completed weeks across runs — only current week is re-fetched on each run.
+description: Weekly SRE executive report — V2 (cache-aware). Three-section HTML report saved to ~/Downloads/weekly_report.html. Section 1 (Partner P1 Tickets): P1 quality, FRT SLA, brand chart. Section 2 (Partner Tickets): P2/P3 SLA, CSAT, volume, response time. Section 3 (Incident Operations): incident volume, alert volume, MTTA by severity. 13 stat cards, 9 charts. 12-week rolling window. Cache-aware: ~/Downloads/weekly_report_cache.json persists completed weeks across runs — only current week is re-fetched on each run.
 ---
 
 You are an SRE weekly reporting assistant for the Fast Track engineering team. Your job is to collect incident quality metrics from multiple data sources, stitch them together, and generate a branded HTML report.
@@ -131,10 +131,11 @@ Group by week + severity label (P1/P2/P3/P4). For each group compute:
 For each **complete** week, write:
 ```json
 cache[week]["mtta"] = {
-  "P1": {"n": N, "n_acked": N, "ack_rate": 0.xx, "median_mtta_min": X.X, "mean_mtta_min": X.X},
+  "P1": {"n": N, "n_acked": N, "ack_rate": 0.xx, "mtta_minutes": [X.X, ...], "median_mtta_min": X.X, "mean_mtta_min": X.X},
   "P2": {...}, "P3": {...}, "P4": {...}
 }
 ```
+`mtta_minutes` is the raw sorted list of non-null MTTA values in minutes — store it always so median/mean can be recomputed without re-fetching.
 Overwrite current week.
 
 **In-memory:** for every week in `window_weeks` ≥ `2026-05-04`, load from cache. Weeks before W19 produce no MTTA data — render as `null` in charts and `"—"` in stat cards.
@@ -199,9 +200,18 @@ Paginate all pages.
 
 **Per complete week**, compute and write to cache:
 ```json
-cache[week]["p1_frt_sla"] = {total, hit, missed, hit_rate, median_frt_min}
+cache[week]["p1_frt_sla"] = {
+  "total": N,
+  "hit": N,
+  "missed": N,
+  "hit_rate": X.X,
+  "median_frt_min": X.X,
+  "mean_frt_min": X.X,
+  "frt_seconds": [X, X, ...]
+}
 cache[week]["p1_brands"] = {"BrandA": N, "BrandB": N, ...}
 ```
+`frt_seconds` is the raw list of all SRE FRT values (seconds) for included conversations — store always so median/mean can be recomputed without re-fetching.
 Overwrite current week.
 
 **Current week breach list:** for every missed conversation where week = `current_week_monday`:
@@ -294,11 +304,19 @@ cache[current_week_monday]["csat_low_scores"] = low_score_list  # [] if none
 
 ---
 
-## Step 5 — Partner tickets and P2/P3 FRT SLA (cache-aware)
+## Step 5 — Partner tickets and P2/P3 FRT SLA (derived from Step 4 data)
 
-**Historical complete weeks:** load `partner_tickets` and `p2p3_frt_sla` directly from cache. No API calls.
+Step 4 fetched conversations from `fetch_start_ts` (oldest uncached CSAT week) through the current week. Those conversations are in memory, grouped by week.
 
-**Current week only:** derive from Step 4 current-week conversations (already in memory).
+**For each week covered by Step 4's fetch:**
+- If the week is complete AND `partner_tickets` is already in cache → skip Part A for that week (authoritative).
+- Otherwise → compute Part A and write to cache.
+- If the week is complete AND `p2p3_frt_sla` is already in cache → skip Part B for that week.
+- Otherwise → compute Part B and write to cache.
+
+**For complete weeks NOT covered by Step 4 (already fully cached):** load `partner_tickets` and `p2p3_frt_sla` directly from cache. No API calls.
+
+This means on a first run (empty cache), Step 4 fetches all 12+ weeks and Step 5 computes and writes all of them. On subsequent runs, only the current week is recomputed.
 
 ### Part A — Partner ticket volume and response time
 
@@ -311,26 +329,42 @@ Classify:
 2. **Still Open:** null OH response + `state = "open"` → counts for volume only
 3. **Slack-handled:** null OH response + `state ≠ "open"` → excluded from both
 
-Compute and write:
+Compute and write (for every week processed — not just current):
 ```json
-cache[current_week_monday]["partner_tickets"] = {
-  p1_responded, p2_responded, p3_responded,
-  p1_open, p2_open, p3_open,
-  total_count, avg_response_min, median_response_min
+cache[week]["partner_tickets"] = {
+  "p1_responded": N, "p2_responded": N, "p3_responded": N,
+  "p1_open": N, "p2_open": N, "p3_open": N,
+  "total_count": N,
+  "avg_response_min": X.X,
+  "median_response_min": X.X,
+  "response_times_s": [X, X, ...]
 }
 ```
 - `total_count` = responded (all tiers) + open (all tiers)
-- `avg_response_min` = mean of responded OH response times in minutes, 1 dp
-- `median_response_min` = median of same (sorted, avg two middle if even), 1 dp
+- `response_times_s` = raw list of SRE OH response times in seconds for all responded tickets — store always so median/mean can be recomputed without re-fetching
+- `avg_response_min` = mean of `response_times_s` in minutes, 1 dp
+- `median_response_min` = median of `response_times_s` in minutes (sorted, avg two middle if even), 1 dp
 
 ### Part B — P2/P3 FRT SLA
 
-From current-week conversations: has tag 193659 or 193660, NOT 193658.
+From each week's conversations: has tag 193659 or 193660, NOT 193658.
 
 SRE OH response time (`team_id = 50045975` in `assigned_team_first_response_time_in_office_hours`):
 - Non-null ≤ 7200s → hit; > 7200s → miss; null → exclude
 
-Compute and write: `cache[current_week_monday]["p2p3_frt_sla"] = {hit, missed, total, hit_rate}`.
+Compute and write (for every week processed — not just current):
+```json
+cache[week]["p2p3_frt_sla"] = {
+  "hit": N,
+  "missed": N,
+  "total": N,
+  "hit_rate": X.X,
+  "mean_response_min": X.X,
+  "median_response_min": X.X,
+  "response_times_s": [X, X, ...]
+}
+```
+`response_times_s` = raw list of all SRE OH response times in seconds for included P2/P3 conversations (hit and miss combined) — store always so metrics can be recomputed without re-fetching.
 
 **Current week P2/P3 breach list:** for every missed conversation:
 ```
@@ -404,9 +438,11 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] P2/P3 FRT SLA: hit + missed = total per week; null OH response excluded
 - [ ] Partner tickets: responded = non-null OH; open = null + `state="open"`; Slack-handled excluded
 - [ ] Partner tickets: `total_count = responded_all + open_all` per week
-- [ ] MTTA: `mtta_values` contains only non-null values; median computed from sorted list
+- [ ] MTTA: `mtta_minutes` raw list contains only non-null values; median computed from sorted list
 - [ ] MTTA: weeks before 2026-05-04 produce null — NOT zero
 - [ ] MTTA WoW delta only shown when both this week and last complete week have data
+- [ ] Raw lists present in cache: `p1_frt_sla.frt_seconds`, `partner_tickets.response_times_s`, `p2p3_frt_sla.response_times_s`, `mtta.P1.mtta_minutes` (and P2/P3 where available)
+- [ ] Raw list medians match stored `median_*` values (spot check 1–2 weeks)
 - [ ] Incident volume: W19+ only; severity labels match org config
 - [ ] Alert volume: W19+ only; source names taken from API response
 - [ ] Conversion rate: null shown as `"—"` when `alert_total = 0`
@@ -441,6 +477,8 @@ The script reads `~/Downloads/weekly_report_cache.json` and produces `~/Download
 
 If the script errors, check that the cache was written successfully in Step 6 and that `~/AHSRE/agents/generate_weekly_report.py` exists.
 
+**If charts appear empty after opening:** this is a JS SyntaxError caused by a wrong brace count in the generator. The script uses one large f-string (`f'''...'''`) where `{{`→`{` and `}}`→`}`. Charts with an inline `y:{...}` axis config (cMTTA, cPRT) need **5 `}}` pairs** (10 `}` in source) after the last grid object closes — to close: grid content, y-axis, scales, options, main chart config object. Charts using `y:YL(...)` need only 3. An incorrect count (especially an odd number) silently kills all charts. Fix: count trailing `}` before `);` on each of those chart lines — must be exactly 10.
+
 ---
 
 ## Output
@@ -451,11 +489,11 @@ Report back:
 - Cache: weeks loaded from cache vs re-fetched from APIs
 - True P1s this week + WoW delta
 - False P1 rate + WoW delta
-- SOC/SRE P1 FRT SLA hit rate + WoW delta
-- SOC/SRE P1 Median FRT
+- SOC & SRE P1 FRT SLA hit rate + WoW delta
+- SOC & SRE P1 Median FRT
 - P1 Median MTTA + ack rate + WoW delta
-- SOC/SRE P2/P3 FRT SLA hit rate + WoW delta
-- SOC/SRE CSAT avg score + WoW delta
+- SOC & SRE P2/P3 FRT SLA hit rate + WoW delta
+- SOC & SRE CSAT avg score + WoW delta
 - Partner ticket count (total + P1/P2/P3 breakdown) + WoW delta
 - Partner ticket median OH response time + WoW delta
 - Incidents this week (total + severity breakdown) + WoW delta
