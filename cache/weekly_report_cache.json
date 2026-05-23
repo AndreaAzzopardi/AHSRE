@@ -1,0 +1,1355 @@
+{
+  "2026-02-23": {
+    "p1_quality_clickhouse": {
+      "true_p1": 0,
+      "false_p1": 2
+    },
+    "p1_frt_sla": {
+      "total": 1,
+      "hit": 1,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 4.3,
+      "frt_seconds": [
+        260
+      ],
+      "mean_frt_min": 4.3
+    },
+    "csat": {
+      "rated": 11,
+      "avg_score": 4.82,
+      "score_dist": {
+        "5": 9,
+        "4": 2,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 20,
+      "response_rate": 55.0
+    },
+    "partner_tickets": {
+      "p1_responded": 3,
+      "p2_responded": 11,
+      "p3_responded": 5,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 19,
+      "avg_response_min": 63.6,
+      "median_response_min": 14.8,
+      "response_times_s": [
+        42,
+        116,
+        236,
+        304,
+        369,
+        406,
+        598,
+        702,
+        1070,
+        1231,
+        1709,
+        2350,
+        2525,
+        5265,
+        21748,
+        22347
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 12,
+      "missed": 2,
+      "total": 14,
+      "hit_rate": 85.7,
+      "response_times_s": [
+        42,
+        116,
+        236,
+        406,
+        598,
+        702,
+        1070,
+        1231,
+        1709,
+        2350,
+        2525,
+        5265,
+        21748,
+        22347
+      ],
+      "mean_response_min": 71.8,
+      "median_response_min": 19.2
+    },
+    "p1_brands": {
+      "Brazil Bet": 2,
+      "Mystake ": 2,
+      "Kyngs": 1,
+      "FlappyCasino": 1
+    }
+  },
+  "2026-03-02": {
+    "p1_quality_clickhouse": {
+      "true_p1": 1,
+      "false_p1": 2
+    },
+    "p1_frt_sla": {
+      "total": 1,
+      "hit": 1,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 1.7,
+      "frt_seconds": [
+        101
+      ],
+      "mean_frt_min": 1.7
+    },
+    "csat": {
+      "rated": 5,
+      "avg_score": 4.6,
+      "score_dist": {
+        "5": 3,
+        "4": 2,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 18,
+      "response_rate": 27.8
+    },
+    "partner_tickets": {
+      "p1_responded": 5,
+      "p2_responded": 11,
+      "p3_responded": 2,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 18,
+      "avg_response_min": 34.8,
+      "median_response_min": 24.0,
+      "response_times_s": [
+        264,
+        442,
+        567,
+        624,
+        639,
+        1380,
+        1503,
+        1750,
+        1794,
+        3679,
+        3985,
+        8395
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 9,
+      "missed": 1,
+      "total": 10,
+      "hit_rate": 90.0,
+      "response_times_s": [
+        264,
+        442,
+        639,
+        1380,
+        1503,
+        1750,
+        1794,
+        3679,
+        3985,
+        8395
+      ],
+      "mean_response_min": 39.7,
+      "median_response_min": 27.1
+    },
+    "p1_brands": {
+      "Glitnor": 1,
+      "Momentum (IG Tech)": 1,
+      "FUTURE BRIGHT": 1,
+      "Campeon": 1
+    }
+  },
+  "2026-03-09": {
+    "p1_quality_clickhouse": {
+      "true_p1": 0,
+      "false_p1": 4
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 4,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 3.4,
+      "frt_seconds": [
+        132,
+        141,
+        270,
+        273
+      ],
+      "mean_frt_min": 3.4
+    },
+    "csat": {
+      "rated": 8,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 8,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 23,
+      "response_rate": 34.8
+    },
+    "partner_tickets": {
+      "p1_responded": 5,
+      "p2_responded": 13,
+      "p3_responded": 3,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 21,
+      "avg_response_min": 16.1,
+      "median_response_min": 5.7,
+      "response_times_s": [
+        78,
+        93,
+        132,
+        219,
+        222,
+        240,
+        249,
+        265,
+        270,
+        409,
+        416,
+        511,
+        558,
+        983,
+        1485,
+        2609,
+        3555,
+        5053
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 14,
+      "missed": 0,
+      "total": 14,
+      "hit_rate": 100.0,
+      "response_times_s": [
+        78,
+        93,
+        219,
+        240,
+        249,
+        265,
+        409,
+        511,
+        558,
+        983,
+        1485,
+        2609,
+        3555,
+        5053
+      ],
+      "mean_response_min": 19.4,
+      "median_response_min": 7.7
+    },
+    "p1_brands": {
+      "Brazil Bet": 1,
+      "Kyngs": 1,
+      "SoftGenius": 1,
+      "Gembet": 1,
+      "Momentum Group(Spinbet)": 1,
+      "PressEnter / Yarrow": 1
+    }
+  },
+  "2026-03-16": {
+    "p1_quality_clickhouse": {
+      "true_p1": 3,
+      "false_p1": 4
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 4,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 6.0,
+      "frt_seconds": [
+        177,
+        250,
+        464,
+        749
+      ],
+      "mean_frt_min": 6.8
+    },
+    "csat": {
+      "rated": 4,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 4,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 18,
+      "response_rate": 22.2
+    },
+    "partner_tickets": {
+      "p1_responded": 5,
+      "p2_responded": 6,
+      "p3_responded": 4,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 15,
+      "avg_response_min": 34.8,
+      "median_response_min": 17.5,
+      "response_times_s": [
+        464,
+        670,
+        749,
+        873,
+        912,
+        987,
+        1048,
+        1569,
+        1951,
+        2156,
+        4756,
+        5219,
+        5786
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 9,
+      "missed": 0,
+      "total": 9,
+      "hit_rate": 100.0,
+      "response_times_s": [
+        670,
+        873,
+        912,
+        987,
+        1569,
+        2156,
+        4756,
+        5219,
+        5786
+      ],
+      "mean_response_min": 42.5,
+      "median_response_min": 26.1
+    },
+    "p1_brands": {
+      "Momentum (IG Tech)": 1,
+      "Tuohi": 1,
+      "Bravo Bet (Suprema)": 1,
+      "Ambition Red": 1,
+      "Fast Track": 1,
+      "Pride Spins": 1
+    }
+  },
+  "2026-03-23": {
+    "p1_quality_clickhouse": {
+      "true_p1": 6,
+      "false_p1": 3
+    },
+    "p1_frt_sla": {
+      "total": 6,
+      "hit": 6,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 3.6,
+      "frt_seconds": [
+        85,
+        112,
+        166,
+        268,
+        513,
+        586
+      ],
+      "mean_frt_min": 4.8
+    },
+    "csat": {
+      "rated": 7,
+      "avg_score": 4.71,
+      "score_dist": {
+        "5": 5,
+        "4": 2,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 25,
+      "response_rate": 28.0
+    },
+    "partner_tickets": {
+      "p1_responded": 8,
+      "p2_responded": 8,
+      "p3_responded": 9,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 25,
+      "avg_response_min": 53.3,
+      "median_response_min": 16.9,
+      "response_times_s": [
+        222,
+        330,
+        513,
+        586,
+        610,
+        874,
+        964,
+        991,
+        1037,
+        1736,
+        2672,
+        3338,
+        4572,
+        5528,
+        12483,
+        14715
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 11,
+      "missed": 2,
+      "total": 13,
+      "hit_rate": 84.6,
+      "response_times_s": [
+        222,
+        330,
+        610,
+        964,
+        991,
+        1037,
+        1736,
+        2672,
+        3338,
+        4572,
+        5528,
+        12483,
+        14715
+      ],
+      "mean_response_min": 63.1,
+      "median_response_min": 28.9
+    },
+    "p1_brands": {
+      "Annexio": 1,
+      "SoftGenius": 1,
+      "Gembet": 1,
+      "Bravo Bet (Suprema)": 1,
+      "Brazil Bet": 1,
+      "BGame": 1,
+      "Chancer": 1
+    }
+  },
+  "2026-03-30": {
+    "p1_quality_clickhouse": {
+      "true_p1": 2,
+      "false_p1": 2
+    },
+    "p1_frt_sla": {
+      "total": 5,
+      "hit": 4,
+      "missed": 1,
+      "hit_rate": 80.0,
+      "median_frt_min": 5.1,
+      "frt_seconds": [
+        136,
+        147,
+        305,
+        453,
+        2006
+      ],
+      "mean_frt_min": 10.2
+    },
+    "csat": {
+      "rated": 6,
+      "avg_score": 4.83,
+      "score_dist": {
+        "5": 5,
+        "4": 1,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 17,
+      "response_rate": 35.3
+    },
+    "partner_tickets": {
+      "p1_responded": 7,
+      "p2_responded": 6,
+      "p3_responded": 3,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 16,
+      "avg_response_min": 60.8,
+      "median_response_min": 21.6,
+      "response_times_s": [
+        231,
+        453,
+        713,
+        1101,
+        1294,
+        1332,
+        4816,
+        4905,
+        17977
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 7,
+      "missed": 1,
+      "total": 8,
+      "hit_rate": 87.5,
+      "response_times_s": [
+        231,
+        713,
+        1101,
+        1294,
+        1332,
+        4816,
+        4905,
+        17977
+      ],
+      "mean_response_min": 67.4,
+      "median_response_min": 21.9
+    },
+    "p1_brands": {
+      "Brazil Bet": 2,
+      "Play": 1,
+      "Tuohi": 2,
+      "Fast Track": 1,
+      "Bravo Bet (Suprema)": 1
+    }
+  },
+  "2026-04-06": {
+    "p1_quality_clickhouse": {
+      "true_p1": 1,
+      "false_p1": 2
+    },
+    "p1_frt_sla": {
+      "total": 3,
+      "hit": 3,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 3.3,
+      "frt_seconds": [
+        156,
+        199,
+        204
+      ],
+      "mean_frt_min": 3.1
+    },
+    "csat": {
+      "rated": 3,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 3,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 13,
+      "response_rate": 23.1
+    },
+    "partner_tickets": {
+      "p1_responded": 5,
+      "p2_responded": 7,
+      "p3_responded": 0,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 12,
+      "avg_response_min": 31.1,
+      "median_response_min": 13.9,
+      "response_times_s": [
+        107,
+        153,
+        156,
+        199,
+        204,
+        832,
+        917,
+        1515,
+        2611,
+        3010,
+        10817
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 5,
+      "missed": 1,
+      "total": 6,
+      "hit_rate": 83.3,
+      "response_times_s": [
+        832,
+        917,
+        1515,
+        2611,
+        3010,
+        10817
+      ],
+      "mean_response_min": 54.7,
+      "median_response_min": 34.4
+    },
+    "p1_brands": {
+      "Star Casino": 1,
+      "Leon Tanzania": 1,
+      "Avento": 1,
+      "Kyngs": 1,
+      "Corestar": 1
+    }
+  },
+  "2026-04-13": {
+    "p1_quality_clickhouse": {
+      "true_p1": 2,
+      "false_p1": 6
+    },
+    "p1_frt_sla": {
+      "total": 3,
+      "hit": 3,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 1.9,
+      "frt_seconds": [
+        44,
+        117,
+        415
+      ],
+      "mean_frt_min": 3.2
+    },
+    "csat": {
+      "rated": 5,
+      "avg_score": 4.8,
+      "score_dist": {
+        "5": 4,
+        "4": 1,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 14,
+      "response_rate": 35.7
+    },
+    "partner_tickets": {
+      "p1_responded": 5,
+      "p2_responded": 3,
+      "p3_responded": 5,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 13,
+      "avg_response_min": 97.3,
+      "median_response_min": 42.6,
+      "response_times_s": [
+        7,
+        44,
+        81,
+        124,
+        2208,
+        2902,
+        3175,
+        3291,
+        8248,
+        38327
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 6,
+      "missed": 2,
+      "total": 8,
+      "hit_rate": 75.0,
+      "response_times_s": [
+        81,
+        124,
+        2208,
+        2902,
+        3175,
+        3291,
+        8248,
+        38327
+      ],
+      "mean_response_min": 121.6,
+      "median_response_min": 50.6
+    },
+    "p1_brands": {
+      "Sisutech": 1,
+      "Momentum Group(Spinbet)": 1,
+      "Corestar": 1,
+      "Avento": 1,
+      "Brazil Bet": 1,
+      "Fairspin": 1
+    }
+  },
+  "2026-04-20": {
+    "p1_quality_clickhouse": {
+      "true_p1": 2,
+      "false_p1": 3
+    },
+    "p1_frt_sla": {
+      "total": 2,
+      "hit": 2,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 4.0,
+      "frt_seconds": [
+        180,
+        304
+      ],
+      "mean_frt_min": 4.0
+    },
+    "csat": {
+      "rated": 8,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 8,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 14,
+      "response_rate": 57.1
+    },
+    "partner_tickets": {
+      "p1_responded": 3,
+      "p2_responded": 9,
+      "p3_responded": 2,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 14,
+      "avg_response_min": 16.7,
+      "median_response_min": 12.9,
+      "response_times_s": [
+        296,
+        304,
+        312,
+        416,
+        434,
+        774,
+        952,
+        1120,
+        1637,
+        1778,
+        3031
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 10,
+      "missed": 0,
+      "total": 10,
+      "hit_rate": 100.0,
+      "response_times_s": [
+        296,
+        312,
+        416,
+        434,
+        774,
+        952,
+        1120,
+        1637,
+        1778,
+        3031
+      ],
+      "mean_response_min": 17.9,
+      "median_response_min": 14.4
+    },
+    "p1_brands": {
+      "Gembet": 2,
+      "Rhino Entertainment": 1
+    }
+  },
+  "2026-04-27": {
+    "p1_quality_clickhouse": {
+      "true_p1": 0,
+      "false_p1": 2
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 2,
+      "missed": 2,
+      "hit_rate": 50.0,
+      "median_frt_min": 207.2,
+      "frt_seconds": [
+        55,
+        646,
+        24217,
+        24435
+      ],
+      "mean_frt_min": 205.6
+    },
+    "csat": {
+      "rated": 5,
+      "avg_score": 3.6,
+      "score_dist": {
+        "5": 3,
+        "4": 0,
+        "3": 0,
+        "2": 1,
+        "1": 1
+      },
+      "total": 7,
+      "response_rate": 71.4
+    },
+    "partner_tickets": {
+      "p1_responded": 3,
+      "p2_responded": 3,
+      "p3_responded": 1,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 7,
+      "avg_response_min": 54.9,
+      "median_response_min": 8.1,
+      "response_times_s": [
+        355,
+        486,
+        9048
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 2,
+      "missed": 1,
+      "total": 3,
+      "hit_rate": 66.7,
+      "response_times_s": [
+        355,
+        486,
+        9048
+      ],
+      "mean_response_min": 54.9,
+      "median_response_min": 8.1
+    },
+    "p1_brands": {
+      "Brazil Bet": 1,
+      "Star Casino": 1
+    }
+  },
+  "2026-05-04": {
+    "p1_quality_incidentio": {
+      "true_p1": 1,
+      "false_p1": 0,
+      "unclassified": 0
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 3,
+      "missed": 1,
+      "hit_rate": 75.0,
+      "median_frt_min": 6.4,
+      "frt_seconds": [
+        67,
+        232,
+        537,
+        2753
+      ],
+      "mean_frt_min": 15.0
+    },
+    "csat": {
+      "rated": 2,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 2,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 11,
+      "response_rate": 18.2
+    },
+    "partner_tickets": {
+      "p1_responded": 4,
+      "p2_responded": 6,
+      "p3_responded": 0,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 10,
+      "avg_response_min": 16.9,
+      "median_response_min": 10.2,
+      "response_times_s": [
+        67,
+        104,
+        232,
+        537,
+        614,
+        910,
+        1270,
+        2061,
+        3326
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 6,
+      "missed": 0,
+      "total": 6,
+      "hit_rate": 100.0,
+      "response_times_s": [
+        104,
+        614,
+        910,
+        1270,
+        2061,
+        3326
+      ],
+      "mean_response_min": 23.0,
+      "median_response_min": 18.2
+    },
+    "incident_volume": {
+      "total": 200,
+      "P1": 1,
+      "P2": 98,
+      "P3": 97,
+      "P4": 4
+    },
+    "alert_volume": {
+      "total": 1241,
+      "by_source": {
+        "DMS": 301,
+        "Grafana SOC": 314,
+        "HTTP": 515,
+        "Grafana": 94,
+        "Intercom": 15,
+        "HTTP DMS FTML": 2
+      }
+    },
+    "p1_brands": {
+      "Fast Track": 1,
+      "SoftGenius": 1,
+      "Sisutech": 1,
+      "Block Media Limited": 1
+    },
+    "mtta": {
+      "P1": {
+        "n": 1,
+        "n_acked": 1,
+        "ack_rate": 1.0,
+        "median_mtta_min": 108.8,
+        "mean_mtta_min": 108.8,
+        "mtta_minutes": [
+          108.8
+        ]
+      },
+      "P2": {
+        "n": 98,
+        "n_acked": null,
+        "ack_rate": null,
+        "median_mtta_min": 7.6,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      },
+      "P3": {
+        "n": 99,
+        "n_acked": 86,
+        "ack_rate": 0.87,
+        "median_mtta_min": 5.6,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      },
+      "P4": {
+        "n": null,
+        "n_acked": null,
+        "ack_rate": null,
+        "median_mtta_min": null,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      }
+    }
+  },
+  "2026-05-11": {
+    "p1_quality_incidentio": {
+      "true_p1": 1,
+      "false_p1": 5,
+      "unclassified": 0
+    },
+    "p1_frt_sla": {
+      "total": 6,
+      "hit": 6,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 5.0,
+      "frt_seconds": [
+        54,
+        118,
+        290,
+        315,
+        540,
+        776
+      ],
+      "mean_frt_min": 5.8
+    },
+    "csat": {
+      "rated": 7,
+      "avg_score": 5.0,
+      "score_dist": {
+        "5": 7,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      },
+      "total": 15,
+      "response_rate": 46.7
+    },
+    "partner_tickets": {
+      "p1_responded": 6,
+      "p2_responded": 6,
+      "p3_responded": 3,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 1,
+      "total_count": 16,
+      "avg_response_min": 63.4,
+      "median_response_min": 29.6,
+      "response_times_s": [
+        233,
+        290,
+        315,
+        364,
+        813,
+        2737,
+        3671,
+        7360,
+        7421,
+        14853
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 5,
+      "missed": 3,
+      "total": 8,
+      "hit_rate": 62.5,
+      "response_times_s": [
+        233,
+        364,
+        813,
+        2737,
+        3671,
+        7360,
+        7421,
+        14853
+      ],
+      "mean_response_min": 78.0,
+      "median_response_min": 53.4
+    },
+    "incident_volume": {
+      "total": 159,
+      "P1": 6,
+      "P2": 91,
+      "P3": 61,
+      "P4": 1
+    },
+    "alert_volume": {
+      "total": 679,
+      "by_source": {
+        "DMS": 74,
+        "Grafana SOC": 196,
+        "HTTP": 392,
+        "Grafana": 3,
+        "Intercom": 14,
+        "HTTP DMS FTML": 0
+      }
+    },
+    "p1_brands": {
+      "Reactivaction Ltd": 1,
+      "Star Casino": 1,
+      "Seguro Bet": 1,
+      "Rocketship": 1,
+      "Betfast N.V": 1
+    },
+    "mtta": {
+      "P1": {
+        "n": 6,
+        "n_acked": 6,
+        "ack_rate": 1.0,
+        "median_mtta_min": 12.2,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      },
+      "P2": {
+        "n": 91,
+        "n_acked": null,
+        "ack_rate": null,
+        "median_mtta_min": 20.4,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      },
+      "P3": {
+        "n": 61,
+        "n_acked": 58,
+        "ack_rate": 0.95,
+        "median_mtta_min": 47.5,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      },
+      "P4": {
+        "n": null,
+        "n_acked": null,
+        "ack_rate": null,
+        "median_mtta_min": null,
+        "mean_mtta_min": null,
+        "mtta_minutes": null
+      }
+    }
+  },
+  "2026-05-18": {
+    "p1_quality_incidentio": {
+      "true_p1": 0,
+      "false_p1": 0,
+      "unclassified": 4
+    },
+    "mtta": {
+      "None": {
+        "n": 3,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P1": {
+        "n": 4,
+        "n_acked": 4,
+        "ack_rate": 1.0,
+        "mtta_minutes": [
+          3.0833,
+          4.8333,
+          10.05,
+          50.85
+        ],
+        "median_mtta_min": 7.44,
+        "mean_mtta_min": 17.2
+      },
+      "P2": {
+        "n": 51,
+        "n_acked": 48,
+        "ack_rate": 0.94,
+        "mtta_minutes": [
+          0.1667,
+          0.4333,
+          0.4833,
+          1.0,
+          1.5833,
+          1.9333,
+          2.0167,
+          3.6833,
+          4.7,
+          5.0167,
+          5.35,
+          7.0333,
+          8.5333,
+          9.4333,
+          9.65,
+          10.2833,
+          10.7667,
+          11.2833,
+          13.1,
+          15.2167,
+          15.3,
+          15.8167,
+          18.2833,
+          19.1,
+          20.0333,
+          22.2833,
+          24.2333,
+          26.2167,
+          27.0167,
+          28.3333,
+          35.4333,
+          39.1167,
+          39.2667,
+          42.1167,
+          51.2667,
+          51.5833,
+          58.5333,
+          60.85,
+          64.9167,
+          68.8333,
+          71.1833,
+          117.5333,
+          188.6833,
+          204.3833,
+          205.1333,
+          298.8167,
+          484.05,
+          1201.9333
+        ],
+        "median_mtta_min": 19.57,
+        "mean_mtta_min": 75.46
+      },
+      "P3": {
+        "n": 22,
+        "n_acked": 16,
+        "ack_rate": 0.73,
+        "mtta_minutes": [
+          0.6333,
+          2.0,
+          3.05,
+          4.9333,
+          6.5667,
+          7.7833,
+          12.4,
+          12.9333,
+          18.3167,
+          33.4833,
+          33.9833,
+          95.3667,
+          111.0,
+          198.3667,
+          479.9167,
+          1088.85
+        ],
+        "median_mtta_min": 15.62,
+        "mean_mtta_min": 131.85
+      },
+      "P4": {
+        "n": 2,
+        "n_acked": 1,
+        "ack_rate": 0.5,
+        "mtta_minutes": [
+          52.0
+        ],
+        "median_mtta_min": 52.0,
+        "mean_mtta_min": 52.0
+      }
+    },
+    "incident_volume": {
+      "total": 82,
+      "P1": 4,
+      "P2": 51,
+      "P3": 22,
+      "P4": 2,
+      "None": 3
+    },
+    "alert_volume": {
+      "total": 530,
+      "by_source": {
+        "Dead Man's Snitch": 59,
+        "Grafana SOC alerts": 137,
+        "Grafana alerts": 1,
+        "HTTP DMS FTML Alerts": 9,
+        "HTTP alerts": 309,
+        "Intercom": 15
+      }
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 4,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 7.11,
+      "mean_frt_min": 6.31,
+      "frt_seconds": [
+        124,
+        344,
+        509,
+        538
+      ]
+    },
+    "p1_brands": {
+      "One Casino": 1,
+      "Sisutech": 1,
+      "Trusted Gaming (5Bet)": 1,
+      "Seguro Bet": 1
+    },
+    "p1_frt_breaches": [],
+    "csat": {
+      "total": 10,
+      "rated": 3,
+      "avg_score": 5.0,
+      "pct_positive": 100.0,
+      "pct_perfect": 100.0,
+      "response_rate": 30.0,
+      "score_dist": {
+        "5": 3,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      }
+    },
+    "csat_low_scores": [],
+    "partner_tickets": {
+      "p1_responded": 1,
+      "p2_responded": 4,
+      "p3_responded": 2,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 7,
+      "avg_response_min": 51.35,
+      "median_response_min": 13.32,
+      "response_times_s": [
+        168,
+        538,
+        793,
+        799,
+        1073,
+        1702,
+        16495
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 5,
+      "missed": 1,
+      "total": 6,
+      "hit_rate": 83.3,
+      "mean_response_min": 58.42,
+      "median_response_min": 15.6,
+      "response_times_s": [
+        168,
+        793,
+        799,
+        1073,
+        1702,
+        16495
+      ]
+    },
+    "p2p3_frt_breaches": [
+      {
+        "conv_id": "215560988608819",
+        "brand": "Tuohi",
+        "priority": "P2",
+        "sre_oh_min": 274.9,
+        "opened_ts": 1779098678,
+        "sre_real_rt_s": 17290,
+        "summary": "Ongoing P2 ticket (Activity Manager Activities) opened Mon 18 May; SRE office-hours response took 4.6 hours against 2-hour target, ticket remains open."
+      }
+    ]
+  },
+  "_p1_brands_top10": {
+    "labels": [
+      "Brazil Bet",
+      "Gembet",
+      "Kyngs",
+      "SoftGenius",
+      "Tuohi",
+      "Bravo Bet (Suprema)",
+      "Fast Track",
+      "Star Casino",
+      "Sisutech",
+      "Mystake "
+    ],
+    "counts": [
+      8,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      2
+    ]
+  }
+}

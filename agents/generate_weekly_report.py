@@ -1,14 +1,16 @@
 import json
+import os
 from datetime import datetime, timezone, timedelta
 from collections import defaultdict
 
-CACHE_FILE = "/Users/andrea/Downloads/weekly_report_cache.json"
-OUTPUT_FILE = "/Users/andrea/Downloads/weekly_report.html"
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CACHE_FILE     = os.path.join(_ROOT, "cache", "weekly_report_cache.json")
+OUTPUT_FILE    = os.path.join(_ROOT, "cache", "weekly_report.html")
 
 with open(CACHE_FILE) as f:
     cache = json.load(f)
 
-SOC_CACHE_FILE = "/Users/andrea/Downloads/soc_mtta_cache.json"
+SOC_CACHE_FILE = os.path.join(_ROOT, "cache", "soc_mtta_cache.json")
 try:
     with open(SOC_CACHE_FILE) as f:
         soc_cache = json.load(f)

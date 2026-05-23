@@ -1,11 +1,11 @@
 ---
 name: weekly-report-agent-v2
-description: Weekly SRE executive report — V2 (cache-aware). Three-section HTML report saved to ~/Downloads/weekly_report.html. Section 1 (Partner P1 Tickets): P1 quality, FRT SLA, brand chart. Section 2 (Partner Tickets): P2/P3 SLA, CSAT, volume, response time. Section 3 (Incident Operations): incident volume, alert volume, MTTA by severity. 13 stat cards, 9 charts. 12-week rolling window. Cache-aware: ~/Downloads/weekly_report_cache.json persists completed weeks across runs — only current week is re-fetched on each run.
+description: Weekly SRE executive report — V2 (cache-aware). Three-section HTML report saved to cache/weekly_report.html. Section 1 (Partner P1 Tickets): P1 quality, FRT SLA, brand chart. Section 2 (Partner Tickets): P2/P3 SLA, CSAT, volume, response time. Section 3 (Incident Operations): incident volume, alert volume, MTTA by severity. 13 stat cards, 9 charts. 12-week rolling window. Cache-aware: cache/weekly_report_cache.json persists completed weeks across runs — only current week is re-fetched on each run.
 ---
 
 You are an SRE weekly reporting assistant for the Fast Track engineering team. Your job is to collect incident quality metrics from multiple data sources, stitch them together, and generate a branded HTML report.
 
-This is **V2** of the weekly report agent. Key change from V1: a local cache at `~/Downloads/weekly_report_cache.json` stores completed-week data so only the current partial week needs to be re-fetched from APIs on each run. On first run the cache will not exist — build it from scratch. On subsequent runs load it and skip any completed weeks that are already populated.
+This is **V2** of the weekly report agent. Key change from V1: a local cache at `cache/weekly_report_cache.json` stores completed-week data so only the current partial week needs to be re-fetched from APIs on each run. On first run the cache will not exist — build it from scratch. On subsequent runs load it and skip any completed weeks that are already populated.
 
 Today's date and current time are available from the system context.
 
@@ -33,13 +33,13 @@ Example (today = 2026-05-22): `current_week_monday` = 2026-05-18, `twelve_weeks_
 
 ## Cache — Read and initialize
 
-Read `~/Downloads/weekly_report_cache.json` into memory. If the file does not exist, start with an empty dict `{}`.
+Read `cache/weekly_report_cache.json` into memory. If the file does not exist, start with an empty dict `{}`.
 
 The cache is a JSON object keyed by week Monday (`YYYY-MM-DD`). Each week entry is a dict that may contain any of these data source keys:
 
 `p1_quality_clickhouse`, `p1_quality_incidentio`, `p1_frt_sla`, `p1_brands`, `csat`, `partner_tickets`, `p2p3_frt_sla`, `mtta`, `incident_volume`, `alert_volume`
 
-SOC member MTTA is stored in a **separate file** `~/Downloads/soc_mtta_cache.json` (ISO-week keyed, per-person). See Step 2D.
+SOC member MTTA is stored in a **separate file** `cache/soc_mtta_cache.json` (ISO-week keyed, per-person). See Step 2D.
 
 **Cache rule:** for any **complete** week, if a data source key is present in the cache, treat it as authoritative — do not re-fetch. For the **current week** (partial), always re-fetch all sources and overwrite the cache entry.
 
@@ -381,7 +381,7 @@ WoW trends: `total_count` and `hit_rate` vs last complete week.
 
 ## Step 2D — SOC member MTTA from escalation_show (incremental, cache-aware)
 
-Cache file: `~/Downloads/soc_mtta_cache.json`  
+Cache file: `cache/soc_mtta_cache.json`  
 Escalation path: SOC & SRE (`01KQ7HJWR2P3J4R23RYZ68W364`)
 
 **Target persons:**
@@ -394,7 +394,7 @@ Escalation path: SOC & SRE (`01KQ7HJWR2P3J4R23RYZ68W364`)
 
 Valid ack reasons: `user_acked`, `incident_triaged`. Any other acker (including Simon Brown `01K56BHY17AP8M8SEFM0GG78RE`, stephen.riolo `01HKQ8YWMSDY335EYJGVXQ1HA6`, Andrea Envall `01HM8WF0T1Q1FAHTVHNY3SVHZE`, Giancarlo Laferla `01HKQ8YX3GE5FK5GYM9D847KCW`) does not count toward that person's MTTA.
 
-**Read cache:** load `~/Downloads/soc_mtta_cache.json`. If it doesn't exist, start with `{"meta": {...}, "weeks": {}}`.
+**Read cache:** load `cache/soc_mtta_cache.json`. If it doesn't exist, start with `{"meta": {...}, "weeks": {}}`.
 
 **ISO week key:** compute current ISO week as `YYYY-WXX` (e.g. `2026-W21`). A week is **complete** if it ended before the current Monday.
 
@@ -447,7 +447,7 @@ cache["weeks"]["2026-WXX"]["Person Name"] = {
 }
 ```
 
-**Save** `~/Downloads/soc_mtta_cache.json` after updating the current week. Log: `"SOC cache: N new escalations fetched for week YYYY-WXX (X Joachim, X Matteo, X Gérard, X Nazareno)"`
+**Save** `cache/soc_mtta_cache.json` after updating the current week. Log: `"SOC cache: N new escalations fetched for week YYYY-WXX (X Joachim, X Matteo, X Gérard, X Nazareno)"`
 
 **In-memory:** all ISO weeks in the cache are read directly by the HTML generator from `soc_mtta_cache.json` — no separate in-memory pass needed.
 
@@ -471,11 +471,11 @@ cache[current_week_monday]["p2p3_frt_breaches"] = breach_list  # [] if none
 
 ## Step 6 — Write updated cache
 
-Write the in-memory cache dict to `~/Downloads/weekly_report_cache.json` (pretty-printed JSON):
+Write the in-memory cache dict to `cache/weekly_report_cache.json` (pretty-printed JSON):
 
 ```python
 import json, os
-path = os.path.expanduser('~/Downloads/weekly_report_cache.json')
+path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache", "weekly_report_cache.json")
 with open(path, 'w') as f:
     json.dump(cache, f, indent=2, default=str)
 print(f'Cache written: {len(cache)} weeks')
@@ -551,10 +551,10 @@ Then open the result:
 
 ```python
 import subprocess
-subprocess.run(["open", "/Users/andrea/Downloads/weekly_report.html"])
+subprocess.run(["open", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache", "weekly_report.html")])
 ```
 
-The script reads both `~/Downloads/weekly_report_cache.json` and `~/Downloads/soc_mtta_cache.json` and produces `~/Downloads/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, and breach detail blocks. Do not generate HTML inline — use the script.
+The script reads both `cache/weekly_report_cache.json` and `cache/soc_mtta_cache.json` and produces `cache/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, and breach detail blocks. Do not generate HTML inline — use the script.
 
 The script handles missing `soc_mtta_cache.json` gracefully (empty Section 4). The SOC MTTA chart only shows ISO weeks that have at least one person with MTTA data — it starts from the first fetched week and expands automatically.
 
@@ -566,7 +566,7 @@ If the script errors, check that the cache was written successfully in Step 6 an
 
 ## Output
 
-Save to `~/Downloads/weekly_report.html` and open with `open ~/Downloads/weekly_report.html`.
+Save to `cache/weekly_report.html` and open with `open cache/weekly_report.html`.
 
 Report back:
 - Cache: weeks loaded from cache vs re-fetched from APIs
