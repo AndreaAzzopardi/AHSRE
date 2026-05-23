@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Intercom__search_conversations",
+      "mcp__claude_ai_Intercom__get_conversation",
+      "mcp__claude_ai_Intercom__search",
+      "mcp__claude_ai_Intercom__fetch",
+      "mcp__claude_ai_incident_io__incident_list",
+      "mcp__claude_ai_incident_io__incident_stats",
+      "mcp__claude_ai_incident_io__incident_show",
+      "mcp__claude_ai_incident_io__alert_list",
+      "mcp__claude_ai_incident_io__alert_stats",
+      "mcp__claude_ai_incident_io__alert_source_list",
+      "mcp__claude_ai_incident_io__ask",
+      "mcp__claude_ai_incident_io__ask_telemetry",
+      "mcp__claude_ai_incident_io__resource_show",
+      "mcp__claude_ai_incident_io__escalation_stats",
+      "mcp__claude_ai_incident_io__escalation_show",
+      "mcp__claude_ai_incident_io__escalation_list",
+      "mcp__claude_ai_Clickhouse_Cloud__run_select_query",
+      "mcp__claude_ai_Clickhouse_Cloud__list_tables",
+      "mcp__claude_ai_Clickhouse_Cloud__list_databases",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "mcp__claude_ai_Google_Drive__search_files",
+      "mcp__claude_ai_Slack__slack_read_channel",
+      "mcp__claude_ai_Slack__slack_read_thread",
+      "mcp__claude_ai_Slack__slack_search_channels",
+      "mcp__claude_ai_Slack__slack_search_public",
+      "mcp__claude_ai_Slack__slack_search_users",
+      "Bash(open *)",
+      "Bash(python3 *)",
+      "Bash(python3 << *)"
+    ]
+  }
+}

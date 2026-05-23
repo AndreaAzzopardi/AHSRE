@@ -523,7 +523,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] SOC MTTA: ack only counted when `actor.id == target_person_id`; other ackers silently skipped
 - [ ] SOC MTTA: `sampled = false`; `sample_size` = resolved count from escalation_stats
 - [ ] SOC MTTA: coverage stats (miss_rate) always overwritten for current week; past weeks untouched
-- [ ] SOC MTTA chart: only ISO weeks with ≥1 person having non-null `median_mtta_min` are shown — no null-only weeks on x-axis
+- [ ] SOC MTTA chart: only ISO weeks with ≥1 person having non-null `mean_mtta_min` are shown — no null-only weeks on x-axis
 - [ ] Incident volume: W19+ only; severity labels match org config
 - [ ] Alert volume: W19+ only; source names taken from API response
 - [ ] Conversion rate: null shown as `"—"` when `alert_total = 0`
@@ -582,4 +582,4 @@ Report back:
 - Incidents this week (total + severity breakdown) + WoW delta
 - Alerts this week (total) + WoW delta
 - Alert→Incident conversion rate + WoW delta
-- SOC member MTTA per person (median, miss rate, acked/resolved) + WoW MTTA delta
+- SOC member MTTA per person (mean, acked/resolved) + WoW MTTA delta
