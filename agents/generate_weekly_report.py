@@ -201,12 +201,16 @@ iP3_arr = [get(wk, "incident_volume", "P3", default=0) for wk in WEEK_KEYS]
 iP4_arr = [get(wk, "incident_volume", "P4", default=0) for wk in WEEK_KEYS]
 iUnk_arr = [get(wk, "incident_volume", "Unknown", default=0) for wk in WEEK_KEYS]
 
-aDMS_arr  = [get(wk, "alert_volume", "by_source", "DMS", default=0) for wk in WEEK_KEYS]
+aDMS_arr  = [get(wk, "alert_volume", "by_source", "DMS", default=0) +
+             get(wk, "alert_volume", "by_source", "Dead Mans Snitch", default=0) for wk in WEEK_KEYS]
 aSOC_arr  = [get(wk, "alert_volume", "by_source", "Grafana SOC", default=0) for wk in WEEK_KEYS]
 aHTTP_arr = [get(wk, "alert_volume", "by_source", "HTTP", default=0) for wk in WEEK_KEYS]
 aGraf_arr = [get(wk, "alert_volume", "by_source", "Grafana", default=0) for wk in WEEK_KEYS]
 aIcom_arr = [get(wk, "alert_volume", "by_source", "Intercom", default=0) for wk in WEEK_KEYS]
 aFTML_arr = [get(wk, "alert_volume", "by_source", "HTTP DMS FTML", default=0) for wk in WEEK_KEYS]
+# PD-era sources (pre-W19)
+aPD_SP_arr  = [get(wk, "alert_volume", "by_source", "Service Portal", default=0) for wk in WEEK_KEYS]
+aPD_BO_arr  = [get(wk, "alert_volume", "by_source", "Backoffice", default=0) for wk in WEEK_KEYS]
 
 # ── STAT CARD CALCULATIONS ───────────────────────────────────────────────────
 cw_date = fmt_date_dmy(stat_week)
@@ -783,6 +787,8 @@ const aHTTP = {js_arr(aHTTP_arr)};
 const aGraf = {js_arr(aGraf_arr)};
 const aIcom = {js_arr(aIcom_arr)};
 const aFTML = {js_arr(aFTML_arr)};
+const aPD_SP  = {js_arr(aPD_SP_arr)};
+const aPD_BO  = {js_arr(aPD_BO_arr)};
 
 const TT = {{ backgroundColor:'#0d1629', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e2e8f0', bodyColor:'#e2e8f0', padding:8 }};
 const LG = {{ position:'top', labels:{{ color:'#e2e8f0', boxWidth:12, padding:10, font:{{size:11}} }} }};
@@ -857,13 +863,15 @@ new Chart(document.getElementById('cIVol'),{{type:'bar',data:{{labels:WK19,datas
   {{label:'Unknown',data:iUnk.slice(-WK19.length),backgroundColor:'#475569',stack:'i'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
-new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datasets:[
-  {{label:'DMS',          data:aDMS.slice(-WK19.length), backgroundColor:'#38bdf8',stack:'a'}},
-  {{label:'Grafana SOC',  data:aSOC.slice(-WK19.length), backgroundColor:'#a78bfa',stack:'a'}},
-  {{label:'HTTP',         data:aHTTP.slice(-WK19.length),backgroundColor:'#22c55e',stack:'a'}},
-  {{label:'Grafana',      data:aGraf.slice(-WK19.length),backgroundColor:'#f59e0b',stack:'a'}},
-  {{label:'Intercom',     data:aIcom.slice(-WK19.length),backgroundColor:'#64748b',stack:'a'}},
-  {{label:'HTTP DMS FTML',data:aFTML.slice(-WK19.length),backgroundColor:'#818cf8',stack:'a'}}
+new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK,datasets:[
+  {{label:'DMS',               data:aDMS, backgroundColor:'#38bdf8',stack:'a'}},
+  {{label:'Grafana SOC',       data:aSOC, backgroundColor:'#a78bfa',stack:'a'}},
+  {{label:'HTTP',              data:aHTTP,backgroundColor:'#22c55e',stack:'a'}},
+  {{label:'Grafana',           data:aGraf,backgroundColor:'#f59e0b',stack:'a'}},
+  {{label:'Intercom',          data:aIcom,backgroundColor:'#64748b',stack:'a'}},
+  {{label:'HTTP DMS FTML',     data:aFTML,backgroundColor:'#818cf8',stack:'a'}},
+  {{label:'Service Portal',    data:aPD_SP, backgroundColor:'#10b981',stack:'a'}},
+  {{label:'Backoffice',        data:aPD_BO, backgroundColor:'#6366f1',stack:'a'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 const SOCMTTAWK = {js_str_arr(SOC_MTTA_WK)};

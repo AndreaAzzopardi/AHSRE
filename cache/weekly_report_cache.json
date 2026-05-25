@@ -78,6 +78,21 @@
       "Momentum (IG Tech)": 1,
       "FUTURE BRIGHT": 1,
       "Campeon": 1
+    },
+    "incident_volume": {
+      "total": 904,
+      "P1": 3,
+      "P2": 257,
+      "P3": 643,
+      "P4": 1
+    },
+    "alert_volume": {
+      "total": 906,
+      "by_source": {
+        "Dead Mans Snitch": 184,
+        "Service Portal": 489,
+        "Backoffice": 233
+      }
     }
   },
   "2026-03-09": {
@@ -174,6 +189,21 @@
       "Gembet": 1,
       "Momentum Group(Spinbet)": 1,
       "PressEnter / Yarrow": 1
+    },
+    "incident_volume": {
+      "total": 771,
+      "P1": 4,
+      "P2": 138,
+      "P3": 628,
+      "P4": 1
+    },
+    "alert_volume": {
+      "total": 772,
+      "by_source": {
+        "Dead Mans Snitch": 60,
+        "Service Portal": 510,
+        "Backoffice": 202
+      }
     }
   },
   "2026-03-16": {
@@ -260,6 +290,21 @@
       "Ambition Red": 1,
       "Fast Track": 1,
       "Pride Spins": 1
+    },
+    "incident_volume": {
+      "total": 930,
+      "P1": 7,
+      "P2": 128,
+      "P3": 795,
+      "P4": 0
+    },
+    "alert_volume": {
+      "total": 932,
+      "by_source": {
+        "Dead Mans Snitch": 52,
+        "Service Portal": 656,
+        "Backoffice": 224
+      }
     }
   },
   "2026-03-23": {
@@ -356,6 +401,21 @@
       "Brazil Bet": 1,
       "BGame": 1,
       "Chancer": 1
+    },
+    "incident_volume": {
+      "total": 795,
+      "P1": 9,
+      "P2": 140,
+      "P3": 644,
+      "P4": 2
+    },
+    "alert_volume": {
+      "total": 795,
+      "by_source": {
+        "Dead Mans Snitch": 104,
+        "Service Portal": 508,
+        "Backoffice": 183
+      }
     }
   },
   "2026-03-30": {
@@ -437,6 +497,21 @@
       "Tuohi": 2,
       "Fast Track": 1,
       "Bravo Bet (Suprema)": 1
+    },
+    "incident_volume": {
+      "total": 1053,
+      "P1": 4,
+      "P2": 194,
+      "P3": 852,
+      "P4": 3
+    },
+    "alert_volume": {
+      "total": 1054,
+      "by_source": {
+        "Dead Mans Snitch": 103,
+        "Service Portal": 679,
+        "Backoffice": 272
+      }
     }
   },
   "2026-04-06": {
@@ -516,6 +591,21 @@
       "Avento": 1,
       "Kyngs": 1,
       "Corestar": 1
+    },
+    "incident_volume": {
+      "total": 889,
+      "P1": 3,
+      "P2": 188,
+      "P3": 695,
+      "P4": 3
+    },
+    "alert_volume": {
+      "total": 890,
+      "by_source": {
+        "Dead Mans Snitch": 124,
+        "Service Portal": 565,
+        "Backoffice": 201
+      }
     }
   },
   "2026-04-13": {
@@ -597,6 +687,21 @@
       "Avento": 1,
       "Brazil Bet": 1,
       "Fairspin": 1
+    },
+    "incident_volume": {
+      "total": 876,
+      "P1": 8,
+      "P2": 236,
+      "P3": 631,
+      "P4": 1
+    },
+    "alert_volume": {
+      "total": 877,
+      "by_source": {
+        "Dead Mans Snitch": 165,
+        "Service Portal": 449,
+        "Backoffice": 263
+      }
     }
   },
   "2026-04-20": {
@@ -676,6 +781,21 @@
     "p1_brands": {
       "Gembet": 2,
       "Rhino Entertainment": 1
+    },
+    "incident_volume": {
+      "total": 957,
+      "P1": 5,
+      "P2": 184,
+      "P3": 765,
+      "P4": 3
+    },
+    "alert_volume": {
+      "total": 957,
+      "by_source": {
+        "Dead Mans Snitch": 88,
+        "Service Portal": 625,
+        "Backoffice": 244
+      }
     }
   },
   "2026-04-27": {
@@ -742,6 +862,21 @@
     "p1_brands": {
       "Brazil Bet": 1,
       "Star Casino": 1
+    },
+    "incident_volume": {
+      "total": 859,
+      "P1": 2,
+      "P2": 256,
+      "P3": 599,
+      "P4": 2
+    },
+    "alert_volume": {
+      "total": 870,
+      "by_source": {
+        "Dead Mans Snitch": 194,
+        "Service Portal": 393,
+        "Backoffice": 283
+      }
     }
   },
   "2026-05-04": {
