@@ -40,6 +40,14 @@ prev_week = WEEK_KEYS[-2]
 CW = cache[current_week]
 PW = cache[prev_week]
 
+# When the current week has no ticket data (e.g. early Monday), show last complete week in stat cards
+_no_cw_data = (
+    (CW.get("p1_frt_sla") or {}).get("total", 0) == 0 and
+    (CW.get("csat") or {}).get("total", 0) == 0
+)
+stat_week      = prev_week        if _no_cw_data else current_week
+stat_prev_week = WEEK_KEYS[-3]   if _no_cw_data else prev_week
+
 # Week labels
 WK = [fmt_week_label(k, k == current_week) for k in WEEK_KEYS]
 # WK19 = incident.io era, fixed from 2026-05-04 regardless of cache completeness
@@ -72,7 +80,7 @@ def delta_str(current, prev, unit="", higher_is_better=True, decimals=1):
         return ("d-muted", "—")
     diff = current - prev
     if abs(diff) < 0.05:
-        fmt = f"0{unit} vs wk {fmt_date_dmy(prev_week)}"
+        fmt = f"0{unit} vs wk {fmt_date_dmy(stat_prev_week)}"
         return ("d-muted", fmt)
     sign = "+" if diff > 0 else "−"
     abs_diff = abs(diff)
@@ -80,7 +88,7 @@ def delta_str(current, prev, unit="", higher_is_better=True, decimals=1):
         fmt_diff = str(int(round(abs_diff)))
     else:
         fmt_diff = f"{abs_diff:.{decimals}f}"
-    fmt = f"{sign}{fmt_diff}{unit} vs wk {fmt_date_dmy(prev_week)}"
+    fmt = f"{sign}{fmt_diff}{unit} vs wk {fmt_date_dmy(stat_prev_week)}"
     good = diff > 0 if higher_is_better else diff < 0
     cls = "d-green" if good else "d-red"
     return (cls, fmt)
@@ -164,9 +172,9 @@ SOC_SHORT   = {"Joachim Farrugia": "Joachim", "Matteo Rapisarda": "Matteo",
                "Gérard E. Pelayo": "Gérard",  "Nazareno Scibilia": "Nazareno"}
 SOC_WEEK_KEYS = sorted(soc_weeks_data.keys())
 
-cw_dt   = datetime.strptime(current_week, "%Y-%m-%d")
+cw_dt   = datetime.strptime(stat_week, "%Y-%m-%d")
 cw_iso  = f"{cw_dt.isocalendar()[0]}-W{cw_dt.isocalendar()[1]:02d}"
-pw_dt   = cw_dt - timedelta(weeks=1)
+pw_dt   = datetime.strptime(stat_prev_week, "%Y-%m-%d")
 pw_iso  = f"{pw_dt.isocalendar()[0]}-W{pw_dt.isocalendar()[1]:02d}"
 pw_iso_label = pw_iso.split("-")[1]  # "W20"
 
@@ -201,76 +209,76 @@ aIcom_arr = [get(wk, "alert_volume", "by_source", "Intercom", default=0) for wk 
 aFTML_arr = [get(wk, "alert_volume", "by_source", "HTTP DMS FTML", default=0) for wk in WEEK_KEYS]
 
 # ── STAT CARD CALCULATIONS ───────────────────────────────────────────────────
-cw_date = fmt_date_dmy(current_week)
+cw_date = fmt_date_dmy(stat_week)
 
 # S1 cards
-cw_true_p1, cw_false_p1, cw_unclass, cw_fp_rate = p1_quality_row(current_week)
-pw_true_p1, pw_false_p1, pw_unclass, pw_fp_rate   = p1_quality_row(prev_week)
+cw_true_p1, cw_false_p1, cw_unclass, cw_fp_rate = p1_quality_row(stat_week)
+pw_true_p1, pw_false_p1, pw_unclass, pw_fp_rate   = p1_quality_row(stat_prev_week)
 
 true_p1_delta_cls, true_p1_delta = delta_str(cw_true_p1, pw_true_p1, "", higher_is_better=False, decimals=0)
 fp_rate_delta_cls, fp_rate_delta = delta_str(cw_fp_rate, pw_fp_rate, "%", higher_is_better=False)
 
-cw_p1_frt_rate = get(current_week, "p1_frt_sla", "hit_rate")
-pw_p1_frt_rate = get(prev_week, "p1_frt_sla", "hit_rate")
-cw_p1_med_frt  = get(current_week, "p1_frt_sla", "median_frt_min")
-pw_p1_med_frt  = get(prev_week, "p1_frt_sla", "median_frt_min")
+cw_p1_frt_rate = get(stat_week, "p1_frt_sla", "hit_rate")
+pw_p1_frt_rate = get(stat_prev_week, "p1_frt_sla", "hit_rate")
+cw_p1_med_frt  = get(stat_week, "p1_frt_sla", "mean_frt_min")
+pw_p1_med_frt  = get(stat_prev_week, "p1_frt_sla", "mean_frt_min")
 
 p1_frt_delta_cls, p1_frt_delta = delta_str(cw_p1_frt_rate, pw_p1_frt_rate, "%")
 p1_med_delta_cls, p1_med_delta = delta_str(cw_p1_med_frt, pw_p1_med_frt, " min", higher_is_better=False)
 
-cw_p1_mtta     = get(current_week, "mtta", "P1", "median_mtta_min")
-pw_p1_mtta     = get(prev_week, "mtta", "P1", "median_mtta_min")
-cw_p1_ack_rate = get(current_week, "mtta", "P1", "ack_rate")
+cw_p1_mtta     = get(stat_week, "mtta", "P1", "median_mtta_min")
+pw_p1_mtta     = get(stat_prev_week, "mtta", "P1", "median_mtta_min")
+cw_p1_ack_rate = get(stat_week, "mtta", "P1", "ack_rate")
 p1_mtta_delta_cls, p1_mtta_delta = delta_str(cw_p1_mtta, pw_p1_mtta, " min", higher_is_better=False)
 p1_ack_pct = f"{int(round(cw_p1_ack_rate*100))}%" if cw_p1_ack_rate is not None else "—"
 p1_ack_cls = "c-green" if cw_p1_ack_rate and cw_p1_ack_rate >= 1.0 else "c-amber"
 
 # S2 cards
-cw_p23_rate = get(current_week, "p2p3_frt_sla", "hit_rate")
-pw_p23_rate = get(prev_week, "p2p3_frt_sla", "hit_rate")
+cw_p23_rate = get(stat_week, "p2p3_frt_sla", "hit_rate")
+pw_p23_rate = get(stat_prev_week, "p2p3_frt_sla", "hit_rate")
 p23_delta_cls, p23_delta = delta_str(cw_p23_rate, pw_p23_rate, "%")
 
-cw_csat_avg = get(current_week, "csat", "avg_score")
-pw_csat_avg = get(prev_week, "csat", "avg_score")
+cw_csat_avg = get(stat_week, "csat", "avg_score")
+pw_csat_avg = get(stat_prev_week, "csat", "avg_score")
 csat_delta_cls, csat_delta = delta_str(cw_csat_avg, pw_csat_avg, "")
 
-cw_pt_resp = pt_responded(current_week)
-pw_pt_resp = pt_responded(prev_week)
-cw_pt_p1 = get(current_week, "partner_tickets", "p1_responded", default=0)
-cw_pt_p2 = get(current_week, "partner_tickets", "p2_responded", default=0)
-cw_pt_p3 = get(current_week, "partner_tickets", "p3_responded", default=0)
+cw_pt_resp = pt_responded(stat_week)
+pw_pt_resp = pt_responded(stat_prev_week)
+cw_pt_p1 = get(stat_week, "partner_tickets", "p1_responded", default=0)
+cw_pt_p2 = get(stat_week, "partner_tickets", "p2_responded", default=0)
+cw_pt_p3 = get(stat_week, "partner_tickets", "p3_responded", default=0)
 pt_delta_cls, pt_delta = delta_str(cw_pt_resp, pw_pt_resp, "", higher_is_better=False, decimals=0)
 
-cw_pt_med = get(current_week, "partner_tickets", "median_response_min")
-pw_pt_med = get(prev_week, "partner_tickets", "median_response_min")
+cw_pt_med = get(stat_week, "partner_tickets", "median_response_min")
+pw_pt_med = get(stat_prev_week, "partner_tickets", "median_response_min")
 pt_med_delta_cls, pt_med_delta = delta_str(cw_pt_med, pw_pt_med, " min", higher_is_better=False)
 
 # S3 cards
-cw_inc_total = get(current_week, "incident_volume", "total", default=0)
-pw_inc_total = get(prev_week, "incident_volume", "total", default=0)
-cw_inc_p1 = get(current_week, "incident_volume", "P1", default=0)
-cw_inc_p2 = get(current_week, "incident_volume", "P2", default=0)
-cw_inc_p3 = get(current_week, "incident_volume", "P3", default=0)
+cw_inc_total = get(stat_week, "incident_volume", "total", default=0)
+pw_inc_total = get(stat_prev_week, "incident_volume", "total", default=0)
+cw_inc_p1 = get(stat_week, "incident_volume", "P1", default=0)
+cw_inc_p2 = get(stat_week, "incident_volume", "P2", default=0)
+cw_inc_p3 = get(stat_week, "incident_volume", "P3", default=0)
 inc_delta_cls, inc_delta = delta_str(cw_inc_total, pw_inc_total, "", higher_is_better=False, decimals=0)
 
-cw_alerts = get(current_week, "alert_volume", "total", default=0)
-pw_alerts = get(prev_week, "alert_volume", "total", default=0)
+cw_alerts = get(stat_week, "alert_volume", "total", default=0)
+pw_alerts = get(stat_prev_week, "alert_volume", "total", default=0)
 alerts_delta_cls, alerts_delta = delta_str(cw_alerts, pw_alerts, "", higher_is_better=False, decimals=0)
 
-cw_p1_ack_rate_s3 = get(current_week, "mtta", "P1", "ack_rate")
-pw_p1_ack_rate_s3 = get(prev_week, "mtta", "P1", "ack_rate")
+cw_p1_ack_rate_s3 = get(stat_week, "mtta", "P1", "ack_rate")
+pw_p1_ack_rate_s3 = get(stat_prev_week, "mtta", "P1", "ack_rate")
 cw_ack_pct = f"{int(round(cw_p1_ack_rate_s3*100))}%" if cw_p1_ack_rate_s3 is not None else "—"
 cw_ack_cls = "c-green" if cw_p1_ack_rate_s3 and cw_p1_ack_rate_s3 >= 1.0 else "c-amber"
 if cw_p1_ack_rate_s3 and pw_p1_ack_rate_s3:
     ack_diff = round((cw_p1_ack_rate_s3 - pw_p1_ack_rate_s3)*100, 1)
     if abs(ack_diff) < 0.1:
-        ack_delta_cls, ack_delta = "d-muted", f"0% vs wk {fmt_date_dmy(prev_week)}"
+        ack_delta_cls, ack_delta = "d-muted", f"0% vs wk {fmt_date_dmy(stat_prev_week)}"
     elif ack_diff > 0:
-        ack_delta_cls, ack_delta = "d-green", f"+{ack_diff}% vs wk {fmt_date_dmy(prev_week)}"
+        ack_delta_cls, ack_delta = "d-green", f"+{ack_diff}% vs wk {fmt_date_dmy(stat_prev_week)}"
     else:
-        ack_delta_cls, ack_delta = "d-red", f"−{abs(ack_diff)}% vs wk {fmt_date_dmy(prev_week)}"
+        ack_delta_cls, ack_delta = "d-red", f"−{abs(ack_diff)}% vs wk {fmt_date_dmy(stat_prev_week)}"
 else:
-    ack_delta_cls, ack_delta = "d-muted", f"— vs wk {fmt_date_dmy(prev_week)}"
+    ack_delta_cls, ack_delta = "d-muted", f"— vs wk {fmt_date_dmy(stat_prev_week)}"
 
 cw_conv_rate = round(cw_inc_total / cw_alerts * 100, 1) if cw_alerts else None
 pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
@@ -279,8 +287,7 @@ conv_delta_cls, conv_delta = delta_str(cw_conv_rate, pw_conv_rate, "%", higher_i
 # S4 SOC stat card values
 def color_mtta(v):
     if v is None: return "c-muted"
-    if v <= 2: return "c-green"
-    if v <= 5: return "c-amber"
+    if v <= 5: return "c-green"
     return "c-red"
 
 def color_miss(mr_pct):
@@ -310,12 +317,12 @@ for p in SOC_PERSONS:
     soc_cards[p] = {
         "mtta_val": f"{cw_mtta:.2f}" if cw_mtta is not None else "—",
         "mtta_cls": color_mtta(cw_mtta),
-        "subnote":  f"{acked}/{sample} acked" if sample else "No data",
+        "subnote":  f"{acked}/{sample} acked · target &lt;5 min" if sample else "No data · target &lt;5 min",
         "mtta_d_cls": mtta_d_cls, "mtta_d": mtta_d,
     }
 
 # ── BREACH BLOCKS ────────────────────────────────────────────────────────────
-week_label_long = f"Week of {fmt_date_dmy(current_week)} {datetime.strptime(current_week, '%Y-%m-%d').year}"
+week_label_long = f"Week of {fmt_date_dmy(stat_week)} {datetime.strptime(stat_week, '%Y-%m-%d').year}"
 
 def render_p1_breach_block(week):
     breaches = cache.get(week, {}).get("p1_frt_breaches", None)
@@ -407,9 +414,9 @@ def render_csat_breach_block(week):
 {items_html}
     </div>'''
 
-p1_breach_html  = render_p1_breach_block(current_week)
-p23_breach_html = render_p23_breach_block(current_week)
-csat_breach_html = render_csat_breach_block(current_week)
+p1_breach_html  = render_p1_breach_block(stat_week)
+p23_breach_html = render_p23_breach_block(stat_week)
+csat_breach_html = render_csat_breach_block(stat_week)
 
 # ── Partner RT callout (weeks where median or avg > 120 min) ─────────────────
 def render_prt_callout():
@@ -545,10 +552,10 @@ html = f'''<!DOCTYPE html>
   <!-- ═══ SECTION 1 — PARTNER P1 TICKETS ══════════════════════════ -->
   <div class="group-label">Partner P1 Tickets</div>
 
-  <div class="stat-grid-5">
+  <div class="stat-grid-4">
     <div class="stat-card">
       <div class="card-label">True P1s This Week ({cw_date})</div>
-      <div class="card-value c-red">{cw_true_p1}</div>
+      <div class="card-value {'c-green' if cw_true_p1 == 0 else 'c-red'}">{cw_true_p1}</div>
       <div class="card-delta {true_p1_delta_cls}">{true_p1_delta}</div>
     </div>
     <div class="stat-card">
@@ -563,15 +570,10 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {p1_frt_delta_cls}">{p1_frt_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">SOC & SRE P1 Median FRT ({cw_date})</div>
-      <div class="card-value c-muted">{fmt_min(cw_p1_med_frt)} <span class="unit">min</span></div>
+      <div class="card-label">SOC & SRE P1 Avg FRT ({cw_date})</div>
+      <div class="card-value {'c-green' if cw_p1_med_frt is not None and cw_p1_med_frt <= 30 else 'c-red' if cw_p1_med_frt is not None else 'c-muted'}">{fmt_min(cw_p1_med_frt)} <span class="unit">min</span></div>
+      <div class="card-subnote">Target: 30 min</div>
       <div class="card-delta {p1_med_delta_cls}">{p1_med_delta}</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">P1 Median MTTA ({cw_date})</div>
-      <div class="card-value c-muted">{fmt_min(cw_p1_mtta) if cw_p1_mtta else '—'} <span class="unit">min</span></div>
-      <div class="card-subnote">Ack rate: {p1_ack_pct}</div>
-      <div class="card-delta {p1_mtta_delta_cls}">{p1_mtta_delta}</div>
     </div>
   </div>
 
@@ -874,7 +876,8 @@ new Chart(document.getElementById('cSOCMTTA'),{{type:'bar',data:{{labels:SOCMTTA
   {{label:'Joachim', data:socMttaJ,backgroundColor:'#ef4444',barPercentage:0.6}},
   {{label:'Matteo',  data:socMttaM,backgroundColor:'#22c55e',barPercentage:0.6}},
   {{label:'Gérard',  data:socMttaG,backgroundColor:'#64748b',barPercentage:0.6}},
-  {{label:'Nazareno',data:socMttaN,backgroundColor:'#3b82f6',barPercentage:0.6}}
+  {{label:'Nazareno',data:socMttaN,backgroundColor:'#3b82f6',barPercentage:0.6}},
+  {{label:'Target (5 min)',type:'line',data:Array(SOCMTTAWK.length).fill(5),borderColor:'#f59e0b',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 </script>
 </body>
