@@ -1530,10 +1530,10 @@
     "alert_volume": {
       "total": 332,
       "by_source": {
-        "Dead Man's Snitch": 48,
-        "Grafana SOC alerts": 103,
-        "Grafana alerts": 3,
-        "HTTP alerts": 159,
+        "DMS": 48,
+        "Grafana SOC": 103,
+        "HTTP": 159,
+        "Grafana": 3,
         "Intercom": 19
       }
     },
