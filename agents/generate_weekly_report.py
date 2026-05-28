@@ -139,10 +139,14 @@ mP1_arr = [get(wk, "mtta", "P1", "median_mtta_min") for wk in WEEK_KEYS]
 mP2_arr = [get(wk, "mtta", "P2", "median_mtta_min") for wk in WEEK_KEYS]
 mP3_arr = [get(wk, "mtta", "P3", "median_mtta_min") for wk in WEEK_KEYS]
 
-# Brands
-top10 = cache.get("_p1_brands_top10", {"labels": [], "counts": []})
-bL = top10["labels"]
-bC = top10["counts"]
+# Brands — always recomputed from per-week p1_brands (cache key _p1_brands_top10 ignored)
+_brand_totals = defaultdict(int)
+for _wk in WEEK_KEYS:
+    for _brand, _cnt in (cache[_wk].get("p1_brands") or {}).items():
+        _brand_totals[_brand] += _cnt
+_ranked = sorted(_brand_totals.items(), key=lambda x: (-x[1], x[0]))
+bL = [b for b, _ in _ranked[:10]]
+bC = [c for _, c in _ranked[:10]]
 
 # ── SECTION 2 — PARTNER TICKETS ─────────────────────────────────────────────
 p23Hit_arr  = [get(wk, "p2p3_frt_sla", "hit", default=0) for wk in WEEK_KEYS]
@@ -201,12 +205,14 @@ iP3_arr = [get(wk, "incident_volume", "P3", default=0) for wk in WEEK_KEYS]
 iP4_arr = [get(wk, "incident_volume", "P4", default=0) for wk in WEEK_KEYS]
 iUnk_arr = [get(wk, "incident_volume", "Unknown", default=0) for wk in WEEK_KEYS]
 
-aDMS_arr  = [get(wk, "alert_volume", "by_source", "DMS", default=0) +
-             get(wk, "alert_volume", "by_source", "Dead Mans Snitch", default=0) for wk in WEEK_KEYS]
-aSOC_arr  = [get(wk, "alert_volume", "by_source", "Grafana SOC", default=0) for wk in WEEK_KEYS]
-aHTTP_arr = [get(wk, "alert_volume", "by_source", "HTTP", default=0) for wk in WEEK_KEYS]
-aGraf_arr = [get(wk, "alert_volume", "by_source", "Grafana", default=0) for wk in WEEK_KEYS]
-aIcom_arr = [get(wk, "alert_volume", "by_source", "Intercom", default=0) for wk in WEEK_KEYS]
+def _src(wk, *keys):
+    return sum(get(wk, "alert_volume", "by_source", k, default=0) for k in keys)
+
+aDMS_arr  = [_src(wk, "DMS", "Dead Mans Snitch", "Dead Man's Snitch") for wk in WEEK_KEYS]
+aSOC_arr  = [_src(wk, "Grafana SOC", "Grafana SOC alerts") for wk in WEEK_KEYS]
+aHTTP_arr = [_src(wk, "HTTP", "HTTP alerts") for wk in WEEK_KEYS]
+aGraf_arr = [_src(wk, "Grafana", "Grafana alerts") for wk in WEEK_KEYS]
+aIcom_arr = [_src(wk, "Intercom") for wk in WEEK_KEYS]
 aFTML_arr = [get(wk, "alert_volume", "by_source", "HTTP DMS FTML", default=0) for wk in WEEK_KEYS]
 # PD-era sources (pre-W19)
 aPD_SP_arr  = [get(wk, "alert_volume", "by_source", "Service Portal", default=0) for wk in WEEK_KEYS]
