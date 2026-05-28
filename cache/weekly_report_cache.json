@@ -1402,78 +1402,173 @@
     "p1_quality_incidentio": {
       "true_p1": 0,
       "false_p1": 0,
-      "unclassified": 0
+      "unclassified": 7
     },
     "mtta": {
       "P1": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": null,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
+        "n": 7,
+        "n_acked": 5,
+        "ack_rate": 0.71,
+        "mtta_minutes": [
+          6.07,
+          16.67,
+          16.88,
+          18.87,
+          70.05
+        ],
+        "median_mtta_min": 16.88,
+        "mean_mtta_min": 25.7
       },
       "P2": {
-        "n": 2,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
+        "n": 60,
+        "n_acked": 53,
+        "ack_rate": 0.88,
+        "mtta_minutes": [
+          0.33,
+          2.35,
+          3.32,
+          5.68,
+          6.23,
+          6.87,
+          6.98,
+          9.03,
+          10.15,
+          10.95,
+          11.47,
+          11.88,
+          12.23,
+          12.85,
+          13.37,
+          14.2,
+          14.25,
+          14.98,
+          15.63,
+          15.77,
+          16.67,
+          18.02,
+          18.25,
+          19.22,
+          20.38,
+          20.9,
+          22.17,
+          24.42,
+          25.48,
+          25.67,
+          26.4,
+          28.13,
+          29.28,
+          31.28,
+          31.42,
+          35.7,
+          38.37,
+          39.47,
+          46.8,
+          46.85,
+          48.55,
+          49.1,
+          51.73,
+          52.33,
+          53.87,
+          62.13,
+          81.1,
+          93.63,
+          158.22,
+          162.83,
+          192.45,
+          408.97,
+          911.85
+        ],
+        "median_mtta_min": 22.17,
+        "mean_mtta_min": 58.3
       },
       "P3": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": null,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
+        "n": 22,
+        "n_acked": 21,
+        "ack_rate": 0.95,
+        "mtta_minutes": [
+          0.17,
+          1.27,
+          2.03,
+          6.18,
+          7.0,
+          7.15,
+          7.33,
+          7.85,
+          12.15,
+          14.98,
+          15.78,
+          16.07,
+          17.88,
+          18.33,
+          18.42,
+          18.45,
+          25.37,
+          64.03,
+          89.62,
+          107.85,
+          119.15
+        ],
+        "median_mtta_min": 15.78,
+        "mean_mtta_min": 27.5
       },
       "P4": {
-        "n": 0,
+        "n": 1,
         "n_acked": 0,
-        "ack_rate": null,
+        "ack_rate": 0.0,
         "mtta_minutes": [],
         "median_mtta_min": null,
         "mean_mtta_min": null
       }
     },
     "incident_volume": {
-      "total": 2,
-      "P1": 0,
-      "P2": 2,
-      "P3": 0,
-      "P4": 0
+      "total": 90,
+      "P1": 7,
+      "P2": 60,
+      "P3": 22,
+      "P4": 1
     },
     "alert_volume": {
-      "total": 12,
+      "total": 332,
       "by_source": {
-        "DMS": 3,
-        "Grafana SOC": 2,
-        "HTTP": 7
+        "Dead Man's Snitch": 48,
+        "Grafana SOC alerts": 103,
+        "Grafana alerts": 3,
+        "HTTP alerts": 159,
+        "Intercom": 19
       }
     },
     "p1_frt_sla": {
-      "total": 0,
-      "hit": 0,
+      "total": 5,
+      "hit": 5,
       "missed": 0,
-      "hit_rate": null,
-      "median_frt_min": null,
-      "mean_frt_min": null,
-      "frt_seconds": []
+      "hit_rate": 100.0,
+      "median_frt_min": 5.0,
+      "mean_frt_min": 7.1,
+      "frt_seconds": [
+        302,
+        445,
+        985,
+        127,
+        272
+      ]
     },
-    "p1_brands": {},
+    "p1_brands": {
+      "FlappyCasino": 1,
+      "Stanleybet.ro": 2,
+      "H2 / Seu Bet (Suprema)": 1,
+      "Leonbets": 1
+    },
     "p1_frt_breaches": [],
     "csat": {
-      "total": 0,
-      "rated": 0,
-      "avg_score": null,
-      "pct_positive": null,
-      "pct_perfect": null,
-      "response_rate": null,
+      "total": 18,
+      "rated": 6,
+      "avg_score": 4.83,
+      "pct_positive": 100.0,
+      "pct_perfect": 83.3,
+      "response_rate": 33.3,
       "score_dist": {
-        "5": 0,
-        "4": 0,
+        "5": 5,
+        "4": 1,
         "3": 0,
         "2": 0,
         "1": 0
@@ -1481,26 +1576,63 @@
     },
     "csat_low_scores": [],
     "partner_tickets": {
-      "p1_responded": 0,
-      "p2_responded": 0,
-      "p3_responded": 0,
-      "p1_open": 0,
+      "p1_responded": 3,
+      "p2_responded": 7,
+      "p3_responded": 4,
+      "p1_open": 2,
       "p2_open": 0,
       "p3_open": 0,
-      "total_count": 0,
-      "avg_response_min": null,
-      "median_response_min": null,
-      "response_times_s": []
+      "total_count": 16,
+      "avg_response_min": 37.5,
+      "median_response_min": 30.6,
+      "response_times_s": [
+        256,
+        445,
+        2717,
+        9401,
+        3626,
+        480,
+        703,
+        2788,
+        865,
+        127,
+        3886,
+        272,
+        1836,
+        4068
+      ]
     },
     "p2p3_frt_sla": {
-      "hit": 0,
-      "missed": 0,
-      "total": 0,
-      "hit_rate": null,
-      "mean_response_min": null,
-      "median_response_min": null,
-      "response_times_s": []
+      "hit": 10,
+      "missed": 1,
+      "total": 11,
+      "hit_rate": 90.9,
+      "mean_response_min": 46.4,
+      "median_response_min": 45.3,
+      "response_times_s": [
+        256,
+        2717,
+        9401,
+        3626,
+        480,
+        703,
+        2788,
+        865,
+        3886,
+        1836,
+        4068
+      ]
     },
-    "p2p3_frt_breaches": []
+    "p2p3_frt_breaches": [
+      {
+        "conv_id": "215560994727050",
+        "company_name": "Stanleybet.ro",
+        "severity": "P3",
+        "oh_frt_s": 9401,
+        "opened_at": 1779790178,
+        "first_reply_at": 1779799579,
+        "summary": "P3 Stanleybet.ro ticket with 156.7 min office-hours response (SLA target 120 min)"
+      }
+    ]
   }
 }

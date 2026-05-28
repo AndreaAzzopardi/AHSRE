@@ -342,16 +342,22 @@ def render_p1_breach_block(week):
     </div>'''
     items = []
     for b in breaches:
-        opened = fmt_ts(b["opened_ts"])
-        first_reply = fmt_ts(b["opened_ts"] + b["sre_real_rt_s"])
+        ts_html = ""
+        opened_ts = b.get("opened_ts")
+        real_rt = b.get("sre_real_rt_s")
+        if opened_ts:
+            opened = fmt_ts(opened_ts)
+            first_reply = fmt_ts(opened_ts + real_rt) if real_rt else "—"
+            ts_html = f'<span class="breach-ts">Opened {opened} &middot; First reply {first_reply}</span>'
+        oh_min = b.get("sre_oh_min", "—")
         items.append(f'''      <div class="breach-item">
         <div class="breach-header">
           <span class="breach-conv-id">#{b["conv_id"]}</span>
-          <span class="breach-meta">{b["brand"]} &middot; {b["priority"]}</span>
-          <span class="breach-frt">{b["sre_oh_min"]} min</span>
-          <span class="breach-ts">Opened {opened} &middot; First reply {first_reply}</span>
+          <span class="breach-meta">{b.get("brand","—")} &middot; {b.get("priority","—")}</span>
+          <span class="breach-frt">{oh_min} min</span>
+          {ts_html}
         </div>
-        <div class="breach-summary">{b["summary"]}</div>
+        <div class="breach-summary">{b.get("summary","")}</div>
       </div>''')
     items_html = "\n".join(items)
     return f'''    <div class="breach-block">
@@ -373,16 +379,24 @@ def render_p23_breach_block(week):
     </div>'''
     items = []
     for b in breaches:
-        opened = fmt_ts(b["opened_ts"])
-        first_reply = fmt_ts(b["opened_ts"] + b["sre_real_rt_s"])
+        ts_html = ""
+        opened_ts = b.get("opened_ts")
+        real_rt = b.get("sre_real_rt_s")
+        if opened_ts:
+            opened = fmt_ts(opened_ts)
+            first_reply = fmt_ts(opened_ts + real_rt) if real_rt else "—"
+            ts_html = f'<span class="breach-ts">Opened {opened} &middot; First reply {first_reply}</span>'
+        oh_min = b.get("sre_oh_min", round(b.get("oh_frt_s", 0)/60, 1) if b.get("oh_frt_s") else "—")
+        brand = b.get("brand") or b.get("company_name") or "—"
+        priority = b.get("priority") or b.get("severity") or "—"
         items.append(f'''      <div class="breach-item">
         <div class="breach-header">
           <span class="breach-conv-id">#{b["conv_id"]}</span>
-          <span class="breach-meta">{b["brand"]} &middot; {b["priority"]}</span>
-          <span class="breach-frt">{b["sre_oh_min"]} min</span>
-          <span class="breach-ts">Opened {opened} &middot; First reply {first_reply}</span>
+          <span class="breach-meta">{brand} &middot; {priority}</span>
+          <span class="breach-frt">{oh_min} min</span>
+          {ts_html}
         </div>
-        <div class="breach-summary">{b["summary"]}</div>
+        <div class="breach-summary">{b.get("summary","")}</div>
       </div>''')
     items_html = "\n".join(items)
     return f'''    <div class="breach-block">
@@ -404,13 +418,17 @@ def render_csat_breach_block(week):
     </div>'''
     items = []
     for b in low:
+        brand = b.get("brand") or b.get("company_name") or "—"
+        rating = b.get("rating") or b.get("score") or "—"
+        priority = b.get("priority", "")
+        meta = f"{brand} &middot; {priority}" if priority else brand
         items.append(f'''      <div class="breach-item">
         <div class="breach-header">
           <span class="breach-conv-id">#{b["conv_id"]}</span>
-          <span class="breach-meta">{b["brand"]} &middot; {b["priority"]}</span>
-          <span class="breach-frt">&#9733; {b["rating"]}</span>
+          <span class="breach-meta">{meta}</span>
+          <span class="breach-frt">&#9733; {rating}</span>
         </div>
-        <div class="breach-summary">{b["summary"]}</div>
+        <div class="breach-summary">{b.get("summary","")}</div>
       </div>''')
     items_html = "\n".join(items)
     return f'''    <div class="breach-block">

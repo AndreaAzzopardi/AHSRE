@@ -2189,14 +2189,14 @@
     },
     "2026-W22": {
       "Joachim Farrugia": {
-        "pages_targeted": 1,
-        "resolved": 0,
-        "expired": 1,
+        "pages_targeted": 62,
+        "resolved": 62,
+        "expired": 0,
         "cancelled": 0,
-        "miss_rate": 1.0,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 0,
+          "sample_size": 62,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -2204,14 +2204,14 @@
         }
       },
       "Matteo Rapisarda": {
-        "pages_targeted": 2,
-        "resolved": 0,
-        "expired": 2,
+        "pages_targeted": 77,
+        "resolved": 77,
+        "expired": 0,
         "cancelled": 0,
-        "miss_rate": 1.0,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 0,
+          "sample_size": 77,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -2219,14 +2219,14 @@
         }
       },
       "G\u00e9rard E. Pelayo": {
-        "pages_targeted": 0,
-        "resolved": 0,
+        "pages_targeted": 73,
+        "resolved": 73,
         "expired": 0,
         "cancelled": 0,
-        "miss_rate": null,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 0,
+          "sample_size": 73,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -2234,16 +2234,16 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 10,
-        "resolved": 2,
-        "expired": 5,
-        "cancelled": 3,
-        "miss_rate": 0.71,
+        "pages_targeted": 77,
+        "resolved": 77,
+        "expired": 0,
+        "cancelled": 0,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 2,
-          "sample_size": 2,
+          "sample_size": 77,
           "sampled": false,
-          "median_mtta_min": 3.17,
+          "median_mtta_min": 3.28,
           "mean_mtta_min": 3.17,
           "raw_records": [
             {
