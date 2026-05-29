@@ -2189,17 +2189,17 @@
     },
     "2026-W22": {
       "Joachim Farrugia": {
-        "pages_targeted": 62,
-        "resolved": 62,
+        "pages_targeted": 78,
+        "resolved": 78,
         "expired": 0,
         "cancelled": 0,
         "miss_rate": 0.0,
         "mtta": {
-          "acked_count": 9,
-          "sample_size": 62,
+          "acked_count": 25,
+          "sample_size": 25,
           "sampled": false,
-          "mean_mtta_min": 3.39,
-          "median_mtta_min": 4.3,
+          "mean_mtta_min": 2.61,
+          "median_mtta_min": 2.37,
           "raw_records": [
             {
               "escalation_id": "01KSJ9KA5HC44PWD91XHQ1Z0D1",
@@ -2263,22 +2263,134 @@
               "acked_at": "2026-05-27T18:11:23Z",
               "acked_reason": "user_acked",
               "mtta_seconds": 342
+            },
+            {
+              "escalation_id": "01KSR6DW4XJCKPJ3W61N0ATNKW",
+              "created_at": "2026-05-28T21:04:15Z",
+              "acked_at": "2026-05-28T21:08:36Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 261
+            },
+            {
+              "escalation_id": "01KSR7NTFZQ34RKZC0R9DM6PDN",
+              "created_at": "2026-05-28T21:26:04Z",
+              "acked_at": "2026-05-28T21:28:44Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 160
+            },
+            {
+              "escalation_id": "01KSR9HZPN5JGM95Y7HQW7S8B3",
+              "created_at": "2026-05-28T21:58:55Z",
+              "acked_at": "2026-05-28T21:59:16Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 21
+            },
+            {
+              "escalation_id": "01KSRC74DJHAAVHZQMWBP3R210",
+              "created_at": "2026-05-28T22:45:25Z",
+              "acked_at": "2026-05-28T22:50:22Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 297
+            },
+            {
+              "escalation_id": "01KSRES1WFKSHGQPFS03PJAV76",
+              "created_at": "2026-05-28T23:30:09Z",
+              "acked_at": "2026-05-28T23:33:11Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 182
+            },
+            {
+              "escalation_id": "01KSRKVNVJNDD3ZKCEEYDDJ5FF",
+              "created_at": "2026-05-29T00:58:58Z",
+              "acked_at": "2026-05-29T00:59:28Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 30
+            },
+            {
+              "escalation_id": "01KSRP4VP2SYW00WE9FPRPKJVG",
+              "created_at": "2026-05-29T01:38:56Z",
+              "acked_at": "2026-05-29T01:42:43Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 227
+            },
+            {
+              "escalation_id": "01KSRPPQ11GRG2Q2NRERCA5GJA",
+              "created_at": "2026-05-29T01:48:41Z",
+              "acked_at": "2026-05-29T01:48:54Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 13
+            },
+            {
+              "escalation_id": "01KSRSY6E7C5F07TH052N84TZN",
+              "created_at": "2026-05-29T02:45:12Z",
+              "acked_at": "2026-05-29T02:46:06Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 54
+            },
+            {
+              "escalation_id": "01KSRVB06K3NZY4NY6NRKYDM1W",
+              "created_at": "2026-05-29T03:09:40Z",
+              "acked_at": "2026-05-29T03:12:32Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 172
+            },
+            {
+              "escalation_id": "01KSRYDZ98NJPED9X5R97PBJ42",
+              "created_at": "2026-05-29T04:03:44Z",
+              "acked_at": "2026-05-29T04:06:59Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 195
+            },
+            {
+              "escalation_id": "01KSRYV3YBSSH5X5W26P4FP7HS",
+              "created_at": "2026-05-29T04:10:54Z",
+              "acked_at": "2026-05-29T04:13:06Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 132
+            },
+            {
+              "escalation_id": "01KSRYW5KRBGNV1E73E3T5H811",
+              "created_at": "2026-05-29T04:11:29Z",
+              "acked_at": "2026-05-29T04:13:06Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 97
+            },
+            {
+              "escalation_id": "01KSRZC307A1ERF3ZDR6JWXQQD",
+              "created_at": "2026-05-29T04:20:10Z",
+              "acked_at": "2026-05-29T04:22:32Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 142
+            },
+            {
+              "escalation_id": "01KSRZRV8B21AH644XT183HGQE",
+              "created_at": "2026-05-29T04:27:08Z",
+              "acked_at": "2026-05-29T04:27:27Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 19
+            },
+            {
+              "escalation_id": "01KSS20RZRCFEN7PFQXRGPM4G1",
+              "created_at": "2026-05-29T05:06:25Z",
+              "acked_at": "2026-05-29T05:07:51Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 86
             }
           ]
         }
       },
       "Matteo Rapisarda": {
-        "pages_targeted": 77,
-        "resolved": 77,
+        "pages_targeted": 86,
+        "resolved": 86,
         "expired": 0,
         "cancelled": 0,
         "miss_rate": 0.0,
         "mtta": {
-          "acked_count": 4,
-          "sample_size": 77,
+          "acked_count": 9,
+          "sample_size": 9,
           "sampled": false,
-          "mean_mtta_min": 0.45,
-          "median_mtta_min": 0.33,
+          "mean_mtta_min": 0.68,
+          "median_mtta_min": 0.37,
           "raw_records": [
             {
               "escalation_id": "01KSHMJ202D1G8QWVK80CTS5B7",
@@ -2307,6 +2419,41 @@
               "acked_at": "2026-05-28T16:03:34Z",
               "acked_reason": "user_acked",
               "mtta_seconds": 62
+            },
+            {
+              "escalation_id": "01KSQZGTJ7NRN2D4TBEMR4MRA3",
+              "created_at": "2026-05-28T19:03:31Z",
+              "acked_at": "2026-05-28T19:05:03Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 92
+            },
+            {
+              "escalation_id": "01KSR1MBJ726W8MV26ZDGB78HX",
+              "created_at": "2026-05-28T19:40:24Z",
+              "acked_at": "2026-05-28T19:41:36Z",
+              "acked_reason": "incident_triaged",
+              "mtta_seconds": 72
+            },
+            {
+              "escalation_id": "01KSR1MBXNTW91M2W2FH88M7G7",
+              "created_at": "2026-05-28T19:40:24Z",
+              "acked_at": "2026-05-28T19:41:36Z",
+              "acked_reason": "incident_triaged",
+              "mtta_seconds": 72
+            },
+            {
+              "escalation_id": "01KSSYAVSX7M4DS181RMP3ZBE0",
+              "created_at": "2026-05-29T13:21:16Z",
+              "acked_at": "2026-05-29T13:21:25Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 9
+            },
+            {
+              "escalation_id": "01KSSYSCKR27YN6DWC4TSA7460",
+              "created_at": "2026-05-29T13:29:12Z",
+              "acked_at": "2026-05-29T13:29:28Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 16
             }
           ]
         }
@@ -2349,17 +2496,17 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 77,
-        "resolved": 77,
+        "pages_targeted": 100,
+        "resolved": 100,
         "expired": 0,
         "cancelled": 0,
         "miss_rate": 0.0,
         "mtta": {
-          "acked_count": 5,
-          "sample_size": 77,
+          "acked_count": 25,
+          "sample_size": 25,
           "sampled": false,
-          "mean_mtta_min": 1.91,
-          "median_mtta_min": 2.65,
+          "mean_mtta_min": 1.7,
+          "median_mtta_min": 2.27,
           "raw_records": [
             {
               "escalation_id": "01KSE7QD7RFAPQMWYNATMVFKVT",
@@ -2395,6 +2542,146 @@
               "acked_at": "2026-05-28T13:19:31Z",
               "acked_reason": "user_acked",
               "mtta_seconds": 14
+            },
+            {
+              "escalation_id": "01KSS9F9MXR014QJ21GRNGC7N4",
+              "created_at": "2026-05-29T07:16:41Z",
+              "acked_at": "2026-05-29T07:16:59Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 18
+            },
+            {
+              "escalation_id": "01KSSA4G4YAGQ7DBJVP9DB9P7S",
+              "created_at": "2026-05-29T07:28:16Z",
+              "acked_at": "2026-05-29T07:28:35Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 19
+            },
+            {
+              "escalation_id": "01KSSAHDFYSBVB6SHJB0VB21ZC",
+              "created_at": "2026-05-29T07:35:19Z",
+              "acked_at": "2026-05-29T07:36:09Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 50
+            },
+            {
+              "escalation_id": "01KSSB3V942C5M3FW2T1SZM394",
+              "created_at": "2026-05-29T07:45:23Z",
+              "acked_at": "2026-05-29T07:47:43Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 140
+            },
+            {
+              "escalation_id": "01KSSCE6S7RVFHMCHNX0F69MC6",
+              "created_at": "2026-05-29T08:08:31Z",
+              "acked_at": "2026-05-29T08:10:44Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 133
+            },
+            {
+              "escalation_id": "01KSSDM2A3GQ25AV9PDEGTCJ6V",
+              "created_at": "2026-05-29T08:29:12Z",
+              "acked_at": "2026-05-29T08:31:29Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 137
+            },
+            {
+              "escalation_id": "01KSSE54DX8R6ETX87Q0BWARMQ",
+              "created_at": "2026-05-29T08:38:31Z",
+              "acked_at": "2026-05-29T08:38:46Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 15
+            },
+            {
+              "escalation_id": "01KSSF7WHSXMWGY1XC2GVWV2PN",
+              "created_at": "2026-05-29T08:57:30Z",
+              "acked_at": "2026-05-29T09:00:13Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 163
+            },
+            {
+              "escalation_id": "01KSSFX9D58E06GNMJ2J18PVBH",
+              "created_at": "2026-05-29T09:09:11Z",
+              "acked_at": "2026-05-29T09:11:40Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 149
+            },
+            {
+              "escalation_id": "01KSSJVFPRD8CK1CTTJMTYF374",
+              "created_at": "2026-05-29T10:00:38Z",
+              "acked_at": "2026-05-29T10:03:06Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 148
+            },
+            {
+              "escalation_id": "01KSSK0SJGXZ28VZNCZBD15N2F",
+              "created_at": "2026-05-29T10:03:32Z",
+              "acked_at": "2026-05-29T10:05:54Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 142
+            },
+            {
+              "escalation_id": "01KSSMDSQS7BYC1MBXBF4VSYYE",
+              "created_at": "2026-05-29T10:28:07Z",
+              "acked_at": "2026-05-29T10:28:24Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 17
+            },
+            {
+              "escalation_id": "01KSSMJ0KRSV4JQCRPHRHGPA7A",
+              "created_at": "2026-05-29T10:30:25Z",
+              "acked_at": "2026-05-29T10:32:39Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 134
+            },
+            {
+              "escalation_id": "01KSSQ4B6789WS720K57J1T35Q",
+              "created_at": "2026-05-29T11:15:22Z",
+              "acked_at": "2026-05-29T11:18:17Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 175
+            },
+            {
+              "escalation_id": "01KSSQ6J912DTKTPASZQMMQ2JB",
+              "created_at": "2026-05-29T11:16:35Z",
+              "acked_at": "2026-05-29T11:16:53Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 18
+            },
+            {
+              "escalation_id": "01KSSQBDG4ETFNNTD6T5CK0FGN",
+              "created_at": "2026-05-29T11:19:14Z",
+              "acked_at": "2026-05-29T11:21:32Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 138
+            },
+            {
+              "escalation_id": "01KSSQZCV3E26E0G6GPDSYZE4A",
+              "created_at": "2026-05-29T11:30:09Z",
+              "acked_at": "2026-05-29T11:32:25Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 136
+            },
+            {
+              "escalation_id": "01KSSTQGTGF6EK51J46HTZ5FFM",
+              "created_at": "2026-05-29T12:18:17Z",
+              "acked_at": "2026-05-29T12:20:33Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 136
+            },
+            {
+              "escalation_id": "01KSSTSAHC4DW1NP3MBHWG44KP",
+              "created_at": "2026-05-29T12:19:16Z",
+              "acked_at": "2026-05-29T12:20:33Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 77
+            },
+            {
+              "escalation_id": "01KST0FYJ07GBEBHGXNVZJWPES",
+              "created_at": "2026-05-29T13:59:00Z",
+              "acked_at": "2026-05-29T13:59:26Z",
+              "acked_reason": "user_acked",
+              "mtta_seconds": 26
             }
           ]
         }
