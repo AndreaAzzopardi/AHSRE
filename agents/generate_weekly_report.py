@@ -442,9 +442,37 @@ def render_csat_breach_block(week):
 {items_html}
     </div>'''
 
+def render_true_p1_detail_block(week):
+    incidents = cache.get(week, {}).get("true_p1_incidents", None)
+    if not incidents:
+        return ""
+    items = []
+    for inc in incidents:
+        status = inc.get("status", "")
+        status_cls = "c-green" if status == "Closed" else "c-amber"
+        cause = inc.get("cause", "")
+        cause_html = f'<span class="breach-meta">{cause}</span>' if cause else ""
+        paras = [p.strip() for p in inc.get("summary","").split("\n\n") if p.strip()]
+        summary_html = "".join(f'<p class="p1-detail-para">{p}</p>' for p in paras)
+        items.append(f'''      <div class="breach-item">
+        <div class="breach-header">
+          <span class="breach-conv-id">{inc["reference"]}</span>
+          <span class="breach-meta">{inc["name"]}</span>
+          <span class="{status_cls}" style="font-size:11px;font-weight:600">{status}</span>
+          {cause_html}
+        </div>
+        <div class="breach-summary">{summary_html}</div>
+      </div>''')
+    items_html = "\n".join(items)
+    return f'''    <div class="breach-block">
+      <div class="breach-list-title">True P1 Incident Details — {week_label_long}</div>
+{items_html}
+    </div>'''
+
 p1_breach_html  = render_p1_breach_block(stat_week)
 p23_breach_html = render_p23_breach_block(stat_week)
 csat_breach_html = render_csat_breach_block(stat_week)
+true_p1_detail_html = render_true_p1_detail_block(stat_week)
 
 # ── Partner RT callout (weeks where median or avg > 120 min) ─────────────────
 def render_prt_callout():
@@ -562,6 +590,8 @@ html = f'''<!DOCTYPE html>
     .breach-frt  {{ font-family: 'DM Mono', monospace; font-size: 12px; color: #ef4444; font-weight: 500; }}
     .breach-ts   {{ font-size: 11px; color: #64748b; }}
     .breach-summary {{ font-size: 12px; color: #94a3b8; margin-top: 5px; line-height: 1.5; }}
+    .p1-detail-para {{ margin: 0 0 6px 0; }}
+    .p1-detail-para:last-child {{ margin-bottom: 0; }}
 
     .footer {{ text-align: center; padding-top: 40px; font-size: 11px; color: #64748b; line-height: 1.9; }}
   </style>
@@ -609,6 +639,7 @@ html = f'''<!DOCTYPE html>
     <div class="chart-title">P1 Incident Quality — Week on Week</div>
     <div class="chart-note">{p1q_note}</div>
     <div class="chart-container" style="height:320px"><canvas id="cP1Q"></canvas></div>
+{true_p1_detail_html}
   </div>
 
   <div class="chart-section">

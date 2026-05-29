@@ -1386,9 +1386,9 @@
   },
   "2026-05-25": {
     "p1_quality_incidentio": {
-      "true_p1": 0,
-      "false_p1": 0,
-      "unclassified": 7
+      "true_p1": 2,
+      "false_p1": 5,
+      "unclassified": 1
     },
     "mtta": {
       "P1": {
@@ -1536,6 +1536,26 @@
         "oh_frt_s": 9401,
         "opened_at": 1779790178,
         "first_reply_at": 1779799579
+      }
+    ],
+    "true_p1_incidents": [
+      {
+        "reference": "INC-8041",
+        "name": "Issues with segments having singularity features due to crm-api errors",
+        "status": "Closed",
+        "reported_at": "2026-05-26T12:34:10Z",
+        "cause": "FT - Backend Code Defect",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8041",
+        "summary": "Problem: Partners were unable to create, update, or clone segments using singularity features with specific operators in crm-api versions 2.61.26 and 2.61.27, causing crm-api errors.\n\nImpact: 88 out of 119 production brands (73%) were unable to create, update, or clone segments that use singularity features with operators such as \"equals\", \"contains\", or \"not contains\". Multiclass features were unaffected.\n\nCause: A bug introduced by PR #2250 in crm-api versions 2.61.26\u20132.61.27 caused errors when segments used singularity features with certain operators.\n\nResolution: The backend fix was merged and deployed to all impacted brands (platform v2.61.30). Partner communications sent. No customer action required."
+      },
+      {
+        "reference": "INC-8064",
+        "name": "[P1] Intercom Incident : H2Bet Production",
+        "status": "Waiting on Partner",
+        "reported_at": "2026-05-26T15:47:42Z",
+        "cause": "Partner Induced",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
+        "summary": "Problem: Duplicate bonuses were sent to H2Bet users weekly for 24 weeks due to insufficient idempotency handling during operator 503 retries.\n\nImpact: Between 275 and 936 users per week received duplicate bonuses over 24 weeks. On 25 May, 26 H2Bet players received the same bonus 2\u20133 times in a single day.\n\nCause: Repeated retries against operator 503 errors led to multiple bonuses being granted on the operator side. Some 503 responses were returned after the bonus was already credited, causing FastTrack to retry and create duplicates. A separate unrelated duplicate stream also exists.\n\nResolution: PR #122 to improve idempotency handling is under review. The client rejected a workaround (treating 503 as success) due to traceability concerns. Simon Grenefalk is preparing a data extract for BetConstruct; Andrew GG is coordinating a long-term fix with BetConstruct."
       }
     ]
   }
