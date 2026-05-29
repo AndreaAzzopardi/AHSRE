@@ -1386,9 +1386,9 @@
   },
   "2026-05-25": {
     "p1_quality_incidentio": {
-      "true_p1": 2,
+      "true_p1": 3,
       "false_p1": 5,
-      "unclassified": 1
+      "unclassified": 0
     },
     "mtta": {
       "P1": {
@@ -1556,6 +1556,15 @@
         "cause": "Partner Induced",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
         "summary": "Problem: Duplicate bonuses were sent to H2Bet users weekly for 24 weeks due to insufficient idempotency handling during operator 503 retries.\n\nImpact: Between 275 and 936 users per week received duplicate bonuses over 24 weeks. On 25 May, 26 H2Bet players received the same bonus 2\u20133 times in a single day.\n\nCause: Repeated retries against operator 503 errors led to multiple bonuses being granted on the operator side. Some 503 responses were returned after the bonus was already credited, causing FastTrack to retry and create duplicates. A separate unrelated duplicate stream also exists.\n\nResolution: PR #122 to improve idempotency handling is under review. The client rejected a workaround (treating 503 as success) due to traceability concerns. Simon Grenefalk is preparing a data extract for BetConstruct; Andrew GG is coordinating a long-term fix with BetConstruct."
+      },
+      {
+        "reference": "INC-8219",
+        "name": "Spinbet Investigation",
+        "status": "Fixing",
+        "reported_at": "2026-05-28T13:10:23Z",
+        "cause": "Partner Induced",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8219",
+        "summary": "Problem: A security breach of Spinbet's SendGrid account required urgent action, disrupting all email services for both Spinbet and Razed.\n\nImpact: Email sending for both Spinbet and Razed has been fully disrupted since the compromised credentials were removed. All outgoing emails are failing for both brands. Additional work is needed to rotate all external-facing API keys for affected integrations.\n\nCause: Spinbet's SendGrid account was breached. Both Spinbet and Razed were sharing the same SendGrid key, causing email failures in both environments once the credentials were disabled.\n\nResolution: Locked affected environments, scaled down email distribution, and removed the compromised SendGrid credentials. Working with the partner to integrate an alternative email provider for both environments. API key rotation in progress, credentials shared via 1Password. Ongoing email restoration tracked in #inc-8234."
       }
     ]
   }
