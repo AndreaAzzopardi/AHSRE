@@ -453,14 +453,19 @@ def render_true_p1_detail_block(week):
         cause = inc.get("cause", "")
         cause_html = f'<span class="breach-meta">{cause}</span>' if cause else ""
         paras = [p.strip() for p in inc.get("summary","").split("\n\n") if p.strip()]
-        summary_html = "".join(f'<p class="p1-detail-para">{p}</p>' for p in paras)
+        def fmt_para(p):
+            if ":" in p:
+                label, _, rest = p.partition(":")
+                return f'<p class="p1-detail-para"><strong>{label}:</strong>{rest}</p>'
+            return f'<p class="p1-detail-para">{p}</p>'
+        summary_html = "".join(fmt_para(p) for p in paras)
         items.append(f'''      <div class="breach-item">
         <div class="breach-header">
           <span class="breach-conv-id">{inc["reference"]}</span>
-          <span class="breach-meta">{inc["name"]}</span>
           <span class="{status_cls}" style="font-size:11px;font-weight:600">{status}</span>
           {cause_html}
         </div>
+        <div style="font-size:13px;font-weight:700;color:#e2e8f0;margin:6px 0 4px">{inc["name"]}</div>
         <div class="breach-summary">{summary_html}</div>
       </div>''')
     items_html = "\n".join(items)
