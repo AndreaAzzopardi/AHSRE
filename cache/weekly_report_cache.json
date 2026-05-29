@@ -1524,18 +1524,26 @@
       {
         "conv_id": "215560996910833",
         "company_name": "Galabet",
+        "brand": "Galabet",
         "severity": "P2",
+        "priority": "P2",
         "oh_frt_s": 17872,
-        "opened_at": 1779976778,
-        "first_reply_at": 1779994650
+        "sre_oh_min": 297.9,
+        "opened_ts": 1779976778,
+        "sre_real_rt_s": 17872,
+        "summary": "Double bonus transfer in Galabet holiday promotion \u2014 280 members received duplicate bonuses; some users got bonuses from two campaigns on a single deposit. Partner requested root cause analysis and a fix recommendation."
       },
       {
         "conv_id": "215560994727050",
         "company_name": "Stanleybet.ro",
+        "brand": "Stanleybet.ro",
         "severity": "P3",
+        "priority": "P3",
         "oh_frt_s": 9401,
-        "opened_at": 1779790178,
-        "first_reply_at": 1779799579
+        "sre_oh_min": 156.7,
+        "opened_ts": 1779790178,
+        "sre_real_rt_s": 9401,
+        "summary": "Stanleybet bonus events returning HTTP 400 \u2014 ~900 requests from Comtrade's iCore failed posting to the integration API. Root cause: incorrect product type in bonus event payloads. Partner was advised to fix their product type and implement a retry mechanism."
       }
     ],
     "true_p1_incidents": [
