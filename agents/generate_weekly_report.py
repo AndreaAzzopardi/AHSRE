@@ -18,6 +18,13 @@ try:
 except FileNotFoundError:
     soc_weeks_data = {}
 
+TB_CACHE_FILE = os.path.join(_ROOT, "cache", "alert_timeblock_cache.json")
+try:
+    with open(TB_CACHE_FILE) as f:
+        tb_cache = json.load(f)
+except FileNotFoundError:
+    tb_cache = {}
+
 WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")]
 today = datetime.now(tz=timezone.utc)
 today_str = today.strftime("%-d %B %Y")
@@ -217,6 +224,21 @@ aFTML_arr = [get(wk, "alert_volume", "by_source", "HTTP DMS FTML", default=0) fo
 # PD-era sources (pre-W19)
 aPD_SP_arr  = [get(wk, "alert_volume", "by_source", "Service Portal", default=0) for wk in WEEK_KEYS]
 aPD_BO_arr  = [get(wk, "alert_volume", "by_source", "Backoffice", default=0) for wk in WEEK_KEYS]
+
+# ── ALERT TIMEBLOCK (W19 onwards) ────────────────────────────────────────────
+def tb_get(week, block, key, default=0):
+    return (tb_cache.get(week, {}).get("blocks", {}).get(block, {}).get(key) or default)
+
+def tb_week_val(week, key, default=None):
+    return tb_cache.get(week, {}).get(key, default)
+
+tbDay_arr    = [tb_get(wk, "day",     "total")     for wk in WK19_KEYS]
+tbEve_arr    = [tb_get(wk, "evening", "total")     for wk in WK19_KEYS]
+tbNight_arr  = [tb_get(wk, "night",   "total")     for wk in WK19_KEYS]
+tbDayW_arr   = [tb_get(wk, "day",     "waste_pct") for wk in WK19_KEYS]
+tbEveW_arr   = [tb_get(wk, "evening", "waste_pct") for wk in WK19_KEYS]
+tbNightW_arr = [tb_get(wk, "night",   "waste_pct") for wk in WK19_KEYS]
+tbTotalW_arr = [tb_week_val(wk, "overall_waste_pct") for wk in WK19_KEYS]
 
 # ── STAT CARD CALCULATIONS ───────────────────────────────────────────────────
 cw_date = fmt_date_dmy(stat_week)
@@ -750,15 +772,27 @@ html = f'''<!DOCTYPE html>
   </div>
 
   <div class="chart-section">
-    <div class="chart-title">Incident Volume by Severity — Week on Week</div>
+    <div class="chart-title">Accepted Incidents Volume by Severity — Week on Week</div>
     <div class="chart-note">Source: incident.io &middot; W19 onwards</div>
     <div class="chart-container" style="height:280px"><canvas id="cIVol"></canvas></div>
   </div>
 
   <div class="chart-section">
     <div class="chart-title">Alert Volume by Source — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 onwards</div>
+    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; incident.io sources only</div>
     <div class="chart-container" style="height:280px"><canvas id="cAVol"></canvas></div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Accepted & Declined Incidents by Time Block — Week on Week</div>
+    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; 8-hour UTC blocks &middot; Accepted (actionable) + Declined (noise) &middot; Line = overall noise rate %</div>
+    <div class="chart-container" style="height:280px"><canvas id="cTBVol"></canvas></div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Declined Rate by Time Block — Week on Week</div>
+    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; Declined incidents as % of total per block per week</div>
+    <div class="chart-container" style="height:240px"><canvas id="cTBWaste"></canvas></div>
   </div>
 
   <div class="chart-section">
@@ -850,12 +884,21 @@ const aFTML = {js_arr(aFTML_arr)};
 const aPD_SP  = {js_arr(aPD_SP_arr)};
 const aPD_BO  = {js_arr(aPD_BO_arr)};
 
+const tbDay    = {js_arr(tbDay_arr)};
+const tbEve    = {js_arr(tbEve_arr)};
+const tbNight  = {js_arr(tbNight_arr)};
+const tbDayW   = {js_arr(tbDayW_arr)};
+const tbEveW   = {js_arr(tbEveW_arr)};
+const tbNightW = {js_arr(tbNightW_arr)};
+const tbTotalW = {js_arr(tbTotalW_arr)};
+
 const TT = {{ backgroundColor:'#0d1629', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e2e8f0', bodyColor:'#e2e8f0', padding:8 }};
 const LG = {{ position:'top', labels:{{ color:'#e2e8f0', boxWidth:12, padding:10, font:{{size:11}} }} }};
 const XA = {{ ticks:{{ color:'#64748b', font:{{size:11}} }}, grid:{{ color:'rgba(255,255,255,0.05)' }} }};
 const YL = (s=false) => ({{ type:'linear', position:'left', min:0, stacked:s, ticks:{{ color:'#64748b', precision:0 }}, grid:{{ color:'rgba(255,255,255,0.05)' }} }});
-const RA = {{ type:'linear', position:'right', min:0, max:100, ticks:{{ color:'#a78bfa', callback:v=>v+'%' }}, grid:{{ display:false }} }};
-const T90 = Array(13).fill(90);
+const RA   = {{ type:'linear', position:'right', min:0, max:100, ticks:{{ color:'#a78bfa', callback:v=>v+'%' }}, grid:{{ display:false }} }};
+const YPct = {{ type:'linear', min:0, max:100, ticks:{{ color:'#64748b', callback:v=>v+'%' }}, grid:{{ color:'rgba(255,255,255,0.05)' }} }};
+const T90 = Array(WK.length).fill(90);
 const noT = item => item.text !== '90% target';
 const no45= item => item.text !== '4.5 target';
 
@@ -900,7 +943,7 @@ new Chart(document.getElementById('cCSAT'),{{type:'bar',data:{{labels:WK,dataset
   {{label:'2★',data:cs2,backgroundColor:'#f97316',stack:'c'}},
   {{label:'1★',data:cs1,backgroundColor:'#ef4444',stack:'c'}},
   {{label:'Avg Score',type:'line',data:csA,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:3,pointBackgroundColor:'#a78bfa'}},
-  {{label:'4.5 target',type:'line',data:Array(13).fill(4.5),borderColor:'rgba(167,139,250,0.3)',borderDash:[5,5],pointRadius:0,fill:false,yAxisID:'rate'}}
+  {{label:'4.5 target',type:'line',data:Array(WK.length).fill(4.5),borderColor:'rgba(167,139,250,0.3)',borderDash:[5,5],pointRadius:0,fill:false,yAxisID:'rate'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{...LG,labels:{{...LG.labels,filter:no45}}}},tooltip:TT}},scales:{{x:XA,y:YL(true),rate:{{type:'linear',position:'right',min:0,max:5,ticks:{{color:'#a78bfa',callback:v=>v.toFixed(1)}},grid:{{display:false}}}}}}}}}});
 
 new Chart(document.getElementById('cPVol'),{{type:'bar',data:{{labels:WK,datasets:[
@@ -923,16 +966,26 @@ new Chart(document.getElementById('cIVol'),{{type:'bar',data:{{labels:WK19,datas
   {{label:'Unknown',data:iUnk.slice(-WK19.length),backgroundColor:'#475569',stack:'i'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
-new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK,datasets:[
-  {{label:'DMS',               data:aDMS, backgroundColor:'#38bdf8',stack:'a'}},
-  {{label:'Grafana SOC',       data:aSOC, backgroundColor:'#a78bfa',stack:'a'}},
-  {{label:'HTTP',              data:aHTTP,backgroundColor:'#22c55e',stack:'a'}},
-  {{label:'Grafana',           data:aGraf,backgroundColor:'#f59e0b',stack:'a'}},
-  {{label:'Intercom',          data:aIcom,backgroundColor:'#64748b',stack:'a'}},
-  {{label:'HTTP DMS FTML',     data:aFTML,backgroundColor:'#818cf8',stack:'a'}},
-  {{label:'Service Portal',    data:aPD_SP, backgroundColor:'#10b981',stack:'a'}},
-  {{label:'Backoffice',        data:aPD_BO, backgroundColor:'#6366f1',stack:'a'}}
+new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datasets:[
+  {{label:'DMS',        data:aDMS.slice(-WK19.length), backgroundColor:'#38bdf8',stack:'a'}},
+  {{label:'Grafana SOC',data:aSOC.slice(-WK19.length), backgroundColor:'#a78bfa',stack:'a'}},
+  {{label:'HTTP',       data:aHTTP.slice(-WK19.length),backgroundColor:'#22c55e',stack:'a'}},
+  {{label:'Grafana',    data:aGraf.slice(-WK19.length),backgroundColor:'#f59e0b',stack:'a'}},
+  {{label:'Intercom',   data:aIcom.slice(-WK19.length),backgroundColor:'#64748b',stack:'a'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
+
+new Chart(document.getElementById('cTBVol'),{{type:'bar',data:{{labels:WK19,datasets:[
+  {{label:'Day (08–16 UTC)',    data:tbDay,   backgroundColor:'#38bdf8',stack:'tb'}},
+  {{label:'Evening (16–00 UTC)',data:tbEve,   backgroundColor:'#f59e0b',stack:'tb'}},
+  {{label:'Night (00–08 UTC)', data:tbNight, backgroundColor:'#64748b',stack:'tb'}},
+  {{label:'Noise Rate %',type:'line',data:tbTotalW,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:4,pointBackgroundColor:'#a78bfa'}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true),rate:RA}}}}}});
+
+new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,datasets:[
+  {{label:'Day (08–16 UTC)',    data:tbDayW,   backgroundColor:'#38bdf8',barPercentage:0.8}},
+  {{label:'Evening (16–00 UTC)',data:tbEveW,   backgroundColor:'#f59e0b',barPercentage:0.8}},
+  {{label:'Night (00–08 UTC)', data:tbNightW, backgroundColor:'#64748b',barPercentage:0.8}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YPct}}}}}});
 
 const SOCMTTAWK = {js_str_arr(SOC_MTTA_WK)};
 const socMttaJ = {js_arr(soc_mtta_arr["Joachim Farrugia"])};

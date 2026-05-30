@@ -1,0 +1,122 @@
+{
+  "2026-05-04": {
+    "days_in_week": 7,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 362,
+        "declined": 126,
+        "accepted": 236,
+        "waste_pct": 34.8
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 237,
+        "declined": 158,
+        "accepted": 79,
+        "waste_pct": 66.7
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 268,
+        "declined": 127,
+        "accepted": 141,
+        "waste_pct": 47.4
+      }
+    },
+    "total": 867,
+    "total_declined": 411,
+    "total_accepted": 456,
+    "overall_waste_pct": 47.4
+  },
+  "2026-05-11": {
+    "days_in_week": 7,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 241,
+        "declined": 131,
+        "accepted": 110,
+        "waste_pct": 54.4
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 201,
+        "declined": 125,
+        "accepted": 76,
+        "waste_pct": 62.2
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 162,
+        "declined": 124,
+        "accepted": 38,
+        "waste_pct": 76.5
+      }
+    },
+    "total": 604,
+    "total_declined": 380,
+    "total_accepted": 224,
+    "overall_waste_pct": 62.9
+  },
+  "2026-05-18": {
+    "days_in_week": 7,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 199,
+        "declined": 129,
+        "accepted": 70,
+        "waste_pct": 64.8
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 173,
+        "declined": 136,
+        "accepted": 37,
+        "waste_pct": 78.6
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 177,
+        "declined": 146,
+        "accepted": 31,
+        "waste_pct": 82.5
+      }
+    },
+    "total": 549,
+    "total_declined": 411,
+    "total_accepted": 138,
+    "overall_waste_pct": 74.9
+  },
+  "2026-05-25": {
+    "days_in_week": 5,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 178,
+        "declined": 89,
+        "accepted": 89,
+        "waste_pct": 50.0
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 91,
+        "declined": 43,
+        "accepted": 48,
+        "waste_pct": 47.3
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 92,
+        "declined": 65,
+        "accepted": 27,
+        "waste_pct": 70.7
+      }
+    },
+    "total": 361,
+    "total_declined": 197,
+    "total_accepted": 164,
+    "overall_waste_pct": 54.6
+  }
+}
