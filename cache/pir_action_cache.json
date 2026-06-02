@@ -1,0 +1,39 @@
+{
+  "generated": "2026-06-01",
+  "total": 102,
+  "open": 52,
+  "completed": 50,
+  "completion_rate": 49.0,
+  "stale_count": 39,
+  "stale_pct": 75.0,
+  "no_due_date_count": 51,
+  "no_due_date_pct": 98.1,
+  "teams": [
+    {"name": "Tech",                 "open": 26, "completed": 15},
+    {"name": "SRE",                  "open": 9,  "completed": 18},
+    {"name": "Rewards",              "open": 10, "completed": 7},
+    {"name": "Integration Managers", "open": 4,  "completed": 4},
+    {"name": "Integrations FBI",     "open": 3,  "completed": 0},
+    {"name": "QA",                   "open": 0,  "completed": 1},
+    {"name": "Partner Support",      "open": 0,  "completed": 1},
+    {"name": "Partner Manager",      "open": 0,  "completed": 1},
+    {"name": "Business Operations",  "open": 0,  "completed": 1},
+    {"name": "Release Manager",      "open": 0,  "completed": 2}
+  ],
+  "categories": {
+    "Engineering Improvement": {"open": 16, "closed": 10},
+    "System Monitoring":       {"open": 12, "closed": 14},
+    "QA & Testing":            {"open": 8,  "closed": 7},
+    "Product Improvement":     {"open": 6,  "closed": 1},
+    "Deployment Governance":   {"open": 5,  "closed": 6},
+    "Incident Management":     {"open": 1,  "closed": 6},
+    "Other":                   {"open": 4,  "closed": 6}
+  },
+  "open_by_priority": {
+    "Normal":      20,
+    "High":        14,
+    "No priority": 10,
+    "Low":         4,
+    "Urgent":      4
+  }
+}

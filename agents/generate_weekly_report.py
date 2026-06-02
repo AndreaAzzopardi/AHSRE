@@ -25,6 +25,13 @@ try:
 except FileNotFoundError:
     tb_cache = {}
 
+PIR_CACHE_FILE = os.path.join(_ROOT, "cache", "pir_action_cache.json")
+try:
+    with open(PIR_CACHE_FILE) as f:
+        pir_cache = json.load(f)
+except FileNotFoundError:
+    pir_cache = {}
+
 WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")]
 today = datetime.now(tz=timezone.utc)
 today_str = today.strftime("%-d %B %Y")
@@ -135,6 +142,7 @@ trueP1_arr, falseP1_arr, unclassP_arr, fpRate_arr = [], [], [], []
 for wk in WEEK_KEYS:
     t, f, u, fp = p1_quality_row(wk)
     trueP1_arr.append(t); falseP1_arr.append(f); unclassP_arr.append(u); fpRate_arr.append(fp)
+unclass_ds = "{label:'Unclassified',data:unclassP,backgroundColor:'#64748b',stack:'q'}," if sum(v or 0 for v in unclassP_arr) > 0 else ""
 
 # P1 FRT SLA arrays
 p1Hit_arr  = [get(wk, "p1_frt_sla", "hit", default=0) for wk in WEEK_KEYS]
@@ -284,6 +292,14 @@ pt_delta_cls, pt_delta = delta_str(cw_pt_resp, pw_pt_resp, "", higher_is_better=
 cw_pt_med = get(stat_week, "partner_tickets", "median_response_min")
 pw_pt_med = get(stat_prev_week, "partner_tickets", "median_response_min")
 pt_med_delta_cls, pt_med_delta = delta_str(cw_pt_med, pw_pt_med, " min", higher_is_better=False)
+if cw_pt_med is None:
+    pt_med_cls = "c-muted"
+elif cw_pt_med <= 60:
+    pt_med_cls = "c-green"
+elif cw_pt_med <= 120:
+    pt_med_cls = "c-amber"
+else:
+    pt_med_cls = "c-red"
 
 # S3 cards
 cw_inc_total = get(stat_week, "incident_volume", "total", default=0)
@@ -296,6 +312,14 @@ inc_delta_cls, inc_delta = delta_str(cw_inc_total, pw_inc_total, "", higher_is_b
 cw_alerts = get(stat_week, "alert_volume", "total", default=0)
 pw_alerts = get(stat_prev_week, "alert_volume", "total", default=0)
 alerts_delta_cls, alerts_delta = delta_str(cw_alerts, pw_alerts, "", higher_is_better=False, decimals=0)
+if cw_alerts == 0:
+    alerts_cls = "c-muted"
+elif cw_alerts <= 400:
+    alerts_cls = "c-green"
+elif cw_alerts <= 600:
+    alerts_cls = "c-amber"
+else:
+    alerts_cls = "c-red"
 
 cw_p1_ack_rate_s3 = get(stat_week, "mtta", "P1", "ack_rate")
 pw_p1_ack_rate_s3 = get(stat_prev_week, "mtta", "P1", "ack_rate")
@@ -345,11 +369,24 @@ for p in SOC_PERSONS:
     pw_mtta  = soc_get(pw_iso, p, "mtta", "mean_mtta_min")
     acked   = soc_get(cw_iso, p, "mtta", "acked_count", default=0)
     sample  = soc_get(cw_iso, p, "mtta", "sample_size", default=0)
+    ack_rate = (acked / sample) if sample > 0 else None
     mtta_d_cls, mtta_d  = soc_delta(cw_mtta, pw_mtta, " min", higher_is_better=False)
+    # Low ack rate makes a low MTTA misleading — flag it.
+    low_ack = ack_rate is not None and ack_rate < 0.5
+    if low_ack:
+        mtta_cls = "c-red"
+        ack_pct = int(round(ack_rate * 100))
+        subnote = f'<span class="c-red">{acked}/{sample} acked ({ack_pct}%)</span> · target &lt;5 min'
+    elif sample:
+        mtta_cls = color_mtta(cw_mtta)
+        subnote = f"{acked}/{sample} acked · target &lt;5 min"
+    else:
+        mtta_cls = color_mtta(cw_mtta)
+        subnote = "No data · target &lt;5 min"
     soc_cards[p] = {
         "mtta_val": f"{cw_mtta:.2f}" if cw_mtta is not None else "—",
-        "mtta_cls": color_mtta(cw_mtta),
-        "subnote":  f"{acked}/{sample} acked · target &lt;5 min" if sample else "No data · target &lt;5 min",
+        "mtta_cls": mtta_cls,
+        "subnote":  subnote,
         "mtta_d_cls": mtta_d_cls, "mtta_d": mtta_d,
     }
 
@@ -502,6 +539,44 @@ csat_breach_html = render_csat_breach_block(stat_week)
 true_p1_detail_html = render_true_p1_detail_block(stat_week)
 
 # ── Partner RT callout (weeks where median or avg > 120 min) ─────────────────
+def render_pir_team_table(teams):
+    if not teams:
+        return ""
+    rows = []
+    for t in sorted(teams, key=lambda t: t["open"], reverse=True):
+        name = t["name"]
+        op   = t["open"]
+        if op == 0:
+            continue
+        comp = t["completed"]
+        total_team = op + comp
+        rate = round(comp / total_team * 100) if total_team > 0 else 0
+        rate_str = f"{rate}%"
+        rate_cls = "c-green" if rate >= 75 else "c-amber" if rate >= 40 else "c-red"
+        open_cls = "c-red" if op >= 20 else "c-amber" if op >= 8 else "c-muted"
+        rows.append(f'''      <tr>
+        <td style="padding:6px 8px;color:#e2e8f0;font-size:12px">{name}</td>
+        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{open_cls}">{op}</td>
+        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{comp}</td>
+        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{rate_cls}">{rate_str}</td>
+      </tr>''')
+    rows_html = "\n".join(rows)
+    return f'''    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.07)">
+            <th style="padding:4px 8px;text-align:left;font-size:10px;color:#64748b;font-weight:600">Team</th>
+            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Open</th>
+            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Done</th>
+            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Rate</th>
+          </tr>
+        </thead>
+        <tbody>
+{rows_html}
+        </tbody>
+      </table>
+    </div>'''
+
 def render_prt_callout():
     flags = []
     for wk in WEEK_KEYS:
@@ -537,7 +612,8 @@ else:
 
 # Brand chart date range
 first_dt = datetime.strptime(WEEK_KEYS[0], "%Y-%m-%d")
-brand_note = f"Source: Intercom &middot; P1 Incident tag &middot; {first_dt.day} {first_dt.strftime('%b')} – {today.day} {today.strftime('%b')} {today.year} &middot; Top 10 brands"
+last_dt  = datetime.strptime(current_week, "%Y-%m-%d") + timedelta(days=6)
+brand_note = f"Source: Intercom &middot; P1 Incident tag &middot; {first_dt.day} {first_dt.strftime('%b')} – {last_dt.day} {last_dt.strftime('%b %Y')} &middot; Top 10 brands"
 
 # ── WK19 first date label ─────────────────────────────────────────────────────
 wk19_first_dt = datetime.strptime(WK19_KEYS[0], "%Y-%m-%d") if WK19_KEYS else None
@@ -558,6 +634,38 @@ def fmt_min(v):
 def fmt_conv_rate(v):
     if v is None: return "—"
     return f"{v:.1f}%"
+
+# ── PIR ACTION ITEMS DATA ────────────────────────────────────────────────────
+_pir_gen_raw = pir_cache.get("generated", "—")
+try:
+    _pir_gen_dt = datetime.strptime(_pir_gen_raw, "%Y-%m-%d")
+    pir_generated = f"{_pir_gen_dt.day} {_pir_gen_dt.strftime('%b %Y')}"
+except (ValueError, TypeError):
+    pir_generated = _pir_gen_raw
+pir_open         = pir_cache.get("open", 0)
+pir_completed    = pir_cache.get("completed", 0)
+pir_total        = pir_cache.get("total", 0)
+pir_comp_rate    = pir_cache.get("completion_rate", 0.0)
+pir_stale        = pir_cache.get("stale_count", 0)
+pir_stale_pct    = pir_cache.get("stale_pct", 0.0)
+pir_no_due_count = pir_cache.get("no_due_date_count", 0)
+pir_no_due_pct   = pir_cache.get("no_due_date_pct", 0.0)
+pir_teams        = pir_cache.get("teams", [])
+pir_categories   = pir_cache.get("categories", {})
+
+pir_comp_cls   = "c-green" if pir_comp_rate >= 85 else "c-amber" if pir_comp_rate >= 65 else "c-red"
+pir_stale_cls  = "c-red" if pir_stale_pct >= 50 else "c-amber" if pir_stale_pct >= 25 else "c-green"
+pir_no_due_cls = "c-red" if pir_no_due_pct >= 75 else "c-amber" if pir_no_due_pct >= 50 else "c-green"
+
+pir_cat_labels  = list(pir_categories.keys())
+pir_cat_open    = [v.get("open", 0)   if isinstance(v, dict) else v for v in pir_categories.values()]
+pir_cat_closed  = [v.get("closed", 0) if isinstance(v, dict) else 0 for v in pir_categories.values()]
+
+pir_teams_chart = sorted([t for t in pir_teams if t.get("open", 0) > 0], key=lambda t: t["open"], reverse=True)
+pir_team_labels = [t["name"]      for t in pir_teams_chart]
+pir_team_open   = [t["open"]      for t in pir_teams_chart]
+pir_team_closed = [t["completed"] for t in pir_teams_chart]
+pir_team_table_html = render_pir_team_table(pir_teams)
 
 # ── HTML GENERATION ──────────────────────────────────────────────────────────
 wk_label_cur = fmt_week_label(current_week, True).rstrip("*")
@@ -629,7 +737,7 @@ html = f'''<!DOCTYPE html>
   <div class="header">
     <div class="header-left">
       <h1>Weekly SRE Report</h1>
-      <div class="subtitle">Partner P1 Tickets &middot; Partner Tickets &middot; Incident Operations</div>
+      <div class="subtitle">Partner P1 Tickets &middot; PIR Action Items &middot; Partner Tickets &middot; Incident Operations &middot; SOC Member Performance</div>
     </div>
     <div class="header-right">{today_str}</div>
   </div>
@@ -684,6 +792,49 @@ html = f'''<!DOCTYPE html>
 
   <div class="group-divider"></div>
 
+  <!-- ═══ PIR ACTION ITEMS ══════════════════════════════════════════ -->
+  <div class="group-label">PIR Action Items
+    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; ClickUp post-incident reviews &middot; excl. SRE internal &middot; as of {pir_generated}</span>
+  </div>
+
+  <div class="stat-grid-4">
+    <div class="stat-card">
+      <div class="card-label">Open PIR Items</div>
+      <div class="card-value c-amber">{pir_open}</div>
+      <div class="card-subnote">{pir_total} total tracked</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Completion Rate</div>
+      <div class="card-value {pir_comp_cls}">{int(round(pir_comp_rate))}%</div>
+      <div class="card-subnote">Target: 85% &middot; {pir_completed} of {pir_total} done</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Stale (&gt;60 days no activity)</div>
+      <div class="card-value {pir_stale_cls}">{pir_stale}</div>
+      <div class="card-subnote">{int(round(pir_stale_pct))}% of open items</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">No Due Date Set</div>
+      <div class="card-value {pir_no_due_cls}">{int(round(pir_no_due_pct))}%</div>
+      <div class="card-subnote">{pir_no_due_count} of {pir_open} open items</div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">PIR Action Items by Team — Open vs Closed</div>
+    <div class="chart-note">Source: ClickUp &middot; Post Incident Report space &middot; excl. SRE internal incidents &middot; Fast Track Team field &middot; teams with open items only</div>
+    <div class="chart-container" style="height:220px"><canvas id="cPIRTeam"></canvas></div>
+{pir_team_table_html}
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">PIR Items by Category — Open vs Closed</div>
+    <div class="chart-note">Source: ClickUp &middot; based on task tags &middot; all tracked items</div>
+    <div class="chart-container" style="height:260px"><canvas id="cPIRCat"></canvas></div>
+  </div>
+
+  <div class="group-divider"></div>
+
   <!-- ═══ SECTION 2 — PARTNER TICKETS ══════════════════════════════ -->
   <div class="group-label">Partner Tickets</div>
 
@@ -707,7 +858,8 @@ html = f'''<!DOCTYPE html>
     </div>
     <div class="stat-card">
       <div class="card-label">Partner Tickets Response Time ({cw_date})</div>
-      <div class="card-value c-muted">{fmt_min(cw_pt_med)} <span class="unit">min</span></div>
+      <div class="card-value {pt_med_cls}">{fmt_min(cw_pt_med)} <span class="unit">min</span></div>
+      <div class="card-subnote">Target: &lt;2 hr</div>
       <div class="card-delta {pt_med_delta_cls}">{pt_med_delta}</div>
     </div>
   </div>
@@ -756,7 +908,8 @@ html = f'''<!DOCTYPE html>
     </div>
     <div class="stat-card">
       <div class="card-label">Alerts This Week ({cw_date})</div>
-      <div class="card-value c-muted">{cw_alerts}</div>
+      <div class="card-value {alerts_cls}">{cw_alerts}</div>
+      <div class="card-subnote">Target: &lt;400/wk</div>
       <div class="card-delta {alerts_delta_cls}">{alerts_delta}</div>
     </div>
     <div class="stat-card">
@@ -826,7 +979,7 @@ html = f'''<!DOCTYPE html>
 
   <div class="footer">
     Generated {today_str} &middot; Fast Track SRE &middot; Data: ClickHouse &middot; incident.io &middot; Intercom<br>
-    12-week rolling window ({fmt_date_dmy(WEEK_KEYS[0])} – {fmt_week_label(current_week, True)}) &middot; All times UTC
+    12-week rolling window ({fmt_date_dmy(WEEK_KEYS[0])} – {fmt_week_label(current_week, True)}) &middot; * partial week &middot; All times UTC
   </div>
 
 </div>
@@ -905,7 +1058,7 @@ const no45= item => item.text !== '4.5 target';
 new Chart(document.getElementById('cP1Q'),{{type:'bar',data:{{labels:WK,datasets:[
   {{label:'True P1',     data:trueP1,  backgroundColor:'#ef4444',stack:'q'}},
   {{label:'False P1',    data:falseP1, backgroundColor:'#f59e0b',stack:'q'}},
-  {{label:'Unclassified',data:unclassP,backgroundColor:'#64748b',stack:'q'}},
+  {unclass_ds}
   {{label:'False P1 Rate %',type:'line',data:fpRate,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:3,pointBackgroundColor:'#a78bfa'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true),rate:RA}}}}}});
 
@@ -919,7 +1072,8 @@ new Chart(document.getElementById('cP1F'),{{type:'bar',data:{{labels:WK,datasets
 new Chart(document.getElementById('cMTTA'),{{type:'line',data:{{labels:WK19,datasets:[
   {{label:'P1 Median',data:mP1.slice(-WK19.length),borderColor:'#ef4444',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#ef4444'}},
   {{label:'P2 Median',data:mP2.slice(-WK19.length),borderColor:'#f59e0b',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#f59e0b'}},
-  {{label:'P3 Median',data:mP3.slice(-WK19.length),borderColor:'#3b82f6',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#3b82f6'}}
+  {{label:'P3 Median',data:mP3.slice(-WK19.length),borderColor:'#3b82f6',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#3b82f6'}},
+  {{label:'5-min target',data:Array(WK19.length).fill(5),borderColor:'rgba(167,139,250,0.4)',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
 new Chart(document.getElementById('cBrand'),{{type:'bar',data:{{labels:bL,datasets:[
@@ -992,6 +1146,30 @@ const socMttaJ = {js_arr(soc_mtta_arr["Joachim Farrugia"])};
 const socMttaM = {js_arr(soc_mtta_arr["Matteo Rapisarda"])};
 const socMttaG = {js_arr(soc_mtta_arr["Gérard E. Pelayo"])};
 const socMttaN = {js_arr(soc_mtta_arr["Nazareno Scibilia"])};
+
+const pirCatL      = {js_str_arr(pir_cat_labels)};
+const pirCatOpen   = {js_arr(pir_cat_open)};
+const pirCatClosed = {js_arr(pir_cat_closed)};
+
+new Chart(document.getElementById('cPIRCat'),{{type:'bar',data:{{labels:pirCatL,datasets:[
+  {{label:'Open',  data:pirCatOpen,   backgroundColor:'#f59e0b',borderWidth:0,borderRadius:3,barPercentage:0.7}},
+  {{label:'Closed',data:pirCatClosed, backgroundColor:'#22c55e',borderWidth:0,borderRadius:3,barPercentage:0.7}}
+]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:LG,tooltip:TT}},scales:{{
+  x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
+  y:{{ticks:{{color:'#94a3b8',font:{{size:11}}}},grid:{{display:false}}}}
+}}}}}});
+
+const pirTeamL      = {js_str_arr(pir_team_labels)};
+const pirTeamOpen   = {js_arr(pir_team_open)};
+const pirTeamClosed = {js_arr(pir_team_closed)};
+
+new Chart(document.getElementById('cPIRTeam'),{{type:'bar',data:{{labels:pirTeamL,datasets:[
+  {{label:'Open',  data:pirTeamOpen,   backgroundColor:'#f59e0b',borderWidth:0,borderRadius:3,barPercentage:0.7}},
+  {{label:'Closed',data:pirTeamClosed, backgroundColor:'#22c55e',borderWidth:0,borderRadius:3,barPercentage:0.7}}
+]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:LG,tooltip:TT}},scales:{{
+  x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
+  y:{{ticks:{{color:'#94a3b8',font:{{size:11}}}},grid:{{display:false}}}}
+}}}}}});
 
 new Chart(document.getElementById('cSOCMTTA'),{{type:'bar',data:{{labels:SOCMTTAWK,datasets:[
   {{label:'Joachim', data:socMttaJ,backgroundColor:'#ef4444',barPercentage:0.6}},
