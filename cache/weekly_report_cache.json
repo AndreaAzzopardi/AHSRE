@@ -1373,16 +1373,30 @@
     ]
   },
   "_p1_brands_top10": {
-    "Brazil Bet": 6,
-    "Gembet": 4,
-    "SoftGenius": 3,
-    "Tuohi": 3,
-    "Bravo Bet (Suprema)": 3,
-    "Fast Track": 3,
-    "Star Casino": 3,
-    "Sisutech": 3,
-    "Momentum (IG Tech)": 2,
-    "Kyngs": 2
+    "labels": [
+      "Brazil Bet",
+      "Gembet",
+      "SoftGenius",
+      "Tuohi",
+      "Bravo Bet (Suprema)",
+      "Fast Track",
+      "Star Casino",
+      "Sisutech",
+      "Kyngs",
+      "Momentum Group(Spinbet)"
+    ],
+    "counts": [
+      6,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      2,
+      2
+    ]
   },
   "2026-05-25": {
     "p1_quality_incidentio": {
@@ -1575,5 +1589,265 @@
         "summary": "Problem: A security breach of Spinbet's SendGrid account required urgent action, disrupting all email services for both Spinbet and Razed.\n\nImpact: Email sending for both Spinbet and Razed has been fully disrupted since the compromised credentials were removed. All outgoing emails are failing for both brands. Additional work is needed to rotate all external-facing API keys for affected integrations.\n\nCause: Spinbet's SendGrid account was breached. Both Spinbet and Razed were sharing the same SendGrid key, causing email failures in both environments once the credentials were disabled.\n\nResolution: Locked affected environments, scaled down email distribution, and removed the compromised SendGrid credentials. Working with the partner to integrate an alternative email provider for both environments. API key rotation in progress, credentials shared via 1Password. Ongoing email restoration tracked in #inc-8234."
       }
     ]
+  },
+  "2026-06-01": {
+    "p1_quality_incidentio": {
+      "true_p1": 2,
+      "false_p1": 1,
+      "unclassified": 1
+    },
+    "true_p1_incidents": [],
+    "mtta": {
+      "P1": {
+        "n": 4,
+        "n_acked": 3,
+        "ack_rate": 0.75,
+        "mtta_minutes": [
+          3.0,
+          8.57,
+          16.3
+        ],
+        "median_mtta_min": 8.57,
+        "mean_mtta_min": 9.3
+      },
+      "P2": {
+        "n": 75,
+        "n_acked": 66,
+        "ack_rate": 0.88,
+        "mtta_minutes": [
+          0.27,
+          0.72,
+          1.87,
+          2.15,
+          2.18,
+          2.57,
+          3.97,
+          4.73,
+          5.07,
+          5.67,
+          6.37,
+          6.4,
+          7.95,
+          8.4,
+          8.65,
+          10.03,
+          10.53,
+          11.72,
+          11.97,
+          13.25,
+          13.5,
+          13.55,
+          13.7,
+          14.18,
+          14.65,
+          14.8,
+          16.05,
+          16.43,
+          16.47,
+          16.98,
+          17.93,
+          17.97,
+          18.22,
+          18.32,
+          18.68,
+          18.83,
+          19.28,
+          20.42,
+          21.33,
+          22.0,
+          23.22,
+          23.5,
+          23.6,
+          23.87,
+          26.08,
+          27.22,
+          27.23,
+          27.27,
+          27.48,
+          27.9,
+          28.23,
+          34.1,
+          37.92,
+          43.6,
+          43.62,
+          46.22,
+          66.92,
+          70.48,
+          76.6,
+          95.82,
+          109.65,
+          110.38,
+          128.52,
+          173.95,
+          257.5,
+          385.68
+        ],
+        "median_mtta_min": 18.27,
+        "mean_mtta_min": 36.9
+      },
+      "P3": {
+        "n": 45,
+        "n_acked": 36,
+        "ack_rate": 0.8,
+        "mtta_minutes": [
+          0.32,
+          2.23,
+          2.5,
+          4.08,
+          5.35,
+          6.8,
+          7.45,
+          8.13,
+          9.33,
+          12.08,
+          13.47,
+          15.88,
+          17.5,
+          18.95,
+          20.08,
+          22.07,
+          22.25,
+          22.28,
+          22.3,
+          27.13,
+          28.88,
+          31.7,
+          35.55,
+          36.53,
+          41.82,
+          43.0,
+          47.5,
+          48.22,
+          56.7,
+          67.88,
+          78.22,
+          78.77,
+          204.93,
+          422.38,
+          450.25,
+          1084.68
+        ],
+        "median_mtta_min": 22.29,
+        "mean_mtta_min": 83.8
+      },
+      "P4": {
+        "n": 4,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      }
+    },
+    "incident_volume": {
+      "total": 128,
+      "P1": 4,
+      "P2": 75,
+      "P3": 45,
+      "P4": 4
+    },
+    "alert_volume": {
+      "total": 1117,
+      "by_source": {
+        "Dead Man's Snitch": 361,
+        "Grafana SOC alerts": 143,
+        "Grafana alerts": 108,
+        "HTTP DMS FTML Alerts": 188,
+        "HTTP alerts": 293,
+        "Intercom": 24
+      }
+    },
+    "p1_frt_sla": {
+      "total": 4,
+      "hit": 4,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 5.0,
+      "mean_frt_min": 4.5,
+      "frt_seconds": [
+        78,
+        257,
+        349,
+        384
+      ]
+    },
+    "p1_brands": {
+      "partyspins": 1,
+      "Estelarbet": 1,
+      "Galabet": 1,
+      "Annexio": 1
+    },
+    "p1_frt_breaches": [],
+    "csat": {
+      "total": 22,
+      "rated": 9,
+      "avg_score": 4.78,
+      "pct_positive": 100.0,
+      "pct_perfect": 77.8,
+      "response_rate": 40.9,
+      "score_dist": {
+        "5": 7,
+        "4": 2,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      }
+    },
+    "csat_low_scores": [],
+    "partner_tickets": {
+      "p1_responded": 3,
+      "p2_responded": 9,
+      "p3_responded": 5,
+      "p1_open": 0,
+      "p2_open": 1,
+      "p3_open": 1,
+      "total_count": 19,
+      "response_times_s": [
+        78,
+        168,
+        214,
+        257,
+        301,
+        349,
+        497,
+        616,
+        640,
+        899,
+        1430,
+        1432,
+        1748,
+        2536,
+        5012,
+        5075,
+        5483
+      ],
+      "avg_response_min": 26.2,
+      "median_response_min": 10.7
+    },
+    "p2p3_frt_sla": {
+      "hit": 14,
+      "missed": 0,
+      "total": 14,
+      "hit_rate": 100.0,
+      "mean_response_min": 31.0,
+      "median_response_min": 19.4,
+      "response_times_s": [
+        168,
+        214,
+        301,
+        497,
+        616,
+        640,
+        899,
+        1430,
+        1432,
+        1748,
+        2536,
+        5012,
+        5075,
+        5483
+      ]
+    },
+    "p2p3_frt_breaches": []
   }
 }
