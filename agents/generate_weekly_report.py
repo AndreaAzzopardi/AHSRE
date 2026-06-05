@@ -10,14 +10,6 @@ OUTPUT_FILE    = os.path.join(_ROOT, "cache", "weekly_report.html")
 with open(CACHE_FILE) as f:
     cache = json.load(f)
 
-SOC_CACHE_FILE = os.path.join(_ROOT, "cache", "soc_mtta_cache.json")
-try:
-    with open(SOC_CACHE_FILE) as f:
-        soc_cache = json.load(f)
-    soc_weeks_data = soc_cache.get("weeks", {})
-except FileNotFoundError:
-    soc_weeks_data = {}
-
 TB_CACHE_FILE = os.path.join(_ROOT, "cache", "alert_timeblock_cache.json")
 try:
     with open(TB_CACHE_FILE) as f:
@@ -67,6 +59,7 @@ WK = [fmt_week_label(k, k == current_week) for k in WEEK_KEYS]
 # WK19 = incident.io era, fixed from 2026-05-04 regardless of cache completeness
 WK19_KEYS = [k for k in WEEK_KEYS if k >= "2026-05-04"]
 WK19 = [fmt_week_label(k, k == current_week) for k in WK19_KEYS]
+
 
 def js_arr(vals):
     parts = []
@@ -184,34 +177,6 @@ ptP2_arr   = [get(wk, "partner_tickets", "p2_responded", default=0) + get(wk, "p
 ptP3_arr   = [get(wk, "partner_tickets", "p3_responded", default=0) + get(wk, "partner_tickets", "p3_open", default=0) for wk in WEEK_KEYS]
 ptMed_arr  = [get(wk, "partner_tickets", "median_response_min") for wk in WEEK_KEYS]
 ptAvg_arr  = [get(wk, "partner_tickets", "avg_response_min") for wk in WEEK_KEYS]
-
-# ── SECTION 4 — SOC MEMBER PERFORMANCE ──────────────────────────────────────
-SOC_PERSONS = ["Joachim Farrugia", "Matteo Rapisarda", "Gérard E. Pelayo", "Nazareno Scibilia"]
-SOC_SHORT   = {"Joachim Farrugia": "Joachim", "Matteo Rapisarda": "Matteo",
-               "Gérard E. Pelayo": "Gérard",  "Nazareno Scibilia": "Nazareno"}
-SOC_WEEK_KEYS = sorted(soc_weeks_data.keys())
-
-cw_dt   = datetime.strptime(stat_week, "%Y-%m-%d")
-cw_iso  = f"{cw_dt.isocalendar()[0]}-W{cw_dt.isocalendar()[1]:02d}"
-pw_dt   = datetime.strptime(stat_prev_week, "%Y-%m-%d")
-pw_iso  = f"{pw_dt.isocalendar()[0]}-W{pw_dt.isocalendar()[1]:02d}"
-pw_iso_label = pw_iso.split("-")[1]  # "W20"
-
-def soc_get(iso_week, person, *keys, default=None):
-    obj = soc_weeks_data.get(iso_week, {}).get(person, {})
-    for k in keys:
-        if obj is None: return default
-        obj = obj.get(k) if isinstance(obj, dict) else None
-    return obj if obj is not None else default
-
-SOC_WK = [w.split("-")[1] for w in SOC_WEEK_KEYS]  # ["W19","W20","W21"]
-
-# MTTA chart: only show weeks where at least one person has data
-SOC_MTTA_WEEK_KEYS = [w for w in SOC_WEEK_KEYS
-    if any(soc_get(w, p, "mtta", "mean_mtta_min") is not None for p in SOC_PERSONS)]
-SOC_MTTA_WK = [w.split("-")[1] for w in SOC_MTTA_WEEK_KEYS]
-
-soc_mtta_arr  = {p: [soc_get(w, p, "mtta", "mean_mtta_min") for w in SOC_MTTA_WEEK_KEYS] for p in SOC_PERSONS}
 
 # ── SECTION 3 — INCIDENT OPERATIONS ─────────────────────────────────────────
 iP1_arr = [get(wk, "incident_volume", "P1", default=0) for wk in WEEK_KEYS]
@@ -339,56 +304,6 @@ else:
 cw_conv_rate = round(cw_inc_total / cw_alerts * 100, 1) if cw_alerts else None
 pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
 conv_delta_cls, conv_delta = delta_str(cw_conv_rate, pw_conv_rate, "%", higher_is_better=False)
-
-# S4 SOC stat card values
-def color_mtta(v):
-    if v is None: return "c-muted"
-    if v <= 5: return "c-green"
-    return "c-red"
-
-def color_miss(mr_pct):
-    if mr_pct is None: return "c-muted"
-    if mr_pct <= 5: return "c-green"
-    if mr_pct <= 15: return "c-amber"
-    return "c-red"
-
-def soc_delta(current, prev, unit="", higher_is_better=False, decimals=1):
-    if current is None or prev is None:
-        return ("d-muted", "—")
-    diff = current - prev
-    if abs(diff) < 0.05:
-        return ("d-muted", f"0{unit} vs {pw_iso_label}")
-    sign = "+" if diff > 0 else "−"
-    fmt_diff = str(int(round(abs(diff)))) if decimals == 0 else f"{abs(diff):.{decimals}f}"
-    good = diff > 0 if higher_is_better else diff < 0
-    return ("d-green" if good else "d-red", f"{sign}{fmt_diff}{unit} vs {pw_iso_label}")
-
-soc_cards = {}
-for p in SOC_PERSONS:
-    cw_mtta  = soc_get(cw_iso, p, "mtta", "mean_mtta_min")
-    pw_mtta  = soc_get(pw_iso, p, "mtta", "mean_mtta_min")
-    acked   = soc_get(cw_iso, p, "mtta", "acked_count", default=0)
-    sample  = soc_get(cw_iso, p, "mtta", "sample_size", default=0)
-    ack_rate = (acked / sample) if sample > 0 else None
-    mtta_d_cls, mtta_d  = soc_delta(cw_mtta, pw_mtta, " min", higher_is_better=False)
-    # Low ack rate makes a low MTTA misleading — flag it.
-    low_ack = ack_rate is not None and ack_rate < 0.5
-    if low_ack:
-        mtta_cls = "c-red"
-        ack_pct = int(round(ack_rate * 100))
-        subnote = f'<span class="c-red">{acked}/{sample} acked ({ack_pct}%)</span> · target &lt;5 min'
-    elif sample:
-        mtta_cls = color_mtta(cw_mtta)
-        subnote = f"{acked}/{sample} acked · target &lt;5 min"
-    else:
-        mtta_cls = color_mtta(cw_mtta)
-        subnote = "No data · target &lt;5 min"
-    soc_cards[p] = {
-        "mtta_val": f"{cw_mtta:.2f}" if cw_mtta is not None else "—",
-        "mtta_cls": mtta_cls,
-        "subnote":  subnote,
-        "mtta_d_cls": mtta_d_cls, "mtta_d": mtta_d,
-    }
 
 # ── BREACH BLOCKS ────────────────────────────────────────────────────────────
 week_label_long = f"Week of {fmt_date_dmy(stat_week)} {datetime.strptime(stat_week, '%Y-%m-%d').year}"
@@ -542,33 +457,37 @@ true_p1_detail_html = render_true_p1_detail_block(stat_week)
 def render_pir_team_table(teams):
     if not teams:
         return ""
+    def _rate(t):
+        total = t["open"] + t["completed"]
+        return t["completed"] / total if total > 0 else 0
     rows = []
-    for t in sorted(teams, key=lambda t: t["open"], reverse=True):
+    for t in sorted(teams, key=_rate):
         name = t["name"]
         op   = t["open"]
-        if op == 0:
-            continue
         comp = t["completed"]
         total_team = op + comp
-        rate = round(comp / total_team * 100) if total_team > 0 else 0
-        rate_str = f"{rate}%"
+        if total_team == 0:
+            continue
+        rate = round(comp / total_team * 100)
+        if rate == 100:
+            continue
         rate_cls = "c-green" if rate >= 75 else "c-amber" if rate >= 40 else "c-red"
         open_cls = "c-red" if op >= 20 else "c-amber" if op >= 8 else "c-muted"
-        rows.append(f'''      <tr>
-        <td style="padding:6px 8px;color:#e2e8f0;font-size:12px">{name}</td>
-        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{open_cls}">{op}</td>
-        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{comp}</td>
-        <td style="padding:6px 8px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{rate_cls}">{rate_str}</td>
+        rows.append(f'''      <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+        <td style="padding:11px 14px;color:#e2e8f0;font-size:13px">{name}</td>
+        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px" class="{open_cls}">{op}</td>
+        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px;color:#22c55e">{comp}</td>
+        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px" class="{rate_cls}">{rate}%</td>
       </tr>''')
     rows_html = "\n".join(rows)
-    return f'''    <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.07);padding-top:12px">
+    return f'''    <div style="flex:1;min-height:0;overflow-y:auto;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-top:12px">
       <table style="width:100%;border-collapse:collapse">
         <thead>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.07)">
-            <th style="padding:4px 8px;text-align:left;font-size:10px;color:#64748b;font-weight:600">Team</th>
-            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Open</th>
-            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Done</th>
-            <th style="padding:4px 8px;text-align:right;font-size:10px;color:#64748b;font-weight:600">Rate</th>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+            <th style="padding:10px 14px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Team</th>
+            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Open</th>
+            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Done</th>
+            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -614,6 +533,136 @@ else:
 first_dt = datetime.strptime(WEEK_KEYS[0], "%Y-%m-%d")
 last_dt  = datetime.strptime(current_week, "%Y-%m-%d") + timedelta(days=6)
 brand_note = f"Source: Intercom &middot; P1 Incident tag &middot; {first_dt.day} {first_dt.strftime('%b')} – {last_dt.day} {last_dt.strftime('%b %Y')} &middot; Top 10 brands"
+brand_range_note = f"{first_dt.day} {first_dt.strftime('%b')} – {last_dt.day} {last_dt.strftime('%b %Y')}"
+
+# ── P1 INCIDENT SUMMARIES ─────────────────────────────────────────────────────
+_p1_inc_raw = cache.get(stat_week, {}).get("true_p1_incidents") or []
+
+def _fmt_dt_short(iso_str):
+    if not iso_str:
+        return ""
+    try:
+        dt = datetime.strptime(iso_str[:19], "%Y-%m-%dT%H:%M:%S")
+        return f"{dt.day} {dt.strftime('%b')} · {dt.strftime('%H:%M')} UTC"
+    except Exception:
+        return iso_str[:10]
+
+def _p1_status_cls(status):
+    s = (status or "").lower()
+    return "c-green" if s in ("closed", "resolved", "postmortem") else "c-amber"
+
+def _build_p1_cards(incidents):
+    if not incidents:
+        return '    <div class="p1-no-data c-muted">No True P1 incidents this week.</div>'
+    cards = []
+    for inc in incidents:
+        status  = inc.get("status", "—")
+        sc      = _p1_status_cls(status)
+        dt_str  = _fmt_dt_short(inc.get("reported_at", ""))
+        cause   = inc.get("cause", "")
+        ref     = inc.get("reference", "")
+        name    = inc.get("name", "")
+        if name.startswith("[P1] Intercom Incident : "):
+            name = name[len("[P1] Intercom Incident : "):]
+        elif name.startswith("[P1] "):
+            name = name[5:]
+        summary = inc.get("summary", "")
+        href    = inc.get("permalink", "")
+        ref_html   = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
+        cause_html = f'<span class="p1-cause">{cause}</span>' if cause else ""
+        cards.append(f'''    <div class="p1-inc-card">
+      <div class="p1-inc-header">
+        {ref_html}
+        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-inc-date">{dt_str}</span>
+        {cause_html}
+      </div>
+      <div class="p1-inc-title">{name}</div>
+      <div class="p1-inc-overview">{summary}</div>
+    </div>''')
+    return "\n".join(cards)
+
+p1_cards_html = _build_p1_cards(_p1_inc_raw)
+cw_p1_open = sum(1 for inc in _p1_inc_raw if _p1_status_cls(inc.get("status", "")) != "c-green")
+
+def _build_brand_strip(brands, range_note):
+    if not brands:
+        return ''
+    items = []
+    for i, (brand, count) in enumerate(brands, 1):
+        items.append(f'<span class="brand-pill"><span class="brand-pill-rank">#{i}</span><span class="brand-pill-name">{brand}</span><span class="brand-pill-count">{count}</span></span>')
+    return f'  <div class="brand-strip"><span class="brand-strip-label">Top Brands &middot; 12-wk</span>{"".join(items)}<span class="brand-strip-note">{range_note}</span></div>'
+
+brand_strip_html = _build_brand_strip(_ranked[:5], brand_range_note)
+
+def _collect_all_relevant_p1s():
+    seen = set()
+    result = []
+    for inc in (cache.get(stat_week, {}).get("true_p1_incidents") or []):
+        ref = inc.get("reference", "")
+        seen.add(ref)
+        result.append(inc)
+    for wk in reversed(WEEK_KEYS):
+        if wk == stat_week:
+            continue
+        for inc in (cache.get(wk, {}).get("true_p1_incidents") or []):
+            ref = inc.get("reference", "")
+            if ref not in seen and _p1_status_cls(inc.get("status", "")) != "c-green":
+                seen.add(ref)
+                result.append(inc)
+    return result
+
+def _parse_summary_sections(summary):
+    sections = []
+    for para in (summary or "").split("\n\n"):
+        para = para.strip()
+        if not para:
+            continue
+        if ":" in para:
+            label, _, body = para.partition(":")
+            sections.append((label.strip(), body.strip()))
+        else:
+            sections.append(("", para))
+    return sections
+
+def _build_p1_full_cards(incidents):
+    if not incidents:
+        return '    <div class="p1-no-data c-muted">No True P1 incidents this week.</div>'
+    cards = []
+    for inc in incidents:
+        status = inc.get("status", "—")
+        sc = _p1_status_cls(status)
+        dt_str = _fmt_dt_short(inc.get("reported_at", ""))
+        ref = inc.get("reference", "")
+        name = inc.get("name", "")
+        if name.startswith("[P1] Intercom Incident : "):
+            name = name[len("[P1] Intercom Incident : "):]
+        elif name.startswith("[P1] "):
+            name = name[5:]
+        href = inc.get("permalink", "")
+        ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
+        sections = _parse_summary_sections(inc.get("summary", ""))
+        sections_html = ""
+        for label, body in sections:
+            if label:
+                sections_html += f'      <div class="p1-section"><div class="p1-section-label">{label}</div><div class="p1-section-body">{body}</div></div>\n'
+            else:
+                sections_html += f'      <div class="p1-section"><div class="p1-section-body">{body}</div></div>\n'
+        active_cls = " active" if not cards else ""
+        cards.append(f'''    <div class="p1-full-card{active_cls}" data-ref="{ref}">
+      <div class="p1-inc-header">
+        {ref_html}
+        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-inc-date">{dt_str}</span>
+      </div>
+      <div class="p1-inc-title">{name}</div>
+      <div class="p1-sections">
+{sections_html}      </div>
+    </div>''')
+    return "\n".join(cards)
+
+_all_p1s = _collect_all_relevant_p1s()
+p1_full_cards_html = _build_p1_full_cards(_all_p1s)
 
 # ── WK19 first date label ─────────────────────────────────────────────────────
 wk19_first_dt = datetime.strptime(WK19_KEYS[0], "%Y-%m-%d") if WK19_KEYS else None
@@ -667,6 +716,67 @@ pir_team_open   = [t["open"]      for t in pir_teams_chart]
 pir_team_closed = [t["completed"] for t in pir_teams_chart]
 pir_team_table_html = render_pir_team_table(pir_teams)
 
+# ── P1 INCIDENT SLIDE GENERATION ─────────────────────────────────────────────
+_p1_chunks    = [_all_p1s[i:i+2] for i in range(0, len(_all_p1s), 2)] or [[]]
+_n_p1_slides  = len(_p1_chunks)
+_idx_pir      = 1 + _n_p1_slides
+_idx_partner  = _idx_pir + 1
+_idx_ops      = _idx_partner + 1
+_total_slides = _idx_ops + 1
+
+def _build_p1_pair_cards(chunk):
+    if not chunk:
+        return '    <div class="p1-no-data c-muted">No True P1 incidents this week.</div>'
+    cards = []
+    for inc in chunk:
+        status = inc.get("status", "—")
+        sc = _p1_status_cls(status)
+        dt_str = _fmt_dt_short(inc.get("reported_at", ""))
+        ref = inc.get("reference", "")
+        name = inc.get("name", "")
+        if name.startswith("[P1] Intercom Incident : "):
+            name = name[len("[P1] Intercom Incident : "):]
+        elif name.startswith("[P1] "):
+            name = name[5:]
+        href = inc.get("permalink", "")
+        ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
+        sections = _parse_summary_sections(inc.get("summary", ""))
+        sections_html = ""
+        for lbl, body in sections:
+            if lbl:
+                sections_html += f'      <div class="p1-section"><div class="p1-section-label">{lbl}</div><div class="p1-section-body">{body}</div></div>\n'
+            else:
+                sections_html += f'      <div class="p1-section"><div class="p1-section-body">{body}</div></div>\n'
+        cards.append(f'''    <div class="p1-full-card">
+      <div class="p1-inc-header">
+        {ref_html}
+        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-inc-date">{dt_str}</span>
+      </div>
+      <div class="p1-inc-title">{name}</div>
+      <div class="p1-sections">
+{sections_html}      </div>
+    </div>''')
+    return "\n".join(cards)
+
+p1_tab_btns_html = ""
+p1_all_slides_html = ""
+for _i, _chunk in enumerate(_p1_chunks):
+    _si = 1 + _i
+    _tab_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents {_i+1}/{_n_p1_slides}"
+    _grp_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents · {_i+1} of {_n_p1_slides}"
+    p1_tab_btns_html += f'    <button class="slide-tab" onclick="showSlide({_si})">{_tab_lbl}</button>\n'
+    _cards = _build_p1_pair_cards(_chunk)
+    p1_all_slides_html += f'''
+<!-- ═══ P1 INCIDENTS {_i+1} ════════════════════════════════════ -->
+<div class="slide" id="s1_{_i+1}"><div class="page">
+  <div class="group-label">{_grp_lbl} · {cw_date}</div>
+  <div class="p1-two-up">
+{_cards}
+  </div>
+</div></div>
+'''
+
 # ── HTML GENERATION ──────────────────────────────────────────────────────────
 wk_label_cur = fmt_week_label(current_week, True).rstrip("*")
 title_date   = datetime.strptime(current_week, "%Y-%m-%d").strftime("%-d %B %Y")
@@ -676,32 +786,36 @@ html = f'''<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weekly SRE Report — {title_date}</title>
+  <title>Weekly Incident Report — {title_date}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-    body {{ background: #080f1e; color: #e2e8f0; font-family: 'DM Sans', sans-serif; min-height: 100vh; }}
-    .page {{ max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }}
-
-    .header {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.07); }}
-    .header-left h1 {{ font-size: 26px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.5px; }}
-    .header-left .subtitle {{ font-size: 13px; color: #64748b; margin-top: 4px; }}
-    .header-right {{ font-size: 13px; color: #64748b; padding-top: 4px; }}
-
-    .group-label {{ font-size: 11px; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 14px; }}
-    .group-divider {{ border: none; border-top: 1px solid rgba(255,255,255,0.07); margin: 36px 0; }}
-
-    .stat-grid-5 {{ display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px; }}
-    .stat-grid-4 {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px; }}
-    .stat-card {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 16px; }}
-    .card-label {{ font-size: 11px; color: #64748b; margin-bottom: 8px; font-weight: 500; line-height: 1.4; }}
-    .card-value {{ font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500; line-height: 1; margin-bottom: 4px; }}
-    .card-value .unit {{ font-size: 13px; font-weight: 400; }}
-    .card-subnote {{ font-size: 11px; color: #64748b; margin-bottom: 4px; }}
-    .card-delta {{ font-family: 'DM Mono', monospace; font-size: 11px; margin-top: 4px; }}
-
+    body {{ background: #080f1e; color: #e2e8f0; font-family: 'DM Sans', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }}
+    .topbar {{ display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 50px; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; gap: 24px; }}
+    .topbar-title {{ font-size: 15px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }}
+    .topbar-meta {{ font-size: 12px; color: #64748b; white-space: nowrap; }}
+    .slide-tabs {{ display: flex; gap: 4px; }}
+    .slide-tab {{ background: none; border: 1px solid transparent; border-radius: 6px; color: #64748b; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 5px 12px; cursor: pointer; transition: all 0.15s; }}
+    .slide-tab:hover {{ color: #e2e8f0; border-color: rgba(255,255,255,0.12); }}
+    .slide-tab.active {{ color: #e2e8f0; background: #1e293b; border-color: rgba(255,255,255,0.12); }}
+    .slides-wrap {{ flex: 1; overflow: hidden; position: relative; min-height: 0; }}
+    .slide {{ position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden; }}
+    .slide.active {{ display: flex; }}
+    .page {{ flex: 1; display: flex; flex-direction: column; padding: 14px 24px 10px; min-height: 0; }}
+    .slide-controls {{ display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 40px; border-top: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }}
+    .slide-btn {{ background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #94a3b8; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 4px 14px; cursor: pointer; transition: all 0.15s; }}
+    .slide-btn:hover {{ color: #e2e8f0; border-color: rgba(255,255,255,0.25); }}
+    .slide-counter {{ font-family: 'DM Mono', monospace; font-size: 11px; color: #475569; }}
+    .group-label {{ font-size: 11px; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; flex-shrink: 0; }}
+    .stat-grid-4 {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
+    .stat-card {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px; }}
+    .card-label {{ font-size: 10px; color: #64748b; margin-bottom: 5px; font-weight: 500; line-height: 1.3; }}
+    .card-value {{ font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; line-height: 1; margin-bottom: 3px; }}
+    .card-value .unit {{ font-size: 12px; font-weight: 400; }}
+    .card-subnote {{ font-size: 10px; color: #64748b; margin-bottom: 2px; }}
+    .card-delta {{ font-family: 'DM Mono', monospace; font-size: 10px; margin-top: 3px; }}
     .c-red   {{ color: #ef4444; }}
     .c-amber {{ color: #f59e0b; }}
     .c-green {{ color: #22c55e; }}
@@ -709,52 +823,64 @@ html = f'''<!DOCTYPE html>
     .d-red   {{ color: #ef4444; }}
     .d-green {{ color: #22c55e; }}
     .d-muted {{ color: #475569; }}
-
-    .chart-section {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 18px 20px; margin-bottom: 14px; }}
-    .chart-title {{ font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 3px; }}
-    .chart-note  {{ font-size: 11px; color: #64748b; margin-bottom: 14px; }}
-    .chart-container {{ position: relative; }}
-
-    .breach-block {{ margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px; }}
-    .breach-list-title {{ font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #64748b; margin-bottom: 8px; }}
-    .breach-clean {{ font-size: 13px; }}
-    .breach-item {{ background: #121e36; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 9px 12px; margin-bottom: 8px; }}
-    .breach-header {{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }}
-    .breach-conv-id {{ font-family: 'DM Mono', monospace; font-size: 11px; color: #38bdf8; }}
-    .breach-meta {{ font-size: 12px; color: #94a3b8; }}
-    .breach-frt  {{ font-family: 'DM Mono', monospace; font-size: 12px; color: #ef4444; font-weight: 500; }}
-    .breach-ts   {{ font-size: 11px; color: #64748b; }}
-    .breach-summary {{ font-size: 12px; color: #94a3b8; margin-top: 5px; line-height: 1.5; }}
-    .p1-detail-para {{ margin: 0 0 6px 0; }}
-    .p1-detail-para:last-child {{ margin-bottom: 0; }}
-
-    .footer {{ text-align: center; padding-top: 40px; font-size: 11px; color: #64748b; line-height: 1.9; }}
+    .charts-area {{ flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }}
+    .chart-row {{ display: flex; gap: 8px; flex: 1; min-height: 0; }}
+    .chart-section {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; flex: 1; min-height: 0; }}
+    .chart-title {{ font-size: 12px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; flex-shrink: 0; }}
+    .chart-note  {{ font-size: 10px; color: #64748b; margin-bottom: 8px; flex-shrink: 0; }}
+    .chart-container {{ flex: 1; min-height: 0; position: relative; }}
+    .stat-grid-2 {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
+    .stat-grid-3 {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
+    .p1-inc-area {{ flex: 1.4; display: flex; flex-direction: column; gap: 8px; min-height: 0; margin-bottom: 8px; }}
+    .p1-inc-card {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 12px 16px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }}
+    .p1-inc-header {{ display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-bottom: 6px; flex-wrap: wrap; }}
+    .p1-ref {{ font-family: 'DM Mono', monospace; font-size: 12px; color: #38bdf8; font-weight: 500; text-decoration: none; }}
+    .p1-ref:hover {{ text-decoration: underline; }}
+    .p1-status-badge {{ font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.06); }}
+    .p1-inc-date {{ font-size: 11px; color: #64748b; margin-left: auto; }}
+    .p1-cause {{ font-size: 11px; color: #94a3b8; }}
+    .p1-inc-title {{ font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; flex-shrink: 0; line-height: 1.3; }}
+    .p1-inc-overview {{ font-size: 12px; color: #94a3b8; line-height: 1.6; overflow: hidden; }}
+    .p1-no-data {{ font-size: 13px; padding: 16px 0; }}
+    .brand-strip {{ display: flex; align-items: center; gap: 10px; padding: 6px 0 8px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 10px; flex-wrap: wrap; }}
+    .brand-strip-label {{ font-size: 10px; color: #475569; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; margin-right: 4px; }}
+    .brand-pill {{ display: inline-flex; align-items: center; gap: 6px; background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 4px 10px; }}
+    .brand-pill-rank {{ font-family: 'DM Mono', monospace; font-size: 10px; color: #475569; }}
+    .brand-pill-name {{ font-size: 12px; color: #e2e8f0; }}
+    .brand-pill-count {{ font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: #38bdf8; }}
+    .brand-strip-note {{ font-size: 10px; color: #475569; margin-left: auto; white-space: nowrap; }}
+    .p1-two-up {{ flex: 1; display: flex; gap: 14px; min-height: 0; }}
+    .p1-full-card {{ flex: 1; min-height: 0; display: flex; flex-direction: column; background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 24px; overflow: hidden; }}
+    .p1-sections {{ display: flex; flex-direction: column; gap: 14px; margin-top: 14px; flex-shrink: 0; }}
+    .p1-section {{ }}
+    .p1-section-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; font-weight: 700; border-bottom: 1px solid rgba(56,189,248,0.15); padding-bottom: 5px; margin-bottom: 7px; }}
+    .p1-section-body {{ font-size: 13px; color: #94a3b8; line-height: 1.7; }}
   </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="header">
-    <div class="header-left">
-      <h1>Weekly SRE Report</h1>
-      <div class="subtitle">Partner P1 Tickets &middot; PIR Action Items &middot; Partner Tickets &middot; Incident Operations &middot; SOC Member Performance</div>
-    </div>
-    <div class="header-right">{today_str}</div>
+<div class="topbar">
+  <div class="topbar-title">Weekly Incident Report</div>
+  <div class="slide-tabs">
+    <button class="slide-tab active" onclick="showSlide(0)">P1 Performance</button>
+{p1_tab_btns_html}    <button class="slide-tab" onclick="showSlide({_idx_pir})">PIR Actions</button>
+    <button class="slide-tab" onclick="showSlide({_idx_partner})">Partner Tickets</button>
+    <button class="slide-tab" onclick="showSlide({_idx_ops})">Incident Ops</button>
   </div>
+  <div class="topbar-meta">{today_str}</div>
+</div>
 
-  <!-- ═══ SECTION 1 — PARTNER P1 TICKETS ══════════════════════════ -->
-  <div class="group-label">Partner P1 Tickets</div>
+<div class="slides-wrap">
 
-  <div class="stat-grid-4">
+<!-- ═══ SLIDE 0 — P1 PERFORMANCE ════════════════════════════════════ -->
+<div class="slide active" id="s0"><div class="page">
+  <div class="group-label">P1 Performance · {cw_date}</div>
+{brand_strip_html}
+  <div class="stat-grid-3">
     <div class="stat-card">
       <div class="card-label">True P1s This Week ({cw_date})</div>
       <div class="card-value {'c-green' if cw_true_p1 == 0 else 'c-red'}">{cw_true_p1}</div>
       <div class="card-delta {true_p1_delta_cls}">{true_p1_delta}</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">False P1 Rate ({cw_date})</div>
-      <div class="card-value {color_pct(cw_fp_rate and 100-cw_fp_rate if cw_fp_rate is not None else None) if False else 'c-amber' if cw_fp_rate and cw_fp_rate >= 50 else 'c-green' if cw_fp_rate is not None else 'c-muted'}">{fmt_rate(cw_fp_rate, 1) if cw_fp_rate else '—'}</div>
-      <div class="card-delta {fp_rate_delta_cls}">{fp_rate_delta}</div>
     </div>
     <div class="stat-card">
       <div class="card-label">SOC & SRE P1 FRT SLA ({cw_date})</div>
@@ -769,35 +895,29 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {p1_med_delta_cls}">{p1_med_delta}</div>
     </div>
   </div>
-
-  <div class="chart-section">
-    <div class="chart-title">P1 Incident Quality — Week on Week</div>
-    <div class="chart-note">{p1q_note}</div>
-    <div class="chart-container" style="height:320px"><canvas id="cP1Q"></canvas></div>
-{true_p1_detail_html}
+  <div class="charts-area">
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">P1 Incident Quality — Week on Week</div>
+        <div class="chart-note">{p1q_note}</div>
+        <div class="chart-container"><canvas id="cP1Q" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">SOC & SRE P1 First Response SLA — Week on Week</div>
+        <div class="chart-note">Source: Intercom &middot; P1 Incident SLA only &middot; 30-min target &middot; excludes downgraded and unanswered tickets</div>
+        <div class="chart-container"><canvas id="cP1F" style="width:100%;height:100%"></canvas></div>
+      </div>
+    </div>
   </div>
+</div></div>
 
-  <div class="chart-section">
-    <div class="chart-title">SOC & SRE P1 First Response SLA — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; P1 Incident SLA only &middot; 30-min target &middot; excludes downgraded and unanswered tickets</div>
-    <div class="chart-container" style="height:280px"><canvas id="cP1F"></canvas></div>
-{p1_breach_html}
-  </div>
+{p1_all_slides_html}
 
-  <div class="chart-section">
-    <div class="chart-title">P1 Tickets by Brand — 12-Week Cumulative</div>
-    <div class="chart-note">{brand_note}</div>
-    <div class="chart-container" style="height:320px"><canvas id="cBrand"></canvas></div>
-  </div>
-
-  <div class="group-divider"></div>
-
-  <!-- ═══ PIR ACTION ITEMS ══════════════════════════════════════════ -->
+<div class="slide" id="s2"><div class="page">
   <div class="group-label">PIR Action Items
     <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; ClickUp post-incident reviews &middot; excl. SRE internal &middot; as of {pir_generated}</span>
   </div>
-
-  <div class="stat-grid-4">
+  <div class="stat-grid-3">
     <div class="stat-card">
       <div class="card-label">Open PIR Items</div>
       <div class="card-value c-amber">{pir_open}</div>
@@ -806,38 +926,23 @@ html = f'''<!DOCTYPE html>
     <div class="stat-card">
       <div class="card-label">Completion Rate</div>
       <div class="card-value {pir_comp_cls}">{int(round(pir_comp_rate))}%</div>
-      <div class="card-subnote">Target: 85% &middot; {pir_completed} of {pir_total} done</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">Stale (&gt;60 days no activity)</div>
-      <div class="card-value {pir_stale_cls}">{pir_stale}</div>
-      <div class="card-subnote">{int(round(pir_stale_pct))}% of open items</div>
+      <div class="card-subnote">{pir_completed} of {pir_total} done</div>
+      <div class="card-subnote">Target: 85%</div>
     </div>
     <div class="stat-card">
       <div class="card-label">No Due Date Set</div>
       <div class="card-value {pir_no_due_cls}">{int(round(pir_no_due_pct))}%</div>
       <div class="card-subnote">{pir_no_due_count} of {pir_open} open items</div>
+      <div class="card-subnote">Target: &lt;25% without date</div>
     </div>
   </div>
-
-  <div class="chart-section">
-    <div class="chart-title">PIR Action Items by Team — Open vs Closed</div>
-    <div class="chart-note">Source: ClickUp &middot; Post Incident Report space &middot; excl. SRE internal incidents &middot; Fast Track Team field &middot; teams with open items only</div>
-    <div class="chart-container" style="height:220px"><canvas id="cPIRTeam"></canvas></div>
 {pir_team_table_html}
-  </div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; From w/c 8 Jun 2026, Producers will hold weekly meetings with the Head of SRE to track progress and plan PIR action items.</div>
+</div></div>
 
-  <div class="chart-section">
-    <div class="chart-title">PIR Items by Category — Open vs Closed</div>
-    <div class="chart-note">Source: ClickUp &middot; based on task tags &middot; all tracked items</div>
-    <div class="chart-container" style="height:260px"><canvas id="cPIRCat"></canvas></div>
-  </div>
-
-  <div class="group-divider"></div>
-
-  <!-- ═══ SECTION 2 — PARTNER TICKETS ══════════════════════════════ -->
+<!-- ═══ SLIDE 3 — PARTNER TICKETS ══════════════════════════════════ -->
+<div class="slide" id="s3"><div class="page">
   <div class="group-label">Partner Tickets</div>
-
   <div class="stat-grid-4">
     <div class="stat-card">
       <div class="card-label">SOC & SRE P2/P3 FRT SLA ({cw_date})</div>
@@ -863,42 +968,36 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {pt_med_delta_cls}">{pt_med_delta}</div>
     </div>
   </div>
-
-  <div class="chart-section">
-    <div class="chart-title">SOC & SRE P2/P3 First Response SLA — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; P2/P3 Incident tagged tickets assigned to SRE &middot; 2-hour target, office hours &middot; Slack-handled excluded</div>
-    <div class="chart-container" style="height:280px"><canvas id="cP23F"></canvas></div>
-{p23_breach_html}
+  <div class="charts-area">
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">SOC & SRE P2/P3 First Response SLA — Week on Week</div>
+        <div class="chart-note">Source: Intercom &middot; P2/P3 Incident tagged &middot; 2-hour target, office hours &middot; Slack-handled excluded</div>
+        <div class="chart-container"><canvas id="cP23F" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">SOC & SRE CSAT — Week on Week</div>
+        <div class="chart-note">Source: Intercom &middot; All SRE conversations &middot; 1–5 scale</div>
+        <div class="chart-container"><canvas id="cCSAT" style="width:100%;height:100%"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">Partner Ticket Volume — Week on Week</div>
+        <div class="chart-note">Source: Intercom &middot; All P1/P2/P3 Incident tagged tickets assigned to SRE</div>
+        <div class="chart-container"><canvas id="cPVol" style="width:100%;height:100%"></canvas></div>
+        <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; From w/c 25 May 2026, Partner Support agreed to route all partner incidents directly to SRE.</div>
+      </div>
+    </div>
   </div>
+</div></div>
 
-  <div class="chart-section">
-    <div class="chart-title">SOC & SRE CSAT — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; All SRE conversations &middot; 1–5 scale</div>
-    <div class="chart-container" style="height:280px"><canvas id="cCSAT"></canvas></div>
-{csat_breach_html}
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Partner Ticket Volume — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; All P1/P2/P3 Incident tagged tickets created and assigned to SRE</div>
-    <div class="chart-container" style="height:280px"><canvas id="cPVol"></canvas></div>
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Partner Ticket Response Time — Week on Week</div>
-    <div class="chart-note">Source: Intercom &middot; Office hours only &middot; Slack-handled excluded &middot; Solid line = median &middot; Dashed line = average &middot; 2-hr reference shown</div>
-    <div class="chart-container" style="height:280px"><canvas id="cPRT"></canvas></div>
-{prt_callout_html}
-  </div>
-
-  <div class="group-divider"></div>
-
-  <!-- ═══ SECTION 3 — INCIDENT OPERATIONS ══════════════════════════ -->
+<!-- ═══ SLIDE 4 — INCIDENT OPERATIONS ══════════════════════════════ -->
+<div class="slide" id="s4"><div class="page">
   <div class="group-label">
     Incident Operations
     <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {wk19_note}</span>
   </div>
-
   <div class="stat-grid-4">
     <div class="stat-card">
       <div class="card-label">Incidents This Week ({cw_date})</div>
@@ -923,66 +1022,47 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {conv_delta_cls}">{conv_delta}</div>
     </div>
   </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Accepted Incidents Volume by Severity — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 onwards</div>
-    <div class="chart-container" style="height:280px"><canvas id="cIVol"></canvas></div>
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Alert Volume by Source — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; incident.io sources only</div>
-    <div class="chart-container" style="height:280px"><canvas id="cAVol"></canvas></div>
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Accepted & Declined Incidents by Time Block — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; 8-hour UTC blocks &middot; Accepted (actionable) + Declined (noise) &middot; Line = overall noise rate %</div>
-    <div class="chart-container" style="height:280px"><canvas id="cTBVol"></canvas></div>
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">Declined Rate by Time Block — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 onwards &middot; Declined incidents as % of total per block per week</div>
-    <div class="chart-container" style="height:240px"><canvas id="cTBWaste"></canvas></div>
-  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">MTTA by Severity — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; W19 ({wk19_first_dt.day if wk19_first_dt else '4'} {wk19_first_dt.strftime('%b %Y') if wk19_first_dt else 'May 2026'}) onwards &middot; Median minutes from incident reported to acknowledged &middot; P1/P2/P3</div>
-    <div class="chart-container" style="height:280px"><canvas id="cMTTA"></canvas></div>
-  </div>
-
-  <div class="group-divider"></div>
-
-  <!-- ═══ SECTION 4 — SOC MEMBER PERFORMANCE ══════════════════════════ -->
-  <div class="group-label">
-    SOC Member Performance
-    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; escalation acknowledgment &middot; {cw_iso}</span>
-  </div>
-
-  <div class="stat-grid-4">
-{''.join(f"""    <div class="stat-card">
-      <div class="card-label">{SOC_SHORT[p]} &middot; Avg MTTA ({cw_date})</div>
-      <div class="card-value {soc_cards[p]['mtta_cls']}">{soc_cards[p]['mtta_val']} <span class="unit">min</span></div>
-      <div class="card-subnote d-muted">{soc_cards[p]['subnote']}</div>
-      <div class="card-delta {soc_cards[p]['mtta_d_cls']}">{soc_cards[p]['mtta_d']}</div>
+  <div class="charts-area">
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">Accepted Incidents by Severity</div>
+        <div class="chart-note">incident.io &middot; W19 onwards</div>
+        <div class="chart-container"><canvas id="cIVol" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">Alert Volume by Source</div>
+        <div class="chart-note">incident.io &middot; W19 onwards &middot; incident.io sources only</div>
+        <div class="chart-container"><canvas id="cAVol" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">MTTA by Severity</div>
+        <div class="chart-note">incident.io &middot; {wk19_first_dt.day if wk19_first_dt else '4'} {wk19_first_dt.strftime('%b %Y') if wk19_first_dt else 'May 2026'} onwards &middot; Median min to ack &middot; P1/P2/P3</div>
+        <div class="chart-container"><canvas id="cMTTA" style="width:100%;height:100%"></canvas></div>
+      </div>
     </div>
-""" for p in SOC_PERSONS)}  </div>
-
-  <div class="chart-section">
-    <div class="chart-title">SOC Member Avg MTTA — Week on Week</div>
-    <div class="chart-note">Source: incident.io &middot; escalation_show &middot; Mean minutes from escalation created to ack</div>
-    <div class="chart-container" style="height:260px"><canvas id="cSOCMTTA"></canvas></div>
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">Accepted & Declined by Time Block</div>
+        <div class="chart-note">incident.io &middot; W19 onwards &middot; 8-hr UTC blocks &middot; Line = overall noise rate %</div>
+        <div class="chart-container"><canvas id="cTBVol" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">Declined Rate by Time Block</div>
+        <div class="chart-note">incident.io &middot; W19 onwards &middot; Declined as % of total per block per week</div>
+        <div class="chart-container"><canvas id="cTBWaste" style="width:100%;height:100%"></canvas></div>
+      </div>
+    </div>
   </div>
+</div></div>
 
-  <div class="footer">
-    Generated {today_str} &middot; Fast Track SRE &middot; Data: ClickHouse &middot; incident.io &middot; Intercom<br>
-    12-week rolling window ({fmt_date_dmy(WEEK_KEYS[0])} – {fmt_week_label(current_week, True)}) &middot; * partial week &middot; All times UTC
-  </div>
+</div><!-- /slides-wrap -->
 
+<div class="slide-controls">
+  <button class="slide-btn" onclick="showSlide(currentSlide-1)">&#8592; Prev</button>
+  <span class="slide-counter" id="slide-counter">1 / {_total_slides}</span>
+  <button class="slide-btn" onclick="showSlide(currentSlide+1)">Next &#8594;</button>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 const WK   = {js_str_arr(WK)};
@@ -1000,9 +1080,6 @@ const p1Rate = {js_arr(p1Rate_arr)};
 const mP1 = {js_arr(mP1_arr)};
 const mP2 = {js_arr(mP2_arr)};
 const mP3 = {js_arr(mP3_arr)};
-
-const bL = {js_str_arr(bL)};
-const bC = {js_arr(bC)};
 
 const p23Hit  = {js_arr(p23Hit_arr)};
 const p23Miss = {js_arr(p23Miss_arr)};
@@ -1076,13 +1153,6 @@ new Chart(document.getElementById('cMTTA'),{{type:'line',data:{{labels:WK19,data
   {{label:'5-min target',data:Array(WK19.length).fill(5),borderColor:'rgba(167,139,250,0.4)',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
-new Chart(document.getElementById('cBrand'),{{type:'bar',data:{{labels:bL,datasets:[
-  {{label:'P1 Tickets',data:bC,backgroundColor:'#38bdf8',borderWidth:0,borderRadius:3}}
-]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:{{display:false}},tooltip:TT}},scales:{{
-  x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
-  y:{{ticks:{{color:'#94a3b8'}},grid:{{display:false}}}}
-}}}}}});
-
 new Chart(document.getElementById('cP23F'),{{type:'bar',data:{{labels:WK,datasets:[
   {{label:'Hit',   data:p23Hit, backgroundColor:'#22c55e',stack:'f2'}},
   {{label:'Missed',data:p23Miss,backgroundColor:'#ef4444',stack:'f2'}},
@@ -1105,12 +1175,6 @@ new Chart(document.getElementById('cPVol'),{{type:'bar',data:{{labels:WK,dataset
   {{label:'P2',data:ptP2,backgroundColor:'#f59e0b',stack:'t'}},
   {{label:'P3',data:ptP3,backgroundColor:'#3b82f6',stack:'t'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
-
-new Chart(document.getElementById('cPRT'),{{type:'line',data:{{labels:WK,datasets:[
-  {{label:'Median (min)',data:ptMed,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.08)',tension:0.3,fill:true,pointRadius:3,pointBackgroundColor:'#38bdf8',spanGaps:false}},
-  {{label:'Average (min)',data:ptAvg,borderColor:'#f59e0b',backgroundColor:'transparent',borderDash:[5,4],tension:0.3,fill:false,pointRadius:3,pointBackgroundColor:'#f59e0b',spanGaps:false}},
-  {{label:'2-hr limit',type:'line',data:T120,borderColor:'rgba(239,68,68,0.4)',borderDash:[4,4],pointRadius:0,fill:false}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
 new Chart(document.getElementById('cIVol'),{{type:'bar',data:{{labels:WK19,datasets:[
   {{label:'P1',data:iP1.slice(-WK19.length),backgroundColor:'#ef4444',stack:'i'}},
@@ -1141,43 +1205,26 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
   {{label:'Night (00–08 UTC)', data:tbNightW, backgroundColor:'#64748b',barPercentage:0.8}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YPct}}}}}});
 
-const SOCMTTAWK = {js_str_arr(SOC_MTTA_WK)};
-const socMttaJ = {js_arr(soc_mtta_arr["Joachim Farrugia"])};
-const socMttaM = {js_arr(soc_mtta_arr["Matteo Rapisarda"])};
-const socMttaG = {js_arr(soc_mtta_arr["Gérard E. Pelayo"])};
-const socMttaN = {js_arr(soc_mtta_arr["Nazareno Scibilia"])};
 
-const pirCatL      = {js_str_arr(pir_cat_labels)};
-const pirCatOpen   = {js_arr(pir_cat_open)};
-const pirCatClosed = {js_arr(pir_cat_closed)};
 
-new Chart(document.getElementById('cPIRCat'),{{type:'bar',data:{{labels:pirCatL,datasets:[
-  {{label:'Open',  data:pirCatOpen,   backgroundColor:'#f59e0b',borderWidth:0,borderRadius:3,barPercentage:0.7}},
-  {{label:'Closed',data:pirCatClosed, backgroundColor:'#22c55e',borderWidth:0,borderRadius:3,barPercentage:0.7}}
-]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:LG,tooltip:TT}},scales:{{
-  x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
-  y:{{ticks:{{color:'#94a3b8',font:{{size:11}}}},grid:{{display:false}}}}
-}}}}}});
-
-const pirTeamL      = {js_str_arr(pir_team_labels)};
-const pirTeamOpen   = {js_arr(pir_team_open)};
-const pirTeamClosed = {js_arr(pir_team_closed)};
-
-new Chart(document.getElementById('cPIRTeam'),{{type:'bar',data:{{labels:pirTeamL,datasets:[
-  {{label:'Open',  data:pirTeamOpen,   backgroundColor:'#f59e0b',borderWidth:0,borderRadius:3,barPercentage:0.7}},
-  {{label:'Closed',data:pirTeamClosed, backgroundColor:'#22c55e',borderWidth:0,borderRadius:3,barPercentage:0.7}}
-]}},options:{{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{{legend:LG,tooltip:TT}},scales:{{
-  x:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',stepSize:1,precision:0}},grid:{{color:'rgba(255,255,255,0.05)'}}}},
-  y:{{ticks:{{color:'#94a3b8',font:{{size:11}}}},grid:{{display:false}}}}
-}}}}}});
-
-new Chart(document.getElementById('cSOCMTTA'),{{type:'bar',data:{{labels:SOCMTTAWK,datasets:[
-  {{label:'Joachim', data:socMttaJ,backgroundColor:'#ef4444',barPercentage:0.6}},
-  {{label:'Matteo',  data:socMttaM,backgroundColor:'#22c55e',barPercentage:0.6}},
-  {{label:'Gérard',  data:socMttaG,backgroundColor:'#64748b',barPercentage:0.6}},
-  {{label:'Nazareno',data:socMttaN,backgroundColor:'#3b82f6',barPercentage:0.6}},
-  {{label:'Target (5 min)',type:'line',data:Array(SOCMTTAWK.length).fill(5),borderColor:'#f59e0b',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const tabs   = document.querySelectorAll('.slide-tab');
+function showSlide(n) {{
+  const total = slides.length;
+  n = ((n % total) + total) % total;
+  slides[currentSlide].classList.remove('active');
+  tabs[currentSlide].classList.remove('active');
+  currentSlide = n;
+  slides[currentSlide].classList.add('active');
+  tabs[currentSlide].classList.add('active');
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + total;
+  if (typeof Chart !== 'undefined') Object.values(Chart.instances).forEach(c => c.resize());
+}}
+document.addEventListener('keydown', e => {{
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showSlide(currentSlide + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showSlide(currentSlide - 1);
+}});
 </script>
 </body>
 </html>'''
