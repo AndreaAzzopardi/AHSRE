@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FT SOC — Partner Comms Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ft-pink: #E96092;
+    --ft-purple: #832081;
+    --ft-blue: #63B6E6;
+    --ft-yellow: #FFDB14;
+    --ft-orange: #F4A300;
+    --ft-dark-orange: #E54F35;
+    --bg: #F7F6F4;
+    --surface: #FFFFFF;
+    --surface-2: #F2F1EF;
+    --border: #E2E1DE;
+    --border-strong: #C8C7C3;
+    --text: #1A1A1A;
+    --text-2: #5A5955;
+    --text-3: #8A8883;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Inter Tight', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo { display: flex; align-items: center; gap: 8px; }
+  .ft-pill {
+    background: var(--ft-pink);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .topbar h1 { font-size: 14px; font-weight: 500; color: var(--text); }
+  .topbar-sep { color: var(--border-strong); }
+  .topbar-sub { font-size: 12px; color: var(--text-3); }
+
+  .platform-toggle { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .tz-group { display: flex; gap: 6px; }
+  .tz-btn {
+    flex: 1;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 4px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .tz-btn:hover { border-color: var(--border-strong); color: var(--text); }
+  .tz-btn.active { background: var(--ft-blue); border-color: var(--ft-blue); color: #0C447C; font-weight: 600; }
+  .tz-hint { font-size: 11px; color: var(--ft-blue); margin-top: 6px; min-height: 14px; }
+  .datetime-row { display: flex; gap: 8px; }
+  .datetime-row input[type="date"] { flex: 1.4; }
+  .datetime-row input[type="time"] { flex: 1; }
+  .datetime-row input { width: auto; min-width: 0; }
+  .now-btn {
+    margin-top: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .now-btn:hover { border-color: var(--ft-blue); color: var(--ft-blue); }
+  .platform-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+  .plat-btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .plat-btn:first-of-type { border-radius: var(--radius-sm) 0 0 var(--radius-sm); border-right: none; }
+  .plat-btn:last-of-type  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+  .plat-btn:hover { color: var(--text); }
+  .plat-btn.active { background: var(--ft-purple); border-color: var(--ft-purple); color: #fff; }
+  .plat-btn.active + .plat-btn { border-left: none; }
+
+  /* LAYOUT */
+  .layout { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 52px); overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar { background: var(--surface); border-right: 1px solid var(--border); overflow-y: scroll; height: calc(100vh - 52px); display: block; }
+  .sidebar-section { border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sidebar-section:last-child { border-bottom: none; padding-bottom: 20px; }
+  .sidebar-section-head {
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .service-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 400;
+    color: var(--text-2);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+  }
+  .service-btn:last-child { border-bottom: none; }
+  .service-btn:hover { background: var(--surface-2); color: var(--text); }
+  .service-btn.active { background: #FDF0F6; color: var(--ft-pink); font-weight: 500; border-left: 2px solid var(--ft-pink); padding-left: 14px; }
+  .service-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--border-strong); }
+  .service-btn.active .service-dot { background: var(--ft-pink); }
+
+  /* MAIN AREA */
+  .main { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); height: calc(100vh - 52px); overflow: hidden; }
+  .config-panel { overflow-y: scroll; height: calc(100vh - 52px); border-right: 1px solid var(--border); padding: 20px; }
+  .preview-panel { background: var(--surface-2); display: flex; flex-direction: column; height: calc(100vh - 52px); overflow: hidden; }
+
+  .panel-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-label::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; }
+  .config-panel .panel-label::before { background: var(--ft-purple); }
+  .preview-panel .panel-label::before { background: var(--ft-pink); }
+
+  /* FORM */
+  .form-group { margin-bottom: 14px; }
+  .form-label { display: block; font-size: 11px; font-weight: 500; color: var(--text-2); margin-bottom: 5px; letter-spacing: 0.02em; }
+
+  input[type="text"], input[type="date"], input[type="time"], textarea, select {
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, input[type="date"]:focus, input[type="time"]:focus, textarea:focus, select:focus {
+    border-color: var(--ft-pink);
+    box-shadow: 0 0 0 3px rgba(233,96,146,0.08);
+  }
+  input[type="date"], input[type="time"] { color: var(--text-2); font-family: inherit; -webkit-appearance: none; appearance: none; }
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="time"]::-webkit-datetime-edit { color: var(--text); padding: 0; }
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="time"]::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="time"]::-webkit-datetime-edit-text { color: var(--text-3); padding: 0 1px; }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator { opacity: 0.45; cursor: pointer; filter: grayscale(1); transition: opacity 0.15s; }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover,
+  input[type="time"]::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
+  input[type="date"]::-webkit-inner-spin-button,
+  input[type="time"]::-webkit-inner-spin-button { display: none; }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
+  select { cursor: pointer; }
+
+  /* CAUSE BUTTONS */
+  .cause-group { display: flex; gap: 5px; flex-wrap: wrap; }
+  .cause-btn {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .cause-btn:hover { border-color: var(--border-strong); color: var(--text); }
+  .cause-btn.active { background: var(--ft-purple); border-color: var(--ft-purple); color: #fff; }
+
+  /* TOGGLES */
+  .toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .toggle-label { font-size: 12px; color: var(--text-2); cursor: pointer; }
+  .toggle { position: relative; width: 34px; height: 20px; cursor: pointer; flex-shrink: 0; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .tslider { position: absolute; inset: 0; background: var(--border-strong); border-radius: 20px; transition: 0.2s; }
+  .tslider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s; }
+  .toggle input:checked + .tslider { background: var(--ft-pink); }
+  .toggle input:checked + .tslider::before { transform: translateX(14px); }
+
+  /* DIVIDER */
+  .form-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .section-title { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 10px; }
+
+  /* MSG TYPE SEGMENTED CONTROL */
+  .msgtype-group { display: flex; }
+  .msgtype-btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    position: relative;
+    margin-right: -1px;
+  }
+  .msgtype-btn:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+  .msgtype-btn:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-right: 0; }
+  .msgtype-btn:hover { color: var(--text); z-index: 1; }
+  .msgtype-btn.active { background: var(--ft-purple); border-color: var(--ft-purple); color: #fff; z-index: 2; }
+
+  /* PREVIEW */
+  .preview-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+  .preview-scroll { flex: 1; overflow-y: auto; padding: 20px; }
+
+  .msg-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .msg-status-bar { height: 3px; background: var(--ft-blue); }
+  .msg-status-bar.active   { background: var(--ft-pink); }
+  .msg-status-bar.update   { background: var(--ft-orange); }
+  .msg-status-bar.resolved { background: #2DA44E; }
+
+  .msg-inner {
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: normal;
+    word-break: break-word;
+    font-family: 'Inter Tight', Arial, sans-serif;
+  }
+  .msg-inner strong { font-weight: 600; }
+  .msg-inner pre { white-space: pre-wrap; word-break: break-word; margin: 4px 0; }
+  .msg-inner code { font-family: Consolas, Monaco, monospace; }
+
+  /* PLACEHOLDER WARNING BANNER */
+  .placeholder-warn {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #8a4500;
+    background: #fff8ee;
+    border-bottom: 1px solid #f4c57a;
+    padding: 7px 20px;
+    flex-shrink: 0;
+  }
+  .placeholder-warn.show { display: flex; }
+
+  .preview-actions {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.12s;
+    text-decoration: none;
+  }
+  .btn-outline { background: var(--surface); border: 1px solid var(--border); color: var(--text-2); }
+  .btn-outline:hover { border-color: var(--border-strong); color: var(--text); background: var(--surface-2); }
+
+  .variant-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .variant-label { font-size: 11px; font-weight: 500; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-right: 4px; flex-shrink: 0; }
+  .var-btn {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+  .var-btn:hover { border-color: var(--ft-pink); color: var(--ft-pink); }
+  .var-btn.active { background: var(--ft-pink); border-color: var(--ft-pink); color: #fff; }
+  .variant-hint { font-size: 11px; color: var(--text-3); margin-left: auto; font-style: italic; }
+
+  .copy-toast { display: none; font-size: 11px; color: var(--ft-pink); font-weight: 500; align-items: center; gap: 4px; margin-left: auto; }
+  .copy-toast.show { display: flex; }
+
+  /* HIDDEN CONDITIONAL FIELDS */
+  .cond { display: none; }
+  .cond.show { display: block; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { grid-template-columns: 1fr; }
+    .config-panel { height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .preview-panel { height: 60vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <span class="ft-pill">FT</span>
+    <h1>SOC Partner Comms Builder</h1>
+  </div>
+  <span class="topbar-sep">·</span>
+  <span class="topbar-sub">Select a service, fill in the details, copy the message</span>
+  <div class="platform-toggle" role="group" aria-label="Output platform">
+    <span class="platform-label">Format for</span>
+    <button class="plat-btn active" id="platSlack" onclick="setPlatform('slack')">Slack</button>
+    <button class="plat-btn" id="platTeams" onclick="setPlatform('teams')">MS Teams</button>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Integration Services</div>
+      <button class="service-btn active" onclick="setService('integration_consumer', this)"><span class="service-dot"></span> Integration Consumer</button>
+      <button class="service-btn" onclick="setService('rabbit_kafka', this)"><span class="service-dot"></span> Rabbit / Kafka / Incoming Events</button>
+      <button class="service-btn" onclick="setService('activity_manager', this)"><span class="service-dot"></span> Activity Manager</button>
+      <button class="service-btn" onclick="setService('activity_manager_time', this)"><span class="service-dot"></span> Activity Manager Time</button>
+      <button class="service-btn" onclick="setService('activity_fire', this)"><span class="service-dot"></span> Activity Manager Fire</button>
+      <button class="service-btn" onclick="setService('singularity', this)"><span class="service-dot"></span> Singularity RTD / Time</button>
+      <button class="service-btn" onclick="setService('clickhouse', this)"><span class="service-dot"></span> Clickhouse Writer</button>
+      <button class="service-btn" onclick="setService('consent', this)"><span class="service-dot"></span> Consent Manager</button>
+      <button class="service-btn" onclick="setService('ds_player', this)"><span class="service-dot"></span> DS Player Activity Calculator</button>
+      <button class="service-btn" onclick="setService('reconciliation', this)"><span class="service-dot"></span> Reconciliation Service</button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">Action Services</div>
+      <button class="service-btn" onclick="setService('email_sms', this)"><span class="service-dot"></span> Email / SMS Distributor</button>
+      <button class="service-btn" onclick="setService('bonus', this)"><span class="service-dot"></span> Bonus Distributor</button>
+      <button class="service-btn" onclick="setService('notification', this)"><span class="service-dot"></span> Notification Distributor</button>
+      <button class="service-btn" onclick="setService('callback', this)"><span class="service-dot"></span> Callback Consumer</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- CONFIG PANEL -->
+    <div class="config-panel">
+      <div class="panel-label">Configure</div>
+      <div class="form-divider" style="margin-top:0"></div>
+
+      <div class="section-title">Incident Details</div>
+
+      <div class="form-group">
+        <label class="form-label">Brand / Partner name</label>
+        <input type="text" id="brand" placeholder="e.g. Rhino Entertainment" oninput="render()">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Started — date &amp; time</label>
+        <div class="datetime-row">
+          <input type="date" id="startDate" oninput="render()">
+          <input type="time" id="startTime" oninput="render()">
+        </div>
+        <button class="now-btn" onclick="setNow()">Set to now</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Time entered is in</label>
+        <div class="tz-group" id="tzGroup">
+          <button class="tz-btn active" onclick="setTz('UTC',this)">UTC</button>
+          <button class="tz-btn" onclick="setTz('CET',this)">CET (UTC+1)</button>
+          <button class="tz-btn" onclick="setTz('CEST',this)">CEST (UTC+2)</button>
+        </div>
+        <div class="tz-hint" id="tzHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">FT Incident ID (internal reference)</label>
+        <input type="text" id="incidentId" placeholder="e.g. INC-4821" oninput="render()">
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- SERVICE-SPECIFIC FIELDS -->
+      <div id="serviceFields"></div>
+
+      <div class="form-divider"></div>
+
+      <!-- CAUSE -->
+      <div class="section-title">Cause Type</div>
+      <div class="form-group">
+        <div class="cause-group" id="causeGroup"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" id="causeDetailLabel">Cause detail</label>
+        <textarea id="causeDetail" placeholder="Describe the specific cause..." oninput="render()"></textarea>
+      </div>
+
+      <div class="form-group cond" id="debugLogsNote">
+        <label class="form-label">Debug logs / error info to share</label>
+        <textarea id="debugLogs" placeholder="Paste relevant log lines here (remove any sensitive keys)" oninput="render()"></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <!-- OPTIONS -->
+      <div class="section-title">Options</div>
+
+      <div id="optionalToggles"></div>
+
+      <div class="form-group">
+        <label class="form-label">Message type</label>
+        <div class="msgtype-group">
+          <button class="msgtype-btn active" id="msgtypeActive"   onclick="setMsgType('active')">Active</button>
+          <button class="msgtype-btn"        id="msgtypeUpdate"   onclick="setMsgType('update')">Update</button>
+          <button class="msgtype-btn"        id="msgtypeResolved" onclick="setMsgType('resolved')">Resolved</button>
+        </div>
+      </div>
+
+      <!-- Next update by — active + update -->
+      <div class="form-group cond show" id="nextUpdateGroup">
+        <label class="form-label">Next update by (optional)</label>
+        <div class="datetime-row">
+          <input type="date" id="nextUpdateDate" oninput="render()">
+          <input type="time" id="nextUpdateTime" oninput="render()">
+        </div>
+      </div>
+
+      <!-- Resolved section -->
+      <div class="cond" id="resolvedSection">
+        <div class="form-group">
+          <label class="form-label">Resolved — date &amp; time</label>
+          <div class="datetime-row">
+            <input type="date" id="resolvedDate" oninput="render()">
+            <input type="time" id="resolvedTime" oninput="render()">
+          </div>
+          <button class="now-btn" onclick="setResolvedNow()">Set to now</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Resolution summary</label>
+          <textarea id="resolution" placeholder="Root cause identified and remediation applied. Service restored at XX:XX UTC. Post-incident report will follow." oninput="render()"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PREVIEW PANEL -->
+    <div class="preview-panel">
+      <div class="preview-header">
+        <div class="panel-label" style="margin-bottom:0">Preview</div>
+      </div>
+      <div class="variant-bar">
+        <span class="variant-label">Variant</span>
+        <button class="var-btn active" onclick="setVariant(0)">1</button>
+        <button class="var-btn" onclick="setVariant(1)">2</button>
+        <button class="var-btn" onclick="setVariant(2)">3</button>
+        <span class="variant-hint">Same info, different tone — pick the one that fits</span>
+      </div>
+      <div class="placeholder-warn" id="placeholderWarn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Message contains unfilled placeholders — double-check before sending
+      </div>
+      <div class="preview-scroll">
+        <div class="msg-card">
+          <div class="msg-status-bar active" id="statusBar"></div>
+          <div class="msg-inner" id="preview"></div>
+        </div>
+      </div>
+      <div class="preview-actions">
+        <button class="btn btn-outline" onclick="copyMsg()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy for Slack / Teams
+        </button>
+        <button class="btn btn-outline" onclick="copyPlain()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Copy plain text
+        </button>
+        <div class="copy-toast" id="copyToast">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Copied!
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────────
+var state = {
+  service:   'integration_consumer',
+  causeType: 'operator',
+  msgType:   'active',   // 'active' | 'update' | 'resolved'
+  variant:   0,
+  platform:  'slack',
+  tz:        'UTC'
+};
+
+var lastMsg = { plain: '', html: '' };
+
+// ─── VARIANT DATA ─────────────────────────────────────────────
+var variants = {
+
+  integration_consumer: [
+    {
+      opening: function(brand) { return "We're seeing an issue on your Integration service for " + brand + " — real-time event processing has stopped, and our monitoring picked it up just now."; },
+      impact: function(d) {
+        var t = "Registration, Login, Deposit and other feed events aren't reaching FT right now. That puts Activities, Lifecycles and live player segmentation on hold until we restore the flow.";
+        if(d.rewards) t += "\nRewards: challenge and level progress is paused too — players won't be able to complete active challenges until we're back up.";
+        return t;
+      }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Integration service for " + brand + " is down. Events from your feed have stopped processing and aren't reaching us."; },
+      impact: function(d) {
+        var t = "No Registration, Login or Deposit events are coming through. Anything that depends on them — Activities, Lifecycles, real-time segmentation — isn't firing for now.";
+        if(d.rewards) t += "\nRewards: players can't progress through active challenges until the feed is back.";
+        return t;
+      }
+    },
+    {
+      opening: function(brand) { return "Our monitoring just alerted us to a problem on the " + brand + " Integration service — it's stopped processing your event feed, and we're already on it."; },
+      impact: function(d) {
+        var t = "Feed events like Registration, Login and Deposit aren't being ingested, so the Activities, Lifecycles and segmentation that rely on them have paused for now.";
+        if(d.rewards) t += "\nRewards: challenge and level progress is on hold while this is ongoing.";
+        return t;
+      }
+    }
+  ],
+
+  rabbit_kafka: [
+    {
+      opening: function(brand) { return "We've stopped receiving events from your " + brand + " feed — our ingestion monitoring triggered on the {feedType} a few moments ago."; },
+      impact: function(d) { return "Registrations, Logins, Payments and Casino events from your " + (d.feedType||'feed') + " aren't reaching us. While that's the case, real-time segmentation is paused and any Activities or Lifecycles built on these events won't fire."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — your " + brand + " {feedType} has gone quiet. We're not receiving any events from it right now."; },
+      impact: function(d) { return "With the " + (d.feedType||'feed') + " silent, no player events are coming through to FT. That means segmentation, triggered Activities and Lifecycles are all on hold until events start flowing again."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that nothing's coming through from your " + brand + " {feedType} — we wanted to let you know straight away."; },
+      impact: function(d) { return "Event ingestion from your " + (d.feedType||'feed') + " has stopped, so FT isn't seeing player activity. Real-time segmentation and any event-driven Activities or Lifecycles are paused for now."; }
+    }
+  ],
+
+  activity_manager: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Activity Manager on " + brand + " — recurring activities aren't firing as they should, and our monitoring caught it."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Lifecycle activities driven by real-time events — Registration, Login, Payment and custom events — aren't running for now.";
+        return "Recurring Activities and Lifecycle entry conditions that respond to real-time events (Registration, Login, Payment, custom events) aren't firing at the moment.";
+      }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Activity Manager for " + brand + " is backing up. The processing queue is behind and activities are stalling."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Lifecycle activities triggered by real-time events aren't running. Registration, Login, Payment and custom event triggers are all affected.";
+        return "Recurring Activities and Lifecycle entry conditions aren't processing right now. Any trigger built on Registration, Login, Payment or custom events is stalled.";
+      }
+    },
+    {
+      opening: function(brand) { return "Our monitoring picked up a problem with the Activity Manager on " + brand + " — it's not processing events the way it should, and we're looking into it."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Lifecycle activities that respond to real-time events are paused for now. This covers Registration, Login, Payment and custom event triggers.";
+        return "Real-time event triggers for Activities and Lifecycles aren't running. Registration, Login, Payment and custom events are all affected while this is ongoing.";
+      }
+    }
+  ],
+
+  activity_manager_time: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the time-based scheduler on " + brand + " — activities set to run on a schedule aren't firing, and our monitoring flagged it."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Lifecycle activities on time triggers (for example, ones set to run every minute) aren't executing right now.";
+        return "Recurring Activities and Lifecycle entry conditions on time triggers (for example, set to run every minute) aren't firing at the moment.";
+      }
+    },
+    {
+      opening: function(brand) { return "Heads up — the time scheduler for " + brand + " is lagging. Anything set to run on a schedule is stalling."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Lifecycle activities that run on a schedule (e.g. every minute) aren't executing on time.";
+        return "Recurring Activities and Lifecycles that fire on a schedule aren't running. Anything set to a fixed interval is stalled for now.";
+      }
+    },
+    {
+      opening: function(brand) { return "Our monitoring picked up that time-triggered activities on " + brand + " aren't processing — we're already digging in."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Lifecycles') > -1) return "Time-triggered Lifecycle activities are paused. Anything set to run every minute or on a schedule isn't executing right now.";
+        return "Time-based Activity and Lifecycle triggers have stopped running. Any recurring logic on a schedule (e.g. per-minute jobs) is affected for now.";
+      }
+    }
+  ],
+
+  activity_fire: [
+    {
+      opening: function(brand) { return "We're seeing an issue with Activity firing on " + brand + " — execution is currently {fireStatus}, and our monitoring caught it."; },
+      impact: function(d) { return "The firing of recurring Activities and Lifecycle launch configurations is " + (d.fireStatus||'stopped') + " right now."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Activity Fire service for " + brand + " isn't executing. Activities aren't launching as they should."; },
+      impact: function(d) { return "Recurring Activity fires and Lifecycle launch configurations are " + (d.fireStatus||'stopped') + ". Nothing downstream of the fire queue is running for now."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that the Activity Fire queue on " + brand + " is {fireStatus} — activities aren't launching, and we're on it."; },
+      impact: function(d) { return "Activity firing and Lifecycle launch configurations are " + (d.fireStatus||'stopped') + " while the execution queue catches up."; }
+    }
+  ],
+
+  singularity: [
+    {
+      opening: function(brand) { return "We're seeing an issue with Singularity on " + brand + " — Player Feature computations aren't running, and our monitoring picked it up."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Time') > -1) return "Player Feature computations scheduled to run at set times of day aren't executing right now.";
+        return "Player Feature computations driven by real-time events (Registration, Login, Payment) aren't executing, and the recurring Activities that depend on them are affected too.";
+      }
+    },
+    {
+      opening: function(brand) { return "Heads up — Singularity on " + brand + " is falling behind. Player Feature computations are stalling."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Time') > -1) return "Scheduled Player Feature computations aren't running on time. Features set to compute at a particular hour of day are affected.";
+        return "Real-time Player Feature computations are stalled. Features driven by Registration, Login and Payment events aren't updating, and downstream Activities aren't triggering.";
+      }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that Singularity on " + brand + " isn't processing Player Feature computations as expected — we're looking into it now."; },
+      impact: function(d) {
+        if((d.subservice||'').indexOf('Time') > -1) return "Time-based Player Feature computations are paused. Anything scheduled to compute at a specific time of day isn't running for now.";
+        return "Real-time Player Feature computations are paused. This affects features driven by Registration, Login and Payment events, plus any Activities that rely on them.";
+      }
+    }
+  ],
+
+  clickhouse: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Clickhouse writer on " + brand + " — database writes are backing up, and our monitoring caught it."; },
+      impact: function() { return "You may notice delays or gaps in Conversion and Performance data in Data Studio, and Player Feature movement data could be temporarily behind."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — write latency on the " + brand + " Clickhouse service has spiked and data is queuing up."; },
+      impact: function() { return "Conversion and Performance reporting in Data Studio may lag or look inconsistent for a while, and Player Feature movements could be a little behind until writes catch up."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that Clickhouse writes on " + brand + " aren't completing at normal speed — we're already on it."; },
+      impact: function() { return "Data Studio Conversion and Performance figures may not reflect the very latest activity yet, and Player Feature movements could show a short lag until the backlog clears."; }
+    }
+  ],
+
+  consent: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Consent Manager on " + brand + " — player opt-out updates aren't processing, and our monitoring caught it."; },
+      impact: function() { return "Consent changes like Email or SMS opt-outs aren't being applied in real time. Until we fix this, players who've unsubscribed may still receive communications — so this one matters to get right quickly."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Consent Manager for " + brand + " isn't applying player preference updates right now."; },
+      impact: function() { return "Opt-outs and consent changes aren't going through. While that's the case, players who have unsubscribed could still get communications they've opted out of — we're treating it with priority."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that consent updates on " + brand + " aren't coming through from your platform — we wanted to flag it to you right away."; },
+      impact: function() { return "Player consent updates aren't being processed in real time, so recent opt-outs or preference changes may not be reflected yet. That can mean affected players receive unwanted communications, so we're prioritising it."; }
+    }
+  ],
+
+  ds_player: [
+    {
+      opening: function(brand) { return "We're seeing a delay in the Player Activity Calculator on " + brand + " — segment field recalculations are running behind, and our monitoring caught it."; },
+      impact: function() { return "Calculated player activity Segment Fields aren't updating right now. Recent deposits and activity may not be reflected yet, so Segment results could be a little off until it catches up."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Player Activity Calculator for " + brand + " is falling behind on segment calculations."; },
+      impact: function() { return "Some player activity Segment Fields are behind. Recent deposits and behaviour may not be counted yet, so Segment membership could be slightly inaccurate until the calculator recovers."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that segment recalculations on " + brand + " aren't completing normally — we're already looking into it."; },
+      impact: function() { return "Segment Fields based on calculated player activity are lagging. Recent deposits and events may not be factored in yet, which can temporarily affect how players fall into segments."; }
+    }
+  ],
+
+  reconciliation: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Reconciliation Service on " + brand + " — automated discrepancy checks are offline, and our monitoring caught it."; },
+      impact: function() { return "We're not automatically detecting or correcting mismatches between your platform and FT right now. Anything that drifts out of sync during this window won't be auto-resolved, so we'll keep a close eye on it."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — reconciliation cycles for " + brand + " aren't completing. Our automated consistency checks have paused."; },
+      impact: function() { return "The service that normally catches and corrects data mismatches between your platform and FT isn't running. Any discrepancies that come up in this window may need a manual look once we're back."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that data consistency checks on " + brand + " aren't running — we wanted to let you know proactively."; },
+      impact: function() { return "Automated reconciliation between your platform and FT is paused for now. Mismatches that surface during this window won't be caught automatically, so we'll be watching closely until it's restored."; }
+    }
+  ],
+
+  email_sms: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the {channel} Distributor on " + brand + " — sends have stopped, and our monitoring caught it."; },
+      impact: function(d) { var ch = d.subservice||'Email/SMS'; return ch + " sends from your Activities and Lifecycles have stopped. Players aren't receiving these communications until we're back up."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the {channel} Distributor for " + brand + " is stalled and messages aren't going out."; },
+      impact: function(d) { var ch = d.subservice||'Email/SMS'; return "The " + ch + " send queue isn't processing, so no " + ch + " messages are going out from your Activities or Lifecycles right now."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that {channel} sends on " + brand + " aren't going out — we're already on it."; },
+      impact: function(d) { var ch = d.subservice||'Email/SMS'; return ch + " delivery from your Activities and Lifecycles has paused. Players won't receive these messages until we restore the service."; }
+    }
+  ],
+
+  bonus: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Bonus Distributor on " + brand + " — bonus credits have stopped processing, and our monitoring caught it."; },
+      impact: function() { return "Bonus credits like Free Spins and Bonus Funds from your Activities and Lifecycles aren't being issued. Players aren't receiving their bonuses until we're back up."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Bonus Distributor for " + brand + " is stalled and credits aren't going through."; },
+      impact: function() { return "The bonus queue isn't processing, so Free Spins and Bonus Funds triggered by your Activities and Lifecycles aren't reaching players right now."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that bonus issuance on " + brand + " has stopped — we wanted to flag it to you quickly given players are waiting."; },
+      impact: function() { return "Bonus distribution from your Activities and Lifecycles has paused. Players due to receive Free Spins or Bonus Funds won't get them until we restore the service."; }
+    }
+  ],
+
+  notification: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Notification Distributor on " + brand + " — on-site messages aren't being delivered, and our monitoring caught it."; },
+      impact: function() { return "On-site notifications and Rich Inbox messages from your Activities and Lifecycles aren't reaching players right now."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Notification Distributor for " + brand + " is stalled and messages aren't going out."; },
+      impact: function() { return "On-site notifications and Rich Inbox messages aren't being delivered, so players won't see them in the product until the queue is back."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that notification delivery on " + brand + " has stopped — we're already looking into it."; },
+      impact: function() { return "On-site notification and Rich Inbox delivery from your Activities and Lifecycles has paused. No player-facing messages of this type are going out for now."; }
+    }
+  ],
+
+  callback: [
+    {
+      opening: function(brand) { return "We're seeing an issue with the Callback Consumer on " + brand + " — custom webhook actions aren't completing, and our monitoring caught it."; },
+      impact: function() { return "Custom Callback actions in your Activities and Lifecycles aren't going through. They'll stay pending until we restore the service."; }
+    },
+    {
+      opening: function(brand) { return "Heads up — the Callback Consumer for " + brand + " is backing up and custom actions aren't completing."; },
+      impact: function() { return "The callback queue is stalled, so custom webhook actions from your Activities and Lifecycles aren't completing — they'll queue until we're back."; }
+    },
+    {
+      opening: function(brand) { return "Our monitoring flagged that outbound webhook calls on " + brand + " are failing — we're on it now."; },
+      impact: function() { return "Custom Callback actions from your Activities and Lifecycles aren't completing. Pending callbacks will stay queued until we restore the service."; }
+    }
+  ]
+
+};
+
+// ─── CAUSE ACTION VARIANTS ────────────────────────────────────
+var causeActionVariants = {
+  operator: [
+    "What we need from you:\nThe debug logs above show the error coming from your Operator API. Could you raise this with your Platform team and reply here? We're standing by and will pick it straight back up the moment you have something.",
+    "Over to you for the next step:\nFrom the logs above, the error is originating on your Operator API. Once your Platform team has taken a look, drop us a reply here — we'll jump straight back in to help.",
+    "How we move this forward:\nThe logs above point to an error on your Operator API. If your Platform team can investigate and share what they find, we'll be right here ready to help close it out."
+  ],
+  provider: [
+    "What we need from you:\nThe debug logs above show the error coming from your provider. Could you raise it with them and let us know what they say? We'll be ready to help the moment you have an update.",
+    "Over to you for the next step:\nFrom the logs above, this is coming from your provider's API. Once you've been in touch with them, reply here and we'll pick it straight back up.",
+    "How we move this forward:\nThe logs above point to your provider's side. If you can reach out to them and share their response here, we'll take it from there together."
+  ],
+  platform: [
+    "What we need from you:\nThe logs above show the error coming from your Platform. Could you check with your team and reply here? We're standing by and will pick it straight back up once you have an update.",
+    "Over to you for the next step:\nFrom the logs above, the error is originating on your Platform. Once your team has investigated, drop us a line here — we'll jump straight back in.",
+    "How we move this forward:\nThe logs above point to your Platform side. If your team can take a look and share what they find, we'll be right here ready to help."
+  ],
+  no_events: [
+    "What we need from you:\nWe're not seeing any events from your feed at the moment. Could you confirm with your team whether that's expected? If it isn't, a quick look on your side at what may have stopped sending would help — and we'll dig in with you.",
+    "Over to you for the next step:\nNothing's coming through from your feed right now. If this isn't intentional, could you check with your team what might have paused sending and let us know? We'll help from our end as soon as you have a sense of it.",
+    "How we move this forward:\nYour feed has gone quiet from our side. Please confirm with your team whether that's deliberate — and if not, reply here and we'll investigate it together."
+  ],
+  pusher: [
+    "What we need from you:\nThe logs above show the error coming from your Pusher.com service. Could you check with your team or Pusher support and reply here? We're standing by to help once you have an update.",
+    "Over to you for the next step:\nFrom the logs above, this is on the Pusher.com side. Once you've reached out to your team or Pusher, drop us a reply — we'll jump back in to help.",
+    "How we move this forward:\nThe logs above point to your Pusher service. If you can loop in your team or Pusher and share what they say, we'll be right here ready to help close it out."
+  ],
+  config: [
+    "What we need from you:\nWe've traced this to the configuration of Activity <activity_id>. A quick review and adjustment of <reason for misconfiguration> should clear it — and if you'd like a hand, just say the word and we'll walk through it with you.",
+    "Over to you for the next step:\nThis comes down to how Activity <activity_id> is set up. Adjusting <reason for misconfiguration> should resolve it. Happy to guide you through it if that's easier — just reply here.",
+    "How we move this forward:\nThe cause is a configuration issue in Activity <activity_id>. Updating <reason for misconfiguration> should fix it. Let us know if you'd like us to take a look alongside you."
+  ],
+  internal: [
+    "No action needed on your side — this one's on us.\nOur team is on it right now and treating it as a priority. We'll be back here with an update very soon, and immediately if anything changes.",
+    "Nothing needed from you — we've got this.\nThe team is actively working on a fix. We'll keep you closely in the loop and post again as soon as we have something concrete.",
+    "You don't need to do anything here — leave it with us.\nWe're on it and focused on getting you back to normal. Expect a further update from us shortly, sooner if the picture changes."
+  ],
+  investigating: [
+    "No action needed on your side — this one's on us.\nOur team is actively investigating the root cause. We'll confirm what's behind it and what's next very soon, and we'll keep you posted throughout.",
+    "Nothing needed from you — we've got this.\nWe're digging into the root cause now. We'll update this thread the moment we know more — you won't be left wondering.",
+    "You don't need to do anything here — leave it with us.\nThe team is investigating now. We'll come back with the cause and our next steps shortly, and keep you in the loop until it's resolved."
+  ]
+};
+
+// ─── SERVICE DEFINITIONS ─────────────────────────────────────
+var services = {
+  integration_consumer: {
+    label: 'Integration Consumer',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional — overrides opening)', type:'textarea', ph:'e.g. Integration service returning 5xx — real-time event processing has stopped' }
+    ],
+    hasRewards: true,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  rabbit_kafka: {
+    label: 'Rabbit / Kafka / Incoming Events',
+    causeModes: ['platform','no_events','internal','investigating'],
+    extraFields: [
+      { id:'feedType', label:'Feed type', type:'select', opts:['RabbitMQ queue','Kafka topic','REST integration'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. No events received from RabbitMQ queue for 15+ minutes' }
+    ],
+    hasRewards: false,
+    causeLabels: { platform:'Platform API issue', no_events:'No events / silent feed', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  activity_manager: {
+    label: 'Activity Manager',
+    causeModes: ['config','internal','investigating'],
+    extraFields: [
+      { id:'subservice', label:'Affected service', type:'select', opts:['Activity Manager','Activity Manager Lifecycles'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Activity Manager queue backing up' }
+    ],
+    hasRewards: false,
+    causeLabels: { config:'Incorrect activity setup', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  activity_manager_time: {
+    label: 'Activity Manager Time',
+    causeModes: ['config','internal','investigating'],
+    extraFields: [
+      { id:'subservice', label:'Affected service', type:'select', opts:['Activity Manager Time','Activity Manager Lifecycles Time'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Time-based scheduler lagging' }
+    ],
+    hasRewards: false,
+    causeLabels: { config:'Heavy / misconfigured activity', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  activity_fire: {
+    label: 'Activity Manager Fire',
+    causeModes: ['config','internal','investigating'],
+    extraFields: [
+      { id:'fireStatus', label:'Status', type:'select', opts:['stopped','delayed'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Activity fire queue stalled' }
+    ],
+    hasRewards: false,
+    causeLabels: { config:'Heavy / misconfigured activity', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  singularity: {
+    label: 'Singularity RTD / Time',
+    causeModes: ['config','internal','investigating'],
+    extraFields: [
+      { id:'subservice', label:'Affected service', type:'select', opts:['Singularity Real-Time (RTD)','Singularity Time'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Singularity RTD processor falling behind' }
+    ],
+    hasRewards: false,
+    causeLabels: { config:'Heavy / misconfigured computation', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  clickhouse: {
+    label: 'Clickhouse Writer',
+    causeModes: ['internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Clickhouse write latency spiked' }
+    ],
+    hasRewards: false,
+    causeLabels: { internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  consent: {
+    label: 'Consent Manager',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Consent Manager returning errors' }
+    ],
+    hasRewards: false,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  ds_player: {
+    label: 'DS Player Activity Calculator',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. ds-player-activity-calculator lag detected' }
+    ],
+    hasRewards: false,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  reconciliation: {
+    label: 'Reconciliation Service',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Reconciliation cycles not completing' }
+    ],
+    hasRewards: false,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  email_sms: {
+    label: 'Email / SMS Distributor',
+    causeModes: ['provider','internal','investigating'],
+    extraFields: [
+      { id:'subservice', label:'Channel', type:'select', opts:['Email','SMS','Email and SMS'] },
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Email distributor queue stalled' }
+    ],
+    hasRewards: false,
+    causeLabels: { provider:'Provider API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  bonus: {
+    label: 'Bonus Distributor',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Bonus distributor queue stalled' }
+    ],
+    hasRewards: false,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  notification: {
+    label: 'Notification Distributor',
+    causeModes: ['pusher','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Notification distributor errors — Pusher connection failures' }
+    ],
+    hasRewards: false,
+    causeLabels: { pusher:'Pusher.com service issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  },
+  callback: {
+    label: 'Callback Consumer',
+    causeModes: ['operator','internal','investigating'],
+    extraFields: [
+      { id:'detected', label:'What monitoring detected (optional)', type:'textarea', ph:'e.g. Callback consumer stalled — webhook actions not completing' }
+    ],
+    hasRewards: false,
+    causeLabels: { operator:'Operator API issue', internal:'Internal / FT issue', investigating:'Still investigating' }
+  }
+};
+
+// ─── RENDER ──────────────────────────────────────────────────
+function render() {
+  var svcKey    = state.service;
+  var svc       = services[svcKey];
+  var causeType = state.causeType;
+  var msgType   = state.msgType;
+  var vi        = state.variant;
+
+  var brand     = v('brand')     || '<brand_name>';
+  var rawDate   = v('startDate');
+  var rawTime   = v('startTime');
+  var startTime = buildStarted(rawDate, rawTime, state.tz);
+  var timeAgo   = buildTimeAgo(rawDate, rawTime, state.tz);
+  var startedLine = 'Started: ' + startTime + (timeAgo ? ' (' + timeAgo + ')' : '');
+
+  var incId       = v('incidentId') || '<Incident ID>';
+  var causeDetail = v('causeDetail') || '<cause>';
+  var debugLogs   = v('debugLogs');
+  var resolution  = v('resolution') || "We identified the root cause and applied a fix, and we've confirmed the service is running normally again. We'll follow up with a full post-incident report shortly.";
+
+  // Next update by
+  var nuTime       = v('nextUpdateTime');
+  var nuDate       = v('nextUpdateDate');
+  var nextUpdateStr = nuTime ? buildStarted(nuDate, nuTime, state.tz) : null;
+
+  // Resolved time + duration
+  var resDate       = v('resolvedDate');
+  var resTime       = v('resolvedTime');
+  var resolvedStr   = resTime ? buildStarted(resDate, resTime, state.tz) : '<resolved_time>';
+  var durationStr   = buildDuration(rawDate, rawTime, resDate, resTime, state.tz);
+
+  // TZ hint
+  var tzHint = document.getElementById('tzHint');
+  if(tzHint) tzHint.textContent = (rawTime && state.tz !== 'UTC') ? 'Shown as ' + startTime + ' in the message.' : '';
+
+  var dynData = {};
+  (svc.extraFields || []).forEach(function(f) {
+    var el = document.getElementById('f_' + f.id);
+    if(el) dynData[f.id] = el.value;
+  });
+  if(svc.hasRewards) {
+    var rewEl = document.getElementById('tog_rewards');
+    dynData.rewards = rewEl && rewEl.checked;
+  }
+
+  var partnerAction = (['internal','investigating'].indexOf(causeType) === -1);
+  var variantSet    = variants[svcKey];
+  var actionArr     = causeActionVariants[causeType] || [''];
+  var lines = [];
+
+  // ── RESOLVED ──────────────────────────────────────────────
+  if(msgType === 'resolved') {
+    var resolvedOpenings = [
+      "Good news — the " + svc.label + " issue on " + brand + " is fully resolved and everything's back to normal.",
+      "We're back up. The " + svc.label + " issue on " + brand + " has been resolved, and service is running normally again.",
+      "All clear on " + brand + " — the " + svc.label + " issue is resolved and things are running as they should."
+    ];
+    var resolvedClosings = [
+      "Thanks for bearing with us. If you spot anything that still looks off, reply here and we'll take a look right away.",
+      "Appreciate your patience while we sorted this. If anything still seems off on your side, just let us know and we'll jump on it.",
+      "Thanks for your patience throughout. Do flag it here if you notice any lingering impact — we'll be straight onto it."
+    ];
+    lines.push('[RESOLVED] ' + brand + ' — ' + svc.label);
+    lines.push('');
+    lines.push('Hi team,');
+    lines.push('');
+    lines.push(resolvedOpenings[vi]);
+    lines.push('');
+    lines.push('Started: ' + startTime);
+    lines.push('Resolved: ' + resolvedStr);
+    if(durationStr) lines.push('Duration: ' + durationStr);
+    lines.push('');
+    lines.push('Resolution: ' + resolution);
+    lines.push('');
+    lines.push(resolvedClosings[vi]);
+    lines.push('FT Incident reference: ' + incId);
+
+  // ── UPDATE ────────────────────────────────────────────────
+  } else if(msgType === 'update') {
+    var updateOpenings = [
+      "We're still on the " + svc.label + " issue for " + brand + " — here's a quick update on where things stand.",
+      "Quick update on the ongoing " + svc.label + " incident for " + brand + ".",
+      "We wanted to keep you in the loop on the " + svc.label + " issue for " + brand + " — here's where we are."
+    ];
+    lines.push('Update — ' + brand + ' — ' + svc.label);
+    lines.push('');
+    lines.push('Hi team,');
+    lines.push('');
+    lines.push(updateOpenings[vi]);
+    lines.push('');
+    lines.push(startedLine);
+    lines.push('');
+    lines.push('Current status: ' + causeDetail);
+    if(debugLogs && debugLogs.trim()) {
+      lines.push('');
+      appendDebugLogs(lines, debugLogs, state.platform);
+    }
+    lines.push('');
+    lines.push(actionArr[vi] || actionArr[0]);
+    lines.push('');
+    if(nextUpdateStr) lines.push('Next update by: ' + nextUpdateStr);
+    lines.push('FT Incident reference: ' + incId);
+
+  // ── ACTIVE ────────────────────────────────────────────────
+  } else {
+    var salutation = partnerAction ? '@channel' : 'Hi team,';
+    lines.push('Active Incident — ' + brand + ' — ' + svc.label);
+    lines.push('');
+    lines.push(salutation);
+    lines.push('');
+
+    var openingFn = variantSet && variantSet[vi] ? variantSet[vi].opening : null;
+    var detected  = (dynData.detected && dynData.detected.trim()) ? dynData.detected.trim() : null;
+    var opening   = detected ? detected : (openingFn ? openingFn(brand) : 'Our monitors have triggered on the ' + svc.label + ' for ' + brand + '.');
+    opening = opening
+      .replace('{feedType}',   dynData.feedType   || '<feed type>')
+      .replace('{channel}',    dynData.subservice || 'Email/SMS')
+      .replace('{fireStatus}', dynData.fireStatus || 'stopped');
+
+    lines.push(opening);
+    lines.push('');
+    lines.push(startedLine);
+    lines.push('');
+
+    var impactFn = variantSet && variantSet[vi] ? variantSet[vi].impact : null;
+    lines.push('Impact:');
+    lines.push(impactFn ? impactFn(dynData) : '');
+    lines.push('');
+    lines.push('Cause: ' + causeDetail);
+
+    if(debugLogs && debugLogs.trim()) {
+      lines.push('');
+      appendDebugLogs(lines, debugLogs, state.platform);
+    }
+
+    lines.push('');
+    lines.push(actionArr[vi] || actionArr[0]);
+    lines.push('');
+    if(nextUpdateStr) lines.push('Next update by: ' + nextUpdateStr);
+    lines.push('FT Incident reference: ' + incId);
+  }
+
+  lastMsg.html  = buildHtml(lines, state.platform);
+  lastMsg.plain = buildPlain(lines, state.platform);
+  document.getElementById('preview').innerHTML = lastMsg.html;
+
+  // Status bar colour
+  document.getElementById('statusBar').className = 'msg-status-bar ' + msgType;
+
+  // Variant buttons
+  document.querySelectorAll('.var-btn').forEach(function(b, i) {
+    b.classList.toggle('active', i === vi);
+  });
+
+  // Placeholder warning — any <token> remaining in plain text
+  var hasPlaceholders = /<[^>]+>/.test(lastMsg.plain);
+  document.getElementById('placeholderWarn').classList.toggle('show', hasPlaceholders);
+}
+
+function appendDebugLogs(lines, debugLogs, platform) {
+  if(platform === 'teams') {
+    lines.push('Debug logs (paste into a Code Block — /code or the format toolbar):');
+    debugLogs.trim().split('\n').forEach(function(l){ lines.push('    ' + l); });
+  } else {
+    lines.push('Debug logs:');
+    lines.push('```');
+    lines.push(debugLogs.trim());
+    lines.push('```');
+  }
+}
+
+// ─── HTML / PLAIN BUILDERS ────────────────────────────────────
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+var HEADING_LABELS = [
+  'Started','Resolved','Impact','Cause','Resolution','Debug logs',
+  'FT Incident reference','What we need from you','Over to you for the next step',
+  'How we move this forward','Current status','Next update by','Duration'
+];
+
+function splitHeading(line) {
+  if(/^Active Incident —/.test(line) || /^\[RESOLVED\]/.test(line) || /^Update —/.test(line)) {
+    return { head: line, rest: '' };
+  }
+  for(var k = 0; k < HEADING_LABELS.length; k++) {
+    var lab = HEADING_LABELS[k];
+    if(line.indexOf(lab + ':') === 0) {
+      return { head: lab + ':', rest: line.slice(lab.length + 1) };
+    }
+  }
+  return null;
+}
+
+function buildHtml(lines, platform) {
+  var out = [];
+  var i = 0;
+  var preStyle = 'font-family:Consolas,Monaco,monospace;font-size:12px;background:#f4f4f4;border:1px solid #e0e0e0;border-radius:4px;padding:8px 10px;white-space:pre-wrap;';
+  while(i < lines.length) {
+    var line = lines[i];
+    if(line === '```') {
+      var code = []; i++;
+      while(i < lines.length && lines[i] !== '```') { code.push(lines[i]); i++; }
+      i++;
+      out.push('<pre style="' + preStyle + '"><code>' + esc(code.join('\n')) + '</code></pre>');
+      continue;
+    }
+    if(/^Debug logs \(paste into a Code Block/.test(line)) {
+      out.push('<strong>Debug logs:</strong>'); i++;
+      var code2 = [];
+      while(i < lines.length && lines[i].indexOf('    ') === 0) { code2.push(lines[i].slice(4)); i++; }
+      if(code2.length) out.push('<pre style="' + preStyle + '"><code>' + esc(code2.join('\n')) + '</code></pre>');
+      continue;
+    }
+    var hd = splitHeading(line);
+    if(hd) {
+      out.push('<strong>' + esc(hd.head) + '</strong>' + esc(hd.rest).replace(/\n/g,'<br>'));
+    } else {
+      out.push(esc(line).replace(/\n/g,'<br>'));
+    }
+    i++;
+  }
+  return out.join('<br>');
+}
+
+function buildPlain(lines, platform) {
+  var mark = (platform === 'teams') ? '**' : '*';
+  var out = [];
+  var i = 0;
+  while(i < lines.length) {
+    var line = lines[i];
+    if(line === '```') {
+      out.push(line); i++;
+      while(i < lines.length && lines[i] !== '```') { out.push(lines[i]); i++; }
+      if(i < lines.length) { out.push(lines[i]); i++; }
+      continue;
+    }
+    if(/^Debug logs \(paste into a Code Block/.test(line)) {
+      out.push(line); i++;
+      while(i < lines.length && lines[i].indexOf('    ') === 0) { out.push(lines[i]); i++; }
+      continue;
+    }
+    var hd = splitHeading(line);
+    out.push(hd ? mark + hd.head + mark + hd.rest : line);
+    i++;
+  }
+  return out.join('\n');
+}
+
+function v(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+// ─── TIME HELPERS ─────────────────────────────────────────────
+function buildStarted(dateStr, timeStr, tz) {
+  if(!timeStr) return dateStr ? dateStr + ' <time> UTC' : '<time>';
+  var offset = (tz === 'CEST') ? 2 : (tz === 'CET') ? 1 : 0;
+  var parts  = timeStr.split(':');
+  var min    = parts[1] || '00';
+
+  if(dateStr) {
+    var d = new Date(dateStr + 'T' + timeStr + ':00Z');
+    if(isNaN(d.getTime())) return dateStr + ' ' + timeStr + ' UTC';
+    d.setUTCHours(d.getUTCHours() - offset);
+    var Y  = d.getUTCFullYear();
+    var Mo = ('0' + (d.getUTCMonth() + 1)).slice(-2);
+    var Da = ('0' + d.getUTCDate()).slice(-2);
+    var Hh = ('0' + d.getUTCHours()).slice(-2);
+    var Mm = ('0' + d.getUTCMinutes()).slice(-2);
+    return Y + '-' + Mo + '-' + Da + ' ' + Hh + ':' + Mm + ' UTC';
+  }
+
+  var h = parseInt(parts[0], 10) - offset;
+  var dayShift = 0;
+  if(h < 0)   { h += 24; dayShift = -1; }
+  if(h >= 24) { h -= 24; dayShift =  1; }
+  var out = ('0' + h).slice(-2) + ':' + min + ' UTC';
+  if(dayShift === -1) out += ' (previous day)';
+  return out;
+}
+
+function buildTimeAgo(dateStr, timeStr, tz) {
+  if(!dateStr || !timeStr) return null;
+  var offset = (tz === 'CEST') ? 2 : (tz === 'CET') ? 1 : 0;
+  var d = new Date(dateStr + 'T' + timeStr + ':00Z');
+  if(isNaN(d.getTime())) return null;
+  d.setUTCHours(d.getUTCHours() - offset);
+  var diffMs = Date.now() - d.getTime();
+  if(diffMs < 0) return null;
+  var mins = Math.floor(diffMs / 60000);
+  if(mins < 1)  return '< 1 min ago';
+  if(mins < 60) return mins + ' min ago';
+  var h = Math.floor(mins / 60), m = mins % 60;
+  return h + 'h' + (m ? ' ' + m + 'm' : '') + ' ago';
+}
+
+function buildDuration(startDate, startTime, endDate, endTime, tz) {
+  if(!startDate || !startTime || !endDate || !endTime) return null;
+  var offset = (tz === 'CEST') ? 2 : (tz === 'CET') ? 1 : 0;
+  var s = new Date(startDate + 'T' + startTime + ':00Z');
+  var e = new Date(endDate   + 'T' + endTime   + ':00Z');
+  if(isNaN(s.getTime()) || isNaN(e.getTime())) return null;
+  s.setUTCHours(s.getUTCHours() - offset);
+  e.setUTCHours(e.getUTCHours() - offset);
+  var diffMs = e.getTime() - s.getTime();
+  if(diffMs <= 0) return null;
+  var mins = Math.floor(diffMs / 60000);
+  var h = Math.floor(mins / 60), m = mins % 60;
+  if(h === 0) return m + 'm';
+  return h + 'h' + (m ? ' ' + m + 'm' : '');
+}
+
+// ─── UI HANDLERS ──────────────────────────────────────────────
+function setVariant(i) { state.variant = i; render(); }
+
+function setPlatform(p) {
+  state.platform = p;
+  document.getElementById('platSlack').classList.toggle('active', p === 'slack');
+  document.getElementById('platTeams').classList.toggle('active', p === 'teams');
+  render();
+}
+
+function setTz(tz, el) {
+  state.tz = tz;
+  document.querySelectorAll('.tz-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  render();
+}
+
+function setMsgType(type) {
+  state.msgType = type;
+
+  ['active','update','resolved'].forEach(function(t) {
+    var btn = document.getElementById('msgtype' + t.charAt(0).toUpperCase() + t.slice(1));
+    if(btn) btn.classList.toggle('active', t === type);
+  });
+
+  var nextGrp = document.getElementById('nextUpdateGroup');
+  if(nextGrp) nextGrp.classList.toggle('show', type === 'active' || type === 'update');
+
+  var resSec = document.getElementById('resolvedSection');
+  if(resSec) resSec.classList.toggle('show', type === 'resolved');
+
+  var lbl = document.getElementById('causeDetailLabel');
+  var ta  = document.getElementById('causeDetail');
+  if(type === 'update') {
+    if(lbl) lbl.textContent = 'Current status / findings';
+    if(ta)  ta.placeholder  = 'Describe current status or latest findings...';
+  } else {
+    if(lbl) lbl.textContent = 'Cause detail';
+    if(ta)  ta.placeholder  = 'Describe the specific cause...';
+  }
+
+  render();
+}
+
+function setNow() {
+  var n = new Date();
+  var dEl = document.getElementById('startDate');
+  var tEl = document.getElementById('startTime');
+  if(dEl) dEl.value = n.getFullYear() + '-' + ('0'+(n.getMonth()+1)).slice(-2) + '-' + ('0'+n.getDate()).slice(-2);
+  if(tEl) tEl.value = ('0'+n.getHours()).slice(-2) + ':' + ('0'+n.getMinutes()).slice(-2);
+  render();
+}
+
+function setResolvedNow() {
+  var n = new Date();
+  var dEl = document.getElementById('resolvedDate');
+  var tEl = document.getElementById('resolvedTime');
+  if(dEl) dEl.value = n.getFullYear() + '-' + ('0'+(n.getMonth()+1)).slice(-2) + '-' + ('0'+n.getDate()).slice(-2);
+  if(tEl) tEl.value = ('0'+n.getHours()).slice(-2) + ':' + ('0'+n.getMinutes()).slice(-2);
+  render();
+}
+
+// ─── SERVICE SWITCH ───────────────────────────────────────────
+function setService(key, el) {
+  state.service = key;
+  state.variant = 0;
+  document.querySelectorAll('.service-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  buildServiceFields();
+  buildCauseBtns();
+  buildToggles();
+  render();
+}
+
+function buildServiceFields() {
+  var svc = services[state.service];
+  var container = document.getElementById('serviceFields');
+  container.innerHTML = '';
+  (svc.extraFields || []).forEach(function(f) {
+    var div = document.createElement('div');
+    div.className = 'form-group';
+    var lbl = document.createElement('label');
+    lbl.className = 'form-label';
+    lbl.textContent = f.label;
+    lbl.setAttribute('for', 'f_' + f.id);
+    div.appendChild(lbl);
+    var input;
+    if(f.type === 'textarea') {
+      input = document.createElement('textarea');
+      input.placeholder = f.ph || '';
+    } else if(f.type === 'select') {
+      input = document.createElement('select');
+      (f.opts || []).forEach(function(o) {
+        var opt = document.createElement('option');
+        opt.value = o; opt.textContent = o;
+        input.appendChild(opt);
+      });
+    } else {
+      input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = f.ph || '';
+    }
+    input.id = 'f_' + f.id;
+    input.addEventListener('input', render);
+    input.addEventListener('change', render);
+    div.appendChild(input);
+    container.appendChild(div);
+  });
+}
+
+function buildCauseBtns() {
+  var svc = services[state.service];
+  var group = document.getElementById('causeGroup');
+  group.innerHTML = '';
+  var modes = svc.causeModes || ['internal'];
+  state.causeType = modes[0];
+  modes.forEach(function(m, i) {
+    var btn = document.createElement('button');
+    btn.className = 'cause-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = svc.causeLabels[m] || m;
+    btn.onclick = function() { setCause(m, btn); };
+    group.appendChild(btn);
+  });
+  updateDebugLogsVisibility();
+}
+
+function buildToggles() {
+  var svc = services[state.service];
+  var container = document.getElementById('optionalToggles');
+  container.innerHTML = '';
+  if(svc.hasRewards) {
+    var row = document.createElement('div');
+    row.className = 'toggle-row';
+    row.innerHTML = '<label class="toggle"><input type="checkbox" id="tog_rewards" onchange="render()"><span class="tslider"></span></label><label class="toggle-label" for="tog_rewards">Brand has Rewards enabled</label>';
+    container.appendChild(row);
+  }
+}
+
+function setCause(type, el) {
+  state.causeType = type;
+  document.querySelectorAll('.cause-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  updateDebugLogsVisibility();
+  render();
+}
+
+function updateDebugLogsVisibility() {
+  var showDebug = (['operator','provider','platform','pusher'].indexOf(state.causeType) > -1);
+  document.getElementById('debugLogsNote').classList.toggle('show', showDebug);
+}
+
+// ─── COPY ─────────────────────────────────────────────────────
+async function copyMsg() {
+  var plainText = lastMsg.plain;
+  var htmlText  = lastMsg.html;
+  var fullHtml  = '<!DOCTYPE html><html><body>' + htmlText + '</body></html>';
+
+  // Modern ClipboardItem API (HTTPS / localhost)
+  if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html':  new Blob([fullHtml],  { type: 'text/html'  }),
+          'text/plain': new Blob([plainText], { type: 'text/plain' })
+        })
+      ]);
+      showCopyToast();
+      return;
+    } catch(e) { /* fall through */ }
+  }
+
+  // Legacy execCommand fallback (file:// protocol)
+  var handler = function(e) {
+    e.clipboardData.setData('text/html',  htmlText);
+    e.clipboardData.setData('text/plain', plainText);
+    e.preventDefault();
+  };
+  var tmp = document.createElement('div');
+  tmp.setAttribute('contenteditable', 'true');
+  tmp.textContent = plainText;
+  tmp.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(tmp);
+  var range = document.createRange();
+  range.selectNodeContents(tmp);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  document.addEventListener('copy', handler);
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch(err) {}
+  document.removeEventListener('copy', handler);
+  sel.removeAllRanges();
+  document.body.removeChild(tmp);
+  if(ok) { showCopyToast(); } else if(navigator.clipboard) { navigator.clipboard.writeText(plainText).then(showCopyToast, function(){}); }
+}
+
+function copyPlain() {
+  var t = lastMsg.plain;
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(showCopyToast, function(){ legacyPlain(t); });
+  } else { legacyPlain(t); }
+}
+
+function legacyPlain(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showCopyToast(); } catch(e){}
+  document.body.removeChild(ta);
+}
+
+function showCopyToast() {
+  var t = document.getElementById('copyToast');
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+buildServiceFields();
+buildCauseBtns();
+buildToggles();
+setMsgType('active');        // sets initial visibility + triggers render()
+setInterval(render, 60000); // keep time-ago current
+</script>
+</body>
+</html>

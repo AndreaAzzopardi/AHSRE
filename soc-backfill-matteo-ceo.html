@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Backfill &amp; Matteo's Promotion — Fast Track</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ft-pink:        #E96092;
+    --ft-purple:      #832081;
+    --ft-blue:        #63B6E6;
+    --ft-yellow:      #FFDB14;
+    --ft-orange:      #F4A300;
+    --ft-dark-orange: #E54F35;
+    --white:          #ffffff;
+    --off-white:      #F9F7F9;
+    --mid-gray:       #E0D8E0;
+    --text-primary:   #1A0F1A;
+    --text-secondary: #5C4A5C;
+    --text-muted:     #8B7A8B;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%; overflow: hidden;
+    font-family: 'Inter Tight', Arial, sans-serif;
+    background: #14091A; color: var(--text-primary);
+  }
+
+  .stage {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 40px 72px;
+  }
+
+  .slide {
+    width: 100%; max-width: 1100px;
+    height: 0; padding-bottom: 56.25%;
+    position: relative;
+    background: var(--off-white);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    overflow: hidden;
+    display: none;
+  }
+  .slide.active { display: block; }
+
+  .slide-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    padding: 48px 64px 52px;
+  }
+  .slide-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  .slide-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 10px; color: var(--text-muted);
+    border-top: 1px solid var(--mid-gray); padding-top: 12px;
+    margin-top: auto; flex-shrink: 0;
+  }
+  .slide-foot-brand { font-weight: 700; color: var(--ft-purple); letter-spacing: 0.06em; }
+
+  /* ── Title slide ── */
+  .slide--title .slide-inner {
+    background: var(--ft-purple); color: var(--white);
+    padding: 56px 70px;
+  }
+  .slide--title::before {
+    content: ''; position: absolute;
+    top: -70px; right: -70px;
+    width: 320px; height: 320px; border-radius: 50%;
+    background: rgba(233,96,146,0.2); z-index: 1; pointer-events: none;
+  }
+  .slide--title::after {
+    content: ''; position: absolute;
+    bottom: -50px; left: 220px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(99,182,230,0.13); z-index: 1; pointer-events: none;
+  }
+  .slide--title .slide-inner > * { position: relative; z-index: 2; }
+  .slide--title .slide-foot { border-top-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+  .slide--title .slide-foot-brand { color: var(--ft-pink); }
+
+  .t-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--ft-pink); margin-bottom: 16px;
+  }
+  .t-main { font-size: 54px; font-weight: 800; line-height: 1.05; margin-bottom: 24px; }
+  .t-main span { color: var(--ft-pink); }
+  .t-sub {
+    font-size: 15px; color: rgba(255,255,255,0.76); line-height: 1.65;
+    max-width: 680px;
+    border-left: 3px solid var(--ft-pink); padding-left: 20px; margin-bottom: 28px;
+  }
+  .t-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .t-chip {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    padding: 6px 14px; border-radius: 20px;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+    color: rgba(255,255,255,0.88);
+  }
+
+  /* ── Section header ── */
+  .sh { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; flex-shrink: 0; }
+  .sh-badge {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .b-green  { background: #1B7A4A; color: var(--white); }
+  .b-orange { background: var(--ft-dark-orange); color: var(--white); }
+  .b-purple { background: var(--ft-purple); color: var(--white); }
+  .b-blue   { background: #2A7FB5; color: var(--white); }
+  .b-star   { background: var(--ft-orange); color: var(--white); }
+
+  .sh-ey { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+  .sh-t  { font-size: 26px; font-weight: 700; color: var(--text-primary); line-height: 1.15; }
+  .sh-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+  /* ── Stat row ── */
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat {
+    background: var(--white); border: 1px solid var(--mid-gray);
+    border-radius: 10px; padding: 18px 20px;
+    border-top: 3px solid var(--ft-purple);
+  }
+  .stat-n { font-size: 38px; font-weight: 800; color: var(--ft-purple); line-height: 1; margin-bottom: 8px; }
+  .stat-n.green  { color: #1B7A4A; }
+  .stat-n.orange { color: var(--ft-dark-orange); }
+  .stat-n.blue   { color: #2A7FB5; }
+  .stat.green  { border-top-color: #1B7A4A; }
+  .stat.orange { border-top-color: var(--ft-dark-orange); }
+  .stat.blue   { border-top-color: #2A7FB5; }
+  .stat-l { font-size: 11.5px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── Cards ── */
+  .g { display: grid; gap: 12px; }
+  .g2 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .c {
+    background: var(--white); border: 1px solid var(--mid-gray);
+    border-radius: 10px; padding: 14px 18px;
+  }
+  .c-red    { border-left: 3px solid var(--ft-dark-orange); }
+  .c-purple { border-left: 3px solid var(--ft-purple); }
+  .c-green  { border-left: 3px solid #1B7A4A; }
+  .c-blue   { border-left: 3px solid #2A7FB5; }
+
+  .c-ey { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+  .c-ey.red    { color: var(--ft-dark-orange); }
+  .c-ey.purple { color: var(--ft-purple); }
+  .c-ey.green  { color: #1B7A4A; }
+  .c-ey.blue   { color: #2A7FB5; }
+
+  .c p { font-size: 12px; color: var(--text-secondary); line-height: 1.55; }
+  .c p strong { color: var(--text-primary); font-weight: 600; }
+
+  /* ── Feature callout ── */
+  .fc {
+    background: var(--white); border: 1px solid var(--mid-gray);
+    border-left: 4px solid var(--ft-purple); border-radius: 10px;
+    padding: 22px 26px; margin-bottom: 16px;
+  }
+  .fc.green  { border-left-color: #1B7A4A; }
+  .fc.orange { border-left-color: var(--ft-dark-orange); }
+  .fc.pink   { border-left-color: var(--ft-pink); }
+
+  .fc-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ft-purple); margin-bottom: 8px;
+  }
+  .fc-label.green  { color: #1B7A4A; }
+  .fc-label.orange { color: var(--ft-dark-orange); }
+  .fc-label.pink   { color: var(--ft-pink); }
+
+  .fc-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+  .fc-text strong { color: var(--text-primary); font-weight: 600; }
+
+  /* ── Two-column split ── */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .split-left  {}
+  .split-right {}
+
+  /* ── Person card ── */
+  .person {
+    background: var(--ft-purple); color: var(--white);
+    border-radius: 10px; padding: 22px 24px; margin-bottom: 14px;
+    position: relative; overflow: hidden;
+  }
+  .person::after {
+    content: ''; position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(233,96,146,0.18);
+  }
+  .person > * { position: relative; z-index: 1; }
+  .person-name { font-size: 20px; font-weight: 800; margin-bottom: 3px; }
+  .person-role-from {
+    font-size: 11px; color: rgba(255,255,255,0.55);
+    text-decoration: line-through; margin-bottom: 4px;
+  }
+  .person-role-to {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--ft-pink); color: var(--white); margin-bottom: 12px;
+  }
+  .person-desc { font-size: 12px; color: rgba(255,255,255,0.82); line-height: 1.55; }
+
+  /* ── Arrow connector ── */
+  .arrow-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--text-secondary);
+    margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .arrow-chip {
+    font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+  }
+  .chip-from { background: #FEE8E4; color: #B33A22; }
+  .chip-to   { background: #EDE8F8; color: #5A3A8A; }
+  .chip-arrow { font-size: 16px; color: var(--mid-gray); }
+
+  /* ── The ask block ── */
+  .ask {
+    background: var(--ft-purple); color: var(--white);
+    border-radius: 12px; padding: 24px 28px; margin-bottom: 16px;
+    position: relative; overflow: hidden;
+  }
+  .ask::before {
+    content: ''; position: absolute; bottom: -40px; right: -40px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: rgba(233,96,146,0.15);
+  }
+  .ask > * { position: relative; z-index: 1; }
+  .ask-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ft-pink); margin-bottom: 8px;
+  }
+  .ask-text { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.9); }
+  .ask-text strong { color: var(--white); font-weight: 700; }
+
+  /* ── Unlocks row ── */
+  .unlocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .unlock {
+    background: var(--white); border: 1px solid var(--mid-gray);
+    border-radius: 8px; padding: 12px 14px;
+    border-top: 3px solid #1B7A4A;
+  }
+  .unlock-n { font-size: 26px; font-weight: 800; color: #1B7A4A; line-height: 1; margin-bottom: 6px; }
+  .unlock-l { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  /* ── Bullet list ── */
+  .pts { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .pts li {
+    font-size: 13px; color: var(--text-secondary); line-height: 1.4;
+    padding-left: 16px; position: relative;
+  }
+  .pts li::before {
+    content: '–'; position: absolute; left: 0;
+    color: var(--text-muted); font-weight: 700;
+  }
+  .pts li strong { color: var(--text-primary); font-weight: 600; }
+
+  .person .pts li         { color: rgba(255,255,255,0.85); }
+  .person .pts li::before { color: rgba(255,255,255,0.4); }
+  .person .pts li strong  { color: var(--white); }
+
+  /* ── Nav ── */
+  .nav {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+    padding: 8px 14px; border-radius: 28px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: none; background: var(--off-white); color: var(--text-primary);
+    font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--ft-purple); color: var(--white); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-c { font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 50px; text-align: center; }
+
+  .nav-p { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.08); z-index: 100; }
+  .nav-pb { height: 100%; background: var(--ft-pink); transition: width 0.3s ease; }
+</style>
+</head>
+<body>
+
+<div class="nav-p"><div class="nav-pb" id="pb"></div></div>
+
+<div class="stage">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide slide--title active">
+    <div class="slide-inner">
+      <div class="slide-body">
+        <div class="t-label">Fast Track · SOC · June 2026</div>
+        <h1 class="t-main">One hire.<br><span>One promotion.</span></h1>
+        <p class="t-sub">Promote Matteo to Junior SRE. Backfill his seat. Both together — or neither works.</p>
+        <div class="t-chips">
+          <span class="t-chip">SOC headcount</span>
+          <span class="t-chip">Internal growth</span>
+          <span class="t-chip">Shift structure</span>
+          <span class="t-chip">GPTW</span>
+          <span class="t-chip">SRE maturity</span>
+        </div>
+      </div>
+      <div class="slide-foot">
+        <div class="slide-foot-brand">FAST TRACK</div>
+        <div>Confidential · Andrea Azzopardi, Head of SRE</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: WHAT WE'VE BUILT -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="sh">
+        <div class="sh-badge b-green">✓</div>
+        <div>
+          <div class="sh-ey">The foundation</div>
+          <div class="sh-t">Chapter one: delivered</div>
+          <div class="sh-sub">5 engineers. Built from scratch. 24/7 coverage from day one.</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="stat-row" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat green">
+            <div class="stat-n green">95%</div>
+            <div class="stat-l">24/7 shift coverage delivered by SOC — without SRE cover</div>
+          </div>
+          <div class="stat green">
+            <div class="stat-n green">90%</div>
+            <div class="stat-l">Alarms resolved without SRE or Dev escalation</div>
+          </div>
+          <div class="stat blue">
+            <div class="stat-n blue">100s hrs</div>
+            <div class="stat-l">Engineering time returned to Dev over the past year</div>
+          </div>
+          <div class="stat orange">
+            <div class="stat-n orange">24 / 7</div>
+            <div class="stat-l">Partner platform coverage — all shifts, all week</div>
+          </div>
+        </div>
+        <div class="fc green">
+          <div class="fc-label green">How — 1 Senior SOC + 4 SOC engineers</div>
+          <ul class="pts">
+            <li><strong>Matteo (Senior SOC)</strong> anchored fixed day shifts Mon–Fri — the knowledge backbone, escalation point, and team lead</li>
+            <li><strong>4 SOC engineers</strong> in rotation covered Day / Late / Night with confidence</li>
+            <li>Partners supported at any hour. Dev stayed focused on building.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="slide-foot"><div class="slide-foot-brand">FAST TRACK</div><div>2 / 5</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: THE 4-SOC CEILING -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="sh">
+        <div class="sh-badge b-orange">!</div>
+        <div>
+          <div class="sh-ey">The constraint</div>
+          <div class="sh-t">That same structure now limits chapter two</div>
+          <div class="sh-sub">This isn't a future risk — one team member departed months ago and we're already living it.</div>
+        </div>
+      </div>
+      <div class="slide-body" style="justify-content:flex-start;gap:12px;">
+        <div class="stat-row" style="grid-template-columns:1fr 1fr;margin-bottom:0;">
+          <div class="stat orange">
+            <div class="stat-n orange">65%</div>
+            <div class="stat-l">24/7 shift coverage by SOC with 4 engineers — SRE absorbing the remaining 35%</div>
+          </div>
+          <div class="stat orange">
+            <div class="stat-n orange">1,300</div>
+            <div class="stat-l">Alarms per month handled across just 4 engineers — and we're already reducing noise</div>
+          </div>
+        </div>
+        <div class="g g2">
+          <div class="c c-red">
+            <div class="c-ey red">SRE on-call is filling the gap</div>
+            <ul class="pts" style="margin-top:4px;">
+              <li>35% of shifts now require SRE to cover — <strong>during their own on-call period</strong></li>
+              <li>This is not additional capacity — it's borrowed time</li>
+              <li>Adding workload and fatigue to both teams simultaneously</li>
+            </ul>
+          </div>
+          <div class="c c-red">
+            <div class="c-ey red">Cognitive load & escalations</div>
+            <ul class="pts" style="margin-top:4px;">
+              <li>1,300 alarms across 4 engineers = <strong>325 per person per month</strong></li>
+              <li>High volume leaves no room for deeper product knowledge</li>
+              <li>More alarms handled = more escalations to SRE and Dev</li>
+            </ul>
+          </div>
+          <div class="c c-red">
+            <div class="c-ey red">Leave is no longer viable</div>
+            <ul class="pts" style="margin-top:4px;">
+              <li>4-person rotation has <strong>zero buffer</strong> for absence</li>
+              <li>Engineers are effectively unable to take meaningful leave</li>
+              <li>Sustained pressure compounds attrition risk further</li>
+            </ul>
+          </div>
+          <div class="c c-red">
+            <div class="c-ey red">Specialisation blocked</div>
+            <ul class="pts" style="margin-top:4px;">
+              <li>Team is in permanent reactive mode — no capacity to develop</li>
+              <li>Growth toward <strong>more specialised technical roles</strong> is not possible</li>
+              <li>Nor is building the AI layer that reduces the load long-term</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot"><div class="slide-foot-brand">FAST TRACK</div><div>3 / 5</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: CHAPTER 2 + THE MOVE -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="sh">
+        <div class="sh-badge b-purple">AI</div>
+        <div>
+          <div class="sh-ey">The path forward</div>
+          <div class="sh-t">The AI layer is the goal — the hire + promotion breaks the cycle</div>
+          <div class="sh-sub">One decision. Everything else becomes possible.</div>
+        </div>
+      </div>
+      <div class="slide-body" style="justify-content:flex-start;gap:11px;">
+        <div class="fc orange" style="margin-bottom:0;padding:14px 20px;">
+          <div class="fc-label orange">The vicious cycle — if nothing changes</div>
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:5px;">
+            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">4 SOC</span>
+            <span style="color:var(--text-muted);">→</span>
+            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">Overloaded ratios</span>
+            <span style="color:var(--text-muted);">→</span>
+            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">More SRE escalations</span>
+            <span style="color:var(--text-muted);">→</span>
+            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">No AI capacity</span>
+            <span style="color:var(--text-muted);">→</span>
+            <span style="background:#B33A22;color:#fff;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">Problem compounds ↺</span>
+          </div>
+        </div>
+        <div class="split">
+          <div class="split-left">
+            <div class="g" style="gap:8px;">
+              <div class="c c-purple">
+                <div class="c-ey purple">AI auto-triage</div>
+                <p>Route alerts <strong>without decision fatigue</strong> — SOC focuses on real threats, not noise</p>
+              </div>
+              <div class="c c-purple">
+                <div class="c-ey purple">Pattern recognition</div>
+                <p>Flag <strong>recurring failure signatures</strong> before they escalate — fewer SRE pull-ins</p>
+              </div>
+              <div class="c c-purple">
+                <div class="c-ey purple">Partner intelligence</div>
+                <p>Shift SOC from reactive to <strong>predictive partner health monitor</strong></p>
+              </div>
+            </div>
+          </div>
+          <div class="split-right">
+            <div class="person" style="margin-bottom:8px;">
+              <div class="person-name">Matteo</div>
+              <div class="person-role-from">Senior SOC Engineer</div>
+              <div class="person-role-to">→ Junior SRE</div>
+              <ul class="pts" style="color:rgba(255,255,255,0.82);margin-top:4px;">
+                <li>Solves SRE-level incidents already</li>
+                <li>Bridge engineer: SOC ↔ SRE depth</li>
+                <li>Visible proof internal growth is real</li>
+              </ul>
+            </div>
+            <div class="c c-green">
+              <div class="c-ey green">Breaking the cycle</div>
+              <ul class="pts" style="margin-top:4px;">
+                <li><strong>5 SOC in rotation</strong> → ratios drop, leave returns, team stabilises</li>
+                <li>Breathing room → SOC develops into <strong>more specialised technical roles</strong></li>
+                <li>AI investment becomes viable — Chapter 2 begins</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot"><div class="slide-foot-brand">FAST TRACK</div><div>4 / 5</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: THE ASK -->
+  <div class="slide">
+    <div class="slide-inner">
+      <div class="sh">
+        <div class="sh-badge b-blue">→</div>
+        <div>
+          <div class="sh-ey">The ask</div>
+          <div class="sh-t">Approve the promotion + 1 backfill hire</div>
+          <div class="sh-sub">One decision. Everything else follows.</div>
+        </div>
+      </div>
+      <div class="slide-body">
+        <div class="ask">
+          <div class="ask-label">What we need</div>
+          <p class="ask-text"><strong>Matteo → Junior SRE</strong> &nbsp;+&nbsp; <strong>1 SOC backfill hire</strong><br>
+          <span style="font-size:13px; color:rgba(255,255,255,0.75); margin-top:6px; display:block;">Promotion alone = team of 4 in rotation. Backfill alone = Matteo stays stuck. Both together is the only version that works.</span></p>
+        </div>
+        <div class="unlocks">
+          <div class="unlock">
+            <div class="unlock-n">4 → 9</div>
+            <div class="unlock-l">Office days per month per engineer with 5-person rotation</div>
+          </div>
+          <div class="unlock">
+            <div class="unlock-n">5 SOC</div>
+            <div class="unlock-l">Full-strength team — equal rotation, fair shifts, no one carrying disproportionate nights</div>
+          </div>
+          <div class="unlock">
+            <div class="unlock-n">Chapter 2</div>
+            <div class="unlock-l">SOC vision unlocked — AI-enabled, product-fluent, close to engineering</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-foot"><div class="slide-foot-brand">FAST TRACK</div><div>5 / 5</div></div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<nav class="nav">
+  <button class="nav-btn" id="prev" onclick="go(-1)" disabled>&#8592;</button>
+  <span class="nav-c" id="ctr">1 / 5</span>
+  <button class="nav-btn" id="next" onclick="go(1)">&#8594;</button>
+</nav>
+
+<script>
+  var slides = document.querySelectorAll('.slide');
+  var n = slides.length;
+  var cur = 0;
+
+  function go(dir) {
+    slides[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n - 1, cur + dir));
+    slides[cur].classList.add('active');
+    document.getElementById('ctr').textContent = (cur + 1) + ' / ' + n;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === n - 1;
+    document.getElementById('pb').style.width = ((cur + 1) / n * 100) + '%';
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(1); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                   { e.preventDefault(); go(-1); }
+  });
+
+  document.getElementById('pb').style.width = (1 / n * 100) + '%';
+</script>
+</body>
+</html>
