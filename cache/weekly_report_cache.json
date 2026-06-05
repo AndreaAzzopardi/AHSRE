@@ -1596,7 +1596,26 @@
       "false_p1": 1,
       "unclassified": 1
     },
-    "true_p1_incidents": [],
+    "true_p1_incidents": [
+      {
+        "reference": "INC-8611",
+        "name": "[P1] Intercom Incident : Lottogo Production",
+        "status": "Closed",
+        "reported_at": "2026-06-03T14:31:46Z",
+        "cause": "FT - Backend Code Defect",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8611",
+        "summary": "Problem: Email templates were not visible to partners using custom user roles in Lottogo Production, preventing access needed for ongoing operations.\n\nImpact: Partners using custom user roles in Lottogo Production could not view email templates, impacting their ability to manage live lifecycle communications. The affected partner confirmed resolution once the fix was applied.\n\nCauses: A backend code defect in crm-api permissions affected partners using custom user roles, following a recent switch to an origin-based setup.\n\nSteps to resolve: We added the brand ID to the correct Unleash segment and restarted the crm-api pods, restoring access to the templates. The partner confirmed the issue was fixed and the related Intercom ticket was closed."
+      },
+      {
+        "reference": "INC-8571",
+        "name": "[P1] Intercom Incident : Galabet Production",
+        "status": "Waiting on Partner",
+        "reported_at": "2026-06-02T21:38:38Z",
+        "cause": "BetConstruct integration load-order defect",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8571",
+        "summary": "Problem: The 'My Rewards' button is missing for most Galabet player and internal accounts, although reward events are still firing and visible in Fast Track.\n\nImpact: Most Galabet player and internal accounts are unable to see the 'My Rewards' button, which prevents them from accessing their rewards. The partner has paused the rewards campaign as a result.\n\nCauses: A load-order issue in BetConstruct's FastTrack integration caused FasttrackCrm.init() to be called before the CRM SDK was loaded. This resulted in a silent failure of initialization and prevented authentication.\n\nSteps to resolve: Root cause confirmed and operator informed of the technical fix (wait for window.FasttrackCrm before calling init()). Incident remains open pending operator deployment."
+      }
+    ],
     "mtta": {
       "P1": {
         "n": 4,
