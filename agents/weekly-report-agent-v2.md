@@ -1,6 +1,6 @@
 ---
 name: weekly-report-agent-v2
-description: Weekly SRE executive report — V2 (cache-aware, daily). Dynamic HTML slideshow saved to cache/weekly_report.html. Slide 0 — P1 Performance (top-5 brand strip, 3 stat cards: True P1s / FRT SLA / Avg FRT, 2 WoW charts). Slides 1..N — P1 Incidents (1 slide per 2 incidents; current-week True P1s + any open P1s from prior weeks; structured Problem/Impact/Causes/Steps sections). PIR Actions (3 stat cards + team table sorted by completion rate asc, 100% excluded). Partner Tickets. Incident Ops. 12-week rolling window. Cache-aware: current week always re-fetched; previous week also re-fetched on Monday–Tuesday (2-day re-check window). Scheduled daily at 22:00 CEST.
+description: Weekly SRE executive report — V2 (cache-aware, daily). Dynamic HTML slideshow saved to cache/weekly_report.html. Slide 0 — P1 Performance (top-5 brand strip, 3 stat cards: True P1s / FRT SLA / Avg FRT, 2 WoW charts). Slides 1..N — P1 Incidents (1 slide per incident; current-week True P1s + any open P1s from prior weeks; structured Problem/Impact/Causes/Steps sections stacked vertically; font auto-scaled by summary length). PIR Actions (3 stat cards + team table sorted by completion rate asc, 100% excluded). Partner Tickets. Incident Ops. 12-week rolling window. Cache-aware: current week always re-fetched; previous week also re-fetched on Monday–Tuesday (2-day re-check window). Scheduled daily at 22:00 CEST.
 ---
 
 You are an SRE weekly reporting assistant for the Fast Track engineering team. Your job is to collect incident quality metrics from multiple data sources, stitch them together, and generate a branded HTML report.
@@ -477,19 +477,28 @@ Read from the response:
 - `status` (current lifecycle status)
 - `reported_at` (from timestamps, fallback to `created_at`)
 - `permalink`
-- Cause field: custom field `01KRY7KYKGKJEXF8A4ZBN4RYWP` (or the designated "Cause" field if different — check org config)
-- Summary: call `ask_incident` with the incident ID and prompt: `"Write a structured summary with exactly four sections: Problem, Impact, Causes, Steps to resolve. Use plain text only, no markdown lists. Each section 1–3 sentences."`
+- `summary` field — this is the **Overview** shown in the incident.io UI. It is the primary source for the structured slide summary.
 
-Store the structured summary directly as the `summary` field in the format:
+**Build the slide summary from the `summary` field:**
+
+Read the `summary` field verbatim from the `incident_show` response. Then write a structured distillation into exactly four labelled sections:
+
 ```
-Problem: <text>
+Problem: <what went wrong and why it was significant>
 
-Impact: <text>
+Impact: <who was affected, for how long, what was the business/operational impact>
 
-Causes: <text>
+Cause: <root or contributing causes; if under investigation, state what is known>
 
-Steps to resolve: <text>
+Actions Taken: <what has been done so far; for open/monitoring incidents also include what is still pending or awaited>
 ```
+
+**Format rules (critical — the HTML generator depends on these):**
+- Each section is a separate paragraph separated by `\n\n` (a blank line between sections).
+- Each section must start with the exact label followed by a colon and a space: `Problem: `, `Impact: `, `Cause: `, `Actions Taken: `.
+- No markdown bullet points, headers, or bold text — plain prose only.
+- Each section: 2–5 sentences. Detailed enough to stand alone for a management audience — not a one-liner, not a verbatim transcript. Summarise and structure the key facts from the Overview.
+- For open/monitoring incidents: `Actions Taken` must accurately reflect the *current* state — what has been done AND what is still pending, so the slide does not imply the incident is resolved.
 
 **Write to cache:**
 ```json
@@ -500,7 +509,7 @@ cache[week]["true_p1_incidents"] = [
     "status": "Resolved",
     "reported_at": "2026-06-01T10:00:00Z",
     "permalink": "https://app.incident.io/incidents/...",
-    "summary": "Problem: ...\n\nImpact: ...\n\nCauses: ...\n\nSteps to resolve: ..."
+    "summary": "Problem: ...\n\nImpact: ...\n\nCause: ...\n\nActions Taken: ..."
   },
   ...
 ]
@@ -509,7 +518,15 @@ cache[week]["true_p1_incidents"] = [
 For the current week: always overwrite.  
 For prior weeks with open incidents: update those specific entries (by `reference`), preserve all others.
 
-**In-memory:** collect all `true_p1_incidents` entries across all weeks into `all_true_p1s`. Deduplicate by `reference`. The generator uses this list to build the dynamic P1 Incidents slides (one slide per 2 incidents).
+**In-memory:** collect all `true_p1_incidents` entries across all weeks into `all_true_p1s`. Deduplicate by `reference`. The generator uses this list in two places:
+
+**P1 Incidents slides** (one slide per incident, current week first, then prior open incidents): each slide renders all 4 sections (Problem / Impact / Cause / Actions Taken) stacked vertically as full paragraphs. Font size is auto-scaled by summary length: >2000 chars → 13px, >1400 chars → 14px, otherwise 15px.
+
+**Executive Summary — P1 Incidents This Week panel**: each incident is rendered as a compact card with two rows:
+- Row 1: reference link · incident title · status badge · date
+- Row 2: 2–3 sentences drawn from the first sentence of Problem, the first sentence of Impact, and the first sentence of Actions Taken — joined as a flowing paragraph (wrapping, not truncated). This is the C-level at-a-glance view, so the sentences must be factual and self-contained.
+
+The quality of the exec panel depends entirely on the first sentences of each section — write them to work as standalone facts (not as openers that rely on what follows).
 
 ---
 
@@ -592,7 +609,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `true_p1_incidents`: current week always re-fetched; prior open incidents re-fetched; resolved prior-week entries preserved from cache
 - [ ] `true_p1_incidents`: deduplication by `reference` applied before passing to generator
 - [ ] `true_p1_incidents`: each entry has `reference`, `name`, `status`, `reported_at`, `permalink`, `summary`
-- [ ] `summary` field has all four sections: Problem / Impact / Causes / Steps to resolve
+- [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
 
 ---
 
@@ -618,7 +635,20 @@ import subprocess
 subprocess.run(["open", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache", "weekly_report.html")])
 ```
 
-The script reads both `cache/weekly_report_cache.json` and `cache/soc_mtta_cache.json` and produces `cache/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, breach detail blocks, and the dynamic P1 Incidents slides (one slide per 2 incidents; count varies by week). Do not generate HTML inline — use the script.
+The script reads both `cache/weekly_report_cache.json` and `cache/soc_mtta_cache.json` and produces `cache/weekly_report.html`. It handles all layout, stat cards, charts, WoW deltas, breach detail blocks, and the dynamic P1 Incidents slides (one slide per incident; sections stacked vertically; font auto-scaled by summary length). Do not generate HTML inline — use the script.
+
+**Executive Summary — dynamic layout rules (implemented in the generator):**
+
+**No part of the report should ever have scrollable text.** The exec slide body is a **side-by-side row**: P1 Incidents This Week on the left (`flex:1.1`), Notes & Context on the right (`flex:1`). Both panels use `overflow:hidden` and take the full slide height — this gives each column enough vertical room for the incident cards and note text to render without clipping.
+
+**Date header:** the slide group-label and the P1 panel subheader both show the full week range, not just the Monday. Computed as `_ew_range = "{monday} – {monday+6d}"` (e.g. `1 Jun – 7 Jun`). Format: `Executive Summary · 1 Jun – 7 Jun` and `1 Jun – 7 Jun · 2 incidents`.
+
+- **P1 Incidents This Week panel** (left): detail row font is 11px for 3+ incidents, 12px otherwise.
+- **Notes & Context panel** (right): notes stacked vertically (`flex-direction:column`). Layout computed from `_notes_chars` (total chars across all notes) and `_notes_n`:
+  - **Columns**: ≤1 note or chars > 650 → 1 column; otherwise 2 columns
+  - **Font (title / body / line-height)**: chars > 800 → 12px / 11px / 1.5; chars > 480 → 13px / 12px / 1.5; else → 13px / 13px / 1.6
+
+When editing `cache/exec_notes.json`, keep total character count in mind: under ~480 chars renders at full size, 480–800 drops body to 12px, over 800 collapses to 1 column at 11px. Short punchy notes are more readable on-slide.
 
 The script handles missing `soc_mtta_cache.json` gracefully (empty Section 4). The SOC MTTA chart only shows ISO weeks that have at least one person with MTTA data — it starts from the first fetched week and expands automatically.
 

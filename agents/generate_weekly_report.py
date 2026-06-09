@@ -24,7 +24,21 @@ try:
 except FileNotFoundError:
     pir_cache = {}
 
-WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")]
+PIR_HISTORY_FILE = os.path.join(_ROOT, "cache", "pir_history_cache.json")
+try:
+    with open(PIR_HISTORY_FILE) as f:
+        pir_history = json.load(f)
+except FileNotFoundError:
+    pir_history = {}
+
+EXEC_NOTES_FILE = os.path.join(_ROOT, "cache", "exec_notes.json")
+try:
+    with open(EXEC_NOTES_FILE) as f:
+        exec_notes_data = json.load(f).get("notes", [])
+except FileNotFoundError:
+    exec_notes_data = []
+
+WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")][-13:]  # 12 prior + current
 today = datetime.now(tz=timezone.utc)
 today_str = today.strftime("%-d %B %Y")
 
@@ -193,7 +207,7 @@ aSOC_arr  = [_src(wk, "Grafana SOC", "Grafana SOC alerts") for wk in WEEK_KEYS]
 aHTTP_arr = [_src(wk, "HTTP", "HTTP alerts") for wk in WEEK_KEYS]
 aGraf_arr = [_src(wk, "Grafana", "Grafana alerts") for wk in WEEK_KEYS]
 aIcom_arr = [_src(wk, "Intercom") for wk in WEEK_KEYS]
-aFTML_arr = [get(wk, "alert_volume", "by_source", "HTTP DMS FTML", default=0) for wk in WEEK_KEYS]
+aFTML_arr = [_src(wk, "HTTP DMS FTML", "HTTP DMS FTML Alerts") for wk in WEEK_KEYS]
 # PD-era sources (pre-W19)
 aPD_SP_arr  = [get(wk, "alert_volume", "by_source", "Service Portal", default=0) for wk in WEEK_KEYS]
 aPD_BO_arr  = [get(wk, "alert_volume", "by_source", "Backoffice", default=0) for wk in WEEK_KEYS]
@@ -470,24 +484,30 @@ def render_pir_team_table(teams):
             continue
         rate = round(comp / total_team * 100)
         if rate == 100:
+            rows.append(f'''      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);opacity:0.55">
+        <td style="padding:5px 12px;color:#e2e8f0;font-size:12px">{name}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#64748b">{op}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{comp}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">100% ✓</td>
+      </tr>''')
             continue
         rate_cls = "c-green" if rate >= 75 else "c-amber" if rate >= 40 else "c-red"
         open_cls = "c-red" if op >= 20 else "c-amber" if op >= 8 else "c-muted"
         rows.append(f'''      <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-        <td style="padding:11px 14px;color:#e2e8f0;font-size:13px">{name}</td>
-        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px" class="{open_cls}">{op}</td>
-        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px;color:#22c55e">{comp}</td>
-        <td style="padding:11px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:13px" class="{rate_cls}">{rate}%</td>
+        <td style="padding:5px 12px;color:#e2e8f0;font-size:12px">{name}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{open_cls}">{op}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{comp}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{rate_cls}">{rate}%</td>
       </tr>''')
     rows_html = "\n".join(rows)
-    return f'''    <div style="flex:1;min-height:0;overflow-y:auto;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-top:12px">
+    return f'''    <div style="flex:1;min-height:0;overflow:hidden;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-top:12px">
       <table style="width:100%;border-collapse:collapse">
         <thead>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
-            <th style="padding:10px 14px;text-align:left;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Team</th>
-            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Open</th>
-            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Done</th>
-            <th style="padding:10px 14px;text-align:right;font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Rate</th>
+            <th style="padding:6px 12px;text-align:left;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Team</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Open</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Done</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -551,6 +571,19 @@ def _p1_status_cls(status):
     s = (status or "").lower()
     return "c-green" if s in ("closed", "resolved", "postmortem") else "c-amber"
 
+import re as _re_name
+def _clean_inc_name(name):
+    return _re_name.sub(r'^\[P\d\] (?:Intercom Incident : )?', '', name or '')
+
+def _exec_status(status):
+    s = (status or "").lower()
+    if s in ("closed", "resolved", "postmortem"):
+        return ("Resolved", "#22c55e")
+    elif s == "monitoring":
+        return ("Monitoring · awaiting fix", "#f59e0b")
+    else:
+        return ("Active · ongoing", "#ef4444")
+
 def _build_p1_cards(incidents):
     if not incidents:
         return '    <div class="p1-no-data c-muted">No True P1 incidents this week.</div>'
@@ -558,14 +591,12 @@ def _build_p1_cards(incidents):
     for inc in incidents:
         status  = inc.get("status", "—")
         sc      = _p1_status_cls(status)
+        status_label, _ = _exec_status(status)
         dt_str  = _fmt_dt_short(inc.get("reported_at", ""))
         cause   = inc.get("cause", "")
         ref     = inc.get("reference", "")
         name    = inc.get("name", "")
-        if name.startswith("[P1] Intercom Incident : "):
-            name = name[len("[P1] Intercom Incident : "):]
-        elif name.startswith("[P1] "):
-            name = name[5:]
+        name = _clean_inc_name(name)
         summary = inc.get("summary", "")
         href    = inc.get("permalink", "")
         ref_html   = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
@@ -573,7 +604,7 @@ def _build_p1_cards(incidents):
         cards.append(f'''    <div class="p1-inc-card">
       <div class="p1-inc-header">
         {ref_html}
-        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-status-badge {sc}">{status_label}</span>
         <span class="p1-inc-date">{dt_str}</span>
         {cause_html}
       </div>
@@ -632,13 +663,11 @@ def _build_p1_full_cards(incidents):
     for inc in incidents:
         status = inc.get("status", "—")
         sc = _p1_status_cls(status)
+        status_label, _ = _exec_status(status)
         dt_str = _fmt_dt_short(inc.get("reported_at", ""))
         ref = inc.get("reference", "")
         name = inc.get("name", "")
-        if name.startswith("[P1] Intercom Incident : "):
-            name = name[len("[P1] Intercom Incident : "):]
-        elif name.startswith("[P1] "):
-            name = name[5:]
+        name = _clean_inc_name(name)
         href = inc.get("permalink", "")
         ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
         sections = _parse_summary_sections(inc.get("summary", ""))
@@ -652,7 +681,7 @@ def _build_p1_full_cards(incidents):
         cards.append(f'''    <div class="p1-full-card{active_cls}" data-ref="{ref}">
       <div class="p1-inc-header">
         {ref_html}
-        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-status-badge {sc}">{status_label}</span>
         <span class="p1-inc-date">{dt_str}</span>
       </div>
       <div class="p1-inc-title">{name}</div>
@@ -710,16 +739,41 @@ pir_cat_labels  = list(pir_categories.keys())
 pir_cat_open    = [v.get("open", 0)   if isinstance(v, dict) else v for v in pir_categories.values()]
 pir_cat_closed  = [v.get("closed", 0) if isinstance(v, dict) else 0 for v in pir_categories.values()]
 
+# Top 5 pain points — sorted by open count descending
+_pir_cat_sorted = sorted(
+    [(k, v.get("open", 0), v.get("closed", 0)) for k, v in pir_categories.items()],
+    key=lambda x: x[1], reverse=True
+)[:5]
+pir_top5_labels = [x[0] for x in _pir_cat_sorted]
+pir_top5_open   = [x[1] for x in _pir_cat_sorted]
+pir_top5_done   = [x[2] for x in _pir_cat_sorted]
+
 pir_teams_chart = sorted([t for t in pir_teams if t.get("open", 0) > 0], key=lambda t: t["open"], reverse=True)
 pir_team_labels = [t["name"]      for t in pir_teams_chart]
 pir_team_open   = [t["open"]      for t in pir_teams_chart]
 pir_team_closed = [t["completed"] for t in pir_teams_chart]
 pir_team_table_html = render_pir_team_table(pir_teams)
 
+# ── PIR HISTORY — write current week snapshot & build chart arrays ────────────
+_pir_snap_key = pir_cache.get("generated", current_week)
+pir_history[_pir_snap_key] = {
+    "open":      pir_open,
+    "completed": pir_completed,
+    "total":     pir_total,
+    "rate":      round(pir_comp_rate, 1),
+}
+with open(PIR_HISTORY_FILE, "w") as _f:
+    json.dump(dict(sorted(pir_history.items())), _f, indent=2)
+
+_pir_hist_keys  = sorted(pir_history.keys())
+pir_hist_labels = [fmt_week_label(k, False) for k in _pir_hist_keys]
+pir_hist_rate   = [pir_history[k]["rate"] for k in _pir_hist_keys]
+
 # ── P1 INCIDENT SLIDE GENERATION ─────────────────────────────────────────────
-_p1_chunks    = [_all_p1s[i:i+2] for i in range(0, len(_all_p1s), 2)] or [[]]
+_p1_chunks    = [[inc] for inc in _all_p1s] if _all_p1s else [[]]
 _n_p1_slides  = len(_p1_chunks)
-_idx_pir      = 1 + _n_p1_slides
+_idx_p1perf   = 1
+_idx_pir      = 2 + _n_p1_slides
 _idx_partner  = _idx_pir + 1
 _idx_ops      = _idx_partner + 1
 _total_slides = _idx_ops + 1
@@ -731,13 +785,11 @@ def _build_p1_pair_cards(chunk):
     for inc in chunk:
         status = inc.get("status", "—")
         sc = _p1_status_cls(status)
+        status_label, _ = _exec_status(status)
         dt_str = _fmt_dt_short(inc.get("reported_at", ""))
         ref = inc.get("reference", "")
         name = inc.get("name", "")
-        if name.startswith("[P1] Intercom Incident : "):
-            name = name[len("[P1] Intercom Incident : "):]
-        elif name.startswith("[P1] "):
-            name = name[5:]
+        name = _clean_inc_name(name)
         href = inc.get("permalink", "")
         ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
         sections = _parse_summary_sections(inc.get("summary", ""))
@@ -750,7 +802,7 @@ def _build_p1_pair_cards(chunk):
         cards.append(f'''    <div class="p1-full-card">
       <div class="p1-inc-header">
         {ref_html}
-        <span class="p1-status-badge {sc}">{status}</span>
+        <span class="p1-status-badge {sc}">{status_label}</span>
         <span class="p1-inc-date">{dt_str}</span>
       </div>
       <div class="p1-inc-title">{name}</div>
@@ -762,20 +814,442 @@ def _build_p1_pair_cards(chunk):
 p1_tab_btns_html = ""
 p1_all_slides_html = ""
 for _i, _chunk in enumerate(_p1_chunks):
-    _si = 1 + _i
+    _si = 2 + _i
     _tab_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents {_i+1}/{_n_p1_slides}"
     _grp_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents · {_i+1} of {_n_p1_slides}"
+    _chars     = sum(len(inc.get("summary", "")) for inc in _chunk)
+    _fs        = 13 if _chars > 2000 else (14 if _chars > 1400 else 15)
     p1_tab_btns_html += f'    <button class="slide-tab" onclick="showSlide({_si})">{_tab_lbl}</button>\n'
     _cards = _build_p1_pair_cards(_chunk)
     p1_all_slides_html += f'''
 <!-- ═══ P1 INCIDENTS {_i+1} ════════════════════════════════════ -->
 <div class="slide" id="s1_{_i+1}"><div class="page">
   <div class="group-label">{_grp_lbl} · {cw_date}</div>
-  <div class="p1-two-up">
+  <div class="p1-two-up" style="font-size: {_fs}px;">
 {_cards}
   </div>
 </div></div>
 '''
+
+# ── EXECUTIVE SUMMARY SLIDE (pre-built to avoid f-string brace-escaping) ─────
+# Exec slide always reports on the last complete week (prev_week), not the partial current week
+_ew         = prev_week
+_ew_true_p1 = p1_quality_row(_ew)[0]
+_ew_p1_frt  = get(_ew, "p1_frt_sla", "hit_rate")
+_ew_csat    = get(_ew, "csat", "avg_score")
+_ew_p23     = get(_ew, "p2p3_frt_sla", "hit_rate")
+_ew_p1_incs = cache.get(_ew, {}).get("true_p1_incidents") or []
+_ew_date    = fmt_date_dmy(_ew)
+_ew_end     = fmt_date_dmy((datetime.strptime(_ew, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+_ew_range   = f"{_ew_date} – {_ew_end}"
+
+_p1_val_color  = 'c-green' if _ew_true_p1 == 0 else 'c-red'
+_p1_frt_color  = color_pct(_ew_p1_frt)
+_csat_color    = color_csat(_ew_csat)
+_p23_color     = color_pct(_ew_p23)
+
+# 12-week average for true P1s (all complete weeks before current)
+_p1_12wk_keys = WEEK_KEYS[:-1]
+_p1_12wk_vals = [p1_quality_row(wk)[0] for wk in _p1_12wk_keys]
+_p1_12wk_vals = [v for v in _p1_12wk_vals if v is not None]
+_p1_4wk_avg   = round(sum(_p1_12wk_vals) / len(_p1_12wk_vals), 1) if _p1_12wk_vals else None
+_p1_12wk_n    = len(_p1_12wk_vals)
+
+# 12-week averages for exec banner chips (all complete weeks before current)
+_frt_prior   = [v for v in p1Rate_arr[:-1]  if v is not None]
+_csat_prior  = [v for v in csA_arr[:-1]     if v is not None]
+_p23_prior   = [v for v in p23Rate_arr[:-1] if v is not None]
+_exec_frt_avg  = round(sum(_frt_prior)  / len(_frt_prior))  if _frt_prior  else None
+_exec_csat_avg = round(sum(_csat_prior) / len(_csat_prior), 2) if _csat_prior else None
+_exec_p23_avg  = round(sum(_p23_prior)  / len(_p23_prior))  if _p23_prior  else None
+_exec_p1_avg   = round(sum(_p1_12wk_vals) / len(_p1_12wk_vals)) if _p1_12wk_vals else None
+
+# Story narrative — two lines: incident quality headline + PIR concern
+import math as _math
+def _build_exec_narrative():
+    _avg = _math.ceil(_p1_4wk_avg) if _p1_4wk_avg is not None else None
+    _n   = _p1_12wk_n
+    _active_n = sum(1 for inc in _ew_p1_incs
+                    if inc.get("status", "").lower() not in ("closed", "resolved", "postmortem"))
+    # Line 1: incident quality headline
+    if _ew_true_p1 == 0:
+        _l1 = "No True P1 incidents this week — all response and quality metrics are on target."
+    elif _avg is not None and _ew_true_p1 <= _avg:
+        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still in Monitoring, awaiting resolution."
+                if _active_n else "")
+        _l1 = (f"Incident handling is in good shape — response times, SLAs, and CSAT are all on target "
+               f"and trending in the right direction. P1 count is consistent with the {_n}-week average.{_mon}")
+    else:
+        _parts = []
+        if _avg is not None and _ew_true_p1 > _avg:
+            _parts.append(f"{_ew_true_p1} True P1s vs {_avg}/wk {_n}-week average")
+        if _ew_p1_frt is not None and _ew_p1_frt < 0.90:
+            _parts.append(f"P1 FRT SLA {fmt_rate(_ew_p1_frt, 0)}")
+        if _ew_csat is not None and _ew_csat < 4.5:
+            _parts.append(f"CSAT {fmt_csat(_ew_csat)}")
+        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still open."
+                if _active_n else "")
+        _l1 = (f"Elevated week — {'; '.join(_parts)}.{_mon}" if _parts
+               else f"Elevated week — {_ew_true_p1} True P1s this week.{_mon}")
+    # Line 2: PIR concern (shown when below 85% target)
+    _l2 = ""
+    if pir_comp_rate < 85:
+        _pct = int(round(pir_comp_rate))
+        _worst = sorted([t for t in pir_teams if t.get("open", 0) > 0],
+                        key=lambda t: t.get("open", 0), reverse=True)
+        if len(_worst) >= 2:
+            _l2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%, "
+                   f"this is a persistent gap. {_worst[0]['name']} ({_worst[0]['open']} open) and "
+                   f"{_worst[1]['name']} ({_worst[1]['open']} open) are the largest contributors and need attention.")
+        elif len(_worst) == 1:
+            _l2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%. "
+                   f"{_worst[0]['name']} ({_worst[0]['open']} open) is the largest contributor.")
+        else:
+            _l2 = f"PIR action completion is at {_pct}% vs 85% target — needs attention."
+    return _l1, _l2
+_exec_line1, _exec_line2 = _build_exec_narrative()
+
+# Brands affected this week (exec week = prev_week)
+_cw_brands_raw = cache.get(_ew, {}).get("p1_brands", {})
+_cw_brand_list = sorted(
+    [(b, c) for b, c in _cw_brands_raw.items() if b and b not in ("", "None", "No company")],
+    key=lambda x: x[1], reverse=True
+)[:5]
+_brands_line = ""
+if _cw_brand_list:
+    _brands_line = "  ".join(
+        f'<span style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:2px 8px;font-size:11px;color:#93c5fd">{b} <span style="font-family:DM Mono,monospace;font-weight:600">{c}</span></span>'
+        for b, c in _cw_brand_list
+    )
+
+# Plain-English status with risk framing
+# PIR worst offender (most open items, not at 100%)
+_pir_worst_team = None
+for _t in pir_teams:
+    _tt = _t["open"] + _t["completed"]
+    if _tt == 0 or _t["open"] == 0:
+        continue
+    if _pir_worst_team is None or _t["open"] > _pir_worst_team["open"]:
+        _pir_worst_team = {**_t, "rate_pct": int(round(_t["completed"] / _tt * 100))}
+
+# P1 incidents compact list — one header row + one detail line per incident
+import re as _re
+def _first_sentence(txt):
+    m = _re.search(r'[.!?]', txt)
+    return txt[:m.end()].strip() if m else txt.strip()
+
+_p1_inc_n      = len(_ew_p1_incs)
+_inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
+
+_exec_inc_rows = ""
+if _ew_p1_incs:
+    for _inc in _ew_p1_incs[:6]:
+        _ref  = _inc.get("reference", "")
+        _nm   = _inc.get("name", "")
+        _nm = _clean_inc_name(_nm)
+        _st_raw = _inc.get("status", "—")
+        _st_label, _st_col = _exec_status(_st_raw)
+        _dt   = _fmt_dt_short(_inc.get("reported_at", ""))
+        _href = _inc.get("permalink", "")
+        _rh   = (f'<a href="{_href}" target="_blank" style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</a>'
+                 if _href else f'<span style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</span>')
+        _secs     = {lbl: body for lbl, body in _parse_summary_sections(_inc.get("summary", ""))}
+        _s_prob   = _first_sentence(_secs.get("Problem", ""))
+        _s_impact = _first_sentence(_secs.get("Impact", ""))
+        _s_action = _first_sentence(_secs.get("Actions Taken", _secs.get("Steps to resolve", _secs.get("Action / Next steps", _secs.get("Next steps", "")))))
+        # 2-3 sentences: Problem + Impact + Actions Taken
+        _sentences = [s for s in [_s_prob, _s_impact, _s_action] if s][:3]
+        _detail = " ".join(_sentences)
+        _exec_inc_rows += (
+            f'<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
+            # Row 1: ref · title · status · date
+            f'<div style="display:flex;align-items:center;gap:8px;min-width:0">'
+            f'{_rh}'
+            f'<span style="flex:1;font-size:13px;color:#e2e8f0;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0">{_nm}</span>'
+            f'<span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.05);color:{_st_col};white-space:nowrap;flex-shrink:0">{_st_label}</span>'
+            f'<span style="font-size:11px;color:#475569;white-space:nowrap;flex-shrink:0">{_dt}</span>'
+            f'</div>'
+            # Row 2: 2-sentence summary — Impact + Actions Taken
+            + (f'<div style="font-size:{_inc_detail_sz};color:#94a3b8;line-height:1.4;margin-top:3px">{_detail}</div>' if _detail else '')
+            + f'</div>'
+        )
+    _n_more_exec = len(_ew_p1_incs) - 6
+    if _n_more_exec > 0:
+        _exec_inc_rows += f'<div style="font-size:12px;color:#475569;padding-top:8px">+{_n_more_exec} more — see P1 Incidents slides</div>'
+else:
+    _exec_inc_rows = '<div style="font-size:13px;color:#22c55e;padding:10px 0">No True P1 incidents this week.</div>'
+
+# Overall RAG status for exec slide
+# CRITICAL   = P1s still actively impacting users (not in Monitoring/Resolved)
+# MONITORING = P1 count significantly above the rolling average
+# STABLE     = P1s on trend, all in Monitoring or Resolved, or no P1s with prior risks
+# ON TRACK   = no P1s at all this week
+_current_week_refs   = {inc.get("reference", "") for inc in _ew_p1_incs}
+_prior_open_p1s      = [inc for inc in _all_p1s if inc.get("reference", "") not in _current_week_refs]
+_has_prior_risk      = len(_prior_open_p1s) > 0
+_has_truly_active_p1 = any(
+    inc.get("status", "").lower() not in ("closed", "resolved", "postmortem", "monitoring")
+    for inc in _ew_p1_incs
+)
+_p1_above_avg        = (
+    (_exec_p1_avg is not None and _ew_true_p1 > _exec_p1_avg + 2)
+    or _ew_true_p1 >= 5
+)
+
+if _has_truly_active_p1:
+    _rag_label = "CRITICAL"
+    _rag_hex   = "#ef4444"
+    _rag_bg    = "rgba(239,68,68,0.08)"
+    _rag_bdr   = "rgba(239,68,68,0.25)"
+elif _p1_above_avg:
+    _rag_label = "MONITORING"
+    _rag_hex   = "#f59e0b"
+    _rag_bg    = "rgba(245,158,11,0.08)"
+    _rag_bdr   = "rgba(245,158,11,0.25)"
+elif _ew_true_p1 == 0:
+    _rag_label = "ON TRACK"
+    _rag_hex   = "#22c55e"
+    _rag_bg    = "rgba(34,197,94,0.06)"
+    _rag_bdr   = "rgba(34,197,94,0.20)"
+else:
+    _rag_label = "STABLE"
+    _rag_hex   = "#22c55e"
+    _rag_bg    = "rgba(34,197,94,0.06)"
+    _rag_bdr   = "rgba(34,197,94,0.20)"
+
+# P1 MTTA colour for exec card
+_mtta_color   = "c-muted"
+if cw_p1_mtta is not None:
+    _mtta_color = "c-green" if cw_p1_mtta <= 15 else ("c-amber" if cw_p1_mtta <= 30 else "c-red")
+_mtta_val_str = f"{round(cw_p1_mtta, 1)}" if cw_p1_mtta is not None else "—"
+
+# Prior-week open P1 rows (Open Risks section)
+_prior_risk_rows = ""
+for _inc in _prior_open_p1s[:5]:
+    _ref  = _inc.get("reference", "")
+    _nm   = _inc.get("name", "")
+    if _nm.startswith("[P1] Intercom Incident : "): _nm = _nm[25:]
+    elif _nm.startswith("[P1] "): _nm = _nm[5:]
+    _st_raw = _inc.get("status", "—")
+    _st_label_r, _st_col_r = _exec_status(_st_raw)
+    _href = _inc.get("permalink", "")
+    _rh_r = (f'<a href="{_href}" target="_blank" style="font-family:DM Mono,monospace;font-size:11px;color:#38bdf8;text-decoration:none;font-weight:500;white-space:nowrap">{_ref}</a>'
+             if _href else f'<span style="font-family:DM Mono,monospace;font-size:11px;color:#38bdf8;font-weight:500;white-space:nowrap">{_ref}</span>')
+    _secs_r = {lbl: body for lbl, body in _parse_summary_sections(_inc.get("summary", ""))}
+    _impact_r = _secs_r.get("Impact", _secs_r.get("Problem", ""))
+    _prior_risk_rows += (
+        f'<div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
+        f'<div style="display:flex;align-items:baseline;gap:7px;margin-bottom:3px">'
+        f'{_rh_r}'
+        f'<span style="flex:1;font-size:11px;color:#e2e8f0;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{_nm}">{_nm}</span>'
+        f'<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:rgba(245,158,11,0.1);color:{_st_col_r};white-space:nowrap">{_st_label_r}</span>'
+        f'</div>'
+        + (f'<div style="font-size:10px;color:#64748b;line-height:1.4;padding-left:2px">{_impact_r[:120]}{"…" if len(_impact_r) > 120 else ""}</div>' if _impact_r else '')
+        + f'</div>'
+    )
+if not _prior_risk_rows:
+    _prior_risk_rows = '<div style="font-size:12px;color:#22c55e;padding:10px 0;display:flex;align-items:center;gap:6px"><span style="font-size:16px">✓</span> No open risks carried from prior weeks.</div>'
+
+# Exec metric chips — 3-col grid in status banner
+def _exec_chip(label, value, context, val_color="#e2e8f0", bg="rgba(255,255,255,0.04)",
+               bdr="rgba(255,255,255,0.09)", ctx_color="#64748b"):
+    return (
+        f'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;'
+        f'background:{bg};border:1px solid {bdr};border-radius:6px;padding:7px 12px">'
+        f'<span style="font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;'
+        f'letter-spacing:0.06em;white-space:nowrap">{label}</span>'
+        f'<span style="font-family:\'DM Mono\',monospace;font-size:18px;font-weight:600;'
+        f'color:{val_color};white-space:nowrap">{value}</span>'
+        f'<span style="font-size:12px;color:{ctx_color};white-space:nowrap">{context}</span>'
+        f'</div>'
+    )
+
+_exec_chips = []
+# True P1s
+if _exec_p1_avg is not None:
+    _p1_arrow = "↓" if _ew_true_p1 < _exec_p1_avg else ("↑" if _ew_true_p1 > _exec_p1_avg else "↔")
+    _p1_ctx   = f'{_p1_12wk_n}w avg {_exec_p1_avg} {_p1_arrow}'
+else:
+    _p1_ctx = '—'
+_exec_chips.append(_exec_chip("True P1s", str(_ew_true_p1), _p1_ctx))
+# P1 FRT SLA
+if _ew_p1_frt is not None:
+    _frt_val   = fmt_rate(_ew_p1_frt, 0)
+    _frt_color = "#22c55e" if _ew_p1_frt >= 0.90 else ("#f59e0b" if _ew_p1_frt >= 0.75 else "#ef4444")
+    _frt_bg    = ("rgba(34,197,94,0.07)"  if _ew_p1_frt >= 0.90 else
+                  "rgba(245,158,11,0.07)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.07)")
+    _frt_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p1_frt >= 0.90 else
+                  "rgba(245,158,11,0.25)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.25)")
+    _frt_arrow = ("↑" if _ew_p1_frt * 100 > (_exec_frt_avg or 0)
+                  else "↓" if _ew_p1_frt * 100 < (_exec_frt_avg or 100) else "→")
+    _frt_ctx   = f'{_p1_12wk_n}w avg {_exec_frt_avg}% {_frt_arrow}' if _exec_frt_avg is not None else '—'
+    _exec_chips.append(_exec_chip("P1 FRT SLA", _frt_val, _frt_ctx, _frt_color, _frt_bg, _frt_bdr))
+# CSAT
+if _ew_csat is not None:
+    _cs_val   = fmt_csat(_ew_csat)
+    _cs_color = "#22c55e" if _ew_csat >= 4.5 else ("#f59e0b" if _ew_csat >= 4.0 else "#ef4444")
+    _cs_bg    = ("rgba(34,197,94,0.07)"  if _ew_csat >= 4.5 else
+                 "rgba(245,158,11,0.07)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.07)")
+    _cs_bdr   = ("rgba(34,197,94,0.20)"  if _ew_csat >= 4.5 else
+                 "rgba(245,158,11,0.25)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.25)")
+    _cs_arrow = ("↑" if _ew_csat > (_exec_csat_avg or 0)
+                 else "↓" if _ew_csat < (_exec_csat_avg or 5) else "→")
+    _cs_ctx   = f'{_p1_12wk_n}w avg {_exec_csat_avg} {_cs_arrow}' if _exec_csat_avg is not None else '—'
+    _exec_chips.append(_exec_chip("CSAT", _cs_val, _cs_ctx, _cs_color, _cs_bg, _cs_bdr))
+# Partner FRT SLA (P2/P3)
+if _ew_p23 is not None:
+    _p23_val   = fmt_rate(_ew_p23, 0)
+    _p23_color = "#22c55e" if _ew_p23 >= 0.90 else ("#f59e0b" if _ew_p23 >= 0.75 else "#ef4444")
+    _p23_bg    = ("rgba(34,197,94,0.07)"  if _ew_p23 >= 0.90 else
+                  "rgba(245,158,11,0.07)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.07)")
+    _p23_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p23 >= 0.90 else
+                  "rgba(245,158,11,0.25)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.25)")
+    _p23_arrow = ("↑" if _ew_p23 * 100 > (_exec_p23_avg or 0)
+                  else "↓" if _ew_p23 * 100 < (_exec_p23_avg or 100) else "→")
+    _p23_ctx   = f'{_p1_12wk_n}w avg {_exec_p23_avg}% {_p23_arrow}' if _exec_p23_avg is not None else '—'
+    _exec_chips.append(_exec_chip("Partner FRT SLA", _p23_val, _p23_ctx, _p23_color, _p23_bg, _p23_bdr))
+# PIR Completion
+_pir_chip_color = "#22c55e" if pir_comp_rate >= 85 else ("#f59e0b" if pir_comp_rate >= 65 else "#ef4444")
+_pir_chip_bg    = ("rgba(34,197,94,0.07)"  if pir_comp_rate >= 85 else
+                   "rgba(245,158,11,0.07)" if pir_comp_rate >= 65 else "rgba(239,68,68,0.07)")
+_pir_chip_bdr   = ("rgba(34,197,94,0.20)"  if pir_comp_rate >= 85 else
+                   "rgba(245,158,11,0.25)" if pir_comp_rate >= 65 else "rgba(239,68,68,0.25)")
+_pir_ctx_txt    = "target 85% ⚠" if pir_comp_rate < 85 else "target 85% ✓"
+_pir_ctx_col    = "#f59e0b"       if pir_comp_rate < 85 else "#22c55e"
+_exec_chips.append(_exec_chip("PIR Completion", fmt_rate(pir_comp_rate, 0), _pir_ctx_txt,
+                               _pir_chip_color, _pir_chip_bg, _pir_chip_bdr, _pir_ctx_col))
+
+_exec_chip_grid_html = (
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;'
+    'padding-top:6px;border-top:1px solid rgba(255,255,255,0.05)">'
+    + ''.join(_exec_chips)
+    + '</div>'
+)
+
+# ── Dynamic exec body layout — no scrolling anywhere ─────────────────────────
+# Both panels share the body via flex. Overflow is hidden (clips silently).
+# P1 incidents flex grows with incident count so it gets more room when needed.
+if _p1_inc_n == 0:
+    _p1_inc_flex = "0 0 auto"   # just the "no incidents" message
+elif _p1_inc_n == 1:
+    _p1_inc_flex = "0.7"
+elif _p1_inc_n == 2:
+    _p1_inc_flex = "1.0"
+else:
+    _p1_inc_flex = "1.4"        # 3+ incidents, takes more of the body
+
+# Detail row font: shrink when many incidents so rows fit in the allotted flex space
+_inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
+
+# Notes & Context layout
+_notes_n     = len(exec_notes_data)
+_notes_chars = sum(len(n.get("title","")) + len(n.get("body","")) for n in exec_notes_data)
+# Column count: 1 note or long content → single column; otherwise 2 columns
+if _notes_n <= 1 or _notes_chars > 650:
+    _notes_cols = 1
+else:
+    _notes_cols = 2
+# Font size: scale down as content grows
+if _notes_chars > 800:
+    _notes_title_sz, _notes_body_sz, _notes_lh = "12px", "11px", "1.5"
+elif _notes_chars > 480:
+    _notes_title_sz, _notes_body_sz, _notes_lh = "13px", "12px", "1.5"
+else:
+    _notes_title_sz, _notes_body_sz, _notes_lh = "13px", "13px", "1.6"
+
+exec_slide_html = (
+    '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY ════════════════════════ -->\n'
+    '<div class="slide active" id="sExec"><div class="page">\n'
+    f'  <div class="group-label">Executive Summary · {_ew_range}</div>\n'
+
+    # ── STATUS BANNER ──────────────────────────────────────────────────────────
+    f'  <div style="margin-bottom:10px;padding:12px 16px;background:{_rag_bg};border:1px solid {_rag_bdr};border-radius:6px;display:flex;flex-direction:column;gap:8px;flex-shrink:0">\n'
+    # Row 1: RAG dot + 2-line story narrative
+    f'    <div style="display:flex;align-items:flex-start;gap:12px">\n'
+    f'      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;padding-top:2px">'
+    f'<div style="width:13px;height:13px;border-radius:50%;background:{_rag_hex};box-shadow:0 0 7px {_rag_hex}"></div>'
+    f'<span style="font-size:13px;font-weight:800;color:{_rag_hex};letter-spacing:0.12em;white-space:nowrap">{_rag_label}</span>'
+    f'</div>\n'
+    f'      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">\n'
+    f'        <span style="font-size:14px;color:#e2e8f0;font-weight:600;line-height:1.5">{_exec_line1}</span>\n'
+    + (f'        <span style="font-size:13px;color:#94a3b8;line-height:1.5">'
+       f'<span style="color:#f59e0b;font-weight:600">{_exec_line2}</span></span>\n'
+       if _exec_line2 else '')
+    + f'      </div>\n'
+    f'    </div>\n'
+    # Row 2: metric chip grid (3 columns)
+    f'    {_exec_chip_grid_html}\n'
+    f'  </div>\n'
+
+    # ── SIDE-BY-SIDE BODY: P1 Incidents (left) | Notes & Context (right) ────
+    '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
+
+    # Left — P1 Incidents This Week
+    + f'    <div style="flex:1.1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
+    + f'      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0">\n'
+    + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'
+    + f'        <span style="font-size:12px;color:#475569">{_ew_range} · {_ew_true_p1} incident{"s" if _ew_true_p1 != 1 else ""}</span>\n'
+    + f'      </div>\n'
+    + _exec_inc_rows
+    + '\n    </div>\n'
+
+    # Right — Notes & Context
+    + (
+        f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
+        f'      <div style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">Notes & Context</div>\n'
+        f'      <div style="display:flex;flex-direction:column;gap:10px">\n'
+        + ''.join(
+            f'        <div style="padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:6px">'
+            f'<div style="font-size:{_notes_title_sz};font-weight:700;color:#cbd5e1;margin-bottom:4px">{n["title"]}</div>'
+            f'<div style="font-size:{_notes_body_sz};color:#94a3b8;line-height:{_notes_lh}">{n["body"]}</div>'
+            f'</div>\n'
+            for n in exec_notes_data
+        )
+        + f'      </div>\n'
+        + f'    </div>\n'
+        if exec_notes_data else
+        f'    <div style="flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px">'
+        f'<span style="font-size:12px;color:#475569">No notes — add items to cache/exec_notes.json</span></div>\n'
+    )
+
+    + '  </div>\n'
+    + '</div></div>\n'
+)
+
+# ── PIR CATEGORY CHART JS (pre-built to avoid f-string brace-escaping) ───────
+_pir_cat_lbl_js = js_str_arr(pir_top5_labels)
+_pir_cat_open_js = js_arr(pir_top5_open)
+_pir_cat_done_js = js_arr(pir_top5_done)
+pir_cat_chart_js = (
+    "new Chart(document.getElementById('cPIRCat'),{"
+    "type:'bar',data:{labels:" + _pir_cat_lbl_js + ",datasets:["
+    "{label:'Open',data:" + _pir_cat_open_js + ",backgroundColor:'#f59e0b',stack:'c',barPercentage:0.7},"
+    "{label:'Done',data:" + _pir_cat_done_js + ",backgroundColor:'#22c55e',stack:'c',barPercentage:0.7}"
+    "]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,"
+    "plugins:{legend:LG,tooltip:TT},"
+    "scales:{x:{type:'linear',min:0,stacked:true,ticks:{color:'#64748b',precision:0},grid:{color:'rgba(255,255,255,0.05)'}},"
+    "y:{ticks:{color:'#e2e8f0',font:{size:13}},grid:{color:'rgba(255,255,255,0.05)'}}}"
+    "}})"
+    ";"
+)
+
+# ── PIR TREND CHART JS ───────────────────────────────────────────────────────
+_pir_hist_lbl_js  = js_str_arr(pir_hist_labels)
+_pir_hist_rate_js = js_arr(pir_hist_rate)
+pir_trend_chart_js = (
+    "new Chart(document.getElementById('cPIRTrend'),{"
+    "type:'line',data:{labels:" + _pir_hist_lbl_js + ",datasets:["
+    "{label:'Completion %',data:" + _pir_hist_rate_js + ","
+    "borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.08)',tension:0.3,fill:true,"
+    "pointRadius:5,pointBackgroundColor:'#a78bfa',pointBorderColor:'#0d1629',pointBorderWidth:2},"
+    "{label:'Target 85%',data:Array(" + str(len(pir_hist_rate)) + ").fill(85),"
+    "borderColor:'#22c55e',borderDash:[5,4],borderWidth:2,pointRadius:0,fill:false,tension:0}"
+    "]},options:{responsive:true,maintainAspectRatio:false,"
+    "plugins:{legend:LG,tooltip:TT},"
+    "scales:{x:{ticks:{color:'#64748b',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}},"
+    "y:{type:'linear',min:0,max:100,ticks:{color:'#64748b',stepSize:20,callback:function(v){return v+'%'}},grid:{color:'rgba(255,255,255,0.05)'}}}}"
+    "});"
+)
 
 # ── HTML GENERATION ──────────────────────────────────────────────────────────
 wk_label_cur = fmt_week_label(current_week, True).rstrip("*")
@@ -808,14 +1282,14 @@ html = f'''<!DOCTYPE html>
     .slide-btn {{ background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: #94a3b8; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 4px 14px; cursor: pointer; transition: all 0.15s; }}
     .slide-btn:hover {{ color: #e2e8f0; border-color: rgba(255,255,255,0.25); }}
     .slide-counter {{ font-family: 'DM Mono', monospace; font-size: 11px; color: #475569; }}
-    .group-label {{ font-size: 11px; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; flex-shrink: 0; }}
+    .group-label {{ font-size: 13px; color: #64748b; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 600; margin-bottom: 8px; flex-shrink: 0; }}
     .stat-grid-4 {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
     .stat-card {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px; }}
-    .card-label {{ font-size: 10px; color: #64748b; margin-bottom: 5px; font-weight: 500; line-height: 1.3; }}
-    .card-value {{ font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; line-height: 1; margin-bottom: 3px; }}
-    .card-value .unit {{ font-size: 12px; font-weight: 400; }}
-    .card-subnote {{ font-size: 10px; color: #64748b; margin-bottom: 2px; }}
-    .card-delta {{ font-family: 'DM Mono', monospace; font-size: 10px; margin-top: 3px; }}
+    .card-label {{ font-size: 12px; color: #64748b; margin-bottom: 5px; font-weight: 500; line-height: 1.3; }}
+    .card-value {{ font-family: 'DM Mono', monospace; font-size: 26px; font-weight: 500; line-height: 1; margin-bottom: 3px; }}
+    .card-value .unit {{ font-size: 14px; font-weight: 400; }}
+    .card-subnote {{ font-size: 12px; color: #64748b; margin-bottom: 2px; }}
+    .card-delta {{ font-family: 'DM Mono', monospace; font-size: 12px; margin-top: 3px; }}
     .c-red   {{ color: #ef4444; }}
     .c-amber {{ color: #f59e0b; }}
     .c-green {{ color: #22c55e; }}
@@ -826,22 +1300,22 @@ html = f'''<!DOCTYPE html>
     .charts-area {{ flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0; }}
     .chart-row {{ display: flex; gap: 8px; flex: 1; min-height: 0; }}
     .chart-section {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; flex: 1; min-height: 0; }}
-    .chart-title {{ font-size: 12px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; flex-shrink: 0; }}
-    .chart-note  {{ font-size: 10px; color: #64748b; margin-bottom: 8px; flex-shrink: 0; }}
+    .chart-title {{ font-size: 14px; font-weight: 600; color: #e2e8f0; margin-bottom: 2px; flex-shrink: 0; }}
+    .chart-note  {{ font-size: 12px; color: #64748b; margin-bottom: 8px; flex-shrink: 0; }}
     .chart-container {{ flex: 1; min-height: 0; position: relative; }}
     .stat-grid-2 {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
     .stat-grid-3 {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; flex-shrink: 0; }}
     .p1-inc-area {{ flex: 1.4; display: flex; flex-direction: column; gap: 8px; min-height: 0; margin-bottom: 8px; }}
     .p1-inc-card {{ background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 12px 16px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }}
-    .p1-inc-header {{ display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-bottom: 6px; flex-wrap: wrap; }}
-    .p1-ref {{ font-family: 'DM Mono', monospace; font-size: 12px; color: #38bdf8; font-weight: 500; text-decoration: none; }}
+    .p1-inc-header {{ display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-bottom: 4px; flex-wrap: wrap; }}
+    .p1-ref {{ font-family: 'DM Mono', monospace; font-size: 13px; color: #38bdf8; font-weight: 500; text-decoration: none; }}
     .p1-ref:hover {{ text-decoration: underline; }}
-    .p1-status-badge {{ font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.06); }}
-    .p1-inc-date {{ font-size: 11px; color: #64748b; margin-left: auto; }}
-    .p1-cause {{ font-size: 11px; color: #94a3b8; }}
-    .p1-inc-title {{ font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px; flex-shrink: 0; line-height: 1.3; }}
-    .p1-inc-overview {{ font-size: 12px; color: #94a3b8; line-height: 1.6; overflow: hidden; }}
-    .p1-no-data {{ font-size: 13px; padding: 16px 0; }}
+    .p1-status-badge {{ font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 4px; background: rgba(255,255,255,0.06); }}
+    .p1-inc-date {{ font-size: 13px; color: #64748b; margin-left: auto; }}
+    .p1-cause {{ font-size: 13px; color: #94a3b8; }}
+    .p1-inc-title {{ font-size: 1.15em; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; flex-shrink: 0; line-height: 1.3; }}
+    .p1-inc-overview {{ font-size: 14px; color: #94a3b8; line-height: 1.7; overflow: hidden; }}
+    .p1-no-data {{ font-size: 14px; padding: 16px 0; }}
     .brand-strip {{ display: flex; align-items: center; gap: 10px; padding: 6px 0 8px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 10px; flex-wrap: wrap; }}
     .brand-strip-label {{ font-size: 10px; color: #475569; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; margin-right: 4px; }}
     .brand-pill {{ display: inline-flex; align-items: center; gap: 6px; background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 6px; padding: 4px 10px; }}
@@ -849,12 +1323,13 @@ html = f'''<!DOCTYPE html>
     .brand-pill-name {{ font-size: 12px; color: #e2e8f0; }}
     .brand-pill-count {{ font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; color: #38bdf8; }}
     .brand-strip-note {{ font-size: 10px; color: #475569; margin-left: auto; white-space: nowrap; }}
-    .p1-two-up {{ flex: 1; display: flex; gap: 14px; min-height: 0; }}
-    .p1-full-card {{ flex: 1; min-height: 0; display: flex; flex-direction: column; background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 20px 24px; overflow: hidden; }}
-    .p1-sections {{ display: flex; flex-direction: column; gap: 14px; margin-top: 14px; flex-shrink: 0; }}
-    .p1-section {{ }}
-    .p1-section-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; font-weight: 700; border-bottom: 1px solid rgba(56,189,248,0.15); padding-bottom: 5px; margin-bottom: 7px; }}
-    .p1-section-body {{ font-size: 13px; color: #94a3b8; line-height: 1.7; }}
+    .p1-two-up {{ flex: 1; display: flex; flex-direction: row; gap: 10px; min-height: 0; }}
+    .p1-full-card {{ flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: #0d1629; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 14px 18px; overflow: hidden; }}
+    .p1-sections {{ display: flex; flex-direction: column; gap: 10px; margin-top: 10px; flex: 1; min-height: 0; overflow: hidden; }}
+    .p1-section {{ min-height: 0; overflow: hidden; border-left: 1px solid rgba(255,255,255,0.06); padding-left: 14px; }}
+    .p1-section:first-child {{ border-left: none; padding-left: 0; }}
+    .p1-section-label {{ font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; font-weight: 700; border-bottom: 1px solid rgba(56,189,248,0.15); padding-bottom: 3px; margin-bottom: 6px; }}
+    .p1-section-body {{ font-size: 1em; color: #94a3b8; line-height: 1.65; overflow: hidden; }}
   </style>
 </head>
 <body>
@@ -862,7 +1337,8 @@ html = f'''<!DOCTYPE html>
 <div class="topbar">
   <div class="topbar-title">Weekly Incident Report</div>
   <div class="slide-tabs">
-    <button class="slide-tab active" onclick="showSlide(0)">P1 Performance</button>
+    <button class="slide-tab active" onclick="showSlide(0)">Executive Summary</button>
+    <button class="slide-tab" onclick="showSlide({_idx_p1perf})">P1 Performance</button>
 {p1_tab_btns_html}    <button class="slide-tab" onclick="showSlide({_idx_pir})">PIR Actions</button>
     <button class="slide-tab" onclick="showSlide({_idx_partner})">Partner Tickets</button>
     <button class="slide-tab" onclick="showSlide({_idx_ops})">Incident Ops</button>
@@ -872,8 +1348,9 @@ html = f'''<!DOCTYPE html>
 
 <div class="slides-wrap">
 
-<!-- ═══ SLIDE 0 — P1 PERFORMANCE ════════════════════════════════════ -->
-<div class="slide active" id="s0"><div class="page">
+{exec_slide_html}
+<!-- ═══ SLIDE 1 — P1 PERFORMANCE ════════════════════════════════════ -->
+<div class="slide" id="s0"><div class="page">
   <div class="group-label">P1 Performance · {cw_date}</div>
 {brand_strip_html}
   <div class="stat-grid-3">
@@ -936,7 +1413,19 @@ html = f'''<!DOCTYPE html>
       <div class="card-subnote">Target: &lt;25% without date</div>
     </div>
   </div>
+  <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:0">
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column">
 {pir_team_table_html}
+    </div>
+    <div style="flex:1.5;min-height:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px 16px;margin-top:12px">
+      <div class="chart-title" style="margin-bottom:8px">Completion Rate · Week on Week</div>
+      <div style="flex:1;min-height:0;position:relative"><canvas id="cPIRTrend" style="width:100%;height:100%"></canvas></div>
+    </div>
+    <div style="flex:1.2;min-height:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:14px 16px;margin-top:12px">
+      <div class="chart-title" style="margin-bottom:8px">Top 5 Pain Points · Open Items by Category</div>
+      <div style="flex:1;min-height:0;position:relative"><canvas id="cPIRCat" style="width:100%;height:100%"></canvas></div>
+    </div>
+  </div>
   <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; From w/c 8 Jun 2026, Producers will hold weekly meetings with the Head of SRE to track progress and plan PIR action items.</div>
 </div></div>
 
@@ -951,7 +1440,7 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {p23_delta_cls}">{p23_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">SOC & SRE CSAT Score ({cw_date})</div>
+      <div class="card-label">Avg. SOC & SRE CSAT Score ({cw_date})</div>
       <div class="card-value {color_csat(cw_csat_avg)}">{fmt_csat(cw_csat_avg)}<span class="unit">/5</span></div>
       <div class="card-delta {csat_delta_cls}">{csat_delta}</div>
     </div>
@@ -962,7 +1451,7 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {pt_delta_cls}">{pt_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">Partner Tickets Response Time ({cw_date})</div>
+      <div class="card-label">Avg. Partner Tickets Response Time ({cw_date})</div>
       <div class="card-value {pt_med_cls}">{fmt_min(cw_pt_med)} <span class="unit">min</span></div>
       <div class="card-subnote">Target: &lt;2 hr</div>
       <div class="card-delta {pt_med_delta_cls}">{pt_med_delta}</div>
@@ -980,15 +1469,13 @@ html = f'''<!DOCTYPE html>
         <div class="chart-note">Source: Intercom &middot; All SRE conversations &middot; 1–5 scale</div>
         <div class="chart-container"><canvas id="cCSAT" style="width:100%;height:100%"></canvas></div>
       </div>
-    </div>
-    <div class="chart-row">
       <div class="chart-section">
         <div class="chart-title">Partner Ticket Volume — Week on Week</div>
         <div class="chart-note">Source: Intercom &middot; All P1/P2/P3 Incident tagged tickets assigned to SRE</div>
         <div class="chart-container"><canvas id="cPVol" style="width:100%;height:100%"></canvas></div>
-        <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; From w/c 25 May 2026, Partner Support agreed to route all partner incidents directly to SRE.</div>
       </div>
     </div>
+    <div style="margin-top:6px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;flex-shrink:0;">&#9432;&nbsp; From w/c 25 May 2026, Partner Support agreed to route all partner incidents directly to SRE.</div>
   </div>
 </div></div>
 
@@ -1122,6 +1609,10 @@ const tbEveW   = {js_arr(tbEveW_arr)};
 const tbNightW = {js_arr(tbNightW_arr)};
 const tbTotalW = {js_arr(tbTotalW_arr)};
 
+const pirCatLabels = {js_str_arr(pir_top5_labels)};
+const pirCatOpen   = {js_arr(pir_top5_open)};
+const pirCatDone   = {js_arr(pir_top5_done)};
+
 const TT = {{ backgroundColor:'#0d1629', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e2e8f0', bodyColor:'#e2e8f0', padding:8 }};
 const LG = {{ position:'top', labels:{{ color:'#e2e8f0', boxWidth:12, padding:10, font:{{size:11}} }} }};
 const XA = {{ ticks:{{ color:'#64748b', font:{{size:11}} }}, grid:{{ color:'rgba(255,255,255,0.05)' }} }};
@@ -1136,8 +1627,7 @@ new Chart(document.getElementById('cP1Q'),{{type:'bar',data:{{labels:WK,datasets
   {{label:'True P1',     data:trueP1,  backgroundColor:'#ef4444',stack:'q'}},
   {{label:'False P1',    data:falseP1, backgroundColor:'#f59e0b',stack:'q'}},
   {unclass_ds}
-  {{label:'False P1 Rate %',type:'line',data:fpRate,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:3,pointBackgroundColor:'#a78bfa'}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true),rate:RA}}}}}});
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 new Chart(document.getElementById('cP1F'),{{type:'bar',data:{{labels:WK,datasets:[
   {{label:'Hit',   data:p1Hit, backgroundColor:'#22c55e',stack:'f'}},
@@ -1204,6 +1694,9 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
   {{label:'Evening (16–00 UTC)',data:tbEveW,   backgroundColor:'#f59e0b',barPercentage:0.8}},
   {{label:'Night (00–08 UTC)', data:tbNightW, backgroundColor:'#64748b',barPercentage:0.8}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YPct}}}}}});
+
+{pir_cat_chart_js}
+{pir_trend_chart_js}
 
 
 

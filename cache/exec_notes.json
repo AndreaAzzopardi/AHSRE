@@ -1,0 +1,12 @@
+{
+  "notes": [
+    {
+      "title": "PIR action item completion",
+      "body": "Following a meeting with Juan, Linus, and Producers, we have agreed to a more focused format for the weekly PIR review, with the Head of SRE owning and prioritising action items going forward."
+    },
+    {
+      "title": "Betconstruct platform incidents",
+      "body": "Two open incidents require Betconstruct to acknowledge: a double-bonus event bug on H2Bet and a Rewards section visibility issue on Galabet. Siria and Robert have been engaged, and we are now escalating to B2B to establish a more robust incident channel with our platform provider."
+    }
+  ]
+}
