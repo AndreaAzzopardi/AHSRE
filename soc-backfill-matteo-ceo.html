@@ -149,7 +149,7 @@
   .c-green  { border-left: 3px solid #1B7A4A; }
   .c-blue   { border-left: 3px solid #2A7FB5; }
 
-  .c-ey { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+  .c-ey { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
   .c-ey.red    { color: var(--ft-dark-orange); }
   .c-ey.purple { color: var(--ft-purple); }
   .c-ey.green  { color: #1B7A4A; }
@@ -169,7 +169,7 @@
   .fc.pink   { border-left-color: var(--ft-pink); }
 
   .fc-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--ft-purple); margin-bottom: 8px;
   }
   .fc-label.green  { color: #1B7A4A; }
@@ -258,7 +258,7 @@
     padding-left: 16px; position: relative;
   }
   .pts li::before {
-    content: '–'; position: absolute; left: 0;
+    content: '•'; position: absolute; left: 0;
     color: var(--text-muted); font-weight: 700;
   }
   .pts li strong { color: var(--text-primary); font-weight: 600; }
@@ -368,9 +368,9 @@
       <div class="sh">
         <div class="sh-badge b-orange">!</div>
         <div>
-          <div class="sh-ey">The constraint</div>
-          <div class="sh-t">That same structure now limits chapter two</div>
-          <div class="sh-sub">This isn't a future risk — one team member departed months ago and we're already living it.</div>
+          <div class="sh-ey">The reality — today</div>
+          <div class="sh-t">We already know what 4 SOC engineers looks like. We're living it.</div>
+          <div class="sh-sub">One engineer left months ago. What follows isn't a projection — it's what we've been running on ever since.</div>
         </div>
       </div>
       <div class="slide-body" style="justify-content:flex-start;gap:12px;">
@@ -410,11 +410,11 @@
             </ul>
           </div>
           <div class="c c-red">
-            <div class="c-ey red">Specialisation blocked</div>
+            <div class="c-ey red">Attrition risk — and 3 SOC breaks us</div>
             <ul class="pts" style="margin-top:4px;">
-              <li>Team is in permanent reactive mode — no capacity to develop</li>
-              <li>Growth toward <strong>more specialised technical roles</strong> is not possible</li>
-              <li>Nor is building the AI layer that reduces the load long-term</li>
+              <li>Sustained pressure with no growth path is the <strong>fastest route to losing someone</strong></li>
+              <li>Lose one more engineer and we're at 3 — overnight coverage fails, SRE absorbs shifts indefinitely</li>
+              <li>No breathing room = no path to specialisation — <strong>growth is the retention lever</strong></li>
             </ul>
           </div>
         </div>
@@ -427,11 +427,11 @@
   <div class="slide">
     <div class="slide-inner">
       <div class="sh">
-        <div class="sh-badge b-purple">AI</div>
+        <div class="sh-badge b-purple">→</div>
         <div>
-          <div class="sh-ey">The path forward</div>
-          <div class="sh-t">The AI layer is the goal — the hire + promotion breaks the cycle</div>
-          <div class="sh-sub">One decision. Everything else becomes possible.</div>
+          <div class="sh-ey">The solution</div>
+          <div class="sh-t">5 is the operational minimum for 24/7 — the promotion unlocks what comes next</div>
+          <div class="sh-sub">4 engineers cannot sustain round-the-clock coverage indefinitely. This isn't a growth ask — it's the floor.</div>
         </div>
       </div>
       <div class="slide-body" style="justify-content:flex-start;gap:11px;">
@@ -444,45 +444,33 @@
             <span style="color:var(--text-muted);">→</span>
             <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">More SRE escalations</span>
             <span style="color:var(--text-muted);">→</span>
-            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">No AI capacity</span>
+            <span style="background:#FEE8E4;color:#B33A22;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">No room to grow</span>
             <span style="color:var(--text-muted);">→</span>
             <span style="background:#B33A22;color:#fff;padding:3px 9px;border-radius:16px;font-size:11px;font-weight:700;">Problem compounds ↺</span>
           </div>
         </div>
         <div class="split">
           <div class="split-left">
-            <div class="g" style="gap:8px;">
-              <div class="c c-purple">
-                <div class="c-ey purple">AI auto-triage</div>
-                <p>Route alerts <strong>without decision fatigue</strong> — SOC focuses on real threats, not noise</p>
-              </div>
-              <div class="c c-purple">
-                <div class="c-ey purple">Pattern recognition</div>
-                <p>Flag <strong>recurring failure signatures</strong> before they escalate — fewer SRE pull-ins</p>
-              </div>
-              <div class="c c-purple">
-                <div class="c-ey purple">Partner intelligence</div>
-                <p>Shift SOC from reactive to <strong>predictive partner health monitor</strong></p>
-              </div>
-            </div>
-          </div>
-          <div class="split-right">
-            <div class="person" style="margin-bottom:8px;">
+            <div class="person">
               <div class="person-name">Matteo</div>
               <div class="person-role-from">Senior SOC Engineer</div>
               <div class="person-role-to">→ Junior SRE</div>
               <ul class="pts" style="color:rgba(255,255,255,0.82);margin-top:4px;">
-                <li>Solves SRE-level incidents already</li>
-                <li>Bridge engineer: SOC ↔ SRE depth</li>
-                <li>Visible proof internal growth is real</li>
+                <li>Solves SRE-level incidents already — the move is already earned</li>
+                <li>Bridge engineer: keeps SOC ↔ SRE knowledge flowing</li>
+                <li>Visible proof that internal growth is real, not just a talking point</li>
               </ul>
             </div>
+          </div>
+          <div class="split-right">
             <div class="c c-green">
-              <div class="c-ey green">Breaking the cycle</div>
+              <div class="c-ey green">What a full 5-person team makes possible</div>
               <ul class="pts" style="margin-top:4px;">
-                <li><strong>5 SOC in rotation</strong> → ratios drop, leave returns, team stabilises</li>
-                <li>Breathing room → SOC develops into <strong>more specialised technical roles</strong></li>
-                <li>AI investment becomes viable — Chapter 2 begins</li>
+                <li><strong>24/7 only holds at 5</strong> — four engineers covering all shifts leaves zero margin. One absence and the rotation fails; SRE picks up shifts that aren't theirs to carry.</li>
+                <li><strong>Day shifts jump from 4 to ~9 per month</strong> — in a 4-person rotation, each engineer gets just 4 day shifts a month. At 5, nearly 45% of the schedule falls during business hours.</li>
+                <li><strong>Proximity to tech is where growth happens</strong> — day shifts put SOC alongside SRE and engineering. That's where knowledge transfers: alarm tuning, incident triage, escalation context — not in isolation at 3am.</li>
+                <li><strong>Any SOC engineer can develop toward more specialised roles</strong> — with breathing room in the rotation, growth stops being theoretical. The path is open, not blocked.</li>
+                <li><strong>AI investment becomes viable</strong> — bandwidth to build what reduces long-term load, rather than just surviving the current one.</li>
               </ul>
             </div>
           </div>
@@ -506,8 +494,13 @@
       <div class="slide-body">
         <div class="ask">
           <div class="ask-label">What we need</div>
-          <p class="ask-text"><strong>Matteo → Junior SRE</strong> &nbsp;+&nbsp; <strong>1 SOC backfill hire</strong><br>
-          <span style="font-size:13px; color:rgba(255,255,255,0.75); margin-top:6px; display:block;">Promotion alone = team of 4 in rotation. Backfill alone = Matteo stays stuck. Both together is the only version that works.</span></p>
+          <p class="ask-text"><strong>Matteo → Junior SRE</strong> &nbsp;+&nbsp; <strong>1 SOC backfill hire</strong></p>
+          <ul style="margin-top:10px; list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;">
+            <li style="font-size:13px; color:rgba(255,255,255,0.75); padding-left:16px; position:relative;"><span style="position:absolute;left:0;">•</span>Promotion alone = 4 in rotation — breaks 24/7, not sustainable.</li>
+            <li style="font-size:13px; color:rgba(255,255,255,0.75); padding-left:16px; position:relative;"><span style="position:absolute;left:0;">•</span>Matteo stays Senior SOC — and he won't stay long. Growing into SRE has been his goal since day one. He's earned it, and without the promotion, we lose him.</li>
+            <li style="font-size:13px; color:rgba(255,255,255,0.75); padding-left:16px; position:relative; margin-top:8px;"><span style="position:absolute;left:0;">•</span>Both together secures the team we have and opens what comes next.</li>
+            <li style="font-size:13px; color:rgba(255,255,255,0.75); padding-left:16px; position:relative;"><span style="position:absolute;left:0;">•</span>Even as automation takes on more work, the right technical capability in-house remains critical.</li>
+          </ul>
         </div>
         <div class="unlocks">
           <div class="unlock">
@@ -516,7 +509,7 @@
           </div>
           <div class="unlock">
             <div class="unlock-n">5 SOC</div>
-            <div class="unlock-l">Full-strength team — equal rotation, fair shifts, no one carrying disproportionate nights</div>
+            <div class="unlock-l">Operational floor restored — 24/7 holds, leave is viable, one departure no longer puts the whole rotation at risk.</div>
           </div>
           <div class="unlock">
             <div class="unlock-n">Chapter 2</div>
