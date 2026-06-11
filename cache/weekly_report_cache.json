@@ -1375,27 +1375,27 @@
   "_p1_brands_top10": {
     "labels": [
       "Brazil Bet",
-      "Gembet",
-      "SoftGenius",
-      "Momentum Group(Spinbet)",
       "Tuohi",
       "Bravo Bet (Suprema)",
       "Fast Track",
+      "Gembet",
       "Star Casino",
-      "Avento",
-      "Sisutech"
+      "Sisutech",
+      "Annexio",
+      "SoftGenius",
+      "Avento"
     ],
     "counts": [
-      7,
-      4,
+      5,
       3,
       3,
       3,
       3,
       3,
       3,
-      3,
-      3
+      2,
+      2,
+      2
     ]
   },
   "2026-05-25": {
@@ -1545,7 +1545,7 @@
         "sre_oh_min": 297.9,
         "opened_ts": 1779976778,
         "sre_real_rt_s": 17872,
-        "summary": "Double bonus transfer in Galabet holiday promotion \u2014 280 members received duplicate bonuses; some users got bonuses from two campaigns on a single deposit. Partner requested root cause analysis and a fix recommendation."
+        "summary": "Double bonus transfer in Galabet holiday promotion — 280 members received duplicate bonuses; some users got bonuses from two campaigns on a single deposit. Partner requested root cause analysis and a fix recommendation."
       },
       {
         "conv_id": "215560994727050",
@@ -1557,7 +1557,7 @@
         "sre_oh_min": 156.7,
         "opened_ts": 1779790178,
         "sre_real_rt_s": 9401,
-        "summary": "Stanleybet bonus events returning HTTP 400 \u2014 ~900 requests from Comtrade's iCore failed posting to the integration API. Root cause: incorrect product type in bonus event payloads. Partner was advised to fix their product type and implement a retry mechanism."
+        "summary": "Stanleybet bonus events returning HTTP 400 — ~900 requests from Comtrade's iCore failed posting to the integration API. Root cause: incorrect product type in bonus event payloads. Partner was advised to fix their product type and implement a retry mechanism."
       }
     ],
     "true_p1_incidents": [
@@ -1568,7 +1568,7 @@
         "reported_at": "2026-05-26T12:34:10Z",
         "cause": "FT - Backend Code Defect",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8041",
-        "summary": "Problem: Partners were unable to create, update, or clone segments using singularity features with specific operators in crm-api versions 2.61.26 and 2.61.27, causing crm-api errors.\n\nImpact: 88 out of 119 production brands (73%) were unable to create, update, or clone segments that use singularity features with operators such as \"equals\", \"contains\", or \"not contains\". Multiclass features were unaffected.\n\nCause: A bug introduced by PR #2250 in crm-api versions 2.61.26\u20132.61.27 caused errors when segments used singularity features with certain operators.\n\nResolution: The backend fix was merged and deployed to all impacted brands (platform v2.61.30). Partner communications sent. No customer action required."
+        "summary": "Problem: Partners were unable to create, update, or clone segments using singularity features with specific operators in crm-api versions 2.61.26 and 2.61.27, causing crm-api errors.\n\nImpact: 88 out of 119 production brands (73%) were unable to create, update, or clone segments that use singularity features with operators such as \"equals\", \"contains\", or \"not contains\". Multiclass features were unaffected.\n\nCause: A bug introduced by PR #2250 in crm-api versions 2.61.26–2.61.27 caused errors when segments used singularity features with certain operators.\n\nResolution: The backend fix was merged and deployed to all impacted brands (platform v2.61.30). Partner communications sent. No customer action required."
       },
       {
         "reference": "INC-8064",
@@ -1576,15 +1576,15 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonus grants have been observed in H2Bet Production, where BetConstruct returns HTTP 503 responses after a bonus has already been credited on their side, causing Fast Track to retry and grant the same bonus multiple times.\n\nImpact: H2Bet has experienced an average of around 500 extra bonus grants per week over the past 24 weeks, mainly affecting FreeSpin bonuses and more recently Cash bonuses. This pattern has resulted in recurring bonus leakage and unintended duplicate awards to users.\n\nCauses: The main cause is BetConstruct returning a 503 error even after successfully crediting bonuses on their side, which causes Fast Track's Bonus Distributor to retry and create duplicates. This is not the expected behaviour from the operator API.\n\nSteps to resolve: We have completed analysis showing weekend monitoring detected no new duplicate credits despite two BetConstruct 5xx error bursts. Improved observability now allows rapid detection of any new duplications. The root cause is still unresolved on BetConstruct's side \u2014 we are awaiting their feedback and continuing to monitor closely. A May UserID/BonusID extract will be shared with H2Bet so they can assess business impact."
+        "summary": "Problem: Duplicate bonuses have been granted in H2Bet Production for at least the past 24 weeks because BetConstruct sometimes returns HTTP 503 after the bonus has already been credited, prompting Fast Track to retry and grant the same bonus again. The pattern most often affects FreeSpins, with the same behaviour now also observed for Cash bonuses.\n\nImpact: H2Bet experiences ongoing bonus leakage, with users receiving more than one bonus when only one was intended — averaging around 500 extra grants per week over the past 24 weeks. Idempotency improvements from February have reduced the weekly count, with several weeks now below 300 extra grants. A May UserID/BonusID extract will be shared with H2Bet so they can assess the business impact.\n\nCause: BetConstruct returns 503 errors after the bonus has already been credited on their side. From Fast Track’s perspective, the request appears to have failed, so the Bonus Distributor retries and creates duplicate grants. This is not the agreed behaviour from the operator API and the root fix is expected to sit with BetConstruct.\n\nActions Taken: Weekend monitoring on 6–7 June showed BetConstruct 5xx error bursts but no new duplicate credits — retries resolved correctly once the operator recovered. New observability allows duplications to be confirmed in minutes rather than hours. The incident remains in Monitoring while we await BetConstruct’s investigation and confirmation of any operator-side change to address the erroneous 503 responses."
       },
       {
         "reference": "INC-8219",
         "name": "Spinbet Investigation",
-        "status": "Monitoring",
+        "status": "Closed",
         "reported_at": "2026-05-28T13:10:23Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8219",
-        "summary": "Problem: Spinbet's SendGrid account was breached, requiring immediate containment action. As part of the response, the compromised SendGrid credentials were removed, which disrupted email sending for both Spinbet and Razed.\n\nImpact: Email sending is currently disrupted for both Spinbet and Razed, with outgoing emails failing after the shared SendGrid credentials were disabled. Both environments were affected because they were using the same SendGrid key. Additional follow-up work is required to rotate external-facing API keys for affected integrations.\n\nCauses: The root cause was a breach of Spinbet's SendGrid account. Since the same SendGrid credentials were being used across both Spinbet and Razed, removing the compromised key to contain the security risk caused email sending failures in both environments. Our internal investigation found no indication of an active security threat within Fast Track.\n\nSteps to resolve: We locked the affected environments, scaled down email distribution, and removed the compromised SendGrid credentials to contain the immediate security risk. We are working with the partner to support the setup of an alternative email provider for both Spinbet and Razed. In parallel, we have started rotating all relevant external-facing API keys, with credentials being shared securely via 1Password. The incident remains in monitoring."
+        "summary": "Problem: Spinbet’s SendGrid account was breached, requiring immediate containment. As part of the response the compromised SendGrid credentials were removed, which disrupted email sending for both Spinbet and Razed because the two brands shared the same SendGrid key.\n\nImpact: Outgoing emails failed for both Spinbet and Razed once the shared SendGrid credentials were disabled, blocking partner-facing email flows until alternative provider setup is complete. External-facing API keys for affected integrations also need to be rotated as follow-up work.\n\nCause: The root cause was a breach of Spinbet’s SendGrid account. Because the same SendGrid key was reused across Spinbet and Razed, removing it for containment disabled email for both environments. Internal investigation across Cloudflare logs, Wiz and database logs found no indication of an active security threat within Fast Track.\n\nActions Taken: We locked the affected environments, scaled down email distribution and removed the compromised SendGrid credentials to contain the risk. Work then shifted to supporting the partner in setting up and integrating an alternative email provider for Spinbet and Razed, and we are rotating all relevant external-facing API keys with credentials shared securely via 1Password. The incident has now been closed."
       }
     ]
   },
@@ -1609,7 +1609,7 @@
         "status": "Monitoring",
         "reported_at": "2026-06-02T21:38:38Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8571",
-        "summary": "Problem: The My Rewards button intermittently fails to appear for some users on Galabet's frontend, affecting their ability to access rewards.\n\nImpact: A subset of Galabet users were unable to consistently see and use the My Rewards button due to intermittent display failures. The issue affected user engagement with the rewards feature on Galabet Production.\n\nCauses: A race condition in BetConstruct's frontend integration prevented the My Rewards button from rendering reliably for some users.\n\nSteps to resolve: We confirmed the root cause and shared the proposed fix with BetConstruct for implementation. We are monitoring the partner-side rollout and continuing observation; the fix has not yet been fully deployed and the incident remains in monitoring."
+        "summary": "Problem: Galabet player and internal accounts intermittently could not see the \"My Rewards\" button because of a race condition in BetConstruct’s frontend integration where FasttrackCrm.init() can be called before the CRM SDK has finished loading. When that happens, initialization silently fails and authentication does not occur.\n\nImpact: Affected Galabet users were unable to access the rewards section during impacted sessions, even though reward events were still firing and visible in Fast Track. The result was inconsistent visibility of rewards for end-users on the frontend, which led the partner to pause their rewards campaign while investigating.\n\nCause: The issue is a load-order race in BetConstruct’s integration: a setTimeout calls FasttrackCrm.init() before window.FasttrackCrm is available, causing silent initialization failures. The same pattern previously affected padisahbet, where a host-side fix waiting for window.FasttrackCrm before calling init() was tested and verified.\n\nActions Taken: We confirmed the root cause, validated the technical fix on padisahbet and shared it with BetConstruct for application on Galabet. The incident remains in Monitoring while we await BetConstruct’s implementation; once they apply the fix on the operator side we will re-test with affected accounts and close the incident."
       }
     ],
     "mtta": {
@@ -1893,40 +1893,36 @@
   "2026-06-08": {
     "p1_quality_incidentio": {
       "true_p1": 1,
-      "false_p1": 4,
-      "unclassified": 0
+      "false_p1": 5,
+      "unclassified": 1
     },
     "p1_frt_sla": {
-      "total": 5,
-      "hit": 5,
+      "total": 7,
+      "hit": 7,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 3.7,
-      "mean_frt_min": 4.5,
+      "median_frt_min": 4.1,
+      "mean_frt_min": 7.4,
       "frt_seconds": [
         53,
         76,
         222,
         247,
-        753
+        261,
+        753,
+        1502
       ]
     },
-    "p1_brands": {
-      "Avento": 1,
-      "Mystake ": 1,
-      "FUTURE BRIGHT": 1,
-      "Momentum Group(Spinbet)": 1,
-      "Brazil Bet": 1
-    },
+    "p1_brands": {},
     "csat": {
-      "total": 12,
-      "rated": 4,
+      "total": 16,
+      "rated": 6,
       "avg_score": 5.0,
       "pct_positive": 100.0,
       "pct_perfect": 100.0,
-      "response_rate": 33.3,
+      "response_rate": 37.5,
       "score_dist": {
-        "5": 4,
+        "5": 6,
         "4": 0,
         "3": 0,
         "2": 0,
@@ -1934,15 +1930,15 @@
       }
     },
     "partner_tickets": {
-      "p1_responded": 3,
-      "p2_responded": 4,
+      "p1_responded": 4,
+      "p2_responded": 5,
       "p3_responded": 1,
-      "p1_open": 1,
-      "p2_open": 1,
+      "p1_open": 0,
+      "p2_open": 0,
       "p3_open": 0,
       "total_count": 10,
-      "avg_response_min": 9.0,
-      "median_response_min": 4.5,
+      "avg_response_min": 17.7,
+      "median_response_min": 8.7,
       "response_times_s": [
         53,
         63,
@@ -1951,105 +1947,131 @@
         320,
         728,
         819,
-        2050
+        1502,
+        2050,
+        4805
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 5,
+      "hit": 6,
       "missed": 0,
-      "total": 5,
+      "total": 6,
       "hit_rate": 100.0,
-      "mean_response_min": 13.3,
-      "median_response_min": 12.1,
+      "mean_response_min": 24.4,
+      "median_response_min": 12.9,
       "response_times_s": [
         63,
         320,
         728,
         819,
-        2050
+        2050,
+        4805
       ]
     },
     "mtta": {
-      "P2": {
-        "n": 28,
-        "n_acked": 18,
-        "ack_rate": 0.64,
-        "mtta_minutes": [
-          0.18,
-          0.23,
-          1.17,
-          1.33,
-          1.88,
-          3.0,
-          5.75,
-          6.83,
-          12.05,
-          16.38,
-          23.83,
-          24.62,
-          42.72,
-          50.85,
-          51.33,
-          57.43,
-          71.98,
-          229.45
-        ],
-        "median_mtta_min": 14.21,
-        "mean_mtta_min": 33.4
-      },
-      "P3": {
-        "n": 23,
-        "n_acked": 17,
-        "ack_rate": 0.74,
-        "mtta_minutes": [
-          0.25,
-          0.73,
-          3.15,
-          4.12,
-          4.68,
-          7.35,
-          8.02,
-          26.33,
-          27.62,
-          31.32,
-          51.08,
-          55.0,
-          74.67,
-          88.28,
-          140.68,
-          227.67,
-          331.68
-        ],
-        "median_mtta_min": 27.62,
-        "mean_mtta_min": 63.7
-      },
       "P1": {
-        "n": 5,
+        "n": 7,
         "n_acked": 0,
         "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P2": {
+        "n": 40,
+        "n_acked": 28,
+        "ack_rate": 0.7,
+        "mtta_minutes": [
+          0.18333333333333332,
+          0.23333333333333334,
+          0.9,
+          1.1666666666666667,
+          1.3333333333333333,
+          1.8166666666666667,
+          1.8833333333333333,
+          3.0,
+          5.75,
+          5.75,
+          6.833333333333333,
+          12.05,
+          12.216666666666667,
+          16.383333333333333,
+          21.433333333333334,
+          23.833333333333332,
+          24.616666666666667,
+          34.93333333333333,
+          37.983333333333334,
+          42.71666666666667,
+          50.85,
+          51.333333333333336,
+          52.3,
+          57.43333333333333,
+          71.98333333333333,
+          73.15,
+          189.21666666666667,
+          229.45
+        ],
+        "median_mtta_min": 18.9,
+        "mean_mtta_min": 36.8
+      },
+      "P3": {
+        "n": 31,
+        "n_acked": 22,
+        "ack_rate": 0.71,
+        "mtta_minutes": [
+          0.25,
+          0.7333333333333333,
+          2.5833333333333335,
+          3.15,
+          4.116666666666666,
+          4.683333333333334,
+          7.35,
+          8.016666666666667,
+          8.783333333333333,
+          18.75,
+          18.816666666666666,
+          26.333333333333332,
+          27.616666666666667,
+          31.316666666666666,
+          51.083333333333336,
+          55.0,
+          61.733333333333334,
+          74.66666666666667,
+          88.28333333333333,
+          140.68333333333334,
+          227.66666666666666,
+          331.68333333333334
+        ],
+        "median_mtta_min": 22.6,
+        "mean_mtta_min": 54.2
+      },
+      "P4": {
+        "n": 0,
+        "n_acked": 0,
+        "ack_rate": null,
         "mtta_minutes": [],
         "median_mtta_min": null,
         "mean_mtta_min": null
       }
     },
     "incident_volume": {
-      "total": 57,
-      "P1": 5,
-      "P2": 27,
-      "P3": 25,
+      "total": 78,
+      "P1": 7,
+      "P2": 40,
+      "P3": 31,
       "P4": 0
     },
     "p1_frt_breaches": [],
     "p2p3_frt_breaches": [],
     "csat_low_scores": [],
     "alert_volume": {
-      "total": 161,
+      "total": 239,
       "by_source": {
-        "Dead Man's Snitch": 7,
-        "Grafana SOC alerts": 52,
-        "Grafana alerts": 8,
-        "HTTP alerts": 74,
-        "Intercom": 20
+        "Dead Man's Snitch": 9,
+        "Grafana SOC alerts": 75,
+        "Grafana alerts": 12,
+        "HTTP alerts": 115,
+        "Intercom": 28
       }
     },
     "true_p1_incidents": [
@@ -2059,7 +2081,7 @@
         "status": "Closed",
         "reported_at": "2026-06-08T14:57:17Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9139",
-        "summary": "Problem: Customers in the Razed Production environment were blocked from launching or editing CRM lifecycles due to a frontend error caused by segments with incorrect categories.\n\nImpact: Customers in the Razed Production environment were unable to launch or edit CRM lifecycles, which prevented them from managing campaigns until the fix was deployed. No other brands were impacted after a global SQL check confirmed all other environments were unaffected.\n\nCauses: A bug in the crm-api caused segments to be assigned the wrong category when cloning lifecycles. This resulted in the frontend filtering out required segments and blocking lifecycle launches.\n\nSteps to resolve: We identified segments with the wrong category and manually updated them. A fix was deployed to crm-api to ensure cloned lifecycles receive the correct segment category. A global SQL check confirmed only Razed Production was impacted. The fix will roll out to other brands through the normal stable release process. The partner confirmed the issue is resolved as of 6:08pm CEST."
+        "summary": "Problem: Customers in the Razed Production environment were blocked from launching or editing CRM lifecycles after a frontend bug caused some segments to be assigned the wrong category when cloning lifecycles. The frontend then filtered out the required segments, preventing campaigns from being managed.\n\nImpact: Razed Production users could not launch or edit CRM lifecycles until the fix was deployed, which directly disrupted their campaign management workflow. A global SQL check confirmed no other brands were impacted, so the customer exposure was limited to Razed.\n\nCause: A defect in crm-api assigned segments the wrong category when cloning lifecycles. Because the frontend depends on segment category for filtering, cloned lifecycles ended up with missing segments and could not be launched.\n\nActions Taken: We manually corrected the segments with the wrong category and deployed a fix to crm-api so future clones inherit the correct category. A global SQL check verified only Razed Production was affected and the partner confirmed resolution at 18:08 CEST. The crm-api fix will reach other environments through the normal stable release process."
       }
     ]
   }
