@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonus grants have been observed in H2Bet production for at least the past 24 weeks. BetConstruct sometimes returns HTTP 503 responses after a bonus has already been credited on their side, which leads Fast Track's Bonus Distributor to retry and grant the same bonus more than once.\n\nImpact: H2Bet has been receiving roughly 500 extra bonus grants per week on average over the past 24 weeks (down to below 300 in several recent weeks since idempotency improvements were rolled out). Most duplicates are FreeSpins, but the same pattern has been seen for Cash bonuses recently, and a list of affected UserID / BonusID combinations for May will be shared with H2Bet so they can assess the business impact.\n\nCause: BetConstruct can return a 503 'Service Unavailable' response even after successfully crediting a bonus to the player. From Fast Track's perspective the call looks failed, so the Bonus Distributor retries, and because the bonus is already credited on the operator side a duplicate grant is created. This is not the agreed behaviour of the operator API.\n\nActions Taken: Weekend monitoring confirmed that recent BetConstruct 5xx error bursts have not produced new duplicates, and observability has been improved so any future duplicates can be detected within minutes. The root cause remains with BetConstruct: Fast Track has shared the data and asked H2Bet to escalate, while Andrew Grech Gatt leads partner communication and Simon Grenefalk prepares the formal H2Bet data extract. The incident stays in Monitoring while we await BetConstruct's investigation and fix."
+        "summary": "Problem: Duplicate bonus grants are being observed in H2Bet production. BetConstruct sometimes returns an HTTP 503 Service Unavailable response after the bonus has already been credited on their side. Fast Track then retries the request, which can result in the same bonus being granted more than once. The pattern has been present for at least 24 weeks.\n\nImpact: Recurring bonus leakage for H2Bet, with users receiving more than one bonus when only one was intended. Reporting indicates an average of around 500 extra bonus grants per week over 24 weeks, with the volume falling below 300/week since idempotency improvements in February. Most duplicates relate to FreeSpins, with recent occurrences also affecting Cash bonuses.\n\nCause: BetConstruct can return a 503 error even after successfully crediting the bonus to the player. From Fast Track's perspective the request appears to have failed, so the Bonus Distributor retries, creating a duplicate grant. The behaviour is not the expected or agreed contract from the operator API.\n\nActions Taken: Weekend monitoring confirmed no new duplicate credits despite 5xx error bursts on 6\u20137 June; improved observability now detects duplicates within minutes. Fast Track has shared the May UserID/BonusID extract with H2Bet and is awaiting their assessment of business impact. The next step is a formal investigation with BetConstruct (led via Andrew Grech Gatt) since the root fix sits on their side, with options including verifying via an additional endpoint and validating External ID idempotency. The incident remains in Monitoring/Waiting on Partner."
       },
       {
         "reference": "INC-8219",
@@ -1609,7 +1609,7 @@
         "status": "Monitoring",
         "reported_at": "2026-06-02T21:38:38Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8571",
-        "summary": "Problem: The 'My Rewards' button intermittently fails to render for Galabet player and internal accounts because of a race condition in BetConstruct's frontend integration of the Fast Track CRM SDK. Reward events still fire and remain visible in Fast Track, but affected users cannot see or interact with their rewards in the operator UI.\n\nImpact: Affected Galabet users intermittently cannot access the My Rewards section during impacted sessions, which blocks their visibility of active rewards even though the underlying CRM events continue to flow correctly. The operator paused its rewards campaign while we investigated, so partner-facing reward delivery for Galabet was effectively suspended for part of the incident.\n\nCause: BetConstruct's frontend calls FasttrackCrm.init() inside a setTimeout before the CRM SDK has finished loading. When the SDK is not yet present the initialization fails silently, authentication never happens for that session, and the My Rewards button cannot render. The same load-order pattern was previously seen on padisahbet, where a host-side fix that waits for window.FasttrackCrm before calling init() resolved it.\n\nActions Taken: The root cause has been confirmed and the technical fix \u2014 wait for window.FasttrackCrm before calling init() \u2014 has been shared with BetConstruct, who own the change. The incident remains in Monitoring while we wait for the operator to deploy the fix on Galabet, and Fast Track is in regular contact with the partner to track adoption."
+        "summary": "Problem: The 'My Rewards' button intermittently fails to appear for some Galabet player and internal accounts. The failure is caused by a race condition in BetConstruct's frontend integration where FasttrackCrm.init() can be called before the CRM SDK has fully loaded. When this happens, initialisation fails silently, preventing authentication.\n\nImpact: Affected users may intermittently be unable to access the 'My Rewards' section during impacted sessions. Reward events are still firing and remain visible in Fast Track, but users are not always able to view or interact with their rewards from the frontend. The issue is not widespread but represents an inconsistent UX for Galabet.\n\nCause: An intermittent race condition: FasttrackCrm.init() can sometimes be called before the CRM SDK has fully loaded. When this happens, initialisation fails silently, preventing authentication and causing the 'My Rewards' button not to render for that session.\n\nActions Taken: The root cause has been confirmed and the required technical fix has been shared with BetConstruct (waiting for window.FasttrackCrm before calling init(), already validated on padisahbet). The incident remains open in Monitoring while we wait for BetConstruct to apply the fix on Galabet. No further FT-side action is pending \u2014 the next step sits with the operator."
       }
     ],
     "mtta": {
@@ -1894,19 +1894,20 @@
     "p1_quality_incidentio": {
       "true_p1": 2,
       "false_p1": 8,
-      "unclassified": 2
+      "unclassified": 3
     },
     "p1_frt_sla": {
-      "total": 10,
-      "hit": 10,
+      "total": 11,
+      "hit": 11,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 4.2,
-      "mean_frt_min": 8.8,
+      "median_frt_min": 4.1,
+      "mean_frt_min": 8.2,
       "frt_seconds": [
         53,
         76,
         89,
+        96,
         222,
         247,
         261,
@@ -1917,6 +1918,7 @@
       ]
     },
     "p1_brands": {
+      "Rolletto": 1,
       "Stanleybet.ro": 1,
       "Betfox": 1,
       "Gembet": 1,
@@ -1928,28 +1930,28 @@
       "Momentum Group(Spinbet)": 1
     },
     "csat": {
-      "total": 26,
+      "total": 27,
       "rated": 10,
       "avg_score": 4.9,
       "pct_positive": 100.0,
       "pct_perfect": 90.0,
-      "response_rate": 38.5,
+      "response_rate": 37.0,
       "score_dist": {
-        "1": 0,
-        "2": 0,
-        "3": 0,
+        "5": 9,
         "4": 1,
-        "5": 9
+        "3": 0,
+        "2": 0,
+        "1": 0
       }
     },
     "partner_tickets": {
       "p1_responded": 5,
       "p2_responded": 8,
       "p3_responded": 4,
-      "p1_open": 1,
+      "p1_open": 2,
       "p2_open": 0,
       "p3_open": 0,
-      "total_count": 18,
+      "total_count": 19,
       "avg_response_min": 16.7,
       "median_response_min": 7.5,
       "response_times_s": [
@@ -1996,7 +1998,7 @@
     },
     "mtta": {
       "P1": {
-        "n": 12,
+        "n": 13,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -2004,9 +2006,9 @@
         "mean_mtta_min": null
       },
       "P2": {
-        "n": 64,
-        "n_acked": 47,
-        "ack_rate": 0.73,
+        "n": 74,
+        "n_acked": 57,
+        "ack_rate": 0.77,
         "mtta_minutes": [
           0.18333333333333332,
           0.2,
@@ -2019,27 +2021,37 @@
           1.6833333333333333,
           1.8166666666666667,
           1.8833333333333333,
+          2.5,
           3.0,
           3.6666666666666665,
           3.716666666666667,
+          3.933333333333333,
           5.083333333333333,
           5.383333333333334,
           5.75,
           5.75,
           6.833333333333333,
+          7.65,
           9.15,
           12.05,
           12.216666666666667,
+          14.866666666666667,
           16.383333333333333,
+          18.0,
+          18.816666666666666,
           19.9,
           21.433333333333334,
+          21.566666666666666,
           23.833333333333332,
           24.616666666666667,
+          26.85,
           27.483333333333334,
           28.083333333333332,
           34.93333333333333,
+          36.53333333333333,
           37.983333333333334,
           42.71666666666667,
+          44.95,
           49.75,
           50.85,
           51.016666666666666,
@@ -2056,12 +2068,12 @@
           229.45,
           352.23333333333335
         ],
-        "median_mtta_min": 19.9,
-        "mean_mtta_min": 40.8
+        "median_mtta_min": 18.8,
+        "mean_mtta_min": 37.1
       },
       "P3": {
-        "n": 56,
-        "n_acked": 42,
+        "n": 59,
+        "n_acked": 44,
         "ack_rate": 0.75,
         "mtta_minutes": [
           0.25,
@@ -2073,7 +2085,9 @@
           4.683333333333334,
           7.35,
           8.016666666666667,
+          8.733333333333333,
           8.783333333333333,
+          8.9,
           11.1,
           13.483333333333333,
           14.4,
@@ -2107,55 +2121,55 @@
           331.68333333333334,
           363.3333333333333
         ],
-        "median_mtta_min": 41.2,
-        "mean_mtta_min": 87.2
+        "median_mtta_min": 29.9,
+        "mean_mtta_min": 83.7
       },
       "P4": {
         "n": 0,
         "n_acked": 0,
-        "ack_rate": 0,
+        "ack_rate": null,
         "mtta_minutes": [],
         "median_mtta_min": null,
         "mean_mtta_min": null
       }
     },
     "incident_volume": {
-      "total": 132,
-      "P1": 12,
-      "P2": 64,
-      "P3": 56,
+      "total": 146,
+      "P1": 13,
+      "P2": 74,
+      "P3": 59,
       "P4": 0
     },
     "p1_frt_breaches": [],
     "p2p3_frt_breaches": [],
     "csat_low_scores": [],
     "alert_volume": {
-      "total": 614,
+      "total": 700,
       "by_source": {
-        "Dead Man's Snitch": 71,
-        "Grafana SOC alerts": 134,
-        "Grafana alerts": 34,
+        "Dead Man's Snitch": 72,
+        "Grafana SOC alerts": 160,
+        "Grafana alerts": 38,
         "HTTP DMS FTML Alerts": 16,
-        "HTTP alerts": 320,
-        "Intercom": 39
+        "HTTP alerts": 374,
+        "Intercom": 40
       }
     },
     "true_p1_incidents": [
-      {
-        "reference": "INC-9139",
-        "name": "[P1] Intercom Incident : Razed Production",
-        "status": "Closed",
-        "reported_at": "2026-06-08T14:57:17Z",
-        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9139",
-        "summary": "Problem: Customers in the Razed Production environment were blocked from launching or editing CRM lifecycles due to a frontend error caused by segments with incorrect categories. Customers could not manage their campaigns while the bug was active in production.\n\nImpact: Customers in the Razed Production environment were unable to launch or edit CRM lifecycles, which prevented them from managing campaigns until the fix was deployed. No other brands were impacted after a global SQL check confirmed all other environments were unaffected. The partner confirmed the issue resolved at 18:08 CEST on the same day.\n\nCause: A bug in the crm-api caused segments to be assigned the wrong category when cloning lifecycles. This resulted in the frontend filtering out required segments and blocking lifecycle launches. The defect originated in the frontend code path that handles lifecycle cloning.\n\nActions Taken: Engineering identified segments with the wrong category and manually updated them to the correct category. A fix was deployed to crm-api to ensure cloned lifecycles receive the correct segment category. A global SQL check confirmed only Razed Production was impacted; the fix will roll out to other brands through the normal stable release process. The incident is closed and resolved."
-      },
       {
         "reference": "INC-9364",
         "name": "KAFKA incident on EU1 Cluster",
         "status": "Monitoring",
         "reported_at": "2026-06-11T15:09:13Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9364",
-        "summary": "Problem: Kafka queues across multiple brands in the EU1 cluster were unable to process or deliver messages due to authentication failures, leading to widespread service outages for about 80 minutes. The disruption affected Integration Consumer and Activity Manager services across many production environments.\n\nImpact: Kafka queues and related services for at least 15 brands \u2014 including Betlive, Crocobet, Roobet, Star-Casino, Campeon-Omega, JackpotCRM, Pressenter, Sisutech, Badhombre, Demo, Reactivaction, Reefspins, Rhino, SBTSolutions, TheIslandGame, and Yarrow \u2014 stopped processing or delivering millions of messages for about 80 minutes. Seven production environments have been locked for deployments to prevent recurrence: Betlive, Yarrow, Rhino, Sortenabet, Crickex, Pressenter, and Bet At Home.\n\nCause: At 14:11 UTC (16:11 CEST), a change to the 'kafka-acl-external-user' Terraform module (PR #397) altered how MSK SCRAM secrets are associated, removing the secrets for all brands except Yarrow. This caused widespread authentication failures across the shared EU1 Kafka cluster, and downstream consumers immediately lost the ability to authenticate with the broker.\n\nActions Taken: At 15:26 UTC (17:26 CEST), the missing secrets were re-associated, restoring all user access to the Kafka cluster, and services were restarted with deployments rolled out for full recovery. Deployment freezes are in place for the seven affected environments while a fix for the Terraform configuration is being prepared. Communications were sent to all affected partners. The incident remains in Monitoring while the Terraform remediation is finalised before the deployment freeze is lifted."
+        "summary": "Problem: Kafka queues across multiple brands on the EU1 cluster were unable to process or deliver messages due to authentication failures. The outage stemmed from a Terraform module change that altered how MSK SCRAM secrets are associated. As a result, the shared EU1 cluster lost user secrets for all brands except Yarrow.\n\nImpact: At least 15 brands \u2014 including Betlive, Crocobet, Roobet, Star-Casino, Campeon-Omega, JackpotCRM, Pressenter, Sisutech, Badhombre, Demo, Reactivaction, Reefspins, Rhino, SBTSolutions, TheIslandGame and Yarrow \u2014 stopped processing or delivering millions of messages for about 80 minutes. Integration Consumer and Activity Manager services were down for Betlive, Crocobet, JackpotCRM and Star-Casino. Seven production environments have been locked for deployments to prevent recurrence.\n\nCause: A change to the 'kafka-acl-external-user' Terraform module (PR #397) altered how MSK SCRAM secrets are associated, removing the secrets for every brand except Yarrow. This caused widespread authentication failures across the shared EU1 Kafka cluster.\n\nActions Taken: At 15:26 UTC the missing secrets were re-associated, restoring all user access to the cluster, and services were restarted to drain backlog. Deployment freezes have been put in place for affected environments, and a fix for the Terraform configuration is still being prepared to prevent recurrence. Communications were sent to all affected partners. The incident remains in Monitoring while the Terraform remediation is finalised and rolled out."
+      },
+      {
+        "reference": "INC-9139",
+        "name": "[P1] Intercom Incident : Razed Production",
+        "status": "Closed",
+        "reported_at": "2026-06-08T14:57:17Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9139",
+        "summary": "Problem: Customers in the Razed Production environment were blocked from launching or editing CRM lifecycles. The frontend was filtering out required segments because they had been assigned the wrong category when cloned. This prevented lifecycle launches and edits across the brand.\n\nImpact: Razed Production customers were unable to launch or edit CRM lifecycles, which blocked them from managing campaigns until the fix was deployed. A global SQL check confirmed no other brand was affected. Business operations on Razed were degraded for the duration of the incident, but no other brands required forced remediation.\n\nCause: A bug in crm-api caused segments to be assigned the wrong category when lifecycles were cloned. The frontend then filtered out those mis-categorised segments, breaking the launch and edit flows.\n\nActions Taken: The affected segments were identified and manually corrected, and a fix was deployed to crm-api so that cloned lifecycles receive the correct segment category. A global SQL check confirmed the issue was isolated to Razed Production, so no forced rollout was needed and the fix will reach other brands via the normal stable release process. The partner confirmed resolution at 6:08pm CEST and the incident is now Closed."
       }
     ]
   }
