@@ -60,13 +60,17 @@ prev_week = WEEK_KEYS[-2]
 CW = cache[current_week]
 PW = cache[prev_week]
 
-# When the current week has no ticket data (e.g. early Monday), show last complete week in stat cards
-_no_cw_data = (
-    (CW.get("p1_frt_sla") or {}).get("total", 0) == 0 and
-    (CW.get("csat") or {}).get("total", 0) == 0
-)
-stat_week      = prev_week        if _no_cw_data else current_week
-stat_prev_week = WEEK_KEYS[-3]   if _no_cw_data else prev_week
+# The exec summary / stat cards only ever show fully-completed weeks — never the
+# in-progress current week. A week key is its Monday; the week is complete once
+# today (UTC) has passed the following Monday. Trends (WEEK_KEYS) still include the
+# partial current week, marked with a '*'.
+def week_is_complete(iso_monday):
+    start = datetime.strptime(iso_monday, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    return today >= start + timedelta(days=7)
+
+complete_weeks = [k for k in WEEK_KEYS if week_is_complete(k)]
+stat_week      = complete_weeks[-1]
+stat_prev_week = complete_weeks[-2]
 
 # Week labels
 WK = [fmt_week_label(k, k == current_week) for k in WEEK_KEYS]
