@@ -1930,12 +1930,12 @@
       "Momentum Group(Spinbet)": 1
     },
     "csat": {
-      "total": 27,
+      "total": 29,
       "rated": 10,
       "avg_score": 4.9,
       "pct_positive": 100.0,
       "pct_perfect": 90.0,
-      "response_rate": 37.0,
+      "response_rate": 34.5,
       "score_dist": {
         "5": 9,
         "4": 1,
@@ -1946,14 +1946,14 @@
     },
     "partner_tickets": {
       "p1_responded": 5,
-      "p2_responded": 8,
+      "p2_responded": 9,
       "p3_responded": 4,
-      "p1_open": 2,
+      "p1_open": 1,
       "p2_open": 0,
-      "p3_open": 0,
-      "total_count": 19,
-      "avg_response_min": 16.7,
-      "median_response_min": 7.5,
+      "p3_open": 1,
+      "total_count": 20,
+      "avg_response_min": 18.8,
+      "median_response_min": 9.8,
       "response_times_s": [
         53,
         63,
@@ -1971,16 +1971,17 @@
         1694,
         2050,
         2313,
+        3339,
         4805
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 12,
+      "hit": 13,
       "missed": 0,
-      "total": 12,
+      "total": 13,
       "hit_rate": 100.0,
-      "mean_response_min": 20.9,
-      "median_response_min": 12.9,
+      "mean_response_min": 23.6,
+      "median_response_min": 13.7,
       "response_times_s": [
         63,
         148,
@@ -1993,6 +1994,7 @@
         1694,
         2050,
         2313,
+        3339,
         4805
       ]
     },
@@ -2172,5 +2174,120 @@
         "summary": "Problem: Customers in the Razed Production environment were blocked from launching or editing CRM lifecycles. The frontend was filtering out required segments because they had been assigned the wrong category when cloned. This prevented lifecycle launches and edits across the brand.\n\nImpact: Razed Production customers were unable to launch or edit CRM lifecycles, which blocked them from managing campaigns until the fix was deployed. A global SQL check confirmed no other brand was affected. Business operations on Razed were degraded for the duration of the incident, but no other brands required forced remediation.\n\nCause: A bug in crm-api caused segments to be assigned the wrong category when lifecycles were cloned. The frontend then filtered out those mis-categorised segments, breaking the launch and edit flows.\n\nActions Taken: The affected segments were identified and manually corrected, and a fix was deployed to crm-api so that cloned lifecycles receive the correct segment category. A global SQL check confirmed the issue was isolated to Razed Production, so no forced rollout was needed and the fix will reach other brands via the normal stable release process. The partner confirmed resolution at 6:08pm CEST and the incident is now Closed."
       }
     ]
+  },
+  "2026-06-15": {
+    "p1_frt_sla": {
+      "total": 1,
+      "hit": 1,
+      "missed": 0,
+      "hit_rate": 100.0,
+      "median_frt_min": 3.2,
+      "mean_frt_min": 3.2,
+      "frt_seconds": [
+        192
+      ]
+    },
+    "p1_brands": {
+      "PressEnter / Yarrow": 1
+    },
+    "p1_frt_breaches": [],
+    "csat": {
+      "total": 4,
+      "rated": 0,
+      "avg_score": null,
+      "pct_positive": null,
+      "pct_perfect": null,
+      "response_rate": 0.0,
+      "score_dist": {
+        "5": 0,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      }
+    },
+    "csat_low_scores": [],
+    "partner_tickets": {
+      "p1_responded": 1,
+      "p2_responded": 0,
+      "p3_responded": 3,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 4,
+      "avg_response_min": 5.4,
+      "median_response_min": 4.8,
+      "response_times_s": [
+        192,
+        263,
+        310,
+        523
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 3,
+      "missed": 0,
+      "total": 3,
+      "hit_rate": 100.0,
+      "mean_response_min": 6.1,
+      "median_response_min": 5.2,
+      "response_times_s": [
+        263,
+        310,
+        523
+      ]
+    },
+    "p2p3_frt_breaches": [],
+    "p1_quality_incidentio": {
+      "true_p1": 0,
+      "false_p1": 0,
+      "unclassified": 0
+    },
+    "mtta": {
+      "P1": {
+        "n": 0,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P2": {
+        "n": 0,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P3": {
+        "n": 0,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P4": {
+        "n": 0,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      }
+    },
+    "incident_volume": {
+      "total": 0,
+      "P1": 0,
+      "P2": 0,
+      "P3": 0,
+      "P4": 0
+    },
+    "alert_volume": {
+      "total": 0,
+      "by_source": {}
+    },
+    "true_p1_incidents": []
   }
 }
