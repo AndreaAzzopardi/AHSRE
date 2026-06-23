@@ -55,6 +55,24 @@ Log: `"Cache: N of M complete weeks populated."` Then proceed.
 
 ---
 
+## Data integrity guard (applies to ALL incident.io-sourced steps: 2, 2B, 2C)
+
+**Never write a zero/empty result that overwrites or fabricates data on a completed week.** A failed or empty fetch must be treated as a fetch failure — not as real zeros — otherwise a transient connector outage permanently freezes zeros into history (a completed week outside the 2-day re-check window is never re-fetched).
+
+Before writing `p1_quality_incidentio`, `mtta`, `incident_volume`, or `alert_volume` for any week, validate the fetch:
+
+- If the `incident_list` / `incident_stats` / `alert_stats` call **errored**, timed out, or the incident.io connector was unavailable → **do not write that key**. Keep the existing cached value, and log `"FETCH FAILED for <source> <week> — retained cache, not overwritten"`. Leave the key absent if it was never populated, so a later run backfills it.
+- For any **completed** week, treat these as failure signals (not legitimate zeros) and apply the same retain-don't-overwrite rule:
+  - `incident_volume.total == 0`
+  - `alert_volume.total == 0`
+  - `p1_quality_incidentio == {0,0,0}` **while** that same week's `incident_volume.total > 0` (zero classifications despite incidents existing is impossible)
+- A genuine zero is only written when the API call **succeeded** and the week legitimately returned no records. This is realistic only for `p1_quality` true/false counts in a quiet week — it is **never** valid for `incident_volume.total` or `alert_volume.total` at Fast Track's scale (hundreds/week).
+- At end of run, if any source was retained-not-overwritten, surface it in the output summary as `"⚠ N week/source cells retained due to fetch failure — re-run when incident.io is healthy"`.
+
+Note for `true_p1_incidents`: include current-week True P1s **even if the incident is private or still active** (e.g. a live security incident) — do not filter by visibility or status, or genuine True P1s will be missed (INC-10453 was missed this way).
+
+---
+
 ## Step 1 — ClickHouse P1 quality (PagerDuty era, cache-aware)
 
 ClickHouse covers P1/P5 incidents up to 2026-04-30. This data never changes once cached.
