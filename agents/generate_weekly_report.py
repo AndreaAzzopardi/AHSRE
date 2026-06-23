@@ -877,24 +877,31 @@ def _median(xs):
     m = n // 2
     return s[m] if n % 2 else (s[m - 1] + s[m]) / 2.0
 
-# Office-hours window for resolve-time stats: Mon–Fri, 08:00–17:00 (9h/day).
-# Timestamps in cache are UTC, so the window is applied in UTC. Bump these two
-# (and add an offset) if the team means a local-time window instead.
+# Office-hours window for resolve-time stats: Mon–Fri, 08:00–17:00 (9h/day),
+# in MALTA local time (Europe/Malta — CET/CEST, DST handled automatically).
+# Cache timestamps are UTC and get converted to Malta local before clipping.
 OFFICE_START_H = 8
 OFFICE_END_H   = 17
+try:
+    from zoneinfo import ZoneInfo
+    OFFICE_TZ = ZoneInfo("Europe/Malta")
+except Exception:                       # no tzdata → fall back to fixed CEST (+2)
+    OFFICE_TZ = timezone(timedelta(hours=2))
 
 def business_hours_between(start, end):
-    """Hours of overlap between [start, end] and Mon–Fri 08:00–17:00, UTC.
-    Out-of-hours (nights, weekends) is excluded. start/end are naive (UTC)."""
+    """Hours of overlap between [start, end] and Mon–Fri 08:00–17:00 Malta time.
+    Nights & weekends excluded; DST handled via Europe/Malta. start/end naive UTC."""
     if not start or not end or end <= start:
         return 0.0
+    start = start.replace(tzinfo=timezone.utc).astimezone(OFFICE_TZ)
+    end   = end.replace(tzinfo=timezone.utc).astimezone(OFFICE_TZ)
     total = 0.0
     day = start.date()
     last = end.date()
     while day <= last:
         if day.weekday() < 5:  # Mon–Fri
-            day_open  = datetime(day.year, day.month, day.day, OFFICE_START_H)
-            day_close = datetime(day.year, day.month, day.day, OFFICE_END_H)
+            day_open  = datetime(day.year, day.month, day.day, OFFICE_START_H, tzinfo=OFFICE_TZ)
+            day_close = datetime(day.year, day.month, day.day, OFFICE_END_H, tzinfo=OFFICE_TZ)
             s = max(start, day_open)
             e = min(end, day_close)
             if e > s:
@@ -905,7 +912,7 @@ def business_hours_between(start, end):
 def eng_overview_stats(week_keys, names):
     """Two per-engineer stats the weekly bars don't show:
     - median_h: MEDIAN reported→resolved time over resolved tickets in week_keys,
-      counted in OFFICE HOURS only (Mon–Fri 08:00–17:00 UTC — nights/weekends
+      counted in OFFICE HOURS only (Mon–Fri 08:00–17:00 Malta time — nights/weekends
       excluded). Robust 'typical' working-time close cost; outliers can't skew it.
     - open_n / oldest_d / over7_n: LIVE open-ticket backlog across ALL stored weeks,
       aged from reported_at to now (dedup by reference)."""
@@ -1027,7 +1034,7 @@ def render_engineer_workload_slide():
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
 {panels_html}
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office h)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 UTC (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office h)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
