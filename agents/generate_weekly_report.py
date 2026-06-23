@@ -966,6 +966,9 @@ def render_engineer_workload_slide():
 
     last = len(eng_week_keys) - 1
     _latest_lbl = eng_wk_labels[last]
+    _nwk        = len(eng_week_keys)
+    _range_lbl  = f"{eng_wk_labels[0]}&ndash;{eng_wk_labels[last]}" if _nwk > 1 else eng_wk_labels[last]
+    _today_lbl  = datetime.now(timezone.utc).strftime("%-d %b")
 
     cards = []
     for n in ENG_FOCUS:
@@ -1001,12 +1004,13 @@ def render_engineer_workload_slide():
         <div style="display:flex;align-items:baseline;gap:14px">
           <span><span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#e2e8f0">{assigned}</span> <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">assigned</span></span>
           <span><span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#22c55e">{closed}</span> <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">closed</span></span>
+          <span class="{net_cls}" style="font-size:12px">{net_txt}</span>
         </div>
-        <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
-          <span class="{net_cls}">{net_txt}</span>
-          <span>{med_html} <span style="color:#64748b">median resolve (office hours)</span></span>
-        </div>
-        <div style="margin-top:5px;font-size:12px">{open_html}</div>
+        <div style="font-size:9.5px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin-top:2px">Week of {_latest_lbl} &middot; assigned vs closed that week</div>
+        <div style="margin-top:8px;font-size:12px">{med_html} <span style="color:#64748b">median resolve (office hours)</span></div>
+        <div style="font-size:9.5px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">Typical close time &middot; {_nwk}-wk median &middot; {_range_lbl}</div>
+        <div style="margin-top:8px;font-size:12px">{open_html}</div>
+        <div style="font-size:9.5px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">Still open now &middot; as of {_today_lbl} &middot; aged from report date</div>
       </div>''')
     cards_html = "\n".join(cards)
 
