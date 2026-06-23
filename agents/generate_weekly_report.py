@@ -820,78 +820,129 @@ def compute_engineer_workload(tickets):
               "open": sum(e["open"] for e in engineers.values())}
     return engineers, totals
 
-def render_engineer_workload_slide(week):
-    ew = (cache.get(week, {}) or {}).get("engineer_workload") or {}
-    if "tickets" in ew:                       # raw schema → compute here
-        engineers, totals = compute_engineer_workload(ew.get("tickets"))
-    else:                                      # legacy pre-aggregated shape (fallback)
-        engineers = ew.get("engineers") or {}
-        totals = ew.get("totals") or {}
-    try:
-        _mon = datetime.strptime(week, "%Y-%m-%d")
-        _sun = _mon + timedelta(days=6)
-        _rng = f"{_mon.day} {_mon.strftime('%b')}–{_sun.day} {_sun.strftime('%b %Y')}"
-    except Exception:
-        _rng = week
+# ── ENGINEER WORKLOAD — multi-week focus view (Giancarlo / Matteo / Simon) ───
+ENG_FOCUS  = ["Giancarlo Laferla", "Matteo Rapisarda", "Simon Brown"]
+ENG_SHORT  = {"Giancarlo Laferla": "Giancarlo", "Matteo Rapisarda": "Matteo", "Simon Brown": "Simon"}
+ENG_COLORS = {"Giancarlo Laferla": "#38bdf8", "Matteo Rapisarda": "#a78bfa", "Simon Brown": "#22c55e"}
 
-    def _fmt_resolve(m):
-        if m is None:
-            return ('<span class="c-muted">—</span>')
-        h = m / 60
-        cls = "c-red" if m > 4320 else "c-amber" if m > 1440 else "c-green"
-        return f'<span class="{cls}">{h:.1f}h</span>'
+# weeks (in WEEK_KEYS order) that actually carry raw engineer_workload tickets
+eng_week_keys = [k for k in WEEK_KEYS
+                 if (((cache.get(k, {}) or {}).get("engineer_workload") or {}).get("tickets"))]
 
-    if not engineers:
-        body = '    <div class="p1-no-data c-muted">No engineer workload data for this week.</div>'
-    else:
-        rows = []
-        for name, s in sorted(engineers.items(), key=lambda kv: (-kv[1].get("led", 0), kv[0])):
-            led = s.get("led", 0); closed = s.get("closed", 0); op = s.get("open", 0)
-            open_cls = "c-red" if op >= 3 else "c-amber" if op >= 1 else "c-muted"
-            rows.append(f'''      <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
-        <td style="padding:5px 12px;color:#e2e8f0;font-size:12px">{name}</td>
-        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{led}</td>
-        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{closed}</td>
-        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{open_cls}">{op}</td>
-        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px">{_fmt_resolve(s.get("avg_resolve_min"))}</td>
-      </tr>''')
-        tt_led = totals.get("led", 0); tt_closed = totals.get("closed", 0); tt_open = totals.get("open", 0)
-        rows.append(f'''      <tr style="border-top:1px solid rgba(255,255,255,0.15);font-weight:700">
-        <td style="padding:6px 12px;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em">Total</td>
-        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{tt_led}</td>
-        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{tt_closed}</td>
-        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{tt_open}</td>
-        <td style="padding:6px 12px;text-align:right"></td>
-      </tr>''')
-        rows_html = "\n".join(rows)
-        body = f'''    <div style="flex:1;min-height:0;overflow:auto;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-top:12px">
-      <table style="width:100%;border-collapse:collapse">
-        <thead>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
-            <th style="padding:6px 12px;text-align:left;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Engineer</th>
-            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Led</th>
-            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Closed</th>
-            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Still Open</th>
-            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Avg Resolution</th>
-          </tr>
-        </thead>
-        <tbody>
-{rows_html}
-        </tbody>
-      </table>
-    </div>'''
+def eng_weekly_series(week_keys, names):
+    """Per-engineer per-week aggregates, computed from the raw tickets of each week."""
+    series = {n: {"led": [], "closed": [], "open": [], "avg_h": []} for n in names}
+    for wk in week_keys:
+        tickets = ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []
+        eng, _ = compute_engineer_workload(tickets)
+        for n in names:
+            e = eng.get(n) or {}
+            series[n]["led"].append(e.get("led", 0))
+            series[n]["closed"].append(e.get("closed", 0))
+            series[n]["open"].append(e.get("open", 0))
+            avg = e.get("avg_resolve_min")
+            series[n]["avg_h"].append(round(avg / 60.0, 1) if avg is not None else None)
+    return series
+
+eng_series    = eng_weekly_series(eng_week_keys, ENG_FOCUS)
+eng_wk_labels = [datetime.strptime(k, "%Y-%m-%d").strftime("%-d %b") for k in eng_week_keys]
+
+def render_engineer_workload_slide():
+    if not eng_week_keys:
+        body = '    <div class="p1-no-data c-muted">No engineer workload data yet.</div>'
+        return f'''<!-- ═══ SLIDE — ENGINEER WORKLOAD ═══ -->
+<div class="slide" id="sEng"><div class="page">
+  <div class="group-label">Engineer Workload</div>
+{body}
+</div></div>'''
+
+    last = len(eng_week_keys) - 1
+    prev = last - 1 if len(eng_week_keys) >= 2 else None
+    _latest_lbl = eng_wk_labels[last]
+
+    def _delta(cur, prv):
+        if prv is None or cur is None or cur == prv:
+            return '<span style="color:#64748b;font-size:11px">&middot; WoW flat</span>'
+        d = cur - prv
+        arrow = "&#9650;" if d > 0 else "&#9660;"
+        return f'<span style="color:#94a3b8;font-size:11px">&middot; {arrow}{abs(d)} WoW</span>'
+
+    cards = []
+    for n in ENG_FOCUS:
+        s = eng_series[n]
+        led = s["led"][last]; closed = s["closed"][last]; op = s["open"][last]
+        avg = s["avg_h"][last]
+        led_prev = s["led"][prev] if prev is not None else None
+        open_cls = "c-red" if op >= 3 else "c-amber" if op >= 1 else "c-muted"
+        if avg is None:
+            avg_html = '<span class="c-muted">&mdash;</span>'
+        else:
+            acls = "c-red" if avg > 72 else "c-amber" if avg > 24 else "c-green"
+            avg_html = f'<span class="{acls}">{avg:.1f}h</span>'
+        cards.append(f'''      <div class="stat-card" style="border-left:3px solid {ENG_COLORS[n]}">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+          <span style="width:9px;height:9px;border-radius:50%;background:{ENG_COLORS[n]};display:inline-block"></span>
+          <span style="font-size:13px;font-weight:700;color:#e2e8f0">{ENG_SHORT[n]}</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#e2e8f0">{led}</span>
+          <span style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">tickets led</span>
+          {_delta(led, led_prev)}
+        </div>
+        <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
+          <span><span class="c-green">{closed}</span> <span style="color:#64748b">closed</span></span>
+          <span><span class="{open_cls}">{op}</span> <span style="color:#64748b">open</span></span>
+          <span>{avg_html} <span style="color:#64748b">avg resolve</span></span>
+        </div>
+      </div>''')
+    cards_html = "\n".join(cards)
 
     return f'''<!-- ═══ SLIDE — ENGINEER WORKLOAD ═══ -->
 <div class="slide" id="sEng"><div class="page">
   <div class="group-label">
     Engineer Workload
-    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; IC Tickets &middot; {_rng} &middot; by Incident Lead (all teams)</span>
+    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; IC Tickets &middot; Giancarlo &middot; Matteo &middot; Simon &middot; widgets = {_latest_lbl}</span>
   </div>
-{body}
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets). Avg Resolution = mean reported→resolved wall-clock per engineer; — = none resolved yet.</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex-shrink:0">
+{cards_html}
+  </div>
+  <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
+      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Tickets Led per Week</div>
+      <div class="chart-container"><canvas id="cEngLed" style="width:100%;height:100%"></canvas></div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
+      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Avg Resolution Time per Week</div>
+      <div class="chart-container"><canvas id="cEngAvg" style="width:100%;height:100%"></canvas></div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. Avg Resolution = mean reported&rarr;resolved wall-clock; gaps = none resolved that week. Full all-team roster retained in cache.</div>
 </div></div>'''
 
-engineer_workload_slide_html = render_engineer_workload_slide(stat_week)
+engineer_workload_slide_html = render_engineer_workload_slide()
+
+# ── ENGINEER WORKLOAD CHART JS (pre-built to avoid f-string brace-escaping) ──
+_eng_lbl_js = js_str_arr(eng_wk_labels)
+eng_led_chart_js = (
+    "new Chart(document.getElementById('cEngLed'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
+    + ",".join(
+        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["led"])
+        + ",backgroundColor:'" + ENG_COLORS[n] + "',barPercentage:0.85,categoryPercentage:0.7}"
+        for n in ENG_FOCUS)
+    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+      "scales:{x:XA,y:YL(false)}}});"
+) if eng_week_keys else ""
+eng_avg_chart_js = (
+    "new Chart(document.getElementById('cEngAvg'),{type:'line',data:{labels:" + _eng_lbl_js + ",datasets:["
+    + ",".join(
+        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["avg_h"])
+        + ",borderColor:'" + ENG_COLORS[n] + "',backgroundColor:'transparent',tension:0.3,fill:false,"
+          "spanGaps:true,pointRadius:4,pointBackgroundColor:'" + ENG_COLORS[n] + "'}"
+        for n in ENG_FOCUS)
+    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+      "scales:{x:XA,y:{type:'linear',min:0,ticks:{color:'#64748b',callback:function(v){return v+'h'}},"
+      "grid:{color:'rgba(255,255,255,0.05)'}}}}});"
+) if eng_week_keys else ""
 
 def _build_p1_pair_cards(chunk):
     if not chunk:
@@ -1815,6 +1866,8 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
 
 {pir_cat_chart_js}
 {pir_trend_chart_js}
+{eng_led_chart_js}
+{eng_avg_chart_js}
 
 
 
