@@ -829,23 +829,49 @@ ENG_COLORS = {"Giancarlo Laferla": "#38bdf8", "Matteo Rapisarda": "#a78bfa", "Si
 eng_week_keys = [k for k in WEEK_KEYS
                  if (((cache.get(k, {}) or {}).get("engineer_workload") or {}).get("tickets"))]
 
-def eng_weekly_series(week_keys, names):
-    """Per-engineer per-week aggregates, computed from the raw tickets of each week."""
-    series = {n: {"led": [], "closed": [], "open": [], "avg_h": []} for n in names}
+def eng_assigned_series(week_keys, names):
+    """Per-engineer per-week ASSIGNED count (tickets REPORTED that week) + avg resolve.
+    Bucketed by reported_at week — the raw tickets already live in their reported week."""
+    series = {n: {"assigned": [], "avg_h": []} for n in names}
     for wk in week_keys:
         tickets = ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []
         eng, _ = compute_engineer_workload(tickets)
         for n in names:
             e = eng.get(n) or {}
-            series[n]["led"].append(e.get("led", 0))
-            series[n]["closed"].append(e.get("closed", 0))
-            series[n]["open"].append(e.get("open", 0))
+            series[n]["assigned"].append(e.get("led", 0))
             avg = e.get("avg_resolve_min")
             series[n]["avg_h"].append(round(avg / 60.0, 1) if avg is not None else None)
     return series
 
-eng_series    = eng_weekly_series(eng_week_keys, ENG_FOCUS)
-eng_wk_labels = [datetime.strptime(k, "%Y-%m-%d").strftime("%-d %b") for k in eng_week_keys]
+def eng_closed_by_resolved_week(week_keys, names):
+    """Per-engineer count of tickets RESOLVED within each week (bucketed by resolved_at),
+    no matter when they were reported. Scans every stored week's tickets (dedup by ref)."""
+    wk_index = {wk: i for i, wk in enumerate(week_keys)}
+    out = {n: [0] * len(week_keys) for n in names}
+    seen = set()
+    for wk in WEEK_KEYS:
+        tickets = ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []
+        for t in tickets:
+            ref = t.get("reference")
+            if ref and ref in seen:
+                continue
+            if ref:
+                seen.add(ref)
+            lead = t.get("lead")
+            if lead not in out:
+                continue
+            rs = _eng_parse_iso(t.get("resolved_at"))
+            if not rs:
+                continue
+            mon = (rs - timedelta(days=rs.weekday())).strftime("%Y-%m-%d")
+            i = wk_index.get(mon)
+            if i is not None:
+                out[lead][i] += 1
+    return out
+
+eng_series        = eng_assigned_series(eng_week_keys, ENG_FOCUS)
+eng_closed_resolv = eng_closed_by_resolved_week(eng_week_keys, ENG_FOCUS)
+eng_wk_labels     = [datetime.strptime(k, "%Y-%m-%d").strftime("%-d %b") for k in eng_week_keys]
 
 def render_engineer_workload_slide():
     if not eng_week_keys:
@@ -857,23 +883,21 @@ def render_engineer_workload_slide():
 </div></div>'''
 
     last = len(eng_week_keys) - 1
-    prev = last - 1 if len(eng_week_keys) >= 2 else None
     _latest_lbl = eng_wk_labels[last]
-
-    def _delta(cur, prv):
-        if prv is None or cur is None or cur == prv:
-            return '<span style="color:#64748b;font-size:11px">&middot; WoW flat</span>'
-        d = cur - prv
-        arrow = "&#9650;" if d > 0 else "&#9660;"
-        return f'<span style="color:#94a3b8;font-size:11px">&middot; {arrow}{abs(d)} WoW</span>'
 
     cards = []
     for n in ENG_FOCUS:
-        s = eng_series[n]
-        led = s["led"][last]; closed = s["closed"][last]; op = s["open"][last]
-        avg = s["avg_h"][last]
-        led_prev = s["led"][prev] if prev is not None else None
-        open_cls = "c-red" if op >= 3 else "c-amber" if op >= 1 else "c-muted"
+        assigned = eng_series[n]["assigned"][last]
+        closed   = eng_closed_resolv[n][last]
+        avg      = eng_series[n]["avg_h"][last]
+        net = assigned - closed   # >0 = took in more than closed this week (backlog up)
+        if net > 0:
+            net_cls = "c-red" if net >= 3 else "c-amber"
+            net_txt = f"+{net} backlog"
+        elif net < 0:
+            net_cls = "c-green"; net_txt = f"{net} cleared"
+        else:
+            net_cls = "c-muted"; net_txt = "even"
         if avg is None:
             avg_html = '<span class="c-muted">&mdash;</span>'
         else:
@@ -884,18 +908,28 @@ def render_engineer_workload_slide():
           <span style="width:9px;height:9px;border-radius:50%;background:{ENG_COLORS[n]};display:inline-block"></span>
           <span style="font-size:13px;font-weight:700;color:#e2e8f0">{ENG_SHORT[n]}</span>
         </div>
-        <div style="display:flex;align-items:baseline;gap:8px">
-          <span style="font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:#e2e8f0">{led}</span>
-          <span style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">tickets led</span>
-          {_delta(led, led_prev)}
+        <div style="display:flex;align-items:baseline;gap:14px">
+          <span><span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#e2e8f0">{assigned}</span> <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">assigned</span></span>
+          <span><span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:700;color:#22c55e">{closed}</span> <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">closed</span></span>
         </div>
         <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
-          <span><span class="c-green">{closed}</span> <span style="color:#64748b">closed</span></span>
-          <span><span class="{open_cls}">{op}</span> <span style="color:#64748b">open</span></span>
+          <span class="{net_cls}">{net_txt}</span>
           <span>{avg_html} <span style="color:#64748b">avg resolve</span></span>
         </div>
       </div>''')
     cards_html = "\n".join(cards)
+
+    panels = []
+    for i, n in enumerate(ENG_FOCUS):
+        panels.append(f'''    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-shrink:0">
+        <span style="width:8px;height:8px;border-radius:50%;background:{ENG_COLORS[n]};display:inline-block"></span>
+        <span style="font-size:12px;font-weight:700;color:#cbd5e1">{ENG_SHORT[n]}</span>
+        <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">&middot; assigned vs closed</span>
+      </div>
+      <div class="chart-container"><canvas id="cEngAC{i}" style="width:100%;height:100%"></canvas></div>
+    </div>''')
+    panels_html = "\n".join(panels)
 
     return f'''<!-- ═══ SLIDE — ENGINEER WORKLOAD ═══ -->
 <div class="slide" id="sEng"><div class="page">
@@ -907,42 +941,27 @@ def render_engineer_workload_slide():
 {cards_html}
   </div>
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
-      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Tickets Closed per Week</div>
-      <div class="chart-container"><canvas id="cEngClosed" style="width:100%;height:100%"></canvas></div>
-    </div>
-    <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
-      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Avg Resolution Time per Week</div>
-      <div class="chart-container"><canvas id="cEngAvg" style="width:100%;height:100%"></canvas></div>
-    </div>
+{panels_html}
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. Avg Resolution = mean reported&rarr;resolved wall-clock; gaps = none resolved that week. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = tickets reported that week; <b>Closed</b> = tickets resolved that week (any report date). When Closed trails Assigned, that engineer's backlog is growing. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
 
 # ── ENGINEER WORKLOAD CHART JS (pre-built to avoid f-string brace-escaping) ──
 _eng_lbl_js = js_str_arr(eng_wk_labels)
-eng_closed_chart_js = (
-    "new Chart(document.getElementById('cEngClosed'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
-    + ",".join(
-        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["closed"])
-        + ",backgroundColor:'" + ENG_COLORS[n] + "',barPercentage:0.85,categoryPercentage:0.7}"
-        for n in ENG_FOCUS)
-    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
-      "scales:{x:XA,y:YL(false)}}});"
-) if eng_week_keys else ""
-eng_avg_chart_js = (
-    "new Chart(document.getElementById('cEngAvg'),{type:'line',data:{labels:" + _eng_lbl_js + ",datasets:["
-    + ",".join(
-        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["avg_h"])
-        + ",borderColor:'" + ENG_COLORS[n] + "',backgroundColor:'transparent',tension:0.3,fill:false,"
-          "spanGaps:true,pointRadius:4,pointBackgroundColor:'" + ENG_COLORS[n] + "'}"
-        for n in ENG_FOCUS)
-    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
-      "scales:{x:XA,y:{type:'linear',min:0,ticks:{color:'#64748b',callback:function(v){return v+'h'}},"
-      "grid:{color:'rgba(255,255,255,0.05)'}}}}});"
-) if eng_week_keys else ""
+eng_ac_chart_js = ""
+if eng_week_keys:
+    _parts = []
+    for i, n in enumerate(ENG_FOCUS):
+        _parts.append(
+            "new Chart(document.getElementById('cEngAC" + str(i) + "'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
+            "{label:'Assigned',data:" + js_arr(eng_series[n]["assigned"]) + ",backgroundColor:'#64748b',barPercentage:0.9,categoryPercentage:0.62},"
+            "{label:'Closed',data:" + js_arr(eng_closed_resolv[n]) + ",backgroundColor:'#22c55e',barPercentage:0.9,categoryPercentage:0.62}"
+            "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+            "scales:{x:XA,y:YL(false)}}});"
+        )
+    eng_ac_chart_js = "\n".join(_parts)
 
 def _build_p1_pair_cards(chunk):
     if not chunk:
@@ -1866,8 +1885,7 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
 
 {pir_cat_chart_js}
 {pir_trend_chart_js}
-{eng_closed_chart_js}
-{eng_avg_chart_js}
+{eng_ac_chart_js}
 
 
 
