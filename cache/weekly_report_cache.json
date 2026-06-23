@@ -2269,9 +2269,9 @@
     },
     "p2p3_frt_breaches": [],
     "p1_quality_incidentio": {
-      "true_p1": 0,
-      "false_p1": 0,
-      "unclassified": 0
+      "true_p1": 2,
+      "false_p1": 8,
+      "unclassified": 1
     },
     "mtta": {
       "P1": {
@@ -2308,15 +2308,22 @@
       }
     },
     "incident_volume": {
-      "total": 0,
-      "P1": 0,
-      "P2": 0,
-      "P3": 0,
-      "P4": 0
+      "total": 131,
+      "P1": 11,
+      "P2": 84,
+      "P3": 34,
+      "P4": 2
     },
     "alert_volume": {
-      "total": 0,
-      "by_source": {}
+      "total": 773,
+      "by_source": {
+        "Dead Man's Snitch": 83,
+        "Grafana SOC alerts": 186,
+        "Grafana alerts": 59,
+        "HTTP DMS FTML Alerts": 46,
+        "HTTP alerts": 369,
+        "Intercom": 30
+      }
     },
     "true_p1_incidents": [
       {
