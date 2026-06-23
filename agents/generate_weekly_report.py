@@ -994,7 +994,7 @@ _current_week_refs   = {inc.get("reference", "") for inc in _ew_p1_incs}
 _prior_open_p1s      = [inc for inc in _all_p1s if inc.get("reference", "") not in _current_week_refs]
 _has_prior_risk      = len(_prior_open_p1s) > 0
 _has_truly_active_p1 = any(
-    inc.get("status", "").lower() not in ("closed", "resolved", "postmortem", "monitoring")
+    inc.get("status", "").lower() not in ("closed", "resolved", "postmortem", "monitoring", "documenting")
     for inc in _ew_p1_incs
 )
 _p1_above_avg        = (
