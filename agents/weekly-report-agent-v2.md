@@ -661,6 +661,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `true_p1_incidents`: deduplication by `reference` applied before passing to generator
 - [ ] `true_p1_incidents`: each entry has `reference`, `name`, `status`, `reported_at`, `permalink`, `summary`
 - [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
+- [ ] `engineer_workload` (Step 2F) written for the current week (and re-checked prev week): per-engineer `led`/`closed`/`open`/`avg_resolve_min` + `totals`; ALL incident leads included (no team filter); per-engineer `led` sums to `totals.led`; boundary-leaked incidents (reported outside the ISO week) excluded
 
 ---
 
