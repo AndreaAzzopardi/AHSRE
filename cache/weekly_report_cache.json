@@ -2281,40 +2281,6 @@
       "false_p1": 8,
       "unclassified": 0
     },
-    "mtta": {
-      "P1": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
-      },
-      "P2": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
-      },
-      "P3": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
-      },
-      "P4": {
-        "n": 0,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
-      }
-    },
     "incident_volume": {
       "total": 131,
       "P1": 11,
