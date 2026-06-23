@@ -782,7 +782,79 @@ _idx_p1perf   = 1
 _idx_pir      = 2 + _n_p1_slides
 _idx_partner  = _idx_pir + 1
 _idx_ops      = _idx_partner + 1
-_total_slides = _idx_ops + 1
+_idx_eng      = _idx_ops + 1
+_total_slides = _idx_eng + 1
+
+# ── ENGINEER WORKLOAD SLIDE (pre-built string; IC-ticket leads, all teams) ────
+def render_engineer_workload_slide(week):
+    ew = (cache.get(week, {}) or {}).get("engineer_workload") or {}
+    engineers = ew.get("engineers") or {}
+    totals = ew.get("totals") or {}
+    try:
+        _mon = datetime.strptime(week, "%Y-%m-%d")
+        _sun = _mon + timedelta(days=6)
+        _rng = f"{_mon.day} {_mon.strftime('%b')}–{_sun.day} {_sun.strftime('%b %Y')}"
+    except Exception:
+        _rng = week
+
+    def _fmt_resolve(m):
+        if m is None:
+            return ('<span class="c-muted">—</span>')
+        h = m / 60
+        cls = "c-red" if m > 4320 else "c-amber" if m > 1440 else "c-green"
+        return f'<span class="{cls}">{h:.1f}h</span>'
+
+    if not engineers:
+        body = '    <div class="p1-no-data c-muted">No engineer workload data for this week.</div>'
+    else:
+        rows = []
+        for name, s in sorted(engineers.items(), key=lambda kv: (-kv[1].get("led", 0), kv[0])):
+            led = s.get("led", 0); closed = s.get("closed", 0); op = s.get("open", 0)
+            open_cls = "c-red" if op >= 3 else "c-amber" if op >= 1 else "c-muted"
+            rows.append(f'''      <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+        <td style="padding:5px 12px;color:#e2e8f0;font-size:12px">{name}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{led}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{closed}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px" class="{open_cls}">{op}</td>
+        <td style="padding:5px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px">{_fmt_resolve(s.get("avg_resolve_min"))}</td>
+      </tr>''')
+        tt_led = totals.get("led", 0); tt_closed = totals.get("closed", 0); tt_open = totals.get("open", 0)
+        rows.append(f'''      <tr style="border-top:1px solid rgba(255,255,255,0.15);font-weight:700">
+        <td style="padding:6px 12px;color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:0.05em">Total</td>
+        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{tt_led}</td>
+        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#22c55e">{tt_closed}</td>
+        <td style="padding:6px 12px;text-align:right;font-family:'DM Mono',monospace;font-size:12px;color:#e2e8f0">{tt_open}</td>
+        <td style="padding:6px 12px;text-align:right"></td>
+      </tr>''')
+        rows_html = "\n".join(rows)
+        body = f'''    <div style="flex:1;min-height:0;overflow:auto;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-top:12px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.1)">
+            <th style="padding:6px 12px;text-align:left;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Engineer</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Led</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Closed</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Still Open</th>
+            <th style="padding:6px 12px;text-align:right;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Avg Resolution</th>
+          </tr>
+        </thead>
+        <tbody>
+{rows_html}
+        </tbody>
+      </table>
+    </div>'''
+
+    return f'''<!-- ═══ SLIDE — ENGINEER WORKLOAD ═══ -->
+<div class="slide" id="sEng"><div class="page">
+  <div class="group-label">
+    Engineer Workload
+    <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; IC Tickets &middot; {_rng} &middot; by Incident Lead (all teams)</span>
+  </div>
+{body}
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets). Avg Resolution = mean reported→resolved wall-clock per engineer; — = none resolved yet.</div>
+</div></div>'''
+
+engineer_workload_slide_html = render_engineer_workload_slide(stat_week)
 
 def _build_p1_pair_cards(chunk):
     if not chunk:
@@ -1348,6 +1420,7 @@ html = f'''<!DOCTYPE html>
 {p1_tab_btns_html}    <button class="slide-tab" onclick="showSlide({_idx_pir})">PIR Actions</button>
     <button class="slide-tab" onclick="showSlide({_idx_partner})">Partner Tickets</button>
     <button class="slide-tab" onclick="showSlide({_idx_ops})">Incident Ops</button>
+    <button class="slide-tab" onclick="showSlide({_idx_eng})">Engineer Workload</button>
   </div>
   <div class="topbar-meta">{today_str}</div>
 </div>
@@ -1547,6 +1620,8 @@ html = f'''<!DOCTYPE html>
     </div>
   </div>
 </div></div>
+
+{engineer_workload_slide_html}
 
 </div><!-- /slides-wrap -->
 

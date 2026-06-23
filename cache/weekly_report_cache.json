@@ -2324,7 +2324,88 @@
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10256",
         "summary": "Problem: MemoryDB on the production-274-gen cluster exceeded 90% memory usage, causing the scheduled-actions-manager service to halt and message queues to grow for multiple brands.\n\nImpact: Scheduled actions and campaign messages stopped processing across at least 19 brands from around 03:30 UTC. Automated notifications, bonuses, and scheduled messages were delayed for all affected brands, with large backlogs building up — over 1.2 million messages queued for Seu Bet and nearly 384,000 for Segurobet.\n\nCause: A surge of scheduled actions from Seubet (two activities each targeting over 2 million users) queued more than 5 million actions at once, consuming ~78 GB and pushing the shared MemoryDB cluster above 90%, which triggered the scheduled-actions-manager into a shutdown/restart loop.\n\nActions Taken: Upgraded MemoryDB to db.r6gd.4xlarge then db.r6gd.8xlarge to add capacity, allowing the queue to drain and service to restore. Seubet advised to stagger large sendouts by 30-45 minutes; alert thresholds under review for earlier warning."
       }
-    ]
+    ],
+    "engineer_workload": {
+      "engineers": {
+        "Matteo Rapisarda": {
+          "led": 8,
+          "closed": 8,
+          "open": 0,
+          "avg_resolve_min": 477.0
+        },
+        "Simon Brown": {
+          "led": 6,
+          "closed": 3,
+          "open": 3,
+          "avg_resolve_min": 2872.6
+        },
+        "Andrea Envall": {
+          "led": 6,
+          "closed": 6,
+          "open": 0,
+          "avg_resolve_min": 2224.6
+        },
+        "James Hodgson": {
+          "led": 4,
+          "closed": 4,
+          "open": 0,
+          "avg_resolve_min": 1006.8
+        },
+        "Simon Grenefalk": {
+          "led": 3,
+          "closed": 2,
+          "open": 1,
+          "avg_resolve_min": 4017.8
+        },
+        "Joachim Farrugia": {
+          "led": 3,
+          "closed": 1,
+          "open": 2,
+          "avg_resolve_min": 1159.9
+        },
+        "Giancarlo Laferla": {
+          "led": 3,
+          "closed": 3,
+          "open": 0,
+          "avg_resolve_min": 1868.8
+        },
+        "Jeremy": {
+          "led": 1,
+          "closed": 0,
+          "open": 1,
+          "avg_resolve_min": null
+        },
+        "Carl": {
+          "led": 1,
+          "closed": 0,
+          "open": 1,
+          "avg_resolve_min": null
+        },
+        "Luke Pullicino": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 5766.2
+        },
+        "Nazareno": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 27.3
+        },
+        "Andrea Azzopardi": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 40.8
+        }
+      },
+      "totals": {
+        "led": 38,
+        "closed": 30,
+        "open": 8
+      }
+    }
   },
   "2026-06-22": {
     "p1_frt_sla": {

@@ -37,7 +37,7 @@ Read `cache/weekly_report_cache.json` into memory. If the file does not exist, s
 
 The cache is a JSON object keyed by week Monday (`YYYY-MM-DD`). Each week entry is a dict that may contain any of these data source keys:
 
-`p1_quality_clickhouse`, `p1_quality_incidentio`, `p1_frt_sla`, `p1_brands`, `csat`, `partner_tickets`, `p2p3_frt_sla`, `mtta`, `incident_volume`, `alert_volume`, `true_p1_incidents`
+`p1_quality_clickhouse`, `p1_quality_incidentio`, `p1_frt_sla`, `p1_brands`, `csat`, `partner_tickets`, `p2p3_frt_sla`, `mtta`, `incident_volume`, `alert_volume`, `true_p1_incidents`, `engineer_workload`
 
 SOC member MTTA is stored in a **separate file** `cache/soc_mtta_cache.json` (ISO-week keyed, per-person). See Step 2D.
 
@@ -545,6 +545,39 @@ For prior weeks with open incidents: update those specific entries (by `referenc
 - Row 2: 2–3 sentences drawn from the first sentence of Problem, the first sentence of Impact, and the first sentence of Actions Taken — joined as a flowing paragraph (wrapping, not truncated). This is the C-level at-a-glance view, so the sentences must be factual and self-contained.
 
 The quality of the exec panel depends entirely on the first sentences of each section — write them to work as standalone facts (not as openers that rely on what follows).
+
+---
+
+## Step 2F — Engineer workload from incident.io (cache-aware)
+
+Populates the `engineer_workload` cache key — per-engineer IC-ticket throughput for the **Engineer Workload** slide. **Include ALL incident leads — do NOT filter to any team.**
+
+"IC Ticket" incidents are the incident.io mirror of Intercom partner tickets. Incident type id: `01KP5RD46AJYSJTG0E85AZXJDZ`. Incident Lead role id: `01HKQ8WYP0NC20QQDJHNBA7BSB`.
+
+**Determine fetch range:** oldest complete week ≥ `2026-05-04` without `engineer_workload` in cache (plus the current week, and the prev week during the 2-day re-check). 
+
+**Fetch:** for each week to (re)compute, call `incident_list` with:
+- `incident_type: ["01KP5RD46AJYSJTG0E85AZXJDZ"]`
+- `created_after` / `created_before` = the week's Monday and the following Monday (ISO dates)
+- `status_category: ["triage","active","post-incident","closed","paused"]` (deliberately EXCLUDES declined/merged/canceled — do not count those)
+- `include: ["roles","timestamps"]`, `page_size: 50` — paginate all pages.
+
+**Per incident:** read the Incident Lead name from `roles` (role == "Incident Lead"; if none, bucket under `"Unassigned"`), the status category (closed vs not), and `Reported at` / `Resolved at` from timestamps.
+
+**Aggregate per lead name** (week = Monday of `reported_at`):
+- `led` = total IC tickets they lead that week
+- `closed` = count with status category `closed`
+- `open` = count not closed
+- `avg_resolve_min` = mean of (`Resolved at` − `Reported at`) in minutes over incidents that have a `Resolved at` (1 dp; `null` if none resolved)
+
+**Write to cache** for each complete week (overwrite current week). Apply the same Data integrity guard — if the fetch errors, retain the existing value, don't overwrite:
+```json
+cache[week]["engineer_workload"] = {
+  "engineers": {"Name": {"led": N, "closed": N, "open": N, "avg_resolve_min": X.X}, ...},
+  "totals": {"led": N, "closed": N, "open": N}
+}
+```
+The generator renders this for the last complete week (`stat_week`) as the Engineer Workload slide table, sorted by `led` desc.
 
 ---
 
