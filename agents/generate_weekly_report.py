@@ -908,8 +908,8 @@ def render_engineer_workload_slide():
   </div>
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
-      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Tickets Led per Week</div>
-      <div class="chart-container"><canvas id="cEngLed" style="width:100%;height:100%"></canvas></div>
+      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Tickets Closed per Week</div>
+      <div class="chart-container"><canvas id="cEngClosed" style="width:100%;height:100%"></canvas></div>
     </div>
     <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 14px">
       <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Avg Resolution Time per Week</div>
@@ -923,10 +923,10 @@ engineer_workload_slide_html = render_engineer_workload_slide()
 
 # ── ENGINEER WORKLOAD CHART JS (pre-built to avoid f-string brace-escaping) ──
 _eng_lbl_js = js_str_arr(eng_wk_labels)
-eng_led_chart_js = (
-    "new Chart(document.getElementById('cEngLed'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
+eng_closed_chart_js = (
+    "new Chart(document.getElementById('cEngClosed'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
     + ",".join(
-        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["led"])
+        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_series[n]["closed"])
         + ",backgroundColor:'" + ENG_COLORS[n] + "',barPercentage:0.85,categoryPercentage:0.7}"
         for n in ENG_FOCUS)
     + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
@@ -1866,7 +1866,7 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
 
 {pir_cat_chart_js}
 {pir_trend_chart_js}
-{eng_led_chart_js}
+{eng_closed_chart_js}
 {eng_avg_chart_js}
 
 
