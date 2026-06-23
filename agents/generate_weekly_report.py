@@ -877,10 +877,36 @@ def _median(xs):
     m = n // 2
     return s[m] if n % 2 else (s[m - 1] + s[m]) / 2.0
 
+# Office-hours window for resolve-time stats: Mon–Fri, 08:00–17:00 (9h/day).
+# Timestamps in cache are UTC, so the window is applied in UTC. Bump these two
+# (and add an offset) if the team means a local-time window instead.
+OFFICE_START_H = 8
+OFFICE_END_H   = 17
+
+def business_hours_between(start, end):
+    """Hours of overlap between [start, end] and Mon–Fri 08:00–17:00, UTC.
+    Out-of-hours (nights, weekends) is excluded. start/end are naive (UTC)."""
+    if not start or not end or end <= start:
+        return 0.0
+    total = 0.0
+    day = start.date()
+    last = end.date()
+    while day <= last:
+        if day.weekday() < 5:  # Mon–Fri
+            day_open  = datetime(day.year, day.month, day.day, OFFICE_START_H)
+            day_close = datetime(day.year, day.month, day.day, OFFICE_END_H)
+            s = max(start, day_open)
+            e = min(end, day_close)
+            if e > s:
+                total += (e - s).total_seconds() / 3600.0
+        day += timedelta(days=1)
+    return total
+
 def eng_overview_stats(week_keys, names):
     """Two per-engineer stats the weekly bars don't show:
-    - median_h: MEDIAN reported→resolved time (hrs) over resolved tickets in week_keys
-      (robust 'typical' close time — one outlier can't skew it like the mean).
+    - median_h: MEDIAN reported→resolved time over resolved tickets in week_keys,
+      counted in OFFICE HOURS only (Mon–Fri 08:00–17:00 UTC — nights/weekends
+      excluded). Robust 'typical' working-time close cost; outliers can't skew it.
     - open_n / oldest_d / over7_n: LIVE open-ticket backlog across ALL stored weeks,
       aged from reported_at to now (dedup by reference)."""
     now = datetime.now(timezone.utc).replace(tzinfo=None)
@@ -892,7 +918,7 @@ def eng_overview_stats(week_keys, names):
                 continue
             r = _eng_parse_iso(t.get("reported_at")); rs = _eng_parse_iso(t.get("resolved_at"))
             if r and rs and rs >= r:
-                durs[lead].append((rs - r).total_seconds() / 3600.0)
+                durs[lead].append(business_hours_between(r, rs))
     open_n = {n: 0 for n in names}; oldest_d = {n: None for n in names}; over7_n = {n: 0 for n in names}
     seen = set()
     for wk in WEEK_KEYS:
@@ -951,7 +977,8 @@ def render_engineer_workload_slide():
         if med is None:
             med_html = '<span class="c-muted">&mdash;</span>'
         else:
-            mcls = "c-red" if med > 72 else "c-amber" if med > 24 else "c-green"
+            # office-hours scale: ≤9h ≈ within 1 working day, ≤27h ≈ 3 working days
+            mcls = "c-red" if med > 27 else "c-amber" if med > 9 else "c-green"
             med_html = f'<span class="{mcls}">{med:.1f}h</span>'
         if open_n == 0:
             open_html = '<span class="c-muted">0 open</span>'
@@ -970,7 +997,7 @@ def render_engineer_workload_slide():
         </div>
         <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
           <span class="{net_cls}">{net_txt}</span>
-          <span>{med_html} <span style="color:#64748b">median resolve</span></span>
+          <span>{med_html} <span style="color:#64748b">median resolve (office h)</span></span>
         </div>
         <div style="margin-top:5px;font-size:12px">{open_html}</div>
       </div>''')
@@ -1000,7 +1027,7 @@ def render_engineer_workload_slide():
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
 {panels_html}
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown (robust to outliers). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office h)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 UTC (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
