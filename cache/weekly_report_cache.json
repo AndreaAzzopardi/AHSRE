@@ -1586,7 +1586,58 @@
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8219",
         "summary": "Problem: Spinbet's SendGrid account was breached, requiring immediate containment that disrupted email sending for both Spinbet and Razed. The compromised SendGrid credentials had to be removed to mitigate the security risk. Because the credentials were shared, the containment action affected both brands simultaneously.\n\nImpact: Outgoing email sending was disrupted for both Spinbet and Razed after the shared SendGrid credentials were disabled. Both environments were impacted because they used the same SendGrid key, and additional follow-up was required to rotate external-facing API keys. No active security threat was identified within Fast Track itself.\n\nCause: The root cause was a breach of Spinbet's SendGrid account, classified as partner-induced. Sharing the same SendGrid credentials across Spinbet and Razed meant containment of the breach forced email outages in both. Internal investigation across Cloudflare logs, Wiz, and database logs found no suspicious activity within Fast Track infrastructure.\n\nActions Taken: The affected environments were locked, email distribution was scaled down, and the compromised SendGrid credentials were removed to contain the breach. Fast Track then began rotating relevant external-facing API keys, sharing new credentials securely via 1Password, and working with the partner to set up an alternative email provider for both Spinbet and Razed. Ongoing email-restoration work continues in a separate incident channel, and this incident was closed from a security perspective on 9 June 2026."
       }
-    ]
+    ],
+    "engineer_workload": {
+      "engineers": {
+        "Matteo Rapisarda": {
+          "led": 6,
+          "closed": 6,
+          "open": 0,
+          "avg_resolve_min": 4828.5
+        },
+        "Simon Brown": {
+          "led": 5,
+          "closed": 5,
+          "open": 0,
+          "avg_resolve_min": 8011.8
+        },
+        "Andrea Azzopardi": {
+          "led": 4,
+          "closed": 3,
+          "open": 1,
+          "avg_resolve_min": 9126.5
+        },
+        "Nazareno": {
+          "led": 3,
+          "closed": 3,
+          "open": 0,
+          "avg_resolve_min": 1445.4
+        },
+        "Daniel Lindengren": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 2784.4
+        },
+        "Giancarlo Laferla": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 5232.9
+        },
+        "Simon Grenefalk": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 2666.7
+        }
+      },
+      "totals": {
+        "led": 23,
+        "closed": 22,
+        "open": 1
+      }
+    }
   },
   "2026-06-01": {
     "p1_quality_incidentio": {
@@ -1888,7 +1939,58 @@
         5483
       ]
     },
-    "p2p3_frt_breaches": []
+    "p2p3_frt_breaches": [],
+    "engineer_workload": {
+      "engineers": {
+        "Simon Brown": {
+          "led": 10,
+          "closed": 10,
+          "open": 0,
+          "avg_resolve_min": 2538.0
+        },
+        "Matteo Rapisarda": {
+          "led": 6,
+          "closed": 6,
+          "open": 0,
+          "avg_resolve_min": 4073.3
+        },
+        "Andrea Envall": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 9077.1
+        },
+        "Nazareno": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 34.8
+        },
+        "Giancarlo Laferla": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 1458.8
+        },
+        "Andrea Azzopardi": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 14559.9
+        },
+        "Ilke": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 19737.2
+        }
+      },
+      "totals": {
+        "led": 24,
+        "closed": 24,
+        "open": 0
+      }
+    }
   },
   "2026-06-08": {
     "p1_quality_incidentio": {
