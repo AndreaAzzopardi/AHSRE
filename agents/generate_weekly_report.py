@@ -1004,7 +1004,7 @@ def render_engineer_workload_slide():
         </div>
         <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
           <span class="{net_cls}">{net_txt}</span>
-          <span>{med_html} <span style="color:#64748b">median resolve (office h)</span></span>
+          <span>{med_html} <span style="color:#64748b">median resolve (office hours)</span></span>
         </div>
         <div style="margin-top:5px;font-size:12px">{open_html}</div>
       </div>''')
@@ -1034,7 +1034,7 @@ def render_engineer_workload_slide():
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
 {panels_html}
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office h)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office hours)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
