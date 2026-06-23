@@ -869,8 +869,57 @@ def eng_closed_by_resolved_week(week_keys, names):
                 out[lead][i] += 1
     return out
 
+def _median(xs):
+    s = sorted(xs)
+    n = len(s)
+    if n == 0:
+        return None
+    m = n // 2
+    return s[m] if n % 2 else (s[m - 1] + s[m]) / 2.0
+
+def eng_overview_stats(week_keys, names):
+    """Two per-engineer stats the weekly bars don't show:
+    - median_h: MEDIAN reported→resolved time (hrs) over resolved tickets in week_keys
+      (robust 'typical' close time — one outlier can't skew it like the mean).
+    - open_n / oldest_d / over7_n: LIVE open-ticket backlog across ALL stored weeks,
+      aged from reported_at to now (dedup by reference)."""
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    durs = {n: [] for n in names}
+    for wk in week_keys:
+        for t in ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []:
+            lead = t.get("lead")
+            if lead not in durs:
+                continue
+            r = _eng_parse_iso(t.get("reported_at")); rs = _eng_parse_iso(t.get("resolved_at"))
+            if r and rs and rs >= r:
+                durs[lead].append((rs - r).total_seconds() / 3600.0)
+    open_n = {n: 0 for n in names}; oldest_d = {n: None for n in names}; over7_n = {n: 0 for n in names}
+    seen = set()
+    for wk in WEEK_KEYS:
+        for t in ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []:
+            ref = t.get("reference")
+            if ref and ref in seen:
+                continue
+            if ref:
+                seen.add(ref)
+            lead = t.get("lead")
+            if lead not in open_n or t.get("closed"):
+                continue
+            r = _eng_parse_iso(t.get("reported_at"))
+            if not r:
+                continue
+            age = (now - r).days
+            open_n[lead] += 1
+            if oldest_d[lead] is None or age > oldest_d[lead]:
+                oldest_d[lead] = age
+            if age >= 7:
+                over7_n[lead] += 1
+    med = {n: (round(_median(durs[n]), 1) if durs[n] else None) for n in names}
+    return med, open_n, oldest_d, over7_n
+
 eng_series        = eng_assigned_series(eng_week_keys, ENG_FOCUS)
 eng_closed_resolv = eng_closed_by_resolved_week(eng_week_keys, ENG_FOCUS)
+eng_median_h, eng_open_n, eng_oldest_d, eng_over7_n = eng_overview_stats(eng_week_keys, ENG_FOCUS)
 eng_wk_labels     = [datetime.strptime(k, "%Y-%m-%d").strftime("%-d %b") for k in eng_week_keys]
 
 def render_engineer_workload_slide():
@@ -889,7 +938,8 @@ def render_engineer_workload_slide():
     for n in ENG_FOCUS:
         assigned = eng_series[n]["assigned"][last]
         closed   = eng_closed_resolv[n][last]
-        avg      = eng_series[n]["avg_h"][last]
+        med      = eng_median_h[n]
+        open_n   = eng_open_n[n]; oldest = eng_oldest_d[n]; over7 = eng_over7_n[n]
         net = assigned - closed   # >0 = took in more than closed this week (backlog up)
         if net > 0:
             net_cls = "c-red" if net >= 3 else "c-amber"
@@ -898,11 +948,17 @@ def render_engineer_workload_slide():
             net_cls = "c-green"; net_txt = f"{net} cleared"
         else:
             net_cls = "c-muted"; net_txt = "even"
-        if avg is None:
-            avg_html = '<span class="c-muted">&mdash;</span>'
+        if med is None:
+            med_html = '<span class="c-muted">&mdash;</span>'
         else:
-            acls = "c-red" if avg > 72 else "c-amber" if avg > 24 else "c-green"
-            avg_html = f'<span class="{acls}">{avg:.1f}h</span>'
+            mcls = "c-red" if med > 72 else "c-amber" if med > 24 else "c-green"
+            med_html = f'<span class="{mcls}">{med:.1f}h</span>'
+        if open_n == 0:
+            open_html = '<span class="c-muted">0 open</span>'
+        else:
+            ocls = "c-red" if (oldest or 0) >= 7 else "c-amber" if (oldest or 0) >= 3 else "c-muted"
+            extra = f", {over7} &gt;7d" if over7 else ""
+            open_html = f'<span class="{ocls}">{open_n} open</span> <span style="color:#64748b">(oldest {oldest}d{extra})</span>'
         cards.append(f'''      <div class="stat-card" style="border-left:3px solid {ENG_COLORS[n]}">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
           <span style="width:9px;height:9px;border-radius:50%;background:{ENG_COLORS[n]};display:inline-block"></span>
@@ -914,8 +970,9 @@ def render_engineer_workload_slide():
         </div>
         <div style="display:flex;gap:14px;margin-top:8px;font-size:12px">
           <span class="{net_cls}">{net_txt}</span>
-          <span>{avg_html} <span style="color:#64748b">avg resolve</span></span>
+          <span>{med_html} <span style="color:#64748b">median resolve</span></span>
         </div>
+        <div style="margin-top:5px;font-size:12px">{open_html}</div>
       </div>''')
     cards_html = "\n".join(cards)
 
@@ -943,7 +1000,7 @@ def render_engineer_workload_slide():
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
 {panels_html}
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = tickets reported that week; <b>Closed</b> = tickets resolved that week (any report date). When Closed trails Assigned, that engineer's backlog is growing. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown (robust to outliers). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
