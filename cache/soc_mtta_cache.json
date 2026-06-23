@@ -20,8 +20,8 @@
         "id": "01JR7V0PFCQKEXP63X96GXT5YE"
       }
     ],
-    "note": "MTTA = acked_at - created_at (seconds), from escalation_show transitions. miss_rate = expired/(resolved+expired). Cancelled excluded from miss rate. W21: full population (all resolved escalations called, sampled=False). W19/W20: coverage stats only.",
-    "last_updated": "2026-06-14T20:24:11.254191+00:00"
+    "note": "MTTA = acked_at - created_at (seconds), from escalation_show transitions. miss_rate = expired/(resolved+expired). Cancelled excluded from miss rate. W21: full population (all resolved escalations called, sampled=False). W19/W20/W25/W26: coverage stats only \u2014 MTTA detail not yet backfilled.",
+    "last_updated": "2026-06-23T21:25:00+00:00"
   },
   "weeks": {
     "2026-W19": {
@@ -5743,6 +5743,130 @@
               "mtta_seconds": 115
             }
           ]
+        }
+      }
+    },
+    "2026-W25": {
+      "Joachim Farrugia": {
+        "pages_targeted": 93,
+        "resolved": 82,
+        "expired": 9,
+        "cancelled": 2,
+        "miss_rate": 0.1,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 82,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "Matteo Rapisarda": {
+        "pages_targeted": 165,
+        "resolved": 154,
+        "expired": 1,
+        "cancelled": 10,
+        "miss_rate": 0.01,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 154,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "G\u00e9rard E. Pelayo": {
+        "pages_targeted": 169,
+        "resolved": 164,
+        "expired": 5,
+        "cancelled": 0,
+        "miss_rate": 0.03,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 164,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "Nazareno Scibilia": {
+        "pages_targeted": 88,
+        "resolved": 62,
+        "expired": 23,
+        "cancelled": 3,
+        "miss_rate": 0.27,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 62,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      }
+    },
+    "2026-W26": {
+      "Joachim Farrugia": {
+        "pages_targeted": 48,
+        "resolved": 36,
+        "expired": 2,
+        "cancelled": 10,
+        "miss_rate": 0.05,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 36,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "Matteo Rapisarda": {
+        "pages_targeted": 55,
+        "resolved": 47,
+        "expired": 3,
+        "cancelled": 5,
+        "miss_rate": 0.06,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 47,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "G\u00e9rard E. Pelayo": {
+        "pages_targeted": 92,
+        "resolved": 91,
+        "expired": 0,
+        "cancelled": 1,
+        "miss_rate": 0.0,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 91,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
+        }
+      },
+      "Nazareno Scibilia": {
+        "pages_targeted": 25,
+        "resolved": 6,
+        "expired": 3,
+        "cancelled": 16,
+        "miss_rate": 0.33,
+        "mtta": {
+          "acked_count": 0,
+          "sample_size": 6,
+          "sampled": false,
+          "median_mtta_min": null,
+          "mean_mtta_min": null,
+          "raw_records": []
         }
       }
     }
