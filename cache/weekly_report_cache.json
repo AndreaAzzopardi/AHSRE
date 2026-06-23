@@ -2181,7 +2181,76 @@
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9583",
         "summary": "Problem: Fable 5 was disabled, causing all AI services to go offline. After mitigation, service was restored but with degraded performance and minor errors.\n\nImpact: All AI-powered services went offline for all brands. Partial service was restored using an Opus-based model, but response times are slower and some previously fixed prompt errors have returned.\n\nCause: Fable 5 was disabled by Anthropic due to US Government restrictions.\n\nActions Taken: Switched production to an Opus-based model to restore service. A phased deployment of a fix is underway and being validated on a subset of brands, with evals running to confirm stability. Coinbar, who reported the issue, is being updated."
       }
-    ]
+    ],
+    "engineer_workload": {
+      "engineers": {
+        "Matteo Rapisarda": {
+          "led": 13,
+          "closed": 13,
+          "open": 0,
+          "avg_resolve_min": 1667.9
+        },
+        "Simon Brown": {
+          "led": 6,
+          "closed": 5,
+          "open": 1,
+          "avg_resolve_min": 1584.6
+        },
+        "Giancarlo Laferla": {
+          "led": 6,
+          "closed": 6,
+          "open": 0,
+          "avg_resolve_min": 2402.7
+        },
+        "Andrea Envall": {
+          "led": 3,
+          "closed": 3,
+          "open": 0,
+          "avg_resolve_min": 2263.6
+        },
+        "Jeremy": {
+          "led": 3,
+          "closed": 3,
+          "open": 0,
+          "avg_resolve_min": 8958.9
+        },
+        "Joachim Farrugia": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 41.2
+        },
+        "Daniel Lindengren": {
+          "led": 2,
+          "closed": 2,
+          "open": 0,
+          "avg_resolve_min": 12227.6
+        },
+        "stephen.riolo": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 2231.2
+        },
+        "Gérard E. Pelayo": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 208.4
+        },
+        "James Hodgson": {
+          "led": 1,
+          "closed": 1,
+          "open": 0,
+          "avg_resolve_min": 10.8
+        }
+      },
+      "totals": {
+        "led": 38,
+        "closed": 37,
+        "open": 1
+      }
+    }
   },
   "2026-06-15": {
     "p1_frt_sla": {
