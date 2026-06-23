@@ -786,10 +786,47 @@ _idx_eng      = _idx_ops + 1
 _total_slides = _idx_eng + 1
 
 # ── ENGINEER WORKLOAD SLIDE (pre-built string; IC-ticket leads, all teams) ────
+def _eng_parse_iso(ts):
+    if not ts:
+        return None
+    try:
+        return datetime.strptime(str(ts)[:19], "%Y-%m-%dT%H:%M:%S")
+    except Exception:
+        return None
+
+def compute_engineer_workload(tickets):
+    """Compute per-engineer aggregates from the raw IC-ticket records in cache.
+    Raw record: {reference, lead, severity, reported_at, resolved_at|null, closed:bool}."""
+    agg = {}
+    for t in (tickets or []):
+        lead = t.get("lead") or "Unassigned"
+        a = agg.setdefault(lead, {"led": 0, "closed": 0, "open": 0, "_mins": []})
+        a["led"] += 1
+        if t.get("closed"):
+            a["closed"] += 1
+        else:
+            a["open"] += 1
+        r = _eng_parse_iso(t.get("reported_at"))
+        rs = _eng_parse_iso(t.get("resolved_at"))
+        if r and rs and rs >= r:
+            a["_mins"].append((rs - r).total_seconds() / 60.0)
+    engineers = {}
+    for lead, a in agg.items():
+        mins = a["_mins"]
+        engineers[lead] = {"led": a["led"], "closed": a["closed"], "open": a["open"],
+                           "avg_resolve_min": round(sum(mins) / len(mins), 1) if mins else None}
+    totals = {"led": sum(e["led"] for e in engineers.values()),
+              "closed": sum(e["closed"] for e in engineers.values()),
+              "open": sum(e["open"] for e in engineers.values())}
+    return engineers, totals
+
 def render_engineer_workload_slide(week):
     ew = (cache.get(week, {}) or {}).get("engineer_workload") or {}
-    engineers = ew.get("engineers") or {}
-    totals = ew.get("totals") or {}
+    if "tickets" in ew:                       # raw schema → compute here
+        engineers, totals = compute_engineer_workload(ew.get("tickets"))
+    else:                                      # legacy pre-aggregated shape (fallback)
+        engineers = ew.get("engineers") or {}
+        totals = ew.get("totals") or {}
     try:
         _mon = datetime.strptime(week, "%Y-%m-%d")
         _sun = _mon + timedelta(days=6)

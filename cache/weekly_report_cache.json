@@ -1588,55 +1588,192 @@
       }
     ],
     "engineer_workload": {
-      "engineers": {
-        "Matteo Rapisarda": {
-          "led": 6,
-          "closed": 6,
-          "open": 0,
-          "avg_resolve_min": 4828.5
+      "tickets": [
+        {
+          "reference": "INC-8296",
+          "lead": "Daniel Lindengren",
+          "severity": "P2",
+          "reported_at": "2026-05-29T13:59:00Z",
+          "resolved_at": "2026-06-02T08:18:15Z",
+          "closed": true
         },
-        "Simon Brown": {
-          "led": 5,
-          "closed": 5,
-          "open": 0,
-          "avg_resolve_min": 8011.8
+        {
+          "reference": "INC-8288",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-05-29T11:16:35Z",
+          "resolved_at": "2026-06-19T06:07:03Z",
+          "closed": true
         },
-        "Andrea Azzopardi": {
-          "led": 4,
-          "closed": 3,
-          "open": 1,
-          "avg_resolve_min": 9126.5
+        {
+          "reference": "INC-8285",
+          "lead": "Daniel Lindengren",
+          "severity": "P2",
+          "reported_at": "2026-05-29T10:28:06Z",
+          "resolved_at": "2026-05-29T12:57:37Z",
+          "closed": true
         },
-        "Nazareno": {
-          "led": 3,
-          "closed": 3,
-          "open": 0,
-          "avg_resolve_min": 1445.4
+        {
+          "reference": "INC-8284",
+          "lead": "Nazareno",
+          "severity": "P2",
+          "reported_at": "2026-05-29T10:03:32Z",
+          "resolved_at": "2026-05-29T10:45:26Z",
+          "closed": true
         },
-        "Daniel Lindengren": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 2784.4
+        {
+          "reference": "INC-8278",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-05-29T08:08:31Z",
+          "resolved_at": "2026-06-01T06:41:02Z",
+          "closed": true
         },
-        "Giancarlo Laferla": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 5232.9
+        {
+          "reference": "INC-8274",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-05-29T07:28:16Z",
+          "resolved_at": "2026-06-01T14:36:28Z",
+          "closed": true
         },
-        "Simon Grenefalk": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 2666.7
+        {
+          "reference": "INC-8235",
+          "lead": "Matteo Rapisarda",
+          "severity": "P1",
+          "reported_at": "2026-05-28T16:02:31Z",
+          "resolved_at": "2026-05-28T19:14:12Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8222",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-05-28T14:02:42Z",
+          "resolved_at": "2026-06-15T13:36:36Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8186",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-05-28T07:45:50Z",
+          "resolved_at": "2026-06-02T13:17:56Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8185",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-05-28T07:35:37Z",
+          "resolved_at": "2026-06-05T12:49:31Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8141",
+          "lead": "Nazareno",
+          "severity": "P3",
+          "reported_at": "2026-05-27T13:53:12Z",
+          "resolved_at": "2026-05-28T13:12:51Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8064",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-05-26T15:47:42Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-8048",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-05-26T13:16:16Z",
+          "resolved_at": "2026-05-28T15:23:05Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8046",
+          "lead": "Nazareno",
+          "severity": "P3",
+          "reported_at": "2026-05-26T12:54:15Z",
+          "resolved_at": "2026-05-28T13:08:50Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8039",
+          "lead": "Giancarlo Laferla",
+          "severity": "P3",
+          "reported_at": "2026-05-26T12:20:35Z",
+          "resolved_at": "2026-05-28T13:14:19Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8038",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-05-26T12:18:27Z",
+          "resolved_at": "2026-05-27T08:02:48Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8036",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-05-26T11:57:00Z",
+          "resolved_at": "2026-05-27T06:41:52Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8032",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-05-26T11:11:13Z",
+          "resolved_at": "2026-05-27T07:59:48Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8029",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-05-26T10:06:47Z",
+          "resolved_at": "2026-06-01T10:15:53Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8028",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-05-26T09:13:54Z",
+          "resolved_at": "2026-05-27T09:03:06Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8023",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-05-26T07:56:30Z",
+          "resolved_at": "2026-05-26T08:53:01Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-7963",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-05-25T10:46:00Z",
+          "resolved_at": "2026-05-27T10:45:39Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-7960",
+          "lead": "Simon Grenefalk",
+          "severity": "P2",
+          "reported_at": "2026-05-25T10:19:02Z",
+          "resolved_at": "2026-05-27T06:45:42Z",
+          "closed": true
         }
-      },
-      "totals": {
-        "led": 23,
-        "closed": 22,
-        "open": 1
-      }
+      ]
     }
   },
   "2026-06-01": {
@@ -1941,55 +2078,200 @@
     },
     "p2p3_frt_breaches": [],
     "engineer_workload": {
-      "engineers": {
-        "Simon Brown": {
-          "led": 10,
-          "closed": 10,
-          "open": 0,
-          "avg_resolve_min": 2538.0
+      "tickets": [
+        {
+          "reference": "INC-8953",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-05T15:07:33Z",
+          "resolved_at": "2026-06-09T08:49:49Z",
+          "closed": true
         },
-        "Matteo Rapisarda": {
-          "led": 6,
-          "closed": 6,
-          "open": 0,
-          "avg_resolve_min": 4073.3
+        {
+          "reference": "INC-8950",
+          "lead": "Simon Brown",
+          "severity": "P1",
+          "reported_at": "2026-06-05T14:41:34Z",
+          "resolved_at": "2026-06-09T10:01:48Z",
+          "closed": true
         },
-        "Andrea Envall": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 9077.1
+        {
+          "reference": "INC-8943",
+          "lead": "Andrea Envall",
+          "severity": "P3",
+          "reported_at": "2026-06-05T13:03:00Z",
+          "resolved_at": "2026-06-17T06:40:47Z",
+          "closed": true
         },
-        "Nazareno": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 34.8
+        {
+          "reference": "INC-8936",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-05T11:24:14Z",
+          "resolved_at": "2026-06-05T12:12:46Z",
+          "closed": true
         },
-        "Giancarlo Laferla": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 1458.8
+        {
+          "reference": "INC-8934",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-05T11:12:59Z",
+          "resolved_at": "2026-06-05T13:53:52Z",
+          "closed": true
         },
-        "Andrea Azzopardi": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 14559.9
+        {
+          "reference": "INC-8918",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-05T07:34:17Z",
+          "resolved_at": "2026-06-05T13:25:04Z",
+          "closed": true
         },
-        "Ilke": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 19737.2
+        {
+          "reference": "INC-8911",
+          "lead": "Andrea Azzopardi",
+          "severity": "P2",
+          "reported_at": "2026-06-05T06:18:48Z",
+          "resolved_at": "2026-06-15T08:58:42Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8795",
+          "lead": "Andrea Envall",
+          "severity": "P2",
+          "reported_at": "2026-06-04T16:08:46Z",
+          "resolved_at": "2026-06-05T13:05:11Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8731",
+          "lead": "Nazareno",
+          "severity": "P3",
+          "reported_at": "2026-06-04T09:17:16Z",
+          "resolved_at": "2026-06-04T09:43:41Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8611",
+          "lead": "Nazareno",
+          "severity": "P1",
+          "reported_at": "2026-06-03T14:31:46Z",
+          "resolved_at": "2026-06-03T15:14:51Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8609",
+          "lead": "Simon Brown",
+          "severity": "P1",
+          "reported_at": "2026-06-03T14:07:05Z",
+          "resolved_at": "2026-06-08T09:53:15Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8604",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-03T12:33:04Z",
+          "resolved_at": "2026-06-05T08:46:49Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8599",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-03T11:24:48Z",
+          "resolved_at": "2026-06-08T08:36:33Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8597",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-03T10:40:50Z",
+          "resolved_at": "2026-06-05T11:12:26Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8595",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-03T10:15:37Z",
+          "resolved_at": "2026-06-05T12:08:50Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8593",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-03T08:42:17Z",
+          "resolved_at": "2026-06-09T13:41:44Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8592",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-03T08:07:27Z",
+          "resolved_at": "2026-06-03T10:52:09Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8591",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-06-03T07:55:18Z",
+          "resolved_at": "2026-06-05T06:47:53Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8571",
+          "lead": "Ilke",
+          "severity": "P1",
+          "reported_at": "2026-06-02T21:38:38Z",
+          "resolved_at": "2026-06-16T14:35:50Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8520",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-02T07:48:02Z",
+          "resolved_at": "2026-06-02T14:12:08Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8519",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-02T07:46:20Z",
+          "resolved_at": "2026-06-03T09:28:55Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8517",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-02T07:02:35Z",
+          "resolved_at": "2026-06-03T14:06:03Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8469",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-06-01T12:55:04Z",
+          "resolved_at": "2026-06-01T14:40:06Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-8467",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-01T12:31:04Z",
+          "resolved_at": "2026-06-03T13:57:46Z",
+          "closed": true
         }
-      },
-      "totals": {
-        "led": 24,
-        "closed": 24,
-        "open": 0
-      }
+      ]
     }
   },
   "2026-06-08": {
@@ -2285,73 +2567,312 @@
       }
     ],
     "engineer_workload": {
-      "engineers": {
-        "Matteo Rapisarda": {
-          "led": 13,
-          "closed": 13,
-          "open": 0,
-          "avg_resolve_min": 1667.9
+      "tickets": [
+        {
+          "reference": "INC-9682",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-14T19:56:51Z",
+          "resolved_at": "2026-06-16T07:02:04Z",
+          "closed": true
         },
-        "Simon Brown": {
-          "led": 6,
-          "closed": 5,
-          "open": 1,
-          "avg_resolve_min": 1584.6
+        {
+          "reference": "INC-9597",
+          "lead": "stephen.riolo",
+          "severity": "P1",
+          "reported_at": "2026-06-13T17:46:44Z",
+          "resolved_at": "2026-06-15T06:57:53Z",
+          "closed": true
         },
-        "Giancarlo Laferla": {
-          "led": 6,
-          "closed": 6,
-          "open": 0,
-          "avg_resolve_min": 2402.7
+        {
+          "reference": "INC-9507",
+          "lead": "Gérard E. Pelayo",
+          "severity": "P2",
+          "reported_at": "2026-06-12T14:54:56Z",
+          "resolved_at": "2026-06-12T18:23:23Z",
+          "closed": true
         },
-        "Andrea Envall": {
-          "led": 3,
-          "closed": 3,
-          "open": 0,
-          "avg_resolve_min": 2263.6
+        {
+          "reference": "INC-9494",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-12T12:57:25Z",
+          "resolved_at": "2026-06-15T15:20:26Z",
+          "closed": true
         },
-        "Jeremy": {
-          "led": 3,
-          "closed": 3,
-          "open": 0,
-          "avg_resolve_min": 8958.9
+        {
+          "reference": "INC-9483",
+          "lead": "Jeremy",
+          "severity": "P3",
+          "reported_at": "2026-06-12T09:48:15Z",
+          "resolved_at": "2026-06-16T12:57:09Z",
+          "closed": true
         },
-        "Joachim Farrugia": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 41.2
+        {
+          "reference": "INC-9480",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-12T09:16:15Z",
+          "resolved_at": "2026-06-12T13:29:32Z",
+          "closed": true
         },
-        "Daniel Lindengren": {
-          "led": 2,
-          "closed": 2,
-          "open": 0,
-          "avg_resolve_min": 12227.6
+        {
+          "reference": "INC-9478",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-12T08:37:57Z",
+          "resolved_at": null,
+          "closed": false
         },
-        "stephen.riolo": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 2231.2
+        {
+          "reference": "INC-9477",
+          "lead": "Andrea Envall",
+          "severity": "P2",
+          "reported_at": "2026-06-12T08:12:03Z",
+          "resolved_at": "2026-06-15T13:05:56Z",
+          "closed": true
         },
-        "Gérard E. Pelayo": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 208.4
+        {
+          "reference": "INC-9404",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-11T18:00:15Z",
+          "resolved_at": "2026-06-11T19:11:49Z",
+          "closed": true
         },
-        "James Hodgson": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 10.8
+        {
+          "reference": "INC-9366",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-11T15:20:14Z",
+          "resolved_at": "2026-06-12T13:52:12Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9359",
+          "lead": "Giancarlo Laferla",
+          "severity": "P1",
+          "reported_at": "2026-06-11T14:25:03Z",
+          "resolved_at": "2026-06-11T15:58:57Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9335",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-11T08:36:41Z",
+          "resolved_at": "2026-06-11T13:36:15Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9315",
+          "lead": "Joachim Farrugia",
+          "severity": "P1",
+          "reported_at": "2026-06-10T22:16:42Z",
+          "resolved_at": "2026-06-10T22:29:07Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9291",
+          "lead": "Giancarlo Laferla",
+          "severity": "P3",
+          "reported_at": "2026-06-10T14:33:19Z",
+          "resolved_at": "2026-06-11T16:57:17Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9290",
+          "lead": "Jeremy",
+          "severity": "P3",
+          "reported_at": "2026-06-10T14:25:26Z",
+          "resolved_at": "2026-06-15T09:19:30Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9287",
+          "lead": "Daniel Lindengren",
+          "severity": "P2",
+          "reported_at": "2026-06-10T13:25:48Z",
+          "resolved_at": "2026-06-12T13:56:27Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9286",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-10T13:05:01Z",
+          "resolved_at": "2026-06-10T14:28:50Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9285",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-06-10T12:37:54Z",
+          "resolved_at": "2026-06-11T09:21:39Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9277",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-10T09:50:46Z",
+          "resolved_at": "2026-06-18T13:48:22Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9276",
+          "lead": "Matteo Rapisarda",
+          "severity": "P1",
+          "reported_at": "2026-06-10T09:40:32Z",
+          "resolved_at": "2026-06-10T10:07:11Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9231",
+          "lead": "Jeremy",
+          "severity": "P3",
+          "reported_at": "2026-06-09T15:36:55Z",
+          "resolved_at": "2026-06-19T09:30:43Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9229",
+          "lead": "Matteo Rapisarda",
+          "severity": "P1",
+          "reported_at": "2026-06-09T15:08:31Z",
+          "resolved_at": "2026-06-10T12:23:57Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9228",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-09T15:03:20Z",
+          "resolved_at": "2026-06-10T14:13:48Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9226",
+          "lead": "Simon Brown",
+          "severity": "P1",
+          "reported_at": "2026-06-09T14:46:58Z",
+          "resolved_at": "2026-06-10T11:37:03Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9221",
+          "lead": "Joachim Farrugia",
+          "severity": "P2",
+          "reported_at": "2026-06-09T13:54:27Z",
+          "resolved_at": "2026-06-09T15:04:27Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9216",
+          "lead": "James Hodgson",
+          "severity": "P1",
+          "reported_at": "2026-06-09T13:03:25Z",
+          "resolved_at": "2026-06-09T13:14:16Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9206",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-09T10:24:02Z",
+          "resolved_at": "2026-06-09T14:51:28Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9203",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-09T09:40:54Z",
+          "resolved_at": "2026-06-09T14:51:11Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9196",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-09T08:17:47Z",
+          "resolved_at": "2026-06-11T15:13:06Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9188",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-09T06:52:26Z",
+          "resolved_at": "2026-06-09T13:05:13Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9140",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-08T15:02:55Z",
+          "resolved_at": "2026-06-09T11:20:36Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9139",
+          "lead": "Simon Brown",
+          "severity": "P1",
+          "reported_at": "2026-06-08T14:57:17Z",
+          "resolved_at": "2026-06-09T19:51:16Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9133",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-06-08T12:11:47Z",
+          "resolved_at": "2026-06-16T06:38:48Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9132",
+          "lead": "Daniel Lindengren",
+          "severity": "P2",
+          "reported_at": "2026-06-08T11:12:15Z",
+          "resolved_at": "2026-06-23T10:16:45Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9131",
+          "lead": "Giancarlo Laferla",
+          "severity": "P1",
+          "reported_at": "2026-06-08T10:12:35Z",
+          "resolved_at": "2026-06-08T10:28:04Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9130",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-08T10:03:48Z",
+          "resolved_at": "2026-06-08T11:02:03Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9128",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-06-08T08:34:01Z",
+          "resolved_at": "2026-06-08T13:26:03Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9124",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-08T07:10:37Z",
+          "resolved_at": "2026-06-08T10:28:58Z",
+          "closed": true
         }
-      },
-      "totals": {
-        "led": 38,
-        "closed": 37,
-        "open": 1
-      }
+      ]
     }
   },
   "2026-06-15": {
@@ -2497,85 +3018,264 @@
       }
     ],
     "engineer_workload": {
-      "engineers": {
-        "Matteo Rapisarda": {
-          "led": 8,
-          "closed": 8,
-          "open": 0,
-          "avg_resolve_min": 477.0
+      "tickets": [
+        {
+          "reference": "INC-10168",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-19T14:55:33Z",
+          "resolved_at": "2026-06-19T20:15:31Z",
+          "closed": true
         },
-        "Simon Brown": {
-          "led": 6,
-          "closed": 3,
-          "open": 3,
-          "avg_resolve_min": 2872.6
+        {
+          "reference": "INC-10166",
+          "lead": "Simon Grenefalk",
+          "severity": "P2",
+          "reported_at": "2026-06-19T14:53:49Z",
+          "resolved_at": "2026-06-22T08:05:33Z",
+          "closed": true
         },
-        "Andrea Envall": {
-          "led": 6,
-          "closed": 6,
-          "open": 0,
-          "avg_resolve_min": 2224.6
+        {
+          "reference": "INC-10160",
+          "lead": "Joachim Farrugia",
+          "severity": "P3",
+          "reported_at": "2026-06-19T14:29:42Z",
+          "resolved_at": null,
+          "closed": false
         },
-        "James Hodgson": {
-          "led": 4,
-          "closed": 4,
-          "open": 0,
-          "avg_resolve_min": 1006.8
+        {
+          "reference": "INC-10144",
+          "lead": "Giancarlo Laferla",
+          "severity": "P3",
+          "reported_at": "2026-06-19T12:37:39Z",
+          "resolved_at": "2026-06-19T13:32:57Z",
+          "closed": true
         },
-        "Simon Grenefalk": {
-          "led": 3,
-          "closed": 2,
-          "open": 1,
-          "avg_resolve_min": 4017.8
+        {
+          "reference": "INC-10135",
+          "lead": "Jeremy",
+          "severity": "P3",
+          "reported_at": "2026-06-19T11:46:52Z",
+          "resolved_at": "2026-06-23T14:17:29Z",
+          "closed": true
         },
-        "Joachim Farrugia": {
-          "led": 3,
-          "closed": 1,
-          "open": 2,
-          "avg_resolve_min": 1159.9
+        {
+          "reference": "INC-10128",
+          "lead": "Giancarlo Laferla",
+          "severity": "P1",
+          "reported_at": "2026-06-19T11:31:02Z",
+          "resolved_at": "2026-06-23T07:03:09Z",
+          "closed": true
         },
-        "Giancarlo Laferla": {
-          "led": 3,
-          "closed": 3,
-          "open": 0,
-          "avg_resolve_min": 1868.8
+        {
+          "reference": "INC-10124",
+          "lead": "Andrea Envall",
+          "severity": "P2",
+          "reported_at": "2026-06-19T10:40:26Z",
+          "resolved_at": "2026-06-23T10:15:15Z",
+          "closed": true
         },
-        "Jeremy": {
-          "led": 1,
-          "closed": 0,
-          "open": 1,
-          "avg_resolve_min": null
+        {
+          "reference": "INC-10121",
+          "lead": "Carl",
+          "severity": "P3",
+          "reported_at": "2026-06-19T10:36:04Z",
+          "resolved_at": null,
+          "closed": false
         },
-        "Carl": {
-          "led": 1,
-          "closed": 0,
-          "open": 1,
-          "avg_resolve_min": null
+        {
+          "reference": "INC-10120",
+          "lead": "Giancarlo Laferla",
+          "severity": "P3",
+          "reported_at": "2026-06-19T10:21:50Z",
+          "resolved_at": "2026-06-19T11:20:51Z",
+          "closed": true
         },
-        "Luke Pullicino": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 5766.2
+        {
+          "reference": "INC-10117",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-19T10:08:07Z",
+          "resolved_at": "2026-06-22T12:51:58Z",
+          "closed": true
         },
-        "Nazareno": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 27.3
+        {
+          "reference": "INC-10104",
+          "lead": "James Hodgson",
+          "severity": "P2",
+          "reported_at": "2026-06-19T07:32:00Z",
+          "resolved_at": "2026-06-19T09:37:55Z",
+          "closed": true
         },
-        "Andrea Azzopardi": {
-          "led": 1,
-          "closed": 1,
-          "open": 0,
-          "avg_resolve_min": 40.8
+        {
+          "reference": "INC-10101",
+          "lead": "Luke Pullicino",
+          "severity": "P2",
+          "reported_at": "2026-06-19T06:31:04Z",
+          "resolved_at": "2026-06-23T06:37:18Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-10052",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-18T17:10:45Z",
+          "resolved_at": "2026-06-18T17:46:42Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-10045",
+          "lead": "Joachim Farrugia",
+          "severity": "P2",
+          "reported_at": "2026-06-18T15:59:34Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-10042",
+          "lead": "Matteo Rapisarda",
+          "severity": "P1",
+          "reported_at": "2026-06-18T14:35:48Z",
+          "resolved_at": "2026-06-18T14:53:24Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9962",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-17T22:45:39Z",
+          "resolved_at": "2026-06-18T17:47:13Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9954",
+          "lead": "Matteo Rapisarda",
+          "severity": "P1",
+          "reported_at": "2026-06-17T20:23:45Z",
+          "resolved_at": "2026-06-17T20:26:12Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9919",
+          "lead": "James Hodgson",
+          "severity": "P3",
+          "reported_at": "2026-06-17T13:25:38Z",
+          "resolved_at": "2026-06-18T10:39:04Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9916",
+          "lead": "James Hodgson",
+          "severity": "P3",
+          "reported_at": "2026-06-17T13:09:24Z",
+          "resolved_at": "2026-06-18T10:26:10Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9914",
+          "lead": "Joachim Farrugia",
+          "severity": "P2",
+          "reported_at": "2026-06-17T12:02:58Z",
+          "resolved_at": "2026-06-18T07:22:51Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9911",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-17T11:37:00Z",
+          "resolved_at": "2026-06-19T13:39:19Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9842",
+          "lead": "Nazareno",
+          "severity": "P2",
+          "reported_at": "2026-06-16T14:54:51Z",
+          "resolved_at": "2026-06-16T15:22:08Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9839",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-06-16T14:31:09Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-9837",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-06-16T13:54:15Z",
+          "resolved_at": "2026-06-16T14:35:04Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9830",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-06-16T12:12:08Z",
+          "resolved_at": "2026-06-18T10:11:10Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9770",
+          "lead": "Simon Grenefalk",
+          "severity": "P3",
+          "reported_at": "2026-06-15T15:22:25Z",
+          "resolved_at": "2026-06-18T12:06:20Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9759",
+          "lead": "James Hodgson",
+          "severity": "P3",
+          "reported_at": "2026-06-15T14:13:50Z",
+          "resolved_at": "2026-06-16T12:44:56Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9758",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-15T14:06:45Z",
+          "resolved_at": "2026-06-16T06:59:43Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9754",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-06-15T13:53:36Z",
+          "resolved_at": "2026-06-15T16:15:36Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9752",
+          "lead": "Andrea Envall",
+          "severity": "P3",
+          "reported_at": "2026-06-15T12:18:55Z",
+          "resolved_at": "2026-06-17T06:44:43Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9734",
+          "lead": "Andrea Envall",
+          "severity": "P1",
+          "reported_at": "2026-06-15T08:20:09Z",
+          "resolved_at": "2026-06-17T08:16:26Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-9733",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-06-15T08:18:05Z",
+          "resolved_at": "2026-06-15T11:41:29Z",
+          "closed": true
         }
-      },
-      "totals": {
-        "led": 38,
-        "closed": 30,
-        "open": 8
-      }
+      ]
     }
   },
   "2026-06-22": {

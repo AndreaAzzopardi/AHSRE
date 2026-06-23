@@ -562,22 +562,28 @@ Populates the `engineer_workload` cache key — per-engineer IC-ticket throughpu
 - `status_category: ["triage","active","post-incident","closed","paused"]` (deliberately EXCLUDES declined/merged/canceled — do not count those)
 - `include: ["roles","timestamps"]`, `page_size: 50` — paginate all pages.
 
-**Per incident:** read the Incident Lead name from `roles` (role == "Incident Lead"; if none, bucket under `"Unassigned"`), the status category (closed vs not), and `Reported at` / `Resolved at` from timestamps.
+**Boundary filter:** incident.io's `created_before` is loose and may return incidents just outside the week. Bucket each incident by the Monday of its `Reported at` timestamp and KEEP ONLY incidents whose `Reported at` is within `[week_monday, next_monday)`. Discard the rest.
 
-**Aggregate per lead name** (week = Monday of `reported_at`):
-- `led` = total IC tickets they lead that week
-- `closed` = count with status category `closed`
-- `open` = count not closed
-- `avg_resolve_min` = mean of (`Resolved at` − `Reported at`) in minutes over incidents that have a `Resolved at` (1 dp; `null` if none resolved)
+**Store RAW per-ticket records — do NOT pre-aggregate.** The generator computes the per-engineer led/closed/open/avg-resolution itself (same pattern as `mtta.mtta_minutes` and `p1_frt_sla.frt_seconds` — the cache holds raw values, the report computes the stats). This keeps the raw data so the metric can be re-sliced (median vs mean, office-hours, by severity/brand) without re-fetching.
 
-**Write to cache** for each complete week (overwrite current week). Apply the same Data integrity guard — if the fetch errors, retain the existing value, don't overwrite:
+For each kept incident emit one record:
+- `reference` (e.g. `INC-9734`)
+- `lead` — Incident Lead name from `roles` (role == "Incident Lead"); `"Unassigned"` if none
+- `severity` — severity name (`P1`/`P2`/`P3`)
+- `reported_at` — `Reported at` ISO timestamp
+- `resolved_at` — `Resolved at` ISO timestamp, or `null` if not resolved
+- `closed` — `true` if status category == `closed`, else `false`
+
+**Write to cache** for each complete week (overwrite current week). Apply the Data integrity guard — if the fetch errors, retain the existing value, don't overwrite:
 ```json
 cache[week]["engineer_workload"] = {
-  "engineers": {"Name": {"led": N, "closed": N, "open": N, "avg_resolve_min": X.X}, ...},
-  "totals": {"led": N, "closed": N, "open": N}
+  "tickets": [
+    {"reference": "INC-XXXX", "lead": "Name", "severity": "P2", "reported_at": "...Z", "resolved_at": "...Z", "closed": true},
+    ...
+  ]
 }
 ```
-The generator renders this for the last complete week (`stat_week`) as the Engineer Workload slide table, sorted by `led` desc.
+The generator's `compute_engineer_workload(tickets)` derives, per Incident Lead: `led`, `closed`, `open`, and `avg_resolve_min` (mean of `resolved_at − reported_at` in minutes over resolved tickets), and renders the Engineer Workload slide for the last complete week (`stat_week`), sorted by `led` desc — all teams, no SRE filter.
 
 ---
 
@@ -661,7 +667,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `true_p1_incidents`: deduplication by `reference` applied before passing to generator
 - [ ] `true_p1_incidents`: each entry has `reference`, `name`, `status`, `reported_at`, `permalink`, `summary`
 - [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
-- [ ] `engineer_workload` (Step 2F) written for the current week (and re-checked prev week): per-engineer `led`/`closed`/`open`/`avg_resolve_min` + `totals`; ALL incident leads included (no team filter); per-engineer `led` sums to `totals.led`; boundary-leaked incidents (reported outside the ISO week) excluded
+- [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
 
 ---
 
