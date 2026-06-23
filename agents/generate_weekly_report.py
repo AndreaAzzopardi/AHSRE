@@ -1037,7 +1037,7 @@ def render_engineer_workload_slide():
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-shrink:0">
         <span style="width:8px;height:8px;border-radius:50%;background:{ENG_COLORS[n]};display:inline-block"></span>
         <span style="font-size:12px;font-weight:700;color:#cbd5e1">{ENG_SHORT[n]}</span>
-        <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">&middot; assigned vs closed</span>
+        <span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.05em">&middot; assigned vs closed &middot; <span style="color:#f59e0b">median resolve</span></span>
       </div>
       <div class="chart-container"><canvas id="cEngAC{i}" style="width:100%;height:100%"></canvas></div>
     </div>''')
@@ -1052,16 +1052,10 @@ def render_engineer_workload_slide():
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex-shrink:0">
 {cards_html}
   </div>
-  <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;margin-top:12px">
-    <div style="flex:1;min-height:0;display:flex;gap:12px">
+  <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
 {panels_html}
-    </div>
-    <div style="flex:1;min-height:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px">
-      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Median Resolve per Week <span style="font-weight:400;text-transform:none;letter-spacing:normal;color:#64748b;font-size:11px">&middot; office hours, by report week</span></div>
-      <div class="chart-container"><canvas id="cEngMed" style="width:100%;height:100%"></canvas></div>
-    </div>
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office hours)</b> = median reported&rarr;resolved counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded); cards show the {len(eng_week_keys)}-wk overall median, the line shows it per report week. <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. Bars (left axis): <b>Assigned</b> = reported that week, <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <span style="color:#f59e0b"><b>Median resolve</b></span> line (right axis, hrs) = median reported&rarr;resolved per report week, counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded); cards show the {len(eng_week_keys)}-wk overall median. <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
@@ -1073,25 +1067,15 @@ if eng_week_keys:
     _parts = []
     for i, n in enumerate(ENG_FOCUS):
         _parts.append(
-            "new Chart(document.getElementById('cEngAC" + str(i) + "'),{type:'bar',data:{labels:" + _eng_lbl_js + ",datasets:["
-            "{label:'Assigned',data:" + js_arr(eng_series[n]["assigned"]) + ",backgroundColor:'#64748b',barPercentage:0.9,categoryPercentage:0.62},"
-            "{label:'Closed',data:" + js_arr(eng_closed_resolv[n]) + ",backgroundColor:'#22c55e',barPercentage:0.9,categoryPercentage:0.62}"
+            "new Chart(document.getElementById('cEngAC" + str(i) + "'),{data:{labels:" + _eng_lbl_js + ",datasets:["
+            "{type:'bar',label:'Assigned',data:" + js_arr(eng_series[n]["assigned"]) + ",backgroundColor:'#64748b',barPercentage:0.9,categoryPercentage:0.62,yAxisID:'y'},"
+            "{type:'bar',label:'Closed',data:" + js_arr(eng_closed_resolv[n]) + ",backgroundColor:'#22c55e',barPercentage:0.9,categoryPercentage:0.62,yAxisID:'y'},"
+            "{type:'line',label:'Median resolve (h)',data:" + js_arr(eng_median_week[n]) + ",borderColor:'#f59e0b',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:true,pointRadius:3,pointBackgroundColor:'#f59e0b',yAxisID:'medh'}"
             "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
-            "scales:{x:XA,y:YL(false)}}});"
+            "scales:{x:XA,y:YL(false),"
+            "medh:{type:'linear',position:'right',min:0,ticks:{color:'#f59e0b',callback:function(v){return v+'h'}},grid:{display:false}}}}});"
         )
     eng_ac_chart_js = "\n".join(_parts)
-
-eng_med_chart_js = (
-    "new Chart(document.getElementById('cEngMed'),{type:'line',data:{labels:" + _eng_lbl_js + ",datasets:["
-    + ",".join(
-        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_median_week[n])
-        + ",borderColor:'" + ENG_COLORS[n] + "',backgroundColor:'transparent',tension:0.3,fill:false,"
-          "spanGaps:true,pointRadius:4,pointBackgroundColor:'" + ENG_COLORS[n] + "'}"
-        for n in ENG_FOCUS)
-    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
-      "scales:{x:XA,y:{type:'linear',min:0,ticks:{color:'#64748b',callback:function(v){return v+'h'}},"
-      "grid:{color:'rgba(255,255,255,0.05)'}}}}});"
-) if eng_week_keys else ""
 
 def _build_p1_pair_cards(chunk):
     if not chunk:
@@ -2016,7 +2000,6 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
 {pir_cat_chart_js}
 {pir_trend_chart_js}
 {eng_ac_chart_js}
-{eng_med_chart_js}
 
 
 
