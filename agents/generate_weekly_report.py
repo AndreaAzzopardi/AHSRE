@@ -968,7 +968,6 @@ def render_engineer_workload_slide():
     _latest_lbl = eng_wk_labels[last]
     _nwk        = len(eng_week_keys)
     _range_lbl  = f"{eng_wk_labels[0]}&ndash;{eng_wk_labels[last]}" if _nwk > 1 else eng_wk_labels[last]
-    _today_lbl  = datetime.now(timezone.utc).strftime("%-d %b")
 
     cards = []
     for n in ENG_FOCUS:
@@ -1010,7 +1009,6 @@ def render_engineer_workload_slide():
         <div style="margin-top:8px;font-size:12px">{med_html} <span style="color:#64748b">median resolve (office hours)</span></div>
         <div style="font-size:9.5px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">Typical close time &middot; {_nwk}-wk median &middot; {_range_lbl}</div>
         <div style="margin-top:8px;font-size:12px">{open_html}</div>
-        <div style="font-size:9.5px;color:#475569;text-transform:uppercase;letter-spacing:0.04em;margin-top:1px">Still open now &middot; as of {_today_lbl} &middot; aged from report date</div>
       </div>''')
     cards_html = "\n".join(cards)
 
