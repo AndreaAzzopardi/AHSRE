@@ -950,8 +950,27 @@ def eng_overview_stats(week_keys, names):
     med = {n: (round(_median(durs[n]), 1) if durs[n] else None) for n in names}
     return med, open_n, oldest_d, over7_n
 
+def eng_median_by_week(week_keys, names):
+    """Per-engineer per-week MEDIAN office-hours resolve time (hrs) over tickets
+    reported that week — the week-by-week version of the card's overall median."""
+    out = {n: [] for n in names}
+    for wk in week_keys:
+        per = {n: [] for n in names}
+        for t in ((cache.get(wk, {}) or {}).get("engineer_workload") or {}).get("tickets") or []:
+            lead = t.get("lead")
+            if lead not in per:
+                continue
+            r = _eng_parse_iso(t.get("reported_at")); rs = _eng_parse_iso(t.get("resolved_at"))
+            if r and rs and rs >= r:
+                per[lead].append(business_hours_between(r, rs))
+        for n in names:
+            m = _median(per[n])
+            out[n].append(round(m, 1) if m is not None else None)
+    return out
+
 eng_series        = eng_assigned_series(eng_week_keys, ENG_FOCUS)
 eng_closed_resolv = eng_closed_by_resolved_week(eng_week_keys, ENG_FOCUS)
+eng_median_week   = eng_median_by_week(eng_week_keys, ENG_FOCUS)
 eng_median_h, eng_open_n, eng_oldest_d, eng_over7_n = eng_overview_stats(eng_week_keys, ENG_FOCUS)
 eng_wk_labels     = [datetime.strptime(k, "%Y-%m-%d").strftime("%-d %b") for k in eng_week_keys]
 
@@ -1033,10 +1052,16 @@ def render_engineer_workload_slide():
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;flex-shrink:0">
 {cards_html}
   </div>
-  <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:12px">
+  <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;margin-top:12px">
+    <div style="flex:1;min-height:0;display:flex;gap:12px">
 {panels_html}
+    </div>
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 12px">
+      <div style="font-size:12px;font-weight:700;color:#cbd5e1;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;flex-shrink:0">Median Resolve per Week <span style="font-weight:400;text-transform:none;letter-spacing:normal;color:#64748b;font-size:11px">&middot; office hours, by report week</span></div>
+      <div class="chart-container"><canvas id="cEngMed" style="width:100%;height:100%"></canvas></div>
+    </div>
   </div>
-  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office hours)</b> = median reported&rarr;resolved over the {len(eng_week_keys)} weeks shown, counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded). <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
+  <div style="font-size:11px;color:#475569;margin-top:8px">Source: incident.io IC-Ticket incidents (Intercom partner tickets), by Incident Lead. <b>Assigned</b> = reported that week; <b>Closed</b> = resolved that week (any report date) &mdash; when Closed trails Assigned, backlog is growing. <b>Median resolve (office hours)</b> = median reported&rarr;resolved counting only Mon&ndash;Fri 08:00&ndash;17:00 Malta time (nights &amp; weekends excluded); cards show the {len(eng_week_keys)}-wk overall median, the line shows it per report week. <b>Open</b> = tickets still open now, aged from report date. Full all-team roster retained in cache.</div>
 </div></div>'''
 
 engineer_workload_slide_html = render_engineer_workload_slide()
@@ -1055,6 +1080,18 @@ if eng_week_keys:
             "scales:{x:XA,y:YL(false)}}});"
         )
     eng_ac_chart_js = "\n".join(_parts)
+
+eng_med_chart_js = (
+    "new Chart(document.getElementById('cEngMed'),{type:'line',data:{labels:" + _eng_lbl_js + ",datasets:["
+    + ",".join(
+        "{label:'" + ENG_SHORT[n] + "',data:" + js_arr(eng_median_week[n])
+        + ",borderColor:'" + ENG_COLORS[n] + "',backgroundColor:'transparent',tension:0.3,fill:false,"
+          "spanGaps:true,pointRadius:4,pointBackgroundColor:'" + ENG_COLORS[n] + "'}"
+        for n in ENG_FOCUS)
+    + "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+      "scales:{x:XA,y:{type:'linear',min:0,ticks:{color:'#64748b',callback:function(v){return v+'h'}},"
+      "grid:{color:'rgba(255,255,255,0.05)'}}}}});"
+) if eng_week_keys else ""
 
 def _build_p1_pair_cards(chunk):
     if not chunk:
@@ -1979,6 +2016,7 @@ new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,da
 {pir_cat_chart_js}
 {pir_trend_chart_js}
 {eng_ac_chart_js}
+{eng_med_chart_js}
 
 
 
