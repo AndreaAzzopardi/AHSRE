@@ -441,7 +441,8 @@ def render_true_p1_detail_block(week):
     items = []
     for inc in incidents:
         status = inc.get("status", "")
-        status_cls = "c-green" if status == "Closed" else "c-amber"
+        # "Documenting" (post-incident phase) = resolved; impact over, PIR pending
+        status_cls = "c-green" if (status or "").lower() in ("closed", "resolved", "postmortem", "documenting") else "c-amber"
         cause = inc.get("cause", "")
         cause_html = f'<span class="breach-meta">{cause}</span>' if cause else ""
         paras = [p.strip() for p in inc.get("summary","").split("\n\n") if p.strip()]
@@ -573,7 +574,8 @@ def _fmt_dt_short(iso_str):
 
 def _p1_status_cls(status):
     s = (status or "").lower()
-    return "c-green" if s in ("closed", "resolved", "postmortem") else "c-amber"
+    # "documenting" = post-incident phase: impact resolved, only the PIR is pending → treat as resolved
+    return "c-green" if s in ("closed", "resolved", "postmortem", "documenting") else "c-amber"
 
 import re as _re_name
 def _clean_inc_name(name):
@@ -581,7 +583,7 @@ def _clean_inc_name(name):
 
 def _exec_status(status):
     s = (status or "").lower()
-    if s in ("closed", "resolved", "postmortem"):
+    if s in ("closed", "resolved", "postmortem", "documenting"):
         return ("Resolved", "#22c55e")
     elif s == "monitoring":
         return ("Monitoring · awaiting fix", "#f59e0b")
