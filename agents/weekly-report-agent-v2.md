@@ -41,6 +41,8 @@ The cache is a JSON object keyed by week Monday (`YYYY-MM-DD`). Each week entry 
 
 SOC member MTTA is stored in a **separate file** `cache/soc_mtta_cache.json` (ISO-week keyed, per-person). See Step 2D.
 
+The alert time-block distribution is stored in a **separate file** `cache/alert_timeblock_cache.json` (ISO-week keyed, per 8-hour UTC block). See Step 2G.
+
 **Cache rule:**
 
 - **Current week** (partial — `week == current_week_monday`): always re-fetch all sources and overwrite.
@@ -587,6 +589,41 @@ The generator's `compute_engineer_workload(tickets)` derives, per Incident Lead:
 
 ---
 
+## Step 2G — Alert time-block distribution from incident.io (cache-aware)
+
+Populates the **separate** file `cache/alert_timeblock_cache.json` — alert volume + waste split across three 8-hour UTC blocks, for the **Incident Ops** slide. ISO-week keyed (`YYYY-MM-DD` Monday). Load it at the start (`{}` if missing) and preserve every existing week key.
+
+`alert_stats` cannot group by time-of-day, so each day's three blocks need their own time-bounded call: **3 calls/day, 21 calls for a full week.**
+
+**Determine fetch range:** the current week ALWAYS, plus the oldest complete week ≥ `2026-05-04` (W19) that is either missing from the file OR has `"partial": true`. (Older complete weeks already written without a `partial` flag are authoritative — skip them.)
+
+**Blocks (UTC), per calendar day D** — for each, call `alert_stats` with `group_by: ["has_incident"]`, `max_alert_ids_per_group: 0`, and:
+- `day`:     `created_after = D 08:00:00Z`, `created_before = D 16:00:00Z`     → label `"08:00-16:00 UTC"`
+- `evening`: `created_after = D 16:00:00Z`, `created_before = (D+1) 00:00:00Z` → label `"16:00-00:00 UTC"`
+- `night`:   `created_after = D 00:00:00Z`, `created_before = D 08:00:00Z`     → label `"00:00-08:00 UTC"`
+
+From each response's `groups`: `has_incident:"true"` count → **accepted**, `has_incident:"false"` count → **declined** (absent group = 0). Sum accepted/declined per block across all the week's days.
+
+**Partial week:** for the current week, fetch only **fully-elapsed UTC calendar days** (a day D is complete once `now_utc ≥ (D+1) 00:00:00Z`). Set `days_in_week` = number of days fetched, `"partial": true`, and `"note": "Partial week — only <first> to <last> data available (<weekday range>)"` (em-dash). A complete week sets `days_in_week: 7` and omits `partial`/`note`.
+
+**Per block:** `total = accepted + declined`; `waste_pct = round(declined/total*100, 1)` (0.0 if total is 0). **Per week:** `total`/`total_declined`/`total_accepted` = sums across blocks; `overall_waste_pct = round(total_declined/total*100, 1)`.
+
+```json
+cache_tb[week] = {
+  "days_in_week": 7,
+  "blocks": {
+    "day":     {"label": "08:00-16:00 UTC", "total": N, "declined": N, "accepted": N, "waste_pct": X.X},
+    "evening": {"label": "16:00-00:00 UTC", "total": N, "declined": N, "accepted": N, "waste_pct": X.X},
+    "night":   {"label": "00:00-08:00 UTC", "total": N, "declined": N, "accepted": N, "waste_pct": X.X}
+  },
+  "total": N, "total_declined": N, "total_accepted": N, "overall_waste_pct": X.X
+}
+```
+
+**Data integrity guard:** apply the same rule as every other source — if an `alert_stats` call errors or the connector is unavailable, do NOT overwrite an existing complete week with empty/partial data; retain the cached value and log the failure. Write `json.dump(..., ensure_ascii=False, indent=2)`.
+
+---
+
 ## Step 5C — P2/P3 breach deep-dive (current week only, no cache)
 
 **Skip entirely if no P2/P3 breaches for the current week.**
@@ -668,6 +705,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `true_p1_incidents`: each entry has `reference`, `name`, `status`, `reported_at`, `permalink`, `summary`
 - [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
+- [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; pre-existing week keys preserved
 
 ---
 

@@ -120,36 +120,34 @@
     "overall_waste_pct": 29.4
   },
   "2026-06-08": {
-    "days_in_week": 1,
-    "partial": true,
-    "note": "Partial week — only 2026-06-08 data available (Monday)",
+    "days_in_week": 7,
     "blocks": {
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 12,
-        "declined": 3,
-        "accepted": 9,
-        "waste_pct": 25.0
+        "total": 210,
+        "declined": 11,
+        "accepted": 199,
+        "waste_pct": 5.2
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 0,
-        "declined": 0,
-        "accepted": 0,
-        "waste_pct": 0.0
+        "total": 217,
+        "declined": 8,
+        "accepted": 209,
+        "waste_pct": 3.7
       },
       "night": {
         "label": "00:00-08:00 UTC",
-        "total": 27,
-        "declined": 2,
-        "accepted": 25,
+        "total": 296,
+        "declined": 22,
+        "accepted": 274,
         "waste_pct": 7.4
       }
     },
-    "total": 39,
-    "total_declined": 5,
-    "total_accepted": 34,
-    "overall_waste_pct": 12.8
+    "total": 723,
+    "total_declined": 41,
+    "total_accepted": 682,
+    "overall_waste_pct": 5.7
   },
   "2026-05-25": {
     "days_in_week": 5,
@@ -180,5 +178,67 @@
     "total_declined": 197,
     "total_accepted": 164,
     "overall_waste_pct": 54.6
+  },
+  "2026-06-15": {
+    "days_in_week": 7,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 247,
+        "declined": 23,
+        "accepted": 224,
+        "waste_pct": 9.3
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 208,
+        "declined": 13,
+        "accepted": 195,
+        "waste_pct": 6.2
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 318,
+        "declined": 19,
+        "accepted": 299,
+        "waste_pct": 6.0
+      }
+    },
+    "total": 773,
+    "total_declined": 55,
+    "total_accepted": 718,
+    "overall_waste_pct": 7.1
+  },
+  "2026-06-22": {
+    "days_in_week": 2,
+    "partial": true,
+    "note": "Partial week — only 2026-06-22 to 2026-06-23 data available (Mon-Tue)",
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 113,
+        "declined": 9,
+        "accepted": 104,
+        "waste_pct": 8.0
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 85,
+        "declined": 6,
+        "accepted": 79,
+        "waste_pct": 7.1
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 103,
+        "declined": 3,
+        "accepted": 100,
+        "waste_pct": 2.9
+      }
+    },
+    "total": 301,
+    "total_declined": 18,
+    "total_accepted": 283,
+    "overall_waste_pct": 6.0
   }
 }
