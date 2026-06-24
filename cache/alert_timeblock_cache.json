@@ -212,7 +212,7 @@
   "2026-06-22": {
     "days_in_week": 2,
     "partial": true,
-    "note": "Partial week — only 2026-06-22 to 2026-06-23 data available (Mon-Tue)",
+    "note": "Partial week — only 2026-06-22 to 2026-06-23 data available (Mon–Tue)",
     "blocks": {
       "day": {
         "label": "08:00-16:00 UTC",

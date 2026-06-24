@@ -12,7 +12,7 @@
         "id": "01JW601NZQVX4SSMVEHQ19S6JW"
       },
       {
-        "name": "G\u00e9rard E. Pelayo",
+        "name": "Gérard E. Pelayo",
         "id": "01JNZFJMS845S6KV5ENT41CFR0"
       },
       {
@@ -20,8 +20,8 @@
         "id": "01JR7V0PFCQKEXP63X96GXT5YE"
       }
     ],
-    "note": "MTTA = acked_at - created_at (seconds), from escalation_show transitions. miss_rate = expired/(resolved+expired). Cancelled excluded from miss rate. W21: full population (all resolved escalations called, sampled=False). W19/W20/W25/W26: coverage stats only \u2014 MTTA detail not yet backfilled.",
-    "last_updated": "2026-06-23T21:25:00+00:00"
+    "note": "MTTA = acked_at - created_at (seconds), from escalation_show transitions. miss_rate = expired/(resolved+expired). Cancelled excluded from miss rate. W21: full population (all resolved escalations called, sampled=False). W19/W20/W25/W26: coverage stats only — MTTA detail not yet backfilled.",
+    "last_updated": "2026-06-24T20:14:05.447757+00:00"
   },
   "weeks": {
     "2026-W19": {
@@ -41,7 +41,7 @@
         "miss_rate": 0.0,
         "mtta": null
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 169,
         "resolved": 150,
         "expired": 0,
@@ -75,7 +75,7 @@
         "miss_rate": 0.0,
         "mtta": null
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 198,
         "resolved": 194,
         "expired": 1,
@@ -1693,7 +1693,7 @@
           ]
         }
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 26,
         "resolved": 22,
         "expired": 4,
@@ -2459,7 +2459,7 @@
           ]
         }
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 73,
         "resolved": 73,
         "expired": 0,
@@ -3064,7 +3064,7 @@
           ]
         }
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 336,
         "resolved": 201,
         "expired": 130,
@@ -4187,7 +4187,7 @@
           ]
         }
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 153,
         "resolved": 146,
         "expired": 5,
@@ -5777,7 +5777,7 @@
           "raw_records": []
         }
       },
-      "G\u00e9rard E. Pelayo": {
+      "Gérard E. Pelayo": {
         "pages_targeted": 169,
         "resolved": 164,
         "expired": 5,
@@ -5810,14 +5810,14 @@
     },
     "2026-W26": {
       "Joachim Farrugia": {
-        "pages_targeted": 48,
-        "resolved": 36,
+        "pages_targeted": 87,
+        "resolved": 75,
         "expired": 2,
         "cancelled": 10,
-        "miss_rate": 0.05,
+        "miss_rate": 0.03,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 36,
+          "sample_size": 75,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -5839,15 +5839,15 @@
           "raw_records": []
         }
       },
-      "G\u00e9rard E. Pelayo": {
-        "pages_targeted": 92,
-        "resolved": 91,
+      "Gérard E. Pelayo": {
+        "pages_targeted": 94,
+        "resolved": 93,
         "expired": 0,
         "cancelled": 1,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 91,
+          "sample_size": 93,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -5855,14 +5855,14 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 25,
-        "resolved": 6,
+        "pages_targeted": 62,
+        "resolved": 43,
         "expired": 3,
         "cancelled": 16,
-        "miss_rate": 0.33,
+        "miss_rate": 0.07,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 6,
+          "sample_size": 43,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
