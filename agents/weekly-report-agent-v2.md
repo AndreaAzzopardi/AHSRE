@@ -43,6 +43,8 @@ SOC member MTTA is stored in a **separate file** `cache/soc_mtta_cache.json` (IS
 
 The alert time-block distribution is stored in a **separate file** `cache/alert_timeblock_cache.json` (ISO-week keyed, per 8-hour UTC block). See Step 2G.
 
+The PIR action backlog is stored in a **separate file** `cache/pir_action_cache.json` — a single current-state snapshot (NOT week-keyed), re-fetched in full every run from ClickUp. See Step 2H. The generator auto-derives the PIR trend history (`cache/pir_history_cache.json`) from each snapshot's `generated` date.
+
 **Cache rule:**
 
 - **Current week** (partial — `week == current_week_monday`): always re-fetch all sources and overwrite.
@@ -624,6 +626,35 @@ cache_tb[week] = {
 
 ---
 
+## Step 2H — PIR Action Items from ClickUp (snapshot, always refreshed)
+
+Populates the **separate** file `cache/pir_action_cache.json` — a point-in-time snapshot of the post-incident action backlog, feeding the **PIR Actions** slide (completion-rate card, team table, top-5 category chart) and the PIR completion-% trend line. This is NOT week-keyed: it is a single current-state snapshot, **re-fetched in full on every run** (the backlog changes daily). The generator (`generate_weekly_report.py`) auto-appends one trend-history point to `cache/pir_history_cache.json`, keyed by this snapshot's `generated` date — so no separate history write is needed here.
+
+**Source:** ClickUp list **"PIR Action Items"**, `list_id = 901513322441` (space "Post Incident Report"). Use the ClickUp MCP tools.
+
+**Step A — enumerate all tasks.** Call `clickup_filter_tasks` with `list_ids:["901513322441"]`, `include_closed:true`, paging `page:0,1,…` until a page returns < 100 tasks (~136 total). Per task capture `id`, `status`, `tags[].name`, `priority`, `due_date`. Status → bucket: **open** = {`to do`,`acknowledged`,`blocked`,`in review`}; **completed** = `complete`. Ignore any other status.
+
+**Step B — team per task.** `filter_tasks` does NOT return custom fields. For each task call `clickup_get_task` with `include:["custom_fields"]` (run in parallel batches of ~15–20). The "Fast Track Team" field `id = b279525e-247d-40cd-a85b-2f36bac929f7` is a dropdown whose `value` is the selected option's **orderindex**; map: 0 Rewards · 1 SRE · 2 Release Manager · 3 Integration Managers · 4 CRM CORE · 5 Integrations FBI · 6 CRM Experience · 7 Cloud · 8 Fast Track AI · 9 QA · 10 Partner Manager · 11 Partner Support · 12 Tech · 13 Product · 14 Business Operations. Field unset → exclude that task from the team breakdown. **This is a heavy step (~136 calls) — checkpoint a `{task_id: {team,status}}` map to disk after each batch** so a failure mid-run can resume (see the subagent-budgeting guidance).
+
+**Step C — categories from tags.** Map (lowercase tag → display): `sre incident`→SRE Incident, `engineering improvement`→Engineering Improvement, `system monitoring`→System Monitoring, `qa + testing improvement`→QA & Testing, `deployment governance`→Deployment Governance, `product improvement`→Product Improvement, `incident management`→Incident Management, `release management`→Release Management, `decomission goverance`→Decommission Governance, `development improvement`→Development Improvement, `product knowledge`→Product Knowledge. **Ignore** the tag `goalsandmilestones`. A task with multiple relevant tags counts under each; a task with no relevant tag counts under **"Other"**.
+
+**Step D — compute & write.** `total = open + completed`; `completion_rate = round(completed/total*100, 2)`. `stale_count` = open tasks with a `due_date` in the past; `no_due_date_count` = open tasks with null `due_date` (each with its `*_pct` of `open`, 1 dp, 0.0 when open=0). `teams` = `[{name, open, completed}]` for teams with the field set. `categories` = `{Display: {open, closed}}` (closed = completed count). `open_by_priority` = `{Urgent/High/Normal/Low/No priority: count}` over open tasks. Write to `cache/pir_action_cache.json` with `"generated"` = today (`YYYY-MM-DD`) as the first key:
+
+```json
+{
+  "generated": "YYYY-MM-DD",
+  "total": N, "open": N, "completed": N, "completion_rate": X.XX,
+  "stale_count": N, "stale_pct": X.X, "no_due_date_count": N, "no_due_date_pct": X.X,
+  "teams": [{"name": "...", "open": N, "completed": N}],
+  "categories": {"SRE Incident": {"open": N, "closed": N}},
+  "open_by_priority": {"High": N}
+}
+```
+
+**Data integrity guard:** if the ClickUp connector errors or returns empty, do NOT overwrite the existing snapshot with zeros — retain the prior file and log the failure (same rule as every other source).
+
+---
+
 ## Step 5C — P2/P3 breach deep-dive (current week only, no cache)
 
 **Skip entirely if no P2/P3 breaches for the current week.**
@@ -706,6 +737,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
 - [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; pre-existing week keys preserved
+- [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
 
 ---
 
