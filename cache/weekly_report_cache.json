@@ -2993,7 +2993,7 @@
       {
         "reference": "INC-9727",
         "name": "Overloaded Errors from Anthropic",
-        "status": "Documenting",
+        "status": "Closed",
         "reported_at": "2026-06-15T07:05:23Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9727",
         "summary": "Problem: Anthropic returned 529 overloaded errors and at times delivered garbled, incoherent AI responses, causing FT AI to fail or respond incorrectly for partners across multiple brands.\n\nImpact: 19 error requests in the prior 24 hours disrupted FT AI for partners across multiple brands. The most impacted brand was Gamius (4 errors), with Gembet, Reactivation, Kenhowells, Shuffle, Weindonesia, Onetwoplay and Betzilo also affected. Some responses were not delivered, others were jumbled but passed system checks and were still surfaced to users.\n\nCause: A recent code change required the AI assistant to format responses in a very rigid way which had been needed for Fable but was not compatible with the Anthropic model. The rigid formatting requirement caused Anthropic to occasionally return garbled output that still passed validation. Anthropic's servers were also under load and returning API 529 errors, compounding the user-visible impact.\n\nActions Taken: The rigid formatting requirement for Anthropic responses was removed (PR #378) and affected brands were migrated to AWS Bedrock, which restored coherent and stable AI behaviour across all brands. The fix is fully rolled out. The incident is now in the Documenting phase while the team completes the post-incident write-up; no further user-facing remediation is pending."
@@ -3497,9 +3497,9 @@
     },
     "p2p3_frt_breaches": [],
     "p1_quality_incidentio": {
-      "true_p1": 1,
-      "false_p1": 4,
-      "unclassified": 4
+      "true_p1": 2,
+      "false_p1": 5,
+      "unclassified": 2
     },
     "mtta": {
       "P1": {
@@ -3589,21 +3589,21 @@
       }
     },
     "incident_volume": {
-      "total": 87,
-      "P1": 8,
-      "P2": 54,
-      "P3": 19,
+      "total": 118,
+      "P1": 9,
+      "P2": 69,
+      "P3": 33,
       "P4": 6
     },
     "alert_volume": {
-      "total": 455,
+      "total": 669,
       "by_source": {
-        "Dead Man's Snitch": 93,
-        "Grafana SOC alerts": 96,
-        "Grafana alerts": 38,
-        "HTTP DMS FTML Alerts": 37,
-        "HTTP alerts": 167,
-        "Intercom": 24
+        "Dead Man's Snitch": 138,
+        "Grafana SOC alerts": 131,
+        "Grafana alerts": 83,
+        "HTTP DMS FTML Alerts": 56,
+        "HTTP alerts": 230,
+        "Intercom": 31
       }
     },
     "true_p1_incidents": [
@@ -3614,6 +3614,22 @@
         "reported_at": "2026-06-22T17:17:37Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10453",
         "summary": "Problem: An active SSRF exploitation chain was detected in the crm-api service running in FTCRM Shared Production. The attacker leveraged a vulnerable Ceram back-office dropdown/accepts endpoint to probe internal resources, including the in-cluster Kubernetes API server, and ultimately created two unauthorised admin users using a compromised legitimate customer account.\n\nImpact: The crm-api container made unauthorised outbound DNS and TCP connections, and two backdoor admin users (security.test@fasttrack.ai and security.audit@fasttrack.ai) were created via the compromised account. A third user (renato.caldara@fasttrack.ai) had their password reset. No evidence yet of successful external login with these new credentials, but the incident represents a real CRM integrity exposure and forced the affected API to be scaled down to stop further activity.\n\nCause: A SSRF vulnerability in the back-office dropdown/accepts endpoint allowed outbound network requests from within the crm-api pod, and a legitimate customer account (Camilla, user 167) was compromised and used to create admin users and reset a password. The developer role in the application incorrectly granted AdminUser create/update permissions, which is what enabled the privilege escalation once the account was taken over.\n\nActions Taken: The affected crm-api service has been scaled down and is being held down while investigation continues. The team has confirmed there was no authorised pen test, correlated change logs and audit data to attribute the unauthorised admin user creation, and is checking related brands for similar indicators. Outstanding work includes validating source IPs against WorkOS/login data, implementing URL allowlisting and egress restrictions for vulnerable endpoints, and reviewing Kubernetes and AWS audit trails for lateral movement. The incident is still active (Fixing) and the containment work is ongoing."
+      },
+      {
+        "reference": "INC-10775",
+        "name": "[P1] Intercom Incident: iBet AUTH_IP_BINDING_ENABLED",
+        "status": "Closed",
+        "reported_at": "2026-06-25T07:10:24Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10775",
+        "summary": "Problem: Users on the iBet brand and associated teams were unable to log in to Fast Track. The login failure blocked partner operators from reaching the CRM until the configuration was corrected.\n\nImpact: All users on the iBet brand and related teams lost access to Fast Track for approximately 15 minutes between 07:10 and 07:27 UTC. Other previously-flagged brands were confirmed unaffected by this specific cause once Joachim Farrugia investigated. Customer confirmation was received once access was restored.\n\nCause: The configuration flag AUTH_IP_BINDING_ENABLED had been enabled, which caused the WorkOS authentication layer to reject legitimate logins. The setting was incompatible with iBet's deployment posture and produced the auth blocking behaviour reported by the partner.\n\nActions Taken: Joachim Farrugia disabled AUTH_IP_BINDING_ENABLED at 09:15 CEST (07:15 UTC), which restored access for all impacted users on iBet. Partner confirmation was received via Intercom, and the incident was closed at 07:27 UTC. The fix is durable for iBet; a follow-up review of when AUTH_IP_BINDING_ENABLED is appropriate to enable per brand is implied but not yet recorded as an action."
+      },
+      {
+        "reference": "INC-10661",
+        "name": "WorkOS 401 Unauthorized Issue",
+        "status": "Fixing",
+        "reported_at": "2026-06-24T07:09:03Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10661",
+        "summary": "Problem: Repeated 401 Unauthorized errors from the WorkOS authentication integration prevented users from logging into Fast Track across multiple major brands. Login failures spread quickly, triggering escalation from triage to a confirmed True P1 within ~30 minutes.\n\nImpact: Users from IBet, OneCasino, Meridianbet, and Roobet were unable to log into Fast Track between approximately 09:10 and 09:35 CEST on 2026-06-24. Betamina also reported login failures in the same window, later determined to be caused by an unrelated CRM-API pod failure. Multiple brands have since been migrated through a brand-tracking spreadsheet, with most confirmed working.\n\nCause: A WorkOS-integration configuration issue in the crm-api caused authentication requests to fail with HTTP 401 for the affected brands. The CRM-API pods themselves were healthy, isolating the fault to the WorkOS integration layer. Betamina's parallel issue was a separate CRM-API pod failure with no shared root cause.\n\nActions Taken: Matteo Rapisarda (incident lead) drove a configuration change in the crm-api that restored login access for IBet, Meridianbet, OneCasino, and Roobet, with partner confirmation received for each. A brand-tracking sheet is being maintained to coordinate rollout and confirm status per brand. The incident remains in Fixing because a permanent fix is still being applied across all affected partners; Betamina's separate failure is being remediated independently."
       }
     ],
     "engineer_workload": {
