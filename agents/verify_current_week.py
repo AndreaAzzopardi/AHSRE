@@ -86,25 +86,52 @@ def main():
     ew = (week.get("engineer_workload") or {}).get("tickets") or []
     av_intercom = ((week.get("alert_volume") or {}).get("by_source") or {}).get("Intercom")
     iv_total = (week.get("incident_volume") or {}).get("total")
+    ic_count = (week.get("incident_volume") or {}).get("ic_ticket_count")
     pt_total = (week.get("partner_tickets") or {}).get("total_count")
 
     # ── 2. Keystone cross-check (the one that catches a divergent partial run) ─
-    # engineer_workload (IC-Ticket incidents, excl. declined/merged) and
-    # alert_volume.by_source["Intercom"] (Intercom-sourced alerts) count the same
-    # population. They should match; a few declined IC tickets can leave a small
-    # gap, so allow a tolerance. Last night: 22 vs 31 → caught.
-    if av_intercom is None:
-        fail(f"[{cw}] alert_volume.by_source['Intercom'] absent — cannot cross-check engineer_workload")
+    # PRIMARY: engineer_workload (Step 2F) is the per-ticket list of IC-Ticket
+    # incidents (excl. declined/merged); incident_volume.ic_ticket_count (Step 2C,
+    # an INDEPENDENT incident_stats fetch) is the same population counted directly.
+    # They must match EXACTLY — a partial run that skips Step 2F leaves a stale
+    # engineer_workload while Step 2C refreshes ic_ticket_count, so any mismatch
+    # means one step didn't refresh this run. (Original 2026-06-25 catch: stale
+    # engineer_workload=22 vs fresh count=31.) This replaces the old Intercom-alert
+    # proxy below, which wrongly assumed alerts↔incidents are 1:1.
+    if ic_count is not None:
+        line = (f"engineer_workload tickets = {len(ew)}  vs  "
+                f"incident_volume.ic_ticket_count = {ic_count}")
+        if len(ew) != ic_count:
+            fail(f"[{cw}] STALE/PARTIAL: {line} — engineer_workload (Step 2F) or "
+                 f"incident_volume (Step 2C) did not refresh this run")
+        else:
+            print("  OK  " + line)
+    elif av_intercom is None:
+        # No authoritative count AND no Intercom alert count — can't cross-check.
+        fail(f"[{cw}] incident_volume.ic_ticket_count absent and alert_volume.Intercom "
+             f"absent — cannot cross-check engineer_workload freshness")
     else:
+        # Fallback for caches predating ic_ticket_count: use the old Intercom-alert
+        # proxy as a hard gate so freshness is still enforced until Step 2C is updated.
         gap = abs(len(ew) - av_intercom)
         tol = max(3, round(0.12 * av_intercom))
         line = (f"engineer_workload tickets = {len(ew)}  vs  "
                 f"alert_volume.Intercom = {av_intercom}  (gap {gap}, tolerance {tol})")
         if gap > tol:
             fail(f"[{cw}] STALE/PARTIAL: {line} — one of these incident.io steps "
-                 f"did not refresh this run")
+                 f"did not refresh this run (ic_ticket_count missing; using alert proxy)")
         else:
             print("  OK  " + line)
+
+    # SECONDARY (warning only): Intercom alerts vs IC incidents are NOT 1:1 — a
+    # single incident can carry several Intercom alerts (e.g. multi-brand auth
+    # outages), so divergence here is informational, not a failure.
+    if av_intercom is not None and ew:
+        gap = abs(len(ew) - av_intercom)
+        if gap > max(3, round(0.12 * av_intercom)):
+            warn(f"[{cw}] engineer_workload tickets ({len(ew)}) diverges from "
+                 f"alert_volume.Intercom ({av_intercom}) by {gap} — expected when "
+                 f"multiple Intercom alerts attach to one incident; verify if unexpected")
 
     # ── 3. Sanity bounds ─────────────────────────────────────────────────────
     if iv_total is not None and len(ew) > iv_total:

@@ -185,9 +185,11 @@ Call `incident_stats` with:
 
 For each (week, severity) group, record count. Aggregate per week and write complete weeks:
 ```json
-cache[week]["incident_volume"] = {"total": N, "P1": N, "P2": N, "P3": N, "P4": N}
+cache[week]["incident_volume"] = {"total": N, "P1": N, "P2": N, "P3": N, "P4": N, "ic_ticket_count": N}
 ```
 Overwrite current week.
+
+**`ic_ticket_count` (current week only — the verifier's keystone):** make a SEPARATE `incident_stats` call with `incident_type: ["01KP5RD46AJYSJTG0E85AZXJDZ"]` (IC Ticket), `status_category: ["triage","active","post-incident","closed","paused"]` (EXCLUDES declined/merged/canceled — same population as Step 2F engineer_workload), `created_after`/`created_before` = current week bounds, `group_by: []`. Store the returned total as `incident_volume.ic_ticket_count`. This MUST be a different call from Step 2F so that a partial run which skips Step 2F is caught: `verify_current_week.py` asserts `len(engineer_workload.tickets) == incident_volume.ic_ticket_count` exactly. (Do NOT cross-check engineer_workload against `alert_volume.Intercom` — Intercom alerts are not 1:1 with IC incidents; several alerts can attach to one incident, e.g. multi-brand auth outages.)
 
 ### Part B — Alert volume
 
@@ -747,7 +749,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 
 ### Gate 1 — Live re-count reconciliation (you, via MCP)
 For the **current week** only, re-query a cheap count from each source and assert it matches what you just wrote to the cache. If any mismatch, the corresponding fetch step did not complete — **re-run that step now**, then re-check.
-- **incident.io IC tickets** — `incident_list` with `incident_type:["01KP5RD46AJYSJTG0E85AZXJDZ"]`, `status_category:["triage","active","post-incident","closed","paused"]`, `created_after`/`created_before` = current week bounds, `page_size:50`, paginate. Count after the boundary filter (reported-at within the week) **must equal** `len(engineer_workload.tickets)` for the current week. This same count must also equal `alert_volume.by_source["Intercom"]`.
+- **incident.io IC tickets** — `incident_list` with `incident_type:["01KP5RD46AJYSJTG0E85AZXJDZ"]`, `status_category:["triage","active","post-incident","closed","paused"]`, `created_after`/`created_before` = current week bounds, `page_size:50`, paginate. Count after the boundary filter (reported-at within the week) **must equal** `len(engineer_workload.tickets)` AND `incident_volume.ic_ticket_count` (Step 2C) for the current week — these three are the same population and `verify_current_week.py` enforces the last equality exactly. Do NOT expect this to equal `alert_volume.by_source["Intercom"]`: Intercom alerts are not 1:1 with IC incidents (multiple alerts can attach to one incident), so a divergence there is a warning, not a failure.
 - **mtta** — the P1/P2/P3 `n` counts for the current week must reflect the same IC-ticket population you just counted (P-level totals consistent with the incident_list severities).
 - **Intercom partner tickets / CSAT / FRT** — if the Intercom connector errored this run, you did NOT refresh `partner_tickets`/`csat`/`p1_frt_sla`/`p2p3_frt_sla`. Do not leave them stale: re-run Steps 3/4/5. A current-week `partner_tickets.total_count` far below the IC-ticket count is a red flag that Intercom was skipped.
 
