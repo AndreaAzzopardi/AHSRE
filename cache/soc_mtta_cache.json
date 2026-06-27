@@ -21,7 +21,7 @@
       }
     ],
     "note": "MTTA = acked_at - created_at (seconds), from escalation_show transitions. miss_rate = expired/(resolved+expired). Cancelled excluded from miss rate. W21: full population (all resolved escalations called, sampled=False). W19/W20/W25/W26: coverage stats only — MTTA detail not yet backfilled.",
-    "last_updated": "2026-06-24T20:14:05.447757+00:00"
+    "last_updated": "2026-06-27T08:30:00+00:00"
   },
   "weeks": {
     "2026-W19": {
@@ -5810,14 +5810,14 @@
     },
     "2026-W26": {
       "Joachim Farrugia": {
-        "pages_targeted": 150,
-        "resolved": 137,
+        "pages_targeted": 207,
+        "resolved": 194,
         "expired": 2,
         "cancelled": 11,
         "miss_rate": 0.01,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 137,
+          "sample_size": 194,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
@@ -5855,14 +5855,14 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 122,
-        "resolved": 103,
-        "expired": 3,
-        "cancelled": 16,
-        "miss_rate": 0.03,
+        "pages_targeted": 189,
+        "resolved": 156,
+        "expired": 15,
+        "cancelled": 18,
+        "miss_rate": 0.09,
         "mtta": {
           "acked_count": 0,
-          "sample_size": 103,
+          "sample_size": 156,
           "sampled": false,
           "median_mtta_min": null,
           "mean_mtta_min": null,
