@@ -210,35 +210,65 @@
     "overall_waste_pct": 7.1
   },
   "2026-06-22": {
-    "days_in_week": 5,
-    "partial": true,
-    "note": "Partial week — only 2026-06-22 to 2026-06-26 data available (Mon–Fri)",
+    "days_in_week": 7,
     "blocks": {
-      "night": {
-        "label": "00:00-08:00 UTC",
-        "total": 292,
-        "declined": 14,
-        "accepted": 278,
-        "waste_pct": 4.8
-      },
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 722,
-        "declined": 16,
-        "accepted": 706,
-        "waste_pct": 2.2
+        "total": 781,
+        "declined": 21,
+        "accepted": 760,
+        "waste_pct": 2.7
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 271,
-        "declined": 51,
-        "accepted": 220,
-        "waste_pct": 18.8
+        "total": 362,
+        "declined": 55,
+        "accepted": 307,
+        "waste_pct": 15.2
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 403,
+        "declined": 23,
+        "accepted": 380,
+        "waste_pct": 5.7
       }
     },
-    "total": 1285,
-    "total_declined": 81,
-    "total_accepted": 1204,
-    "overall_waste_pct": 6.3
+    "total": 1546,
+    "total_declined": 99,
+    "total_accepted": 1447,
+    "overall_waste_pct": 6.4
+  },
+  "2026-06-29": {
+    "days_in_week": 1,
+    "partial": true,
+    "note": "Partial week — only 2026-06-29 data available (Monday)",
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 32,
+        "declined": 0,
+        "accepted": 32,
+        "waste_pct": 0.0
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 51,
+        "declined": 4,
+        "accepted": 47,
+        "waste_pct": 7.8
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 27,
+        "declined": 5,
+        "accepted": 22,
+        "waste_pct": 18.5
+      }
+    },
+    "total": 110,
+    "total_declined": 9,
+    "total_accepted": 101,
+    "overall_waste_pct": 8.2
   }
 }

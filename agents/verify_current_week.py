@@ -77,9 +77,20 @@ def main():
     print(f"Current week under test: {cw}\n")
 
     # ── 1. Completeness ──────────────────────────────────────────────────────
+    # true_p1_incidents is LEGITIMATELY empty on quiet weeks (zero confirmed P1s).
+    # It is only suspicious if p1_quality says there WERE true P1s — then an empty
+    # list means the fetch (Step 2D) didn't run. So exempt it from the blanket
+    # "empty = fetch produced nothing" rule and check it conditionally below.
+    p1q = week.get("p1_quality_incidentio") or {}
+    true_p1_count = p1q.get("true_p1") if isinstance(p1q, dict) else None
     for k in EXPECTED_KEYS:
         if k not in week:
             fail(f"[{cw}] missing key '{k}' — a fetch step did not run")
+        elif k == "true_p1_incidents":
+            # Only fail on empty if p1_quality claims there were true P1s this week.
+            if is_empty(week[k]) and true_p1_count:
+                fail(f"[{cw}] key 'true_p1_incidents' is empty but p1_quality.true_p1="
+                     f"{true_p1_count} — Step 2D did not run")
         elif is_empty(week[k]):
             fail(f"[{cw}] key '{k}' is empty — fetch step produced nothing")
 
