@@ -1375,27 +1375,27 @@
   "_p1_brands_top10": {
     "labels": [
       "Brazil Bet",
-      "Gembet",
-      "Fast Track",
       "Sisutech",
       "Stanleybet.ro",
+      "Star Casino",
       "Avento",
-      "Bravo Bet (Suprema)",
+      "Gembet",
+      "Atomo",
+      "Corestar",
       "Momentum Group(Spinbet)",
-      "SoftGenius",
-      "Star Casino"
+      "Fast Track"
     ],
     "counts": [
-      10,
-      5,
+      7,
       4,
       4,
-      4,
       3,
       3,
       3,
       3,
-      3
+      2,
+      2,
+      2
     ]
   },
   "2026-05-25": {
@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonuses are granted to H2Bet users when BetConstruct returns a 503 error after already crediting a bonus, causing retries to re-apply the same credit. This pattern has persisted for over 24 weeks and remains unresolved as of 1 July 2026.\n\nImpact: Recurring bonus leakage for H2Bet, historically 275\u2013936 users affected per week, with roughly 300 duplicate grants continuing per week as of the latest monitoring. Both FreeSpins and Cash bonuses are impacted.\n\nCause: BetConstruct's operator API sometimes returns HTTP 503 after the bonus has been committed. Fast Track's retry path then reissues the credit because the response looked like a failure, producing duplicate grants that the operator API is not idempotent enough to reject.\n\nActions Taken: Enhanced observability and monitoring were deployed, so duplicates can now be validated within minutes. The scoped FT-side mitigation (PR #122 treating 503-after-credit as success) remains rejected by H2Bet on traceability grounds. Fast Track continues to escalate with BetConstruct for a long-term idempotency fix, and the incident stays in Monitoring while awaiting partner or vendor action."
+        "summary": "Problem: Duplicate bonuses are granted to H2Bet users when BetConstruct returns an HTTP 503 error after already crediting a bonus, causing Fast Track's retry logic to re-issue the credit. This pattern has been observed intermittently for at least 24 weeks.\n\nImpact: Recurring bonus leakage for H2Bet users, with approximately 300\u2013500 extra bonus grants per week over the affected period. Both FreeSpins and Cash bonuses are impacted. No new duplicates were observed on the weekend of 6\u20137 June 2026, though roughly 300 duplicate grants per week continued through mid-June.\n\nCause: BetConstruct can return HTTP 503/5xx errors after a bonus has been credited, while Fast Track then retries the request, producing duplicate grants. The core defect sits in BetConstruct's inconsistent response semantics rather than Fast Track code.\n\nActions Taken: Enhanced logging and monitoring were deployed (PR #123 merged) enabling rapid detection of duplicate events. A partner-specific workaround treating 503 responses as success was proposed but rejected by H2Bet due to traceability concerns; PR #122 remains closed unmerged. Efforts continue to produce a detailed impact analysis and to escalate the issue with BetConstruct for an upstream fix. Incident remains in Monitoring while awaiting BetConstruct's response \u2014 no technical mitigation deployed yet."
       },
       {
         "reference": "INC-8219",
@@ -4058,6 +4058,38 @@
     "engineer_workload": {
       "tickets": [
         {
+          "reference": "INC-12049",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-07-02T14:53:18Z",
+          "resolved_at": "2026-07-02T16:14:35Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-12035",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-02T14:07:36Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-12022",
+          "lead": "Andrea Azzopardi",
+          "severity": "P1",
+          "reported_at": "2026-07-02T13:40:45Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-11978",
+          "lead": "Nazareno",
+          "severity": "P3",
+          "reported_at": "2026-07-02T10:19:30Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
           "reference": "INC-11746",
           "lead": "Matteo Rapisarda",
           "severity": "P2",
@@ -4067,7 +4099,7 @@
         },
         {
           "reference": "INC-11737",
-          "lead": "Matteo Rapisarda",
+          "lead": "Nazareno",
           "severity": "P2",
           "reported_at": "2026-07-01T14:22:45Z",
           "resolved_at": null,
@@ -4115,7 +4147,7 @@
         },
         {
           "reference": "INC-11685",
-          "lead": "Jeremy",
+          "lead": "Jeremy Curmi",
           "severity": "P3",
           "reported_at": "2026-07-01T08:53:07Z",
           "resolved_at": null,
@@ -4126,8 +4158,8 @@
           "lead": "Nazareno",
           "severity": "P1",
           "reported_at": "2026-07-01T00:02:25Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-02T15:16:13Z",
+          "closed": true
         },
         {
           "reference": "INC-11602",
@@ -4155,7 +4187,7 @@
         },
         {
           "reference": "INC-11485",
-          "lead": "Jeremy",
+          "lead": "Jeremy Curmi",
           "severity": "P3",
           "reported_at": "2026-06-30T15:03:02Z",
           "resolved_at": null,
@@ -4174,8 +4206,8 @@
           "lead": "Matteo Rapisarda",
           "severity": "P3",
           "reported_at": "2026-06-30T12:54:11Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-02T13:39:51Z",
+          "closed": true
         },
         {
           "reference": "INC-11439",
@@ -4203,7 +4235,7 @@
         },
         {
           "reference": "INC-11390",
-          "lead": "Jeremy",
+          "lead": "Jeremy Curmi",
           "severity": "P1",
           "reported_at": "2026-06-30T08:38:27Z",
           "resolved_at": null,
@@ -4244,119 +4276,145 @@
       ]
     },
     "incident_volume": {
-      "total": 102,
-      "P1": 10,
-      "P2": 64,
-      "P3": 26,
-      "P4": 2,
-      "ic_ticket_count": 23
+      "total": 138,
+      "P1": 12,
+      "P2": 83,
+      "P3": 40,
+      "P4": 3,
+      "ic_ticket_count": 27
     },
     "p1_quality_incidentio": {
       "true_p1": 0,
       "false_p1": 0,
-      "unclassified": 10
+      "unclassified": 12
     },
     "mtta": {
       "P1": {
-        "n": 10,
+        "n": 12,
         "n_acked": 1,
-        "ack_rate": 0.1,
+        "ack_rate": 0.08,
         "mtta_minutes": [
-          0.67
+          0.6666666666666666
         ],
-        "median_mtta_min": 0.67,
+        "median_mtta_min": 0.7,
         "mean_mtta_min": 0.7
       },
       "P2": {
-        "n": 64,
-        "n_acked": 52,
-        "ack_rate": 0.81,
+        "n": 83,
+        "n_acked": 69,
+        "ack_rate": 0.83,
         "mtta_minutes": [
           1.9,
+          1.9166666666666667,
+          2.066666666666667,
+          2.216666666666667,
           2.3,
-          2.82,
-          3.92,
-          4.17,
-          4.52,
+          2.7,
+          2.816666666666667,
+          3.5833333333333335,
+          3.9166666666666665,
+          4.166666666666667,
+          4.516666666666667,
           4.8,
-          6.18,
-          8.08,
-          8.13,
-          8.57,
+          5.083333333333333,
+          5.783333333333333,
+          5.866666666666666,
+          6.183333333333334,
+          6.7,
+          6.783333333333333,
+          7.333333333333333,
+          8.083333333333334,
+          8.133333333333333,
+          8.566666666666666,
           9.0,
-          9.42,
-          9.43,
-          9.83,
-          9.97,
+          9.416666666666666,
+          9.433333333333334,
+          9.833333333333334,
+          9.966666666666667,
           10.3,
-          10.63,
+          10.633333333333333,
           10.8,
-          11.37,
+          11.366666666666667,
           12.85,
           13.6,
-          14.78,
-          16.22,
+          14.783333333333333,
+          15.183333333333334,
+          16.216666666666665,
           17.35,
-          18.22,
-          20.38,
+          18.216666666666665,
+          20.383333333333333,
           20.4,
-          20.92,
-          22.82,
+          20.916666666666668,
+          22.816666666666666,
           22.9,
-          23.27,
+          23.266666666666666,
           24.55,
-          28.07,
+          25.7,
+          26.7,
+          28.066666666666666,
           30.8,
-          31.48,
+          31.483333333333334,
           31.6,
-          32.77,
-          46.63,
-          48.62,
-          50.83,
-          52.48,
+          32.766666666666666,
+          41.95,
+          45.9,
+          46.63333333333333,
+          48.61666666666667,
+          50.833333333333336,
+          52.483333333333334,
           53.1,
           59.35,
-          66.17,
+          66.16666666666667,
           71.5,
-          76.23,
-          106.03,
-          109.58,
-          231.62,
-          283.67,
-          321.72
+          76.23333333333333,
+          106.03333333333333,
+          109.58333333333333,
+          113.3,
+          231.61666666666667,
+          283.6666666666667,
+          321.71666666666664
         ],
-        "median_mtta_min": 19.3,
-        "mean_mtta_min": 40.9
+        "median_mtta_min": 15.2,
+        "mean_mtta_min": 35.4
       },
       "P3": {
-        "n": 27,
-        "n_acked": 18,
-        "ack_rate": 0.67,
+        "n": 41,
+        "n_acked": 27,
+        "ack_rate": 0.66,
         "mtta_minutes": [
-          2.78,
+          0.8166666666666667,
+          2.7666666666666666,
+          2.783333333333333,
+          2.8,
+          2.816666666666667,
+          2.8333333333333335,
+          2.8666666666666667,
+          2.8833333333333333,
+          2.933333333333333,
+          3.716666666666667,
           5.2,
           5.6,
           8.2,
-          11.88,
-          14.82,
-          15.67,
-          17.08,
-          17.23,
+          11.883333333333333,
+          14.816666666666666,
+          15.666666666666666,
+          17.083333333333332,
+          17.233333333333334,
           19.25,
-          20.83,
-          23.48,
-          30.37,
+          20.833333333333332,
+          23.483333333333334,
+          30.366666666666667,
           34.2,
-          51.03,
-          53.68,
+          51.03333333333333,
+          53.68333333333333,
           54.3,
           98.8
         ],
-        "median_mtta_min": 18.24,
-        "mean_mtta_min": 26.9
+        "median_mtta_min": 11.9,
+        "mean_mtta_min": 18.8
       },
       "P4": {
-        "n": 2,
+        "n": 3,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -4366,25 +4424,25 @@
     },
     "true_p1_incidents": [],
     "alert_volume": {
-      "total": 851,
+      "total": 1422,
       "by_source": {
         "Cloudflare AI Loop": 6,
-        "Cloudflare Security Scanner": 7,
-        "Database Security AI Loop": 3,
-        "Dead Man's Snitch": 146,
-        "Grafana SOC alerts": 175,
-        "Grafana alerts": 34,
-        "HTTP alerts": 452,
-        "Intercom": 28
+        "Cloudflare Security Scanner": 10,
+        "Database Security AI Loop": 4,
+        "Dead Man's Snitch": 223,
+        "Grafana SOC alerts": 396,
+        "Grafana alerts": 89,
+        "HTTP alerts": 660,
+        "Intercom": 34
       }
     },
     "p1_frt_sla": {
-      "total": 7,
-      "hit": 7,
+      "total": 9,
+      "hit": 9,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 1.9,
-      "mean_frt_min": 2.2,
+      "median_frt_min": 2.5,
+      "mean_frt_min": 5.6,
       "frt_seconds": [
         73,
         74,
@@ -4392,26 +4450,30 @@
         114,
         147,
         173,
-        268
+        268,
+        325,
+        1762
       ]
     },
     "p1_brands": {
-      "FlappyCasino": 1,
-      "Zunado": 1,
+      "Estelarbet": 1,
       "H2 / Seu Bet (Suprema)": 1,
+      "Zunado": 1,
+      "Roobet": 1,
+      "FlappyCasino": 1,
       "Atomo": 2,
       "Brazil Bet": 1
     },
     "p1_frt_breaches": [],
     "csat": {
-      "total": 19,
-      "rated": 5,
-      "avg_score": 4.8,
+      "total": 26,
+      "rated": 7,
+      "avg_score": 4.86,
       "pct_positive": 100.0,
-      "pct_perfect": 80.0,
-      "response_rate": 26.3,
+      "pct_perfect": 85.7,
+      "response_rate": 26.9,
       "score_dist": {
-        "5": 4,
+        "5": 6,
         "4": 1,
         "3": 0,
         "2": 0,
@@ -4420,15 +4482,15 @@
     },
     "csat_low_scores": [],
     "partner_tickets": {
-      "p1_responded": 7,
-      "p2_responded": 5,
-      "p3_responded": 3,
+      "p1_responded": 9,
+      "p2_responded": 8,
+      "p3_responded": 5,
       "p1_open": 0,
-      "p2_open": 1,
-      "p3_open": 0,
-      "total_count": 16,
-      "avg_response_min": 16.8,
-      "median_response_min": 4.5,
+      "p2_open": 0,
+      "p3_open": 1,
+      "total_count": 23,
+      "avg_response_min": 83.9,
+      "median_response_min": 14.3,
       "response_times_s": [
         73,
         74,
@@ -4438,33 +4500,62 @@
         173,
         268,
         270,
+        325,
         462,
         767,
         951,
+        1762,
         1844,
+        2285,
         2388,
         2588,
-        4905
+        4004,
+        4190,
+        4905,
+        24334,
+        58791
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 8,
-      "missed": 0,
-      "total": 8,
-      "hit_rate": 100.0,
-      "mean_response_min": 29.5,
-      "median_response_min": 23.3,
+      "hit": 11,
+      "missed": 2,
+      "total": 13,
+      "hit_rate": 84.6,
+      "mean_response_min": 138.2,
+      "median_response_min": 39.8,
       "response_times_s": [
         270,
         462,
         767,
         951,
         1844,
+        2285,
         2388,
         2588,
-        4905
+        4004,
+        4190,
+        4905,
+        24334,
+        58791
       ]
     },
-    "p2p3_frt_breaches": []
+    "p2p3_frt_breaches": [
+      {
+        "conv_id": "215561040684603",
+        "company_name": "supabets",
+        "severity": "P3",
+        "oh_frt_s": 24334,
+        "opened_at": 1782711914,
+        "first_reply_at": 1782736248
+      },
+      {
+        "conv_id": "215561044774280",
+        "company_name": "flappy-casino",
+        "severity": "P2",
+        "oh_frt_s": 58791,
+        "opened_at": 1782912943,
+        "first_reply_at": 1782971734
+      }
+    ]
   }
 }
