@@ -212,6 +212,14 @@ aHTTP_arr = [_src(wk, "HTTP", "HTTP alerts") for wk in WEEK_KEYS]
 aGraf_arr = [_src(wk, "Grafana", "Grafana alerts") for wk in WEEK_KEYS]
 aIcom_arr = [_src(wk, "Intercom") for wk in WEEK_KEYS]
 aFTML_arr = [_src(wk, "HTTP DMS FTML", "HTTP DMS FTML Alerts") for wk in WEEK_KEYS]
+# "Other" = every incident.io source not broken out above (e.g. Cloudflare Security
+# Scanner, Database Security AI Loop) so the stacked bar always reconciles to
+# alert_volume.total. Computed as total minus the six named series; only rendered for
+# W19+ weeks (the chart slices to WK19), where total is entirely incident.io sources.
+aOther_arr = [max(0, get(wk, "alert_volume", "total", default=0)
+                  - (aDMS_arr[i] + aSOC_arr[i] + aHTTP_arr[i] + aGraf_arr[i]
+                     + aIcom_arr[i] + aFTML_arr[i]))
+              for i, wk in enumerate(WEEK_KEYS)]
 # PD-era sources (pre-W19)
 aPD_SP_arr  = [get(wk, "alert_volume", "by_source", "Service Portal", default=0) for wk in WEEK_KEYS]
 aPD_BO_arr  = [get(wk, "alert_volume", "by_source", "Backoffice", default=0) for wk in WEEK_KEYS]
@@ -290,6 +298,7 @@ pw_inc_total = get(stat_prev_week, "incident_volume", "total", default=0)
 cw_inc_p1 = get(stat_week, "incident_volume", "P1", default=0)
 cw_inc_p2 = get(stat_week, "incident_volume", "P2", default=0)
 cw_inc_p3 = get(stat_week, "incident_volume", "P3", default=0)
+cw_inc_p4 = get(stat_week, "incident_volume", "P4", default=0)
 inc_delta_cls, inc_delta = delta_str(cw_inc_total, pw_inc_total, "", higher_is_better=False, decimals=0)
 
 cw_alerts = get(stat_week, "alert_volume", "total", default=0)
@@ -1789,7 +1798,7 @@ html = f'''<!DOCTYPE html>
     <div class="stat-card">
       <div class="card-label">Incidents This Week ({cw_date})</div>
       <div class="card-value c-muted">{cw_inc_total}</div>
-      <div class="card-subnote">P1: {cw_inc_p1} &middot; P2: {cw_inc_p2} &middot; P3: {cw_inc_p3}</div>
+      <div class="card-subnote">P1: {cw_inc_p1} &middot; P2: {cw_inc_p2} &middot; P3: {cw_inc_p3} &middot; P4: {cw_inc_p4}</div>
       <div class="card-delta {inc_delta_cls}">{inc_delta}</div>
     </div>
     <div class="stat-card">
@@ -1900,6 +1909,7 @@ const aHTTP = {js_arr(aHTTP_arr)};
 const aGraf = {js_arr(aGraf_arr)};
 const aIcom = {js_arr(aIcom_arr)};
 const aFTML = {js_arr(aFTML_arr)};
+const aOther = {js_arr(aOther_arr)};
 const aPD_SP  = {js_arr(aPD_SP_arr)};
 const aPD_BO  = {js_arr(aPD_BO_arr)};
 
@@ -1981,7 +1991,9 @@ new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datas
   {{label:'Grafana SOC',data:aSOC.slice(-WK19.length), backgroundColor:'#a78bfa',stack:'a'}},
   {{label:'HTTP',       data:aHTTP.slice(-WK19.length),backgroundColor:'#22c55e',stack:'a'}},
   {{label:'Grafana',    data:aGraf.slice(-WK19.length),backgroundColor:'#f59e0b',stack:'a'}},
-  {{label:'Intercom',   data:aIcom.slice(-WK19.length),backgroundColor:'#64748b',stack:'a'}}
+  {{label:'FTML',       data:aFTML.slice(-WK19.length),backgroundColor:'#ec4899',stack:'a'}},
+  {{label:'Intercom',   data:aIcom.slice(-WK19.length),backgroundColor:'#64748b',stack:'a'}},
+  {{label:'Other',      data:aOther.slice(-WK19.length),backgroundColor:'#475569',stack:'a'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 new Chart(document.getElementById('cTBVol'),{{type:'bar',data:{{labels:WK19,datasets:[
