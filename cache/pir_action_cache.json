@@ -1,135 +1,47 @@
 {
-  "generated": "2026-06-25",
-  "total": 138,
-  "open": 80,
-  "completed": 58,
-  "completion_rate": 42.03,
+  "generated": "2026-07-03",
+  "total": 137,
+  "open": 73,
+  "completed": 64,
+  "completion_rate": 46.72,
   "stale_count": 1,
-  "stale_pct": 1.2,
-  "no_due_date_count": 79,
-  "no_due_date_pct": 98.8,
+  "stale_pct": 1.4,
+  "no_due_date_count": 72,
+  "no_due_date_pct": 98.6,
   "teams": [
-    {
-      "name": "Rewards",
-      "open": 13,
-      "completed": 6
-    },
-    {
-      "name": "SRE",
-      "open": 9,
-      "completed": 22
-    },
-    {
-      "name": "Release Manager",
-      "open": 0,
-      "completed": 2
-    },
-    {
-      "name": "Integration Managers",
-      "open": 4,
-      "completed": 4
-    },
-    {
-      "name": "CRM CORE",
-      "open": 19,
-      "completed": 8
-    },
-    {
-      "name": "Integrations FBI",
-      "open": 8,
-      "completed": 1
-    },
-    {
-      "name": "CRM Experience",
-      "open": 17,
-      "completed": 9
-    },
-    {
-      "name": "Cloud",
-      "open": 8,
-      "completed": 1
-    },
-    {
-      "name": "Fast Track AI",
-      "open": 2,
-      "completed": 0
-    },
-    {
-      "name": "QA",
-      "open": 0,
-      "completed": 2
-    },
-    {
-      "name": "Partner Manager",
-      "open": 0,
-      "completed": 1
-    },
-    {
-      "name": "Partner Support",
-      "open": 0,
-      "completed": 1
-    },
-    {
-      "name": "Business Operations",
-      "open": 0,
-      "completed": 1
-    }
+    {"name": "SRE", "open": 9, "completed": 22},
+    {"name": "CRM CORE", "open": 16, "completed": 10},
+    {"name": "CRM Experience", "open": 15, "completed": 10},
+    {"name": "Rewards", "open": 10, "completed": 9},
+    {"name": "Integrations FBI", "open": 9, "completed": 1},
+    {"name": "Cloud", "open": 8, "completed": 1},
+    {"name": "Integration Managers", "open": 4, "completed": 4},
+    {"name": "Fast Track AI", "open": 2, "completed": 0},
+    {"name": "QA", "open": 0, "completed": 2},
+    {"name": "Release Manager", "open": 0, "completed": 2},
+    {"name": "Partner Manager", "open": 0, "completed": 1},
+    {"name": "Partner Support", "open": 0, "completed": 1},
+    {"name": "Business Operations", "open": 0, "completed": 1}
   ],
   "categories": {
-    "Engineering Improvement": {
-      "open": 18,
-      "closed": 10
-    },
-    "System Monitoring": {
-      "open": 13,
-      "closed": 14
-    },
-    "SRE Incident": {
-      "open": 23,
-      "closed": 8
-    },
-    "Product Improvement": {
-      "open": 8,
-      "closed": 1
-    },
-    "Other": {
-      "open": 0,
-      "closed": 1
-    },
-    "Incident Management": {
-      "open": 1,
-      "closed": 6
-    },
-    "QA & Testing": {
-      "open": 8,
-      "closed": 7
-    },
-    "Release Management": {
-      "open": 1,
-      "closed": 2
-    },
-    "Deployment Governance": {
-      "open": 5,
-      "closed": 6
-    },
-    "Development Improvement": {
-      "open": 1,
-      "closed": 1
-    },
-    "Product Knowledge": {
-      "open": 0,
-      "closed": 1
-    },
-    "Decommission Governance": {
-      "open": 2,
-      "closed": 1
-    }
+    "SRE Incident": {"open": 21, "closed": 9},
+    "Engineering Improvement": {"open": 16, "closed": 12},
+    "System Monitoring": {"open": 13, "closed": 14},
+    "Product Improvement": {"open": 8, "closed": 1},
+    "QA & Testing": {"open": 5, "closed": 10},
+    "Deployment Governance": {"open": 5, "closed": 6},
+    "Decommission Governance": {"open": 2, "closed": 1},
+    "Incident Management": {"open": 1, "closed": 6},
+    "Release Management": {"open": 1, "closed": 2},
+    "Development Improvement": {"open": 1, "closed": 1},
+    "Product Knowledge": {"open": 0, "closed": 1},
+    "Other": {"open": 0, "closed": 1}
   },
   "open_by_priority": {
-    "Normal": 29,
-    "High": 22,
-    "No priority": 18,
     "Urgent": 4,
-    "Low": 7
+    "High": 21,
+    "Normal": 27,
+    "Low": 8,
+    "No priority": 13
   }
 }
