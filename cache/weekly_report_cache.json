@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonuses are being granted to H2Bet users when BetConstruct returns a 503 error after already crediting a bonus, causing retries that result in extra grants. This has been a persistent issue for at least 24 weeks.\n\nImpact: Recurring bonus leakage for H2Bet users, with approximately 300\u2013500 extra bonus grants per week over the past 24 weeks. Both FreeSpins and Cash bonuses are affected. Weekend monitoring on 6\u20137 June 2026 showed no new duplicates, but around 300 per week continue overall as of the latest updates.\n\nCause: BetConstruct can return an HTTP 503 error after a bonus has actually been credited to a player. Fast Track then retries the request, which can result in the same bonus being granted more than once. This is not the expected behavior of the operator API and leads to duplicate bonuses.\n\nActions Taken: Enhanced logging and observability improvements were deployed, allowing minute-scale detection and validation of duplicate events. Partner-specific workaround proposals (such as treating 503 responses as success) have not been approved by H2Bet due to traceability concerns. Detailed impact analysis and outreach to BetConstruct for a long-term idempotency-safe fix remain in progress; no technical mitigation has been deployed on the Fast Track side and the core defect remains unresolved. The incident is kept in Monitoring until BetConstruct confirms an upstream fix or H2Bet approves a scoped workaround."
+        "summary": "Problem: Duplicate bonuses are being granted to H2Bet users when BetConstruct returns a 503 error after already crediting a bonus, causing retries that result in extra grants. This has been a persistent issue for at least 24 weeks.\n\nImpact: Recurring bonus leakage for H2Bet users, with approximately 300\u2013500 extra bonus grants per week. Both FreeSpins and Cash bonuses are affected. No new duplicate bonuses were observed during the weekend of 6\u20137 June 2026, but around 300 per week continue to occur as of 11 June 2026.\n\nCause: BetConstruct can return an HTTP 503 error after a bonus has actually been credited to a player. Fast Track then retries the request, which can result in the same bonus being granted more than once. This is not the expected behaviour of the operator API and leads to duplicate bonuses.\n\nActions Taken: Enhanced logging and monitoring have been deployed, enabling rapid detection and validation of duplicate events. Partner-specific workaround proposals (such as treating 503 responses as success) have not been approved by H2Bet due to traceability concerns. Detailed impact analysis and escalation with BetConstruct are ongoing. No technical mitigation has been deployed yet as of 18 June 2026, and Fast Track continues to seek direct engagement with BetConstruct to address the root cause. The incident remains in Monitoring while the partner-side fix is pursued."
       },
       {
         "reference": "INC-8219",
@@ -4058,6 +4058,14 @@
     "engineer_workload": {
       "tickets": [
         {
+          "reference": "INC-12297",
+          "lead": "stephen.riolo",
+          "severity": "P1",
+          "reported_at": "2026-07-04T11:24:57Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
           "reference": "INC-12236",
           "lead": "Matteo Rapisarda",
           "severity": "P1",
@@ -4083,7 +4091,7 @@
         },
         {
           "reference": "INC-12191",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P2",
           "reported_at": "2026-07-03T12:32:42Z",
           "resolved_at": null,
@@ -4115,7 +4123,7 @@
         },
         {
           "reference": "INC-12168",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P1",
           "reported_at": "2026-07-03T09:09:13Z",
           "resolved_at": "2026-07-03T15:55:24Z",
@@ -4155,7 +4163,7 @@
         },
         {
           "reference": "INC-11978",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P3",
           "reported_at": "2026-07-02T10:19:30Z",
           "resolved_at": null,
@@ -4187,7 +4195,7 @@
         },
         {
           "reference": "INC-11711",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P2",
           "reported_at": "2026-07-01T11:54:11Z",
           "resolved_at": "2026-07-03T12:21:27Z",
@@ -4211,7 +4219,7 @@
         },
         {
           "reference": "INC-11697",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P4",
           "reported_at": "2026-07-01T10:24:24Z",
           "resolved_at": "2026-07-01T11:01:04Z",
@@ -4227,7 +4235,7 @@
         },
         {
           "reference": "INC-11639",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P1",
           "reported_at": "2026-07-01T00:02:25Z",
           "resolved_at": "2026-07-02T15:16:13Z",
@@ -4267,7 +4275,7 @@
         },
         {
           "reference": "INC-11449",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P2",
           "reported_at": "2026-06-30T13:04:30Z",
           "resolved_at": "2026-07-01T12:20:30Z",
@@ -4291,7 +4299,7 @@
         },
         {
           "reference": "INC-11421",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P1",
           "reported_at": "2026-06-30T11:21:13Z",
           "resolved_at": "2026-07-02T20:34:22Z",
@@ -4299,7 +4307,7 @@
         },
         {
           "reference": "INC-11397",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P1",
           "reported_at": "2026-06-30T09:35:08Z",
           "resolved_at": "2026-06-30T09:59:34Z",
@@ -4315,7 +4323,7 @@
         },
         {
           "reference": "INC-11389",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P3",
           "reported_at": "2026-06-30T08:31:04Z",
           "resolved_at": "2026-07-01T19:44:16Z",
@@ -4331,7 +4339,7 @@
         },
         {
           "reference": "INC-11386",
-          "lead": "Nazareno Scibilia",
+          "lead": "Nazareno",
           "severity": "P3",
           "reported_at": "2026-06-30T08:11:37Z",
           "resolved_at": "2026-06-30T09:18:28Z",
@@ -4348,23 +4356,23 @@
       ]
     },
     "incident_volume": {
-      "total": 177,
-      "P1": 15,
+      "total": 186,
+      "P1": 16,
       "P2": 103,
-      "P3": 54,
-      "P4": 3,
-      "ic_ticket_count": 36
+      "P3": 62,
+      "P4": 4,
+      "ic_ticket_count": 37
     },
     "p1_quality_incidentio": {
       "true_p1": 0,
       "false_p1": 0,
-      "unclassified": 15
+      "unclassified": 16
     },
     "mtta": {
       "P1": {
-        "n": 15,
+        "n": 16,
         "n_acked": 1,
-        "ack_rate": 0.07,
+        "ack_rate": 0.06,
         "mtta_minutes": [
           0.6667
         ],
@@ -4373,8 +4381,8 @@
       },
       "P2": {
         "n": 103,
-        "n_acked": 82,
-        "ack_rate": 0.8,
+        "n_acked": 85,
+        "ack_rate": 0.83,
         "mtta_minutes": [
           1.9,
           1.9167,
@@ -4390,6 +4398,7 @@
           4.6833,
           4.8,
           5.0833,
+          5.3167,
           5.7833,
           5.8167,
           5.8167,
@@ -4424,6 +4433,7 @@
           22.8167,
           22.9,
           23.2667,
+          23.75,
           24.4333,
           24.55,
           25.7,
@@ -4454,17 +4464,18 @@
           106.0333,
           109.5833,
           113.3,
+          119.85,
           231.6167,
           283.6667,
           301.3667,
           321.7167
         ],
-        "median_mtta_min": 17.78,
-        "mean_mtta_min": 37.6
+        "median_mtta_min": 18.22,
+        "mean_mtta_min": 38.1
       },
       "P3": {
-        "n": 54,
-        "n_acked": 33,
+        "n": 62,
+        "n_acked": 38,
         "ack_rate": 0.61,
         "mtta_minutes": [
           0.8167,
@@ -4492,20 +4503,25 @@
           19.25,
           20.8333,
           23.4833,
+          24.7333,
           30.3667,
+          31.7833,
           34.2,
           51.0333,
           53.6833,
           54.3,
           71.8167,
+          81.5333,
           98.8,
-          1005.1667
+          108.1,
+          1005.1667,
+          1560.4833
         ],
-        "median_mtta_min": 11.88,
-        "mean_mtta_min": 49.3
+        "median_mtta_min": 16.38,
+        "mean_mtta_min": 90.4
       },
       "P4": {
-        "n": 3,
+        "n": 4,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -4515,26 +4531,28 @@
     },
     "true_p1_incidents": [],
     "alert_volume": {
-      "total": 1760,
+      "total": 1876,
       "by_source": {
         "Cloudflare AI Loop": 6,
-        "Cloudflare Security Scanner": 11,
+        "Cloudflare Security Scanner": 12,
         "Database Security AI Loop": 5,
-        "Dead Man's Snitch": 245,
-        "Grafana SOC alerts": 606,
-        "Grafana alerts": 102,
-        "HTTP alerts": 741,
-        "Intercom": 44
+        "Dead Man's Snitch": 261,
+        "Grafana SOC alerts": 624,
+        "Grafana alerts": 118,
+        "HTTP DMS FTML Alerts": 1,
+        "HTTP alerts": 804,
+        "Intercom": 45
       }
     },
     "p1_frt_sla": {
-      "total": 12,
-      "hit": 12,
+      "total": 13,
+      "hit": 13,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 3.7,
-      "mean_frt_min": 7.0,
+      "median_frt_min": 4.5,
+      "mean_frt_min": 8.0,
       "frt_seconds": [
+        1207,
         492,
         642,
         1762,
@@ -4550,6 +4568,7 @@
       ]
     },
     "p1_brands": {
+      "Coinbar": 1,
       "Seguro Bet": 1,
       "Estelarbet": 1,
       "Ambition Red": 1,
@@ -4562,12 +4581,12 @@
     },
     "p1_frt_breaches": [],
     "csat": {
-      "total": 34,
+      "total": 35,
       "rated": 8,
-      "avg_score": 4.88,
+      "avg_score": 4.9,
       "pct_positive": 100.0,
       "pct_perfect": 87.5,
-      "response_rate": 23.5,
+      "response_rate": 22.9,
       "score_dist": {
         "5": 7,
         "4": 1,
@@ -4578,16 +4597,16 @@
     },
     "csat_low_scores": [],
     "partner_tickets": {
-      "p1_responded": 12,
+      "p1_responded": 13,
       "p2_responded": 11,
       "p3_responded": 6,
       "p1_open": 0,
       "p2_open": 0,
       "p3_open": 0,
-      "total_count": 29,
-      "avg_response_min": 68.4,
-      "median_response_min": 8.2,
+      "total_count": 30,
       "response_times_s": [
+        1207,
+        270,
         492,
         642,
         2285,
@@ -4608,7 +4627,6 @@
         462,
         74,
         147,
-        270,
         4905,
         767,
         2388,
@@ -4617,16 +4635,17 @@
         114,
         173,
         951
-      ]
+      ],
+      "avg_response_min": 66.8,
+      "median_response_min": 9.4
     },
     "p2p3_frt_sla": {
+      "total": 17,
       "hit": 16,
       "missed": 1,
-      "total": 17,
       "hit_rate": 94.1,
-      "mean_response_min": 111.8,
-      "median_response_min": 15.8,
       "response_times_s": [
+        270,
         2285,
         257,
         1293,
@@ -4639,12 +4658,13 @@
         203,
         90026,
         462,
-        270,
         4905,
         767,
         2388,
         951
-      ]
+      ],
+      "mean_response_min": 111.8,
+      "median_response_min": 15.8
     },
     "p2p3_frt_breaches": [
       {

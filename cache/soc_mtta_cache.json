@@ -5872,14 +5872,14 @@
     },
     "2026-W27": {
       "Joachim Farrugia": {
-        "pages_targeted": 119,
-        "resolved": 113,
+        "pages_targeted": 160,
+        "resolved": 151,
         "expired": 1,
-        "cancelled": 5,
+        "cancelled": 8,
         "miss_rate": 0.01,
         "mtta": {
           "acked_count": 73,
-          "sample_size": 113,
+          "sample_size": 151,
           "sampled": false,
           "median_mtta_min": 4.27,
           "mean_mtta_min": 3.72,
@@ -6399,14 +6399,14 @@
         }
       },
       "Matteo Rapisarda": {
-        "pages_targeted": 223,
-        "resolved": 195,
+        "pages_targeted": 232,
+        "resolved": 204,
         "expired": 0,
         "cancelled": 28,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 66,
-          "sample_size": 195,
+          "sample_size": 204,
           "sampled": false,
           "median_mtta_min": 1.76,
           "mean_mtta_min": 2.66,
@@ -6877,14 +6877,14 @@
         }
       },
       "Gérard E. Pelayo": {
-        "pages_targeted": 18,
-        "resolved": 17,
+        "pages_targeted": 33,
+        "resolved": 31,
         "expired": 0,
-        "cancelled": 1,
+        "cancelled": 2,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 17,
-          "sample_size": 17,
+          "sample_size": 31,
           "sampled": false,
           "median_mtta_min": 0.42,
           "mean_mtta_min": 0.64,
@@ -7012,14 +7012,14 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 382,
-        "resolved": 370,
+        "pages_targeted": 396,
+        "resolved": 383,
         "expired": 1,
-        "cancelled": 11,
+        "cancelled": 12,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 278,
-          "sample_size": 370,
+          "sample_size": 383,
           "sampled": false,
           "median_mtta_min": 2.24,
           "mean_mtta_min": 3.88,
