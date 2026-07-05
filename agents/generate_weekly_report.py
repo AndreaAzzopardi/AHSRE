@@ -1469,6 +1469,37 @@ _exec_chip_grid_html = (
 # Detail row font: shrink when many incidents so rows fit in the allotted flex space
 _inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
 
+# ── Theme of the week — standalone widget below the status banner ────────────
+# Rendered only when Step 2E wrote a p1_theme for the exec week (>=2 True P1s
+# sharing a root cause). Incident refs link to incident.io where a permalink
+# is known from the week's true_p1_incidents.
+_theme_widget_html = ""
+if _ew_theme and _ew_theme.get("summary"):
+    _theme_permalinks = {inc.get("reference", ""): inc.get("permalink", "") for inc in _ew_p1_incs}
+    _theme_ref_chips = ""
+    for _ref in _ew_theme.get("incident_refs", []):
+        _href = _theme_permalinks.get(_ref, "")
+        _chip_style = ("font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:#c4b5fd;"
+                       "background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);"
+                       "border-radius:4px;padding:2px 8px;text-decoration:none;white-space:nowrap")
+        _theme_ref_chips += (f'<a href="{_href}" target="_blank" style="{_chip_style}">{_ref}</a>'
+                             if _href else f'<span style="{_chip_style}">{_ref}</span>')
+    _theme_widget_html = (
+        f'  <div style="margin-bottom:10px;padding:10px 16px;background:rgba(167,139,250,0.07);'
+        f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
+        f'display:flex;align-items:center;gap:16px;flex-shrink:0">\n'
+        f'    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;min-width:0">\n'
+        f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
+        f'text-transform:uppercase;white-space:nowrap">Theme of the week</span>\n'
+        f'      <span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;'
+        f'color:#e2e8f0">{_ew_theme.get("label", "")}</span>\n'
+        f'    </div>\n'
+        f'    <div style="flex:1;min-width:0;font-size:13px;color:#cbd5e1;line-height:1.5">'
+        f'{_ew_theme.get("summary", "")}</div>\n'
+        f'    <div style="flex-shrink:0;display:flex;gap:6px;align-items:center">{_theme_ref_chips}</div>\n'
+        f'  </div>\n'
+    )
+
 exec_slide_html = (
     '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY ════════════════════════ -->\n'
     '<div class="slide active" id="sExec"><div class="page">\n'
@@ -1487,21 +1518,17 @@ exec_slide_html = (
     + (f'        <span style="font-size:13px;color:#94a3b8;line-height:1.5">'
        f'<span style="color:#f59e0b;font-weight:600">{_exec_line2}</span></span>\n'
        if _exec_line2 else '')
-    # Theme of the week: shown when Step 2E found a shared root cause across True P1s
-    + (f'        <span style="font-size:13px;line-height:1.5;display:flex;align-items:baseline;gap:8px">'
-       f'<span style="flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:0.1em;color:#c4b5fd;'
-       f'background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:3px;'
-       f'padding:2px 7px">THEME</span>'
-       f'<span style="color:#cbd5e1">{_ew_theme.get("summary", "")}</span></span>\n'
-       if _ew_theme and _ew_theme.get("summary") else '')
     + f'      </div>\n'
     f'    </div>\n'
     # Row 2: metric chip grid (3 columns)
     f'    {_exec_chip_grid_html}\n'
     f'  </div>\n'
 
+    # ── THEME OF THE WEEK widget (own card, below the banner) ────────────────
+    + _theme_widget_html
+
     # ── BODY: P1 Incidents This Week (full width; Notes & Context removed) ──
-    '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
+    + '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
     + f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
     + f'      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0">\n'
     + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'

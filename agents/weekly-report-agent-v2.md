@@ -552,7 +552,7 @@ cache[week]["p1_theme"] = {
 }
 ```
 
-If the week's True P1s have unrelated causes (or fewer than 2 True P1s), **delete** any existing `p1_theme` key for the week — do not leave a stale theme. `label` should be short (a flag name, release name, or provider); `summary` is rendered verbatim next to a THEME chip on the exec banner. The generator also tags every listed incident's card with "Recurring cause: {label}" on the P1 Incidents slides, including when it later appears as a carry-over.
+If the week's True P1s have unrelated causes (or fewer than 2 True P1s), **delete** any existing `p1_theme` key for the week — do not leave a stale theme. `label` should be short (a flag name, release name, or provider — it renders in DM Mono at 15px); `summary` is rendered verbatim in a dedicated "Theme of the week" widget between the exec banner and the P1 incidents panel, with the `incident_refs` shown as linked chips. The generator also tags every listed incident's card with "Recurring cause: {label}" on the P1 Incidents slides, including when it later appears as a carry-over.
 
 **In-memory:** collect all `true_p1_incidents` entries across all weeks into `all_true_p1s`. Deduplicate by `reference`. The generator uses this list in two places:
 
