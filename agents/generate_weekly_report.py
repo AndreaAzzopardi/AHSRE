@@ -798,7 +798,9 @@ pir_history[_pir_snap_key] = {
 with open(PIR_HISTORY_FILE, "w") as _f:
     json.dump(dict(sorted(pir_history.items())), _f, indent=2)
 
-_pir_hist_keys  = sorted(pir_history.keys())
+# Snapshots are daily now (GitHub Action) — cap the trend chart to the last 13
+# points so it stays readable, mirroring the 13-week cap on WEEK_KEYS.
+_pir_hist_keys  = sorted(pir_history.keys())[-13:]
 pir_hist_labels = [fmt_week_label(k, False) for k in _pir_hist_keys]
 pir_hist_rate   = [pir_history[k]["rate"] for k in _pir_hist_keys]
 

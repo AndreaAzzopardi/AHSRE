@@ -155,6 +155,27 @@ def main():
             warn(f"[{cw}] partner_tickets.total_count ({pt_total}) is well below "
                  f"Intercom IC count ({av_intercom}) — Intercom steps may be stale")
 
+    # ── 4B. PIR snapshot freshness (warn) ────────────────────────────────────
+    # pir_action_cache.json is refreshed daily by the "Refresh PIR cache"
+    # GitHub Action (19:15 UTC). If it's >3 days old the Action is failing
+    # (expired token, API error) and the PIR slide is drifting stale.
+    pir_file = os.path.join(os.path.dirname(CACHE), "pir_action_cache.json")
+    try:
+        with open(pir_file) as f:
+            pir_generated = json.load(f).get("generated")
+        if pir_generated:
+            gen = datetime.strptime(pir_generated, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            age_d = (datetime.now(timezone.utc) - gen).days
+            if age_d > 3:
+                warn(f"pir_action_cache.json generated {pir_generated} ({age_d}d ago) — "
+                     f"the Refresh PIR cache GitHub Action may be failing")
+        else:
+            warn("pir_action_cache.json has no 'generated' stamp")
+    except FileNotFoundError:
+        warn("pir_action_cache.json missing — PIR slide will be empty")
+    except (ValueError, json.JSONDecodeError) as e:
+        warn(f"could not check PIR snapshot freshness: {e}")
+
     # ── 5. Freshness-by-age (warn) ───────────────────────────────────────────
     newest = max((t.get("reported_at", "") for t in ew), default="")
     if newest:
