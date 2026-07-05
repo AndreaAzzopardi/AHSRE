@@ -823,7 +823,7 @@ Report back:
 - False P1 rate + WoW delta
 - SOC & SRE P1 FRT SLA hit rate + WoW delta
 - SOC & SRE P1 Median FRT
-- P1 Median MTTA + ack rate + WoW delta
+- P1 Median MTTA + WoW delta (ack rate still cached in Step 2B but no longer reported — the "Accepted at" stamping regression makes it uncomputable; P1 Ack Rate card dropped from the HTML 2026-07-05)
 - SOC & SRE P2/P3 FRT SLA hit rate + WoW delta
 - SOC & SRE CSAT avg score + WoW delta
 - Partner ticket count (total + P1/P2/P3 breakdown) + WoW delta

@@ -34,9 +34,12 @@ except FileNotFoundError:
 EXEC_NOTES_FILE = os.path.join(_ROOT, "cache", "exec_notes.json")
 try:
     with open(EXEC_NOTES_FILE) as f:
-        exec_notes_data = json.load(f).get("notes", [])
+        _exec_notes_json = json.load(f)
+    exec_notes_data = _exec_notes_json.get("notes", [])
+    exec_notes_updated = _exec_notes_json.get("updated")  # ISO date, set by hand when editing notes
 except FileNotFoundError:
     exec_notes_data = []
+    exec_notes_updated = None
 
 WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")][-13:]  # 12 prior + current
 today = datetime.now(tz=timezone.utc)
@@ -259,10 +262,7 @@ p1_med_delta_cls, p1_med_delta = delta_str(cw_p1_med_frt, pw_p1_med_frt, " min",
 
 cw_p1_mtta     = get(stat_week, "mtta", "P1", "median_mtta_min")
 pw_p1_mtta     = get(stat_prev_week, "mtta", "P1", "median_mtta_min")
-cw_p1_ack_rate = get(stat_week, "mtta", "P1", "ack_rate")
 p1_mtta_delta_cls, p1_mtta_delta = delta_str(cw_p1_mtta, pw_p1_mtta, " min", higher_is_better=False)
-p1_ack_pct = f"{int(round(cw_p1_ack_rate*100))}%" if cw_p1_ack_rate is not None else "—"
-p1_ack_cls = "c-green" if cw_p1_ack_rate and cw_p1_ack_rate >= 1.0 else "c-amber"
 
 # S2 cards
 cw_p23_rate = get(stat_week, "p2p3_frt_sla", "hit_rate")
@@ -304,29 +304,20 @@ inc_delta_cls, inc_delta = delta_str(cw_inc_total, pw_inc_total, "", higher_is_b
 cw_alerts = get(stat_week, "alert_volume", "total", default=0)
 pw_alerts = get(stat_prev_week, "alert_volume", "total", default=0)
 alerts_delta_cls, alerts_delta = delta_str(cw_alerts, pw_alerts, "", higher_is_better=False, decimals=0)
+# Alert colour thresholds keyed to the composite per-source target:
+# HTTP <400 + SOC <200 + DMS <150 = 750/wk (untargeted sources ride on top).
 if cw_alerts == 0:
     alerts_cls = "c-muted"
-elif cw_alerts <= 400:
+elif cw_alerts <= 750:
     alerts_cls = "c-green"
-elif cw_alerts <= 600:
+elif cw_alerts <= 1125:
     alerts_cls = "c-amber"
 else:
     alerts_cls = "c-red"
 
-cw_p1_ack_rate_s3 = get(stat_week, "mtta", "P1", "ack_rate")
-pw_p1_ack_rate_s3 = get(stat_prev_week, "mtta", "P1", "ack_rate")
-cw_ack_pct = f"{int(round(cw_p1_ack_rate_s3*100))}%" if cw_p1_ack_rate_s3 is not None else "—"
-cw_ack_cls = "c-green" if cw_p1_ack_rate_s3 and cw_p1_ack_rate_s3 >= 1.0 else "c-amber"
-if cw_p1_ack_rate_s3 and pw_p1_ack_rate_s3:
-    ack_diff = round((cw_p1_ack_rate_s3 - pw_p1_ack_rate_s3)*100, 1)
-    if abs(ack_diff) < 0.1:
-        ack_delta_cls, ack_delta = "d-muted", f"0% vs wk {fmt_date_dmy(stat_prev_week)}"
-    elif ack_diff > 0:
-        ack_delta_cls, ack_delta = "d-green", f"+{ack_diff}% vs wk {fmt_date_dmy(stat_prev_week)}"
-    else:
-        ack_delta_cls, ack_delta = "d-red", f"−{abs(ack_diff)}% vs wk {fmt_date_dmy(stat_prev_week)}"
-else:
-    ack_delta_cls, ack_delta = "d-muted", f"— vs wk {fmt_date_dmy(stat_prev_week)}"
+# P1 Ack Rate card dropped 2026-07-05: incident.io stopped stamping "Accepted at"
+# on IC-Ticket incidents (~3–5 Jun regression), so the rate cannot be computed.
+# Reinstate from git history once upstream stamping is fixed.
 
 cw_conv_rate = round(cw_inc_total / cw_alerts * 100, 1) if cw_alerts else None
 pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
@@ -1449,6 +1440,25 @@ else:
 # Detail row font: shrink when many incidents so rows fit in the allotted flex space
 _inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
 
+# Notes staleness stamp: amber once older than 14 days so a forgotten
+# exec_notes.json doesn't keep presenting old context as current.
+_notes_stamp_html = ""
+if exec_notes_updated:
+    try:
+        _notes_upd_dt = datetime.strptime(exec_notes_updated, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        _notes_age_d = (today - _notes_upd_dt).days
+        _notes_stamp_col = "#f59e0b" if _notes_age_d > 14 else "#475569"
+        _notes_stamp_txt = f"updated {_notes_upd_dt.strftime('%-d %b %Y')}"
+        if _notes_age_d > 14:
+            _notes_stamp_txt += f" &middot; {_notes_age_d}d old ⚠"
+        _notes_stamp_html = (
+            f'<span style="margin-left:auto;font-size:10px;font-weight:500;'
+            f'letter-spacing:normal;text-transform:none;color:{_notes_stamp_col}">'
+            f'{_notes_stamp_txt}</span>'
+        )
+    except ValueError:
+        pass
+
 # Notes & Context layout
 _notes_n     = len(exec_notes_data)
 _notes_chars = sum(len(n.get("title","")) + len(n.get("body","")) for n in exec_notes_data)
@@ -1504,7 +1514,7 @@ exec_slide_html = (
     # Right — Notes & Context
     + (
         f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
-        f'      <div style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">Notes & Context</div>\n'
+        f'      <div style="display:flex;align-items:baseline;font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">Notes & Context{_notes_stamp_html}</div>\n'
         f'      <div style="display:flex;flex-direction:column;gap:10px">\n'
         + ''.join(
             f'        <div style="padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:6px">'
@@ -1794,7 +1804,7 @@ html = f'''<!DOCTYPE html>
     Incident Operations
     <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {wk19_note}</span>
   </div>
-  <div class="stat-grid-4">
+  <div class="stat-grid-3">
     <div class="stat-card">
       <div class="card-label">Incidents This Week ({cw_date})</div>
       <div class="card-value c-muted">{cw_inc_total}</div>
@@ -1804,13 +1814,8 @@ html = f'''<!DOCTYPE html>
     <div class="stat-card">
       <div class="card-label">Alerts This Week ({cw_date})</div>
       <div class="card-value {alerts_cls}">{cw_alerts}</div>
-      <div class="card-subnote">Target: &lt;400/wk</div>
+      <div class="card-subnote">Composite target: &lt;750/wk (HTTP 400 &middot; SOC 200 &middot; DMS 150)</div>
       <div class="card-delta {alerts_delta_cls}">{alerts_delta}</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">P1 Ack Rate ({cw_date})</div>
-      <div class="card-value {cw_ack_cls}">{cw_ack_pct}</div>
-      <div class="card-delta {ack_delta_cls}">{ack_delta}</div>
     </div>
     <div class="stat-card">
       <div class="card-label">Alert&#x2192;Incident Rate ({cw_date})</div>
