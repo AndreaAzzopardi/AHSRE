@@ -4052,6 +4052,15 @@
           "closed": true
         }
       ]
+    },
+    "p1_theme": {
+      "label": "AUTH_IP_BINDING_ENABLED",
+      "summary": "All 3 True P1s share one root cause: the AUTH_IP_BINDING_ENABLED security-release setting rejecting legitimate logins (WorkOS, CLI/HMAC and iBet brand auth). Part of the 24 Jun\u20131 Jul security-release incident wave.",
+      "incident_refs": [
+        "INC-10775",
+        "INC-10673",
+        "INC-10661"
+      ]
     }
   },
   "2026-06-29": {

@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 from datetime import datetime, timezone, timedelta
@@ -6,6 +7,29 @@ from collections import defaultdict
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE_FILE     = os.path.join(_ROOT, "cache", "weekly_report_cache.json")
 OUTPUT_FILE    = os.path.join(_ROOT, "cache", "weekly_report.html")
+
+# ── Vendored assets (agents/assets/) — inlined so the report is fully
+# self-contained: no CDN/Google Fonts fetch needed for offline viewing,
+# archived copies, or PDF export. Latin subsets only (same coverage as the
+# old Google Fonts links; non-latin glyphs fall back to system fonts).
+_ASSETS_DIR = os.path.join(_ROOT, "agents", "assets")
+
+def _b64_asset(*parts):
+    with open(os.path.join(_ASSETS_DIR, *parts), "rb") as f:
+        return base64.b64encode(f.read()).decode("ascii")
+
+vendored_font_css = "\n".join(
+    "@font-face { font-family: '%s'; font-style: normal; font-weight: %s; "
+    "src: url(data:font/woff2;base64,%s) format('woff2'); }" % (fam, wght, _b64_asset("fonts", fname))
+    for fam, wght, fname in [
+        ("DM Sans", "100 1000", "dm-sans-var.woff2"),   # variable font covers all weights used
+        ("DM Mono", "400",      "dm-mono-400.woff2"),
+        ("DM Mono", "500",      "dm-mono-500.woff2"),
+    ]
+)
+
+with open(os.path.join(_ASSETS_DIR, "chart.umd.min.js")) as f:
+    vendored_chartjs = f.read()
 
 with open(CACHE_FILE) as f:
     cache = json.load(f)
@@ -646,8 +670,18 @@ def _collect_all_relevant_p1s():
             ref = inc.get("reference", "")
             if ref not in seen and _p1_status_cls(inc.get("status", "")) != "c-green":
                 seen.add(ref)
-                result.append(inc)
+                # copy so the carry-over marker never leaks into the cache dict
+                result.append({**inc, "_carryover": True})
     return result
+
+# Recurring-cause themes: weeks may carry a "p1_theme" key (written by Step 2E
+# when >=2 True P1s share a root cause). Map ref -> theme label so incident
+# cards can be tagged, including carry-overs from earlier themed weeks.
+_theme_by_ref = {}
+for _wk in WEEK_KEYS:
+    _th = cache.get(_wk, {}).get("p1_theme") or {}
+    for _ref in _th.get("incident_refs", []):
+        _theme_by_ref[_ref] = _th.get("label", "")
 
 def _parse_summary_sections(summary):
     sections = []
@@ -776,7 +810,8 @@ pir_hist_labels = [fmt_week_label(k, False) for k in _pir_hist_keys]
 pir_hist_rate   = [pir_history[k]["rate"] for k in _pir_hist_keys]
 
 # ── P1 INCIDENT SLIDE GENERATION ─────────────────────────────────────────────
-_p1_chunks    = [[inc] for inc in _all_p1s] if _all_p1s else [[]]
+# Two incidents per slide (the p1-two-up container holds a pair of cards).
+_p1_chunks    = [_all_p1s[i:i+2] for i in range(0, len(_all_p1s), 2)] if _all_p1s else [[]]
 _n_p1_slides  = len(_p1_chunks)
 _idx_p1perf   = 1
 _idx_pir      = 2 + _n_p1_slides
@@ -1091,6 +1126,11 @@ def _build_p1_pair_cards(chunk):
         name = _clean_inc_name(name)
         href = inc.get("permalink", "")
         ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
+        carry_html = ('<span class="p1-carry-badge">Carry-over</span>'
+                      if inc.get("_carryover") else "")
+        theme_lbl = _theme_by_ref.get(ref)
+        theme_html = (f'<span class="p1-theme-badge">Recurring cause: {theme_lbl}</span>'
+                      if theme_lbl else "")
         sections = _parse_summary_sections(inc.get("summary", ""))
         sections_html = ""
         for lbl, body in sections:
@@ -1102,6 +1142,7 @@ def _build_p1_pair_cards(chunk):
       <div class="p1-inc-header">
         {ref_html}
         <span class="p1-status-badge {sc}">{status_label}</span>
+        {carry_html}{theme_html}
         <span class="p1-inc-date">{dt_str}</span>
       </div>
       <div class="p1-inc-title">{name}</div>
@@ -1116,6 +1157,12 @@ for _i, _chunk in enumerate(_p1_chunks):
     _si = 2 + _i
     _tab_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents {_i+1}/{_n_p1_slides}"
     _grp_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents · {_i+1} of {_n_p1_slides}"
+    # A slide of only carry-overs is labelled as such — those incidents are
+    # from earlier weeks and must not read as new this week.
+    if _chunk and all(inc.get("_carryover") for inc in _chunk):
+        _grp_suffix = "Carry-over · still open"
+    else:
+        _grp_suffix = cw_date
     _chars     = sum(len(inc.get("summary", "")) for inc in _chunk)
     _fs        = 13 if _chars > 2000 else (14 if _chars > 1400 else 15)
     p1_tab_btns_html += f'    <button class="slide-tab" onclick="showSlide({_si})">{_tab_lbl}</button>\n'
@@ -1123,7 +1170,7 @@ for _i, _chunk in enumerate(_p1_chunks):
     p1_all_slides_html += f'''
 <!-- ═══ P1 INCIDENTS {_i+1} ════════════════════════════════════ -->
 <div class="slide" id="s1_{_i+1}"><div class="page">
-  <div class="group-label">{_grp_lbl} · {cw_date}</div>
+  <div class="group-label">{_grp_lbl} · {_grp_suffix}</div>
   <div class="p1-two-up" style="font-size: {_fs}px;">
 {_cards}
   </div>
@@ -1138,6 +1185,7 @@ _ew_p1_frt  = get(_ew, "p1_frt_sla", "hit_rate")
 _ew_csat    = get(_ew, "csat", "avg_score")
 _ew_p23     = get(_ew, "p2p3_frt_sla", "hit_rate")
 _ew_p1_incs = cache.get(_ew, {}).get("true_p1_incidents") or []
+_ew_theme   = cache.get(_ew, {}).get("p1_theme") or None
 _ew_date    = fmt_date_dmy(_ew)
 _ew_end     = fmt_date_dmy((datetime.strptime(_ew, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
 _ew_range   = f"{_ew_date} – {_ew_end}"
@@ -1493,6 +1541,13 @@ exec_slide_html = (
     + (f'        <span style="font-size:13px;color:#94a3b8;line-height:1.5">'
        f'<span style="color:#f59e0b;font-weight:600">{_exec_line2}</span></span>\n'
        if _exec_line2 else '')
+    # Theme of the week: shown when Step 2E found a shared root cause across True P1s
+    + (f'        <span style="font-size:13px;line-height:1.5;display:flex;align-items:baseline;gap:8px">'
+       f'<span style="flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:0.1em;color:#c4b5fd;'
+       f'background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:3px;'
+       f'padding:2px 7px">THEME</span>'
+       f'<span style="color:#cbd5e1">{_ew_theme.get("summary", "")}</span></span>\n'
+       if _ew_theme and _ew_theme.get("summary") else '')
     + f'      </div>\n'
     f'    </div>\n'
     # Row 2: metric chip grid (3 columns)
@@ -1579,9 +1634,7 @@ html = f'''<!DOCTYPE html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Weekly Incident Report — {title_date}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>{vendored_font_css}</style>
   <style>
     * {{ box-sizing: border-box; margin: 0; padding: 0; }}
     body {{ background: #080f1e; color: #e2e8f0; font-family: 'DM Sans', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }}
@@ -1629,6 +1682,8 @@ html = f'''<!DOCTYPE html>
     .p1-ref {{ font-family: 'DM Mono', monospace; font-size: 13px; color: #38bdf8; font-weight: 500; text-decoration: none; }}
     .p1-ref:hover {{ text-decoration: underline; }}
     .p1-status-badge {{ font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 4px; background: rgba(255,255,255,0.06); }}
+    .p1-carry-badge {{ font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; color: #94a3b8; background: rgba(148,163,184,0.10); border: 1px solid rgba(148,163,184,0.25); }}
+    .p1-theme-badge {{ font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; color: #c4b5fd; background: rgba(167,139,250,0.10); border: 1px solid rgba(167,139,250,0.30); }}
     .p1-inc-date {{ font-size: 13px; color: #64748b; margin-left: auto; }}
     .p1-cause {{ font-size: 13px; color: #94a3b8; }}
     .p1-inc-title {{ font-size: 1.15em; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; flex-shrink: 0; line-height: 1.3; }}
@@ -1767,6 +1822,7 @@ html = f'''<!DOCTYPE html>
       <div class="card-label">Partner Tickets This Week ({cw_date})</div>
       <div class="card-value c-muted">{cw_pt_resp}</div>
       <div class="card-subnote">P1: {cw_pt_p1} &middot; P2: {cw_pt_p2} &middot; P3: {cw_pt_p3}</div>
+      <div class="card-subnote">As tagged at intake &mdash; P1 tag &ne; confirmed True P1 (see P1 Performance)</div>
       <div class="card-delta {pt_delta_cls}">{pt_delta}</div>
     </div>
     <div class="stat-card">
@@ -1866,7 +1922,7 @@ html = f'''<!DOCTYPE html>
   <button class="slide-btn" onclick="showSlide(currentSlide+1)">Next &#8594;</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>{vendored_chartjs}</script>
 <script>
 const WK   = {js_str_arr(WK)};
 const WK19 = {js_str_arr(WK19)};

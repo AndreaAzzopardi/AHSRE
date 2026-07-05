@@ -542,9 +542,21 @@ cache[week]["true_p1_incidents"] = [
 For the current week: always overwrite.  
 For prior weeks with open incidents: update those specific entries (by `reference`), preserve all others.
 
+**Theme of the week (recurring cause):** after writing `true_p1_incidents`, judge whether **2 or more** of the week's True P1s share a root cause (same config flag, same faulty release, same upstream provider — judged from the Cause sections, not just similar symptoms). If so, write:
+
+```json
+cache[week]["p1_theme"] = {
+  "label": "AUTH_IP_BINDING_ENABLED",
+  "summary": "One sentence for the exec banner: how many of the week's True P1s share the cause and what it is.",
+  "incident_refs": ["INC-XXXX", "INC-YYYY"]
+}
+```
+
+If the week's True P1s have unrelated causes (or fewer than 2 True P1s), **delete** any existing `p1_theme` key for the week — do not leave a stale theme. `label` should be short (a flag name, release name, or provider); `summary` is rendered verbatim next to a THEME chip on the exec banner. The generator also tags every listed incident's card with "Recurring cause: {label}" on the P1 Incidents slides, including when it later appears as a carry-over.
+
 **In-memory:** collect all `true_p1_incidents` entries across all weeks into `all_true_p1s`. Deduplicate by `reference`. The generator uses this list in two places:
 
-**P1 Incidents slides** (one slide per incident, current week first, then prior open incidents): each slide renders all 4 sections (Problem / Impact / Cause / Actions Taken) stacked vertically as full paragraphs. Font size is auto-scaled by summary length: >2000 chars → 13px, >1400 chars → 14px, otherwise 15px.
+**P1 Incidents slides** (two incidents per slide, current week first, then prior open incidents; a slide of only prior-week incidents is labelled "Carry-over · still open" and each such card gets a Carry-over badge): each card renders all 4 sections (Problem / Impact / Cause / Actions Taken) stacked vertically as full paragraphs. Font size is auto-scaled by summary length: >2000 chars → 13px, >1400 chars → 14px, otherwise 15px.
 
 **Executive Summary — P1 Incidents This Week panel**: each incident is rendered as a compact card with two rows:
 - Row 1: reference link · incident title · status badge · date

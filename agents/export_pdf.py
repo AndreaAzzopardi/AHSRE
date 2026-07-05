@@ -88,13 +88,14 @@ html = html.replace("<html", '<html class="pdf-export"', 1)
 head_inject = SCREEN_CSS + "\n" + PRINT_CSS
 html = html.replace("</head>", head_inject + "\n</head>", 1)
 
-# 3. Disable animations at the very start of the inline chart script block
-#    (the <script> tag that immediately follows the Chart.js CDN tag)
-CDN_TAG = '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>'
-INLINE_START = f"{CDN_TAG}\n<script>"
+# 3. Disable animations at the very start of the inline chart script block.
+#    Chart.js is vendored inline (no CDN tag since 2026-07-05), so anchor on
+#    the chart-config script itself, which opens with the WK labels array.
+CHART_SCRIPT_START = "<script>\nconst WK"
+assert CHART_SCRIPT_START in html, "chart-config script anchor not found — did the generator layout change?"
 html = html.replace(
-    INLINE_START,
-    f"{CDN_TAG}\n<script>{ANIM_PATCH}",
+    CHART_SCRIPT_START,
+    f"<script>\n{ANIM_PATCH}const WK",
     1,
 )
 
