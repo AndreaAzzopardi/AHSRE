@@ -240,35 +240,35 @@
     "overall_waste_pct": 6.4
   },
   "2026-06-29": {
-    "days_in_week": 5,
+    "days_in_week": 6,
     "partial": true,
-    "note": "Partial week — only Mon 29 Jun to Fri 3 Jul data available (Monday–Friday)",
+    "note": "Partial week — only Mon 29 Jun to Sat 4 Jul data available (Monday–Saturday)",
     "blocks": {
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 462,
+        "declined": 145,
+        "accepted": 317,
+        "waste_pct": 31.4
+      },
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 907,
-        "declined": 124,
-        "accepted": 783,
-        "waste_pct": 13.7
+        "total": 936,
+        "declined": 140,
+        "accepted": 796,
+        "waste_pct": 15.0
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 460,
-        "declined": 95,
-        "accepted": 365,
-        "waste_pct": 20.7
-      },
-      "night": {
-        "label": "00:00-08:00 UTC",
-        "total": 411,
-        "declined": 136,
-        "accepted": 275,
-        "waste_pct": 33.1
+        "total": 487,
+        "declined": 102,
+        "accepted": 385,
+        "waste_pct": 20.9
       }
     },
-    "total": 1778,
-    "total_declined": 355,
-    "total_accepted": 1423,
-    "overall_waste_pct": 20.0
+    "total": 1885,
+    "total_declined": 387,
+    "total_accepted": 1498,
+    "overall_waste_pct": 20.5
   }
 }

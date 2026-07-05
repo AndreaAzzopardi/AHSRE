@@ -1545,7 +1545,7 @@
         "sre_oh_min": 297.9,
         "opened_ts": 1779976778,
         "sre_real_rt_s": 17872,
-        "summary": "Double bonus transfer in Galabet holiday promotion \u2014 280 members received duplicate bonuses; some users got bonuses from two campaigns on a single deposit. Partner requested root cause analysis and a fix recommendation."
+        "summary": "Double bonus transfer in Galabet holiday promotion — 280 members received duplicate bonuses; some users got bonuses from two campaigns on a single deposit. Partner requested root cause analysis and a fix recommendation."
       },
       {
         "conv_id": "215560994727050",
@@ -1557,7 +1557,7 @@
         "sre_oh_min": 156.7,
         "opened_ts": 1779790178,
         "sre_real_rt_s": 9401,
-        "summary": "Stanleybet bonus events returning HTTP 400 \u2014 ~900 requests from Comtrade's iCore failed posting to the integration API. Root cause: incorrect product type in bonus event payloads. Partner was advised to fix their product type and implement a retry mechanism."
+        "summary": "Stanleybet bonus events returning HTTP 400 — ~900 requests from Comtrade's iCore failed posting to the integration API. Root cause: incorrect product type in bonus event payloads. Partner was advised to fix their product type and implement a retry mechanism."
       }
     ],
     "true_p1_incidents": [
@@ -1568,7 +1568,7 @@
         "reported_at": "2026-05-26T12:34:10Z",
         "cause": "FT - Backend Code Defect",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8041",
-        "summary": "Problem: Partners were unable to create, update, or clone segments using singularity features with specific operators in crm-api versions 2.61.26 and 2.61.27, causing crm-api errors.\n\nImpact: 88 out of 119 production brands (73%) were unable to create, update, or clone segments that use singularity features with operators such as \"equals\", \"contains\", or \"not contains\". Multiclass features were unaffected.\n\nCause: A bug introduced by PR #2250 in crm-api versions 2.61.26\u20132.61.27 caused errors when segments used singularity features with certain operators.\n\nResolution: The backend fix was merged and deployed to all impacted brands (platform v2.61.30). Partner communications sent. No customer action required."
+        "summary": "Problem: Partners were unable to create, update, or clone segments using singularity features with specific operators in crm-api versions 2.61.26 and 2.61.27, causing crm-api errors.\n\nImpact: 88 out of 119 production brands (73%) were unable to create, update, or clone segments that use singularity features with operators such as \"equals\", \"contains\", or \"not contains\". Multiclass features were unaffected.\n\nCause: A bug introduced by PR #2250 in crm-api versions 2.61.26–2.61.27 caused errors when segments used singularity features with certain operators.\n\nResolution: The backend fix was merged and deployed to all impacted brands (platform v2.61.30). Partner communications sent. No customer action required."
       },
       {
         "reference": "INC-8064",
@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonuses are being granted to H2Bet users when BetConstruct returns a 503 error after already crediting a bonus, causing retries that result in extra grants. This has been a persistent issue for at least 24 weeks.\n\nImpact: Recurring bonus leakage for H2Bet users, with approximately 300\u2013500 extra bonus grants per week. Both FreeSpins and Cash bonuses are affected. No new duplicate bonuses were observed during the weekend of 6\u20137 June 2026, but around 300 per week continue to occur as of 11 June 2026.\n\nCause: BetConstruct can return an HTTP 503 error after a bonus has actually been credited to a player. Fast Track then retries the request, which can result in the same bonus being granted more than once. This is not the expected behaviour of the operator API and leads to duplicate bonuses.\n\nActions Taken: Enhanced logging and monitoring have been deployed, enabling rapid detection and validation of duplicate events. Partner-specific workaround proposals (such as treating 503 responses as success) have not been approved by H2Bet due to traceability concerns. Detailed impact analysis and escalation with BetConstruct are ongoing. No technical mitigation has been deployed yet as of 18 June 2026, and Fast Track continues to seek direct engagement with BetConstruct to address the root cause. The incident remains in Monitoring while the partner-side fix is pursued."
+        "summary": "Problem: Duplicate bonuses are still being granted to H2Bet users when BetConstruct returns an HTTP 503 after committing a bonus credit, causing Fast Track's retry path to re-issue the same bonus.\n\nImpact: Recurring bonus leakage of ~300 extra grants per week over the last several weeks (peaking at 500+ earlier), covering both FreeSpins and Cash bonuses; the weekend of 6–7 June saw zero duplicates despite 5xx bursts, but the risk remains.\n\nCause: BetConstruct's operator API returns a 503 after already crediting the player, so Fast Track's retry mechanism can grant the same bonus more than once. This is an upstream behavior in the partner API, not a Fast Track defect.\n\nActions Taken: We deployed enhanced logging (crm-bonus-distributor PR #123) to detect duplicates in minutes rather than hours, and continue to escalate with BetConstruct. A scoped FT-side mitigation (PR #122 — treat 503 as success on indeterminate credits) was rejected by H2Bet on traceability grounds; we are awaiting partner engagement with BetConstruct for the upstream fix and remain in Monitoring."
       },
       {
         "reference": "INC-8219",
@@ -2555,7 +2555,7 @@
         "status": "Closed",
         "reported_at": "2026-06-11T15:09:13Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/9364",
-        "summary": "Problem: Kafka queues across multiple brands on the EU1 cluster were unable to process or deliver messages due to authentication failures, leading to widespread service outages across roughly 15 brands for about 80 minutes.\n\nImpact: Kafka queues and related services for at least 15 brands \u2014 including Betlive, Crocobet, Roobet, Star-Casino, Campeon-Omega, JackpotCRM, Pressenter, Sisutech, Badhombre, Demo, Reactivaction, Reefspins, Rhino, SBTSolutions, TheIslandGame, and Yarrow \u2014 stopped processing or delivering millions of messages for about 80 minutes. Seven production environments were locked for deployments to prevent recurrence; production deployments for those environments have since been manually restored and confirmed healthy.\n\nCause: At 14:11 UTC a change to the 'kafka-acl-external-user' Terraform module (PR #397) altered how MSK SCRAM secrets are associated, resulting in the removal of secrets for all brands except Yarrow. This caused widespread authentication failures across the shared EU1 Kafka cluster.\n\nActions Taken: At 15:26 UTC the missing secrets were re-associated, restoring user access to the Kafka cluster. Services were restarted and message processing recovered. Deployment freezes were put in place for the affected environments and have since been lifted after manual verification. A fix for the Terraform configuration is being prepared to prevent recurrence; the incident is in Documenting status pending the post-mortem."
+        "summary": "Problem: Kafka queues across multiple brands on the EU1 cluster were unable to process or deliver messages due to authentication failures, leading to widespread service outages across roughly 15 brands for about 80 minutes.\n\nImpact: Kafka queues and related services for at least 15 brands — including Betlive, Crocobet, Roobet, Star-Casino, Campeon-Omega, JackpotCRM, Pressenter, Sisutech, Badhombre, Demo, Reactivaction, Reefspins, Rhino, SBTSolutions, TheIslandGame, and Yarrow — stopped processing or delivering millions of messages for about 80 minutes. Seven production environments were locked for deployments to prevent recurrence; production deployments for those environments have since been manually restored and confirmed healthy.\n\nCause: At 14:11 UTC a change to the 'kafka-acl-external-user' Terraform module (PR #397) altered how MSK SCRAM secrets are associated, resulting in the removal of secrets for all brands except Yarrow. This caused widespread authentication failures across the shared EU1 Kafka cluster.\n\nActions Taken: At 15:26 UTC the missing secrets were re-associated, restoring user access to the Kafka cluster. Services were restarted and message processing recovered. Deployment freezes were put in place for the affected environments and have since been lifted after manual verification. A fix for the Terraform configuration is being prepared to prevent recurrence; the incident is in Documenting status pending the post-mortem."
       },
       {
         "reference": "INC-9583",
@@ -2586,7 +2586,7 @@
         },
         {
           "reference": "INC-9507",
-          "lead": "G\u00e9rard E. Pelayo",
+          "lead": "Gérard E. Pelayo",
           "severity": "P2",
           "reported_at": "2026-06-12T14:54:56Z",
           "resolved_at": "2026-06-12T18:23:23Z",
@@ -3012,7 +3012,7 @@
         "status": "Closed",
         "reported_at": "2026-06-20T05:07:06Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10256",
-        "summary": "Problem: MemoryDB on the production-274-gen cluster exceeded 90% memory usage, causing the scheduled-actions-manager service to halt and message queues to grow for multiple brands.\n\nImpact: Scheduled actions and campaign messages stopped processing across at least 19 brands from around 03:30 UTC. Automated notifications, bonuses, and scheduled messages were delayed for all affected brands, with large backlogs building up \u2014 over 1.2 million messages queued for Seu Bet and nearly 384,000 for Segurobet.\n\nCause: A surge of scheduled actions from Seubet (two activities each targeting over 2 million users) queued more than 5 million actions at once, consuming ~78 GB and pushing the shared MemoryDB cluster above 90%, which triggered the scheduled-actions-manager into a shutdown/restart loop.\n\nActions Taken: Upgraded MemoryDB to db.r6gd.4xlarge then db.r6gd.8xlarge to add capacity, allowing the queue to drain and service to restore. Seubet advised to stagger large sendouts by 30-45 minutes; alert thresholds under review for earlier warning."
+        "summary": "Problem: MemoryDB on the production-274-gen cluster exceeded 90% memory usage, causing the scheduled-actions-manager service to halt and message queues to grow for multiple brands.\n\nImpact: Scheduled actions and campaign messages stopped processing across at least 19 brands from around 03:30 UTC. Automated notifications, bonuses, and scheduled messages were delayed for all affected brands, with large backlogs building up — over 1.2 million messages queued for Seu Bet and nearly 384,000 for Segurobet.\n\nCause: A surge of scheduled actions from Seubet (two activities each targeting over 2 million users) queued more than 5 million actions at once, consuming ~78 GB and pushing the shared MemoryDB cluster above 90%, which triggered the scheduled-actions-manager into a shutdown/restart loop.\n\nActions Taken: Upgraded MemoryDB to db.r6gd.4xlarge then db.r6gd.8xlarge to add capacity, allowing the queue to drain and service to restore. Seubet advised to stagger large sendouts by 30-45 minutes; alert thresholds under review for earlier warning."
       }
     ],
     "engineer_workload": {
@@ -3447,7 +3447,7 @@
         "oh_frt_min": 78.6,
         "opened_at": 1782203425,
         "first_reply_at": 1782208142,
-        "summary": "Internal Spinbet login outage reported to critical-support at 02:50 UTC (overnight, outside Malta office hours); SRE first response logged 79 min later (04:09 UTC) when the on-call SRE picked up the ticket \u2014 the breach was after-hours pickup, not an in-shift delay."
+        "summary": "Internal Spinbet login outage reported to critical-support at 02:50 UTC (overnight, outside Malta office hours); SRE first response logged 79 min later (04:09 UTC) when the on-call SRE picked up the ticket — the breach was after-hours pickup, not an in-shift delay."
       }
     ],
     "csat": {
@@ -3547,7 +3547,7 @@
         "oh_frt_s": 69629,
         "opened_at": 1782464896,
         "first_reply_at": 1782534525,
-        "summary": "Betpipo P3 'Report a Problem' ticket opened 26 Jun 11:08 CEST and routed first to Partner Support; the SRE office-hours first response exceeded the 2-hour P2/P3 SLA by a wide margin (~19 office-hours) as the ticket sat snoozed awaiting SRE triage \u2014 an ownership/routing gap rather than an in-shift delay."
+        "summary": "Betpipo P3 'Report a Problem' ticket opened 26 Jun 11:08 CEST and routed first to Partner Support; the SRE office-hours first response exceeded the 2-hour P2/P3 SLA by a wide margin (~19 office-hours) as the ticket sat snoozed awaiting SRE triage — an ownership/routing gap rather than an in-shift delay."
       }
     ],
     "p1_quality_incidentio": {
@@ -3758,7 +3758,7 @@
         "status": "Closed",
         "reported_at": "2026-06-24T07:09:03Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/10661",
-        "summary": "Problem: WorkOS authentication failures and a separate CRM-API pod problem prevented users from logging into Fast Track across several brands, producing repeated 401 Unauthorized errors during login.\n\nImpact: Users from IBet, OneCasino, Meridianbet, Roobet, and Sway Gaming lost login access at various times between 09:10 and 12:30 CEST on 24 June. Betamina experienced a related but separate outage caused by CRM-API pod failures during the same window.\n\nCause: A misconfiguration in the WorkOS integration \u2014 AUTH_IP_BINDING_ENABLED left on \u2014 rejected valid tokens and returned 401s across multiple brands. Betamina's parallel loss of login came from unhealthy crm-api pods rather than the WorkOS setting.\n\nActions Taken: We set AUTH_IP_BINDING_ENABLED to false and redeployed crm-api, restoring login for IBet, Meridianbet, Roobet, OneCasino, and Sway Gaming. Betamina was resolved by fixing its crm-api deployment. Partner confirmation was received for all impacted brands and the incident was closed on 30 June after a monitoring window."
+        "summary": "Problem: WorkOS authentication failures and a separate CRM-API pod problem prevented users from logging into Fast Track across several brands, producing repeated 401 Unauthorized errors during login.\n\nImpact: Users from IBet, OneCasino, Meridianbet, Roobet, and Sway Gaming lost login access at various times between 09:10 and 12:30 CEST on 24 June. Betamina experienced a related but separate outage caused by CRM-API pod failures during the same window.\n\nCause: A misconfiguration in the WorkOS integration — AUTH_IP_BINDING_ENABLED left on — rejected valid tokens and returned 401s across multiple brands. Betamina's parallel loss of login came from unhealthy crm-api pods rather than the WorkOS setting.\n\nActions Taken: We set AUTH_IP_BINDING_ENABLED to false and redeployed crm-api, restoring login for IBet, Meridianbet, Roobet, OneCasino, and Sway Gaming. Betamina was resolved by fixing its crm-api deployment. Partner confirmation was received for all impacted brands and the incident was closed on 30 June after a monitoring window."
       }
     ],
     "engineer_workload": {
@@ -4055,7 +4055,7 @@
     },
     "p1_theme": {
       "label": "AUTH_IP_BINDING_ENABLED",
-      "summary": "All 3 True P1s share one root cause: the AUTH_IP_BINDING_ENABLED security-release setting rejecting legitimate logins (WorkOS, CLI/HMAC and iBet brand auth). Part of the 24 Jun\u20131 Jul security-release incident wave.",
+      "summary": "All 3 True P1s share one root cause: the AUTH_IP_BINDING_ENABLED security-release setting rejecting legitimate logins (WorkOS, CLI/HMAC and iBet brand auth). Part of the 24 Jun–1 Jul security-release incident wave.",
       "incident_refs": [
         "INC-10775",
         "INC-10673",
@@ -4071,8 +4071,8 @@
           "lead": "stephen.riolo",
           "severity": "P1",
           "reported_at": "2026-07-04T11:24:57Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-05T05:04:57Z",
+          "closed": true
         },
         {
           "reference": "INC-12236",
@@ -4365,17 +4365,17 @@
       ]
     },
     "incident_volume": {
-      "total": 186,
+      "total": 206,
       "P1": 16,
-      "P2": 103,
-      "P3": 62,
+      "P2": 117,
+      "P3": 68,
       "P4": 4,
       "ic_ticket_count": 37
     },
     "p1_quality_incidentio": {
-      "true_p1": 0,
-      "false_p1": 0,
-      "unclassified": 16
+      "true_p1": 6,
+      "false_p1": 8,
+      "unclassified": 2
     },
     "mtta": {
       "P1": {
@@ -4383,151 +4383,163 @@
         "n_acked": 1,
         "ack_rate": 0.06,
         "mtta_minutes": [
-          0.6667
+          0.6666666666666666
         ],
-        "median_mtta_min": 0.67,
+        "median_mtta_min": 0.7,
         "mean_mtta_min": 0.7
       },
       "P2": {
-        "n": 103,
-        "n_acked": 85,
-        "ack_rate": 0.83,
+        "n": 117,
+        "n_acked": 96,
+        "ack_rate": 0.82,
         "mtta_minutes": [
+          0.55,
           1.9,
-          1.9167,
-          2.0667,
-          2.2167,
+          1.9166666666666667,
+          2.066666666666667,
+          2.216666666666667,
           2.3,
           2.7,
-          2.8167,
-          3.5833,
-          3.9167,
-          4.1667,
-          4.5167,
-          4.6833,
+          2.816666666666667,
+          3.5833333333333335,
+          3.9166666666666665,
+          4.166666666666667,
+          4.516666666666667,
+          4.683333333333334,
           4.8,
-          5.0833,
-          5.3167,
-          5.7833,
-          5.8167,
-          5.8167,
-          5.8667,
-          6.1833,
+          5.083333333333333,
+          5.316666666666666,
+          5.333333333333333,
+          5.783333333333333,
+          5.816666666666666,
+          5.816666666666666,
+          5.866666666666666,
+          6.183333333333334,
           6.7,
-          6.7833,
-          7.3333,
-          7.7833,
-          8.0833,
-          8.1333,
-          8.5667,
+          6.783333333333333,
+          7.333333333333333,
+          7.783333333333333,
+          7.9,
+          8.083333333333334,
+          8.133333333333333,
+          8.566666666666666,
           9.0,
-          9.4167,
-          9.4333,
-          9.8333,
-          9.9667,
+          9.416666666666666,
+          9.433333333333334,
+          9.833333333333334,
+          9.966666666666667,
           10.3,
-          10.6333,
+          10.633333333333333,
           10.8,
-          11.3667,
+          11.366666666666667,
+          12.416666666666666,
           12.85,
           13.6,
-          14.7833,
-          15.1833,
-          16.2167,
+          14.783333333333333,
+          15.183333333333334,
+          15.466666666666667,
+          16.1,
+          16.216666666666665,
+          16.466666666666665,
           17.35,
-          18.2167,
-          20.3833,
+          17.7,
+          18.216666666666665,
+          18.45,
+          20.383333333333333,
           20.4,
-          20.9167,
-          22.8167,
+          20.916666666666668,
+          22.816666666666666,
           22.9,
-          23.2667,
+          23.266666666666666,
           23.75,
-          24.4333,
+          24.433333333333334,
           24.55,
           25.7,
           26.7,
-          26.8833,
+          26.883333333333333,
           27.05,
-          28.0667,
+          28.066666666666666,
           29.5,
           30.8,
-          31.4833,
+          31.483333333333334,
           31.6,
           31.7,
-          32.7667,
-          37.5333,
-          38.6167,
+          32.766666666666666,
+          37.53333333333333,
+          38.61666666666667,
           41.95,
           45.9,
-          46.6333,
-          48.6167,
-          50.8333,
-          52.4833,
+          46.63333333333333,
+          48.61666666666667,
+          50.833333333333336,
+          52.483333333333334,
           53.1,
           59.35,
-          66.1667,
+          66.16666666666667,
           71.5,
-          76.2333,
-          99.0667,
-          106.0333,
-          109.5833,
+          76.23333333333333,
+          99.06666666666666,
+          106.03333333333333,
+          109.58333333333333,
           113.3,
           119.85,
-          231.6167,
-          283.6667,
-          301.3667,
-          321.7167
+          231.61666666666667,
+          283.6666666666667,
+          301.3666666666667,
+          306.9166666666667,
+          321.71666666666664,
+          590.4666666666667
         ],
-        "median_mtta_min": 18.22,
-        "mean_mtta_min": 38.1
+        "median_mtta_min": 16.9,
+        "mean_mtta_min": 44.2
       },
       "P3": {
-        "n": 62,
-        "n_acked": 38,
-        "ack_rate": 0.61,
+        "n": 68,
+        "n_acked": 39,
+        "ack_rate": 0.57,
         "mtta_minutes": [
-          0.8167,
-          2.7667,
-          2.7833,
+          0.8166666666666667,
+          2.7666666666666666,
+          2.783333333333333,
           2.8,
-          2.8167,
-          2.8333,
-          2.8667,
-          2.8833,
-          2.9333,
-          3.7167,
+          2.816666666666667,
+          2.8333333333333335,
+          2.8666666666666667,
+          2.8833333333333333,
+          2.933333333333333,
+          3.716666666666667,
           5.2,
           5.6,
-          6.0333,
-          6.8167,
+          6.033333333333333,
+          6.816666666666666,
           8.2,
-          9.5333,
-          11.8833,
-          14.8167,
-          15.6667,
-          17.0833,
-          17.2333,
+          9.533333333333333,
+          11.883333333333333,
+          14.816666666666666,
+          15.666666666666666,
+          17.083333333333332,
+          17.233333333333334,
+          17.95,
           18.8,
           19.25,
-          20.8333,
-          23.4833,
-          24.7333,
-          30.3667,
-          31.7833,
+          20.833333333333332,
+          23.483333333333334,
+          30.366666666666667,
+          31.783333333333335,
           34.2,
-          51.0333,
-          53.6833,
+          51.03333333333333,
+          53.68333333333333,
           54.3,
-          71.8167,
-          81.5333,
+          71.81666666666666,
+          81.53333333333333,
           98.8,
           108.1,
-          1005.1667,
-          1560.4833
+          417.71666666666664,
+          1005.1666666666666,
+          1560.4833333333333
         ],
-        "median_mtta_min": 16.38,
-        "mean_mtta_min": 90.4
+        "median_mtta_min": 17.1,
+        "mean_mtta_min": 98.6
       },
       "P4": {
         "n": 4,
@@ -4538,18 +4550,67 @@
         "mean_mtta_min": null
       }
     },
-    "true_p1_incidents": [],
+    "true_p1_incidents": [
+      {
+        "reference": "INC-12236",
+        "name": "[P1] Intercom Incident : Segurobet Production",
+        "status": "Waiting on Partner",
+        "reported_at": "2026-07-03T19:56:25Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12236",
+        "summary": "Problem: SDT activities on Segurobet production were not being processed, which cascaded into delayed activity SMS delivery.\n\nImpact: Some brands' SDT-driven activity SMS were held up as the Activity Manager queues backed up, degrading customer engagement flows for roughly two hours.\n\nCause: Sustained RDS CPU saturation on the Segurobet production database (95–99% CPU) caused the Activity Manager SDT and fire queues to back up, which in turn blocked downstream processing.\n\nActions Taken: We scaled the Segurobet RDS instance from r6g.large through xlarge, 2xlarge, up to 4xlarge; adjusted Activity Manager fire consumer settings (prefetch, batch size); increased fire pod limits; and reduced the conversion service to 1 pod. By 11:37pm CEST the SDT and fire queues had drained and activity processing had caught up. The incident remains in Waiting on Partner while we confirm end-to-end recovery."
+      },
+      {
+        "reference": "INC-11853",
+        "name": "Multiple partners unable to login",
+        "status": "Monitoring",
+        "reported_at": "2026-07-02T07:24:07Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/11853",
+        "summary": "Problem: Multiple partner environments were unable to log in, with users hitting login loops and 404s across brands including Winspirit, Roobet, Crocobet, Betlive and several others.\n\nImpact: Users on affected partner environments could not authenticate into the CRM. Some brands saw related service-specific access issues (Fusion API, rewards API, failed actions API) until their environments were redeployed. Residual client-side login loops persisted due to stale cached content.\n\nCause: An analytics-config change triggered long-running MySQL table rebuilds and locks. A recent kafka-acl-external-user module version bump also caused intermittent deployment failures via forbidden service-account permissions, blocking recovery redeploys.\n\nActions Taken: We reverted the analytics-config change and redeployed the impacted brands, and rolled back the kafka-acl-external-user module bump; deployments returned to green as of 14:02 CEST. Cache-busting login URLs / incognito workarounds were communicated for remaining client-side loops. Incident is in Monitoring while we complete manual validation with partners."
+      },
+      {
+        "reference": "INC-11639",
+        "name": "[P1] Intercom Incident : H2Bet Production",
+        "status": "Closed",
+        "reported_at": "2026-07-01T00:02:25Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/11639",
+        "summary": "Problem: H2Bet and Seubet users were unable to access the rewards section, with a significant spike in UNAUTHENTICATED errors seen from 4pm CEST.\n\nImpact: End users on H2Bet and Seubet could not authenticate against the rewards backend for several hours, blocking rewards access across multiple brands.\n\nCause: An invalid JWT secret was set in the rewards backend configuration for both brands, causing authentication errors on every token verification.\n\nActions Taken: We updated the JWT secret directly in the cluster for both brands using the correct value from 1Password. Error graphs dropped to zero on UNAUTHENTICATED after 3am CEST, and customer confirmation followed; incident is closed."
+      },
+      {
+        "reference": "INC-11602",
+        "name": "[P1] Intercom Incident : Atomo Production",
+        "status": "Closed",
+        "reported_at": "2026-06-30T19:48:12Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/11602",
+        "summary": "Problem: The rewards button was missing from at least one Atomo customer's page, blocking access to the rewards feature.\n\nImpact: Affected Atomo customers could not see or access the rewards UI, cutting them off from expected rewards functionality until the fix was applied.\n\nCause: A misconfiguration in the rewards backend meant the end-user JWT secret was not set correctly, so authentication of the rewards call failed and the button did not render.\n\nActions Taken: We updated the rewards backend configuration to set the correct end-user JWT secret; the rewards button reappeared for affected customers and the incident was closed within roughly 90 minutes of report."
+      },
+      {
+        "reference": "INC-11554",
+        "name": "[P1] Intercom Incident : BrazilBet Production",
+        "status": "Waiting on Partner",
+        "reported_at": "2026-06-30T17:28:34Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/11554",
+        "summary": "Problem: BrazilBet website users could not log in and the rewards icon was missing due to token verification errors.\n\nImpact: BrazilBet customers were locked out of the site and lost visibility of the rewards icon between approximately 7:30pm and 7:50pm CEST.\n\nCause: The JWT secret key was mis-named in the environment variables ('fusion_api' vs 'fusion-api' in the vault), causing authentication to fail on every token verification for BrazilBet.\n\nActions Taken: We manually updated the JWT token and configuration for both the fusion API and rewards-backend to use the correct vault key. Service was restored and BrazilBet was running normally as of 7:54pm CEST; incident remains in Waiting on Partner for final sign-off."
+      },
+      {
+        "reference": "INC-11390",
+        "name": "CRM users getting logged out when clicking FT AI",
+        "status": "Documenting",
+        "reported_at": "2026-06-30T08:38:27Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/11390",
+        "summary": "Problem: CRM users were logged out immediately when clicking the FT AI button, sometimes ending up in a sign-in / sign-out loop that prevented them from getting back into the CRM.\n\nImpact: CRM users across multiple brands — We88, Corestar, Starcasino, Mystake, Leaderbet, Zunado and others — were unable to work in the CRM while the loop persisted.\n\nCause: A misconfiguration of the JWT secret between crm-api and the FT AI service caused a token mismatch, so accessing FT AI invalidated the CRM session and logged the user out.\n\nActions Taken: We rolled out a fix routing the correct JWT secret to both crm-api and FT AI, deployed it across the affected brands, and are documenting the post-incident actions. Further deployments were scheduled for the remaining brands once deployment-system issues from INC-11853 cleared."
+      }
+    ],
     "alert_volume": {
-      "total": 1876,
+      "total": 2108,
       "by_source": {
         "Cloudflare AI Loop": 6,
-        "Cloudflare Security Scanner": 12,
-        "Database Security AI Loop": 5,
-        "Dead Man's Snitch": 261,
-        "Grafana SOC alerts": 624,
-        "Grafana alerts": 118,
+        "Cloudflare Security Scanner": 14,
+        "Database Security AI Loop": 6,
+        "Dead Man's Snitch": 266,
+        "Grafana SOC alerts": 641,
+        "Grafana alerts": 184,
         "HTTP DMS FTML Alerts": 1,
-        "HTTP alerts": 804,
+        "HTTP alerts": 945,
         "Intercom": 45
       }
     },
@@ -4592,7 +4653,7 @@
     "csat": {
       "total": 35,
       "rated": 8,
-      "avg_score": 4.9,
+      "avg_score": 4.88,
       "pct_positive": 100.0,
       "pct_perfect": 87.5,
       "response_rate": 22.9,
@@ -4613,7 +4674,10 @@
       "p2_open": 0,
       "p3_open": 0,
       "total_count": 30,
+      "avg_response_min": 66.8,
+      "median_response_min": 9.4,
       "response_times_s": [
+        833,
         1207,
         270,
         492,
@@ -4622,7 +4686,6 @@
         257,
         1293,
         1762,
-        833,
         261,
         2588,
         4190,
@@ -4644,21 +4707,19 @@
         114,
         173,
         951
-      ],
-      "avg_response_min": 66.8,
-      "median_response_min": 9.4
+      ]
     },
     "p2p3_frt_sla": {
-      "total": 17,
       "hit": 16,
       "missed": 1,
+      "total": 17,
       "hit_rate": 94.1,
       "response_times_s": [
+        833,
         270,
         2285,
         257,
         1293,
-        833,
         261,
         2588,
         4190,
@@ -4684,6 +4745,16 @@
         "opened_at": 1782976230,
         "first_reply_at": 1783066256
       }
-    ]
+    ],
+    "p1_theme": {
+      "label": "JWT_SECRET_MISCONFIG",
+      "summary": "Four of this week's six True P1s were driven by JWT-secret / auth-token misconfiguration across the rewards backend and FT AI services (H2Bet, Atomo, BrazilBet, and cross-brand FT AI).",
+      "incident_refs": [
+        "INC-11639",
+        "INC-11602",
+        "INC-11554",
+        "INC-11390"
+      ]
+    }
   }
 }

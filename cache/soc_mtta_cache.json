@@ -5872,14 +5872,14 @@
     },
     "2026-W27": {
       "Joachim Farrugia": {
-        "pages_targeted": 160,
-        "resolved": 151,
+        "pages_targeted": 261,
+        "resolved": 252,
         "expired": 1,
         "cancelled": 8,
-        "miss_rate": 0.01,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 139,
-          "sample_size": 151,
+          "sample_size": 252,
           "sampled": false,
           "median_mtta_min": 4.67,
           "mean_mtta_min": 3.95,
@@ -7710,14 +7710,14 @@
         }
       },
       "Gérard E. Pelayo": {
-        "pages_targeted": 33,
-        "resolved": 31,
-        "expired": 0,
-        "cancelled": 2,
-        "miss_rate": 0.0,
+        "pages_targeted": 59,
+        "resolved": 47,
+        "expired": 8,
+        "cancelled": 4,
+        "miss_rate": 0.15,
         "mtta": {
           "acked_count": 17,
-          "sample_size": 31,
+          "sample_size": 47,
           "sampled": false,
           "median_mtta_min": 0.42,
           "mean_mtta_min": 0.64,
@@ -7845,14 +7845,14 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 396,
-        "resolved": 383,
+        "pages_targeted": 400,
+        "resolved": 385,
         "expired": 1,
-        "cancelled": 12,
+        "cancelled": 14,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 331,
-          "sample_size": 383,
+          "sample_size": 385,
           "sampled": false,
           "median_mtta_min": 2.3,
           "mean_mtta_min": 3.95,
