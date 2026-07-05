@@ -155,26 +155,6 @@ def main():
             warn(f"[{cw}] partner_tickets.total_count ({pt_total}) is well below "
                  f"Intercom IC count ({av_intercom}) — Intercom steps may be stale")
 
-    # ── 4B. Exec notes staleness (warn) ──────────────────────────────────────
-    # exec_notes.json is hand-edited; the report shows it verbatim, so old notes
-    # silently read as current context. Warn when the 'updated' stamp is >14d old.
-    notes_file = os.path.join(os.path.dirname(CACHE), "exec_notes.json")
-    try:
-        with open(notes_file) as f:
-            notes_updated = json.load(f).get("updated")
-        if notes_updated:
-            upd = datetime.strptime(notes_updated, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            age_d = (datetime.now(timezone.utc) - upd).days
-            if age_d > 14:
-                warn(f"exec_notes.json last updated {notes_updated} ({age_d}d ago) — "
-                     f"Notes & Context on the exec slide may be stale")
-        else:
-            warn("exec_notes.json has no 'updated' stamp — add one when editing notes")
-    except FileNotFoundError:
-        pass
-    except (ValueError, json.JSONDecodeError) as e:
-        warn(f"could not check exec_notes.json staleness: {e}")
-
     # ── 5. Freshness-by-age (warn) ───────────────────────────────────────────
     newest = max((t.get("reported_at", "") for t in ew), default="")
     if newest:

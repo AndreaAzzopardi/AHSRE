@@ -806,16 +806,11 @@ The script reads both `cache/weekly_report_cache.json` and `cache/soc_mtta_cache
 
 **Executive Summary — dynamic layout rules (implemented in the generator):**
 
-**No part of the report should ever have scrollable text.** The exec slide body is a **side-by-side row**: P1 Incidents This Week on the left (`flex:1.1`), Notes & Context on the right (`flex:1`). Both panels use `overflow:hidden` and take the full slide height — this gives each column enough vertical room for the incident cards and note text to render without clipping.
+**No part of the report should ever have scrollable text.** The exec slide body is a single full-width **P1 Incidents This Week** panel with `overflow:hidden` taking the full slide height. (The Notes & Context panel was removed 2026-07-05; `cache/exec_notes.json` is no longer read.)
 
 **Date header:** the slide group-label and the P1 panel subheader both show the full week range, not just the Monday. Computed as `_ew_range = "{monday} – {monday+6d}"` (e.g. `1 Jun – 7 Jun`). Format: `Executive Summary · 1 Jun – 7 Jun` and `1 Jun – 7 Jun · 2 incidents`.
 
-- **P1 Incidents This Week panel** (left): detail row font is 11px for 3+ incidents, 12px otherwise.
-- **Notes & Context panel** (right): notes stacked vertically (`flex-direction:column`). Layout computed from `_notes_chars` (total chars across all notes) and `_notes_n`:
-  - **Columns**: ≤1 note or chars > 650 → 1 column; otherwise 2 columns
-  - **Font (title / body / line-height)**: chars > 800 → 12px / 11px / 1.5; chars > 480 → 13px / 12px / 1.5; else → 13px / 13px / 1.6
-
-When editing `cache/exec_notes.json`, keep total character count in mind: under ~480 chars renders at full size, 480–800 drops body to 12px, over 800 collapses to 1 column at 11px. Short punchy notes are more readable on-slide.
+- **P1 Incidents This Week panel**: detail row font is 11px for 3+ incidents, 12px otherwise.
 
 The script handles missing `soc_mtta_cache.json` gracefully (empty Section 4). The SOC MTTA chart only shows ISO weeks that have at least one person with MTTA data — it starts from the first fetched week and expands automatically.
 

@@ -55,15 +55,8 @@ try:
 except FileNotFoundError:
     pir_history = {}
 
-EXEC_NOTES_FILE = os.path.join(_ROOT, "cache", "exec_notes.json")
-try:
-    with open(EXEC_NOTES_FILE) as f:
-        _exec_notes_json = json.load(f)
-    exec_notes_data = _exec_notes_json.get("notes", [])
-    exec_notes_updated = _exec_notes_json.get("updated")  # ISO date, set by hand when editing notes
-except FileNotFoundError:
-    exec_notes_data = []
-    exec_notes_updated = None
+# Notes & Context panel removed from the exec slide 2026-07-05 (user request);
+# cache/exec_notes.json is no longer read.
 
 WEEK_KEYS = [k for k in sorted(cache.keys()) if not k.startswith("_")][-13:]  # 12 prior + current
 today = datetime.now(tz=timezone.utc)
@@ -1473,55 +1466,8 @@ _exec_chip_grid_html = (
     + '</div>'
 )
 
-# ── Dynamic exec body layout — no scrolling anywhere ─────────────────────────
-# Both panels share the body via flex. Overflow is hidden (clips silently).
-# P1 incidents flex grows with incident count so it gets more room when needed.
-if _p1_inc_n == 0:
-    _p1_inc_flex = "0 0 auto"   # just the "no incidents" message
-elif _p1_inc_n == 1:
-    _p1_inc_flex = "0.7"
-elif _p1_inc_n == 2:
-    _p1_inc_flex = "1.0"
-else:
-    _p1_inc_flex = "1.4"        # 3+ incidents, takes more of the body
-
 # Detail row font: shrink when many incidents so rows fit in the allotted flex space
 _inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
-
-# Notes staleness stamp: amber once older than 14 days so a forgotten
-# exec_notes.json doesn't keep presenting old context as current.
-_notes_stamp_html = ""
-if exec_notes_updated:
-    try:
-        _notes_upd_dt = datetime.strptime(exec_notes_updated, "%Y-%m-%d").replace(tzinfo=timezone.utc)
-        _notes_age_d = (today - _notes_upd_dt).days
-        _notes_stamp_col = "#f59e0b" if _notes_age_d > 14 else "#475569"
-        _notes_stamp_txt = f"updated {_notes_upd_dt.strftime('%-d %b %Y')}"
-        if _notes_age_d > 14:
-            _notes_stamp_txt += f" &middot; {_notes_age_d}d old ⚠"
-        _notes_stamp_html = (
-            f'<span style="margin-left:auto;font-size:10px;font-weight:500;'
-            f'letter-spacing:normal;text-transform:none;color:{_notes_stamp_col}">'
-            f'{_notes_stamp_txt}</span>'
-        )
-    except ValueError:
-        pass
-
-# Notes & Context layout
-_notes_n     = len(exec_notes_data)
-_notes_chars = sum(len(n.get("title","")) + len(n.get("body","")) for n in exec_notes_data)
-# Column count: 1 note or long content → single column; otherwise 2 columns
-if _notes_n <= 1 or _notes_chars > 650:
-    _notes_cols = 1
-else:
-    _notes_cols = 2
-# Font size: scale down as content grows
-if _notes_chars > 800:
-    _notes_title_sz, _notes_body_sz, _notes_lh = "12px", "11px", "1.5"
-elif _notes_chars > 480:
-    _notes_title_sz, _notes_body_sz, _notes_lh = "13px", "12px", "1.5"
-else:
-    _notes_title_sz, _notes_body_sz, _notes_lh = "13px", "13px", "1.6"
 
 exec_slide_html = (
     '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY ════════════════════════ -->\n'
@@ -1554,37 +1500,15 @@ exec_slide_html = (
     f'    {_exec_chip_grid_html}\n'
     f'  </div>\n'
 
-    # ── SIDE-BY-SIDE BODY: P1 Incidents (left) | Notes & Context (right) ────
+    # ── BODY: P1 Incidents This Week (full width; Notes & Context removed) ──
     '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
-
-    # Left — P1 Incidents This Week
-    + f'    <div style="flex:1.1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
+    + f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
     + f'      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0">\n'
     + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'
     + f'        <span style="font-size:12px;color:#475569">{_ew_range} · {_ew_true_p1} incident{"s" if _ew_true_p1 != 1 else ""}</span>\n'
     + f'      </div>\n'
     + _exec_inc_rows
     + '\n    </div>\n'
-
-    # Right — Notes & Context
-    + (
-        f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
-        f'      <div style="display:flex;align-items:baseline;font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:8px;flex-shrink:0">Notes & Context{_notes_stamp_html}</div>\n'
-        f'      <div style="display:flex;flex-direction:column;gap:10px">\n'
-        + ''.join(
-            f'        <div style="padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:6px">'
-            f'<div style="font-size:{_notes_title_sz};font-weight:700;color:#cbd5e1;margin-bottom:4px">{n["title"]}</div>'
-            f'<div style="font-size:{_notes_body_sz};color:#94a3b8;line-height:{_notes_lh}">{n["body"]}</div>'
-            f'</div>\n'
-            for n in exec_notes_data
-        )
-        + f'      </div>\n'
-        + f'    </div>\n'
-        if exec_notes_data else
-        f'    <div style="flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px">'
-        f'<span style="font-size:12px;color:#475569">No notes — add items to cache/exec_notes.json</span></div>\n'
-    )
-
     + '  </div>\n'
     + '</div></div>\n'
 )
