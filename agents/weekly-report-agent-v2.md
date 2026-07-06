@@ -73,7 +73,9 @@ Before writing `p1_quality_incidentio`, `mtta`, `incident_volume`, or `alert_vol
 - A genuine zero is only written when the API call **succeeded** and the week legitimately returned no records. This is realistic only for `p1_quality` true/false counts in a quiet week — it is **never** valid for `incident_volume.total` or `alert_volume.total` at Fast Track's scale (hundreds/week).
 - At end of run, if any source was retained-not-overwritten, surface it in the output summary as `"⚠ N week/source cells retained due to fetch failure — re-run when incident.io is healthy"`.
 
-Note for `true_p1_incidents`: include current-week True P1s **even if the incident is private or still active** (e.g. a live security incident) — do not filter by visibility or status, or genuine True P1s will be missed (INC-10453 was missed this way).
+**Private incidents are excluded from the ENTIRE report** (rule set 2026-07-06, supersedes the earlier INC-10453 note that said the opposite): any incident with `visibility: "private"` (e.g. security incidents like INC-11433) must not factor into ANY metric or slide — P1 quality, MTTA, incident volume, true-P1 summaries, workload, everything. Filter them out client-side wherever `incident_list` results are used. `incident_stats` aggregates (Step 2C Part A) cannot filter by visibility — subtract any private incidents you observed in the Step 2 listing (that covers all P1s; private non-P1 incidents are exceptionally rare, subtract manually if you become aware of one).
+
+Note for `true_p1_incidents`: still include **active/unresolved** True P1s (do not filter by status) — only visibility filters an incident out.
 
 ---
 
@@ -106,9 +108,9 @@ For each returned row that is a complete week, write: `cache[week]["p1_quality_c
 
 ---
 
-## Step 2 — incident.io P1 quality (May 2026+, cache-aware)
+## Step 2 — incident.io P1 quality (May 2026+, cache-aware with 3-week re-check)
 
-**Determine fetch range:** find the oldest complete week ≥ `2026-05-04` (W19) without `p1_quality_incidentio` in cache. Set `fetch_after`. If all complete weeks ≥ W19 are cached, `fetch_after = current_week_monday`.
+**Determine fetch range:** find the oldest complete week ≥ `2026-05-04` (W19) without `p1_quality_incidentio` in cache. Set `fetch_after = min(that week, current_week_monday − 21 days)` — i.e. even when everything is cached, **always re-fetch the last 3 complete weeks plus the current week, and overwrite their cached values**. Classification lags: the team back-fills "P1 validity assessment" up to two weeks after an incident (found 2026-07-06 — the 22 Jun week was cached as 3 true / 5 false / 6 unclassified but had become 7 / 7 / 0 in incident.io). Weeks older than the re-check window stay locked as before.
 
 **Fetch:** call `incident_list` with:
 - `severity: ["01HKQ8WYP01RYH4XD82M9J93KV"]` (P1)
@@ -118,14 +120,16 @@ For each returned row that is a complete week, write: `cache[week]["p1_quality_c
 
 Paginate all pages.
 
-For each incident, read custom field `01KRY7KT75AQJ9KDD9NRF18WJ7` (**P1 validity assessment**):
+**Drop any incident with `visibility: "private"`** (global rule — see Data integrity guard). It must not appear in these counts, and remember its reference: it also gets subtracted from Step 2C incident volume and excluded from Step 2B MTTA and Step 2E summaries.
+
+For each remaining incident, read custom field `01KRY7KT75AQJ9KDD9NRF18WJ7` (**P1 validity assessment**):
 - `01KRY7KT7591SSZCVWRKCTBM44` → True P1
 - `01KRY7KT75FHMKV0AYHJSVM8JB` → Not a P1 (False P1)
 - No value → Unclassified
 
 Week = Monday of `reported_at` from timestamps (fall back to `created_at`).
 
-For each **complete** week, write: `cache[week]["p1_quality_incidentio"] = {true_p1, false_p1, unclassified}`. Overwrite current week.
+For each **complete** week in the fetch range, write: `cache[week]["p1_quality_incidentio"] = {true_p1, false_p1, unclassified}` — overwriting the re-check-window weeks. Overwrite current week.
 
 **In-memory:** for every week in `window_weeks` ≥ `2026-05-04`, load from cache and produce `{week, true_p1, false_p1, unclassified, source: "incident.io"}`.
 
@@ -490,6 +494,9 @@ This step populates the `true_p1_incidents` cache key — structured per-inciden
 **Which incidents to fetch:**
 1. Current-week True P1s (week = `current_week_monday`, classified as True P1 in Step 2): always re-fetch.
 2. Any prior-week True P1 that is **still open** (status ≠ `Resolved` and ≠ `Closed`): re-fetch to capture updated status.
+3. **Late classifications:** any incident Step 2's re-check window found newly classified as True P1 in the last 3 complete weeks that has no entry in that week's `true_p1_incidents` yet — fetch it and add its entry (the classification often lands a week or two after the incident).
+
+Private incidents (`visibility: "private"`) are never included — global rule.
 
 **Check cache:** load `cache[current_week_monday].get("true_p1_incidents", [])`. For prior weeks, scan `cache[week]["true_p1_incidents"]` for entries where `status` is not `Resolved`/`Closed` — these need re-fetching.
 
