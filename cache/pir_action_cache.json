@@ -1,12 +1,12 @@
 {
-  "generated": "2026-07-06",
+  "generated": "2026-07-07",
   "total": 137,
-  "open": 73,
-  "completed": 64,
-  "completion_rate": 46.72,
+  "open": 72,
+  "completed": 65,
+  "completion_rate": 47.45,
   "stale_count": 1,
   "stale_pct": 1.4,
-  "no_due_date_count": 72,
+  "no_due_date_count": 71,
   "no_due_date_pct": 98.6,
   "teams": [
     {
@@ -31,8 +31,8 @@
     },
     {
       "name": "Integrations FBI",
-      "open": 9,
-      "completed": 1
+      "open": 8,
+      "completed": 2
     },
     {
       "name": "Cloud",
@@ -97,8 +97,8 @@
       "closed": 10
     },
     "Deployment Governance": {
-      "open": 5,
-      "closed": 6
+      "open": 4,
+      "closed": 7
     },
     "Decommission Governance": {
       "open": 2,
@@ -128,7 +128,7 @@
   "open_by_priority": {
     "Urgent": 4,
     "High": 21,
-    "Normal": 27,
+    "Normal": 26,
     "Low": 8,
     "No priority": 13
   }
