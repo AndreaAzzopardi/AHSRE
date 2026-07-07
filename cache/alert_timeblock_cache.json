@@ -268,5 +268,37 @@
     "total_declined": 467,
     "total_accepted": 1647,
     "overall_waste_pct": 22.1
+  },
+  "2026-07-06": {
+    "days_in_week": 1,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 399,
+        "declined": 10,
+        "accepted": 389,
+        "waste_pct": 2.5
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 56,
+        "declined": 0,
+        "accepted": 56,
+        "waste_pct": 0.0
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 85,
+        "declined": 49,
+        "accepted": 36,
+        "waste_pct": 57.6
+      }
+    },
+    "total": 540,
+    "total_declined": 59,
+    "total_accepted": 481,
+    "overall_waste_pct": 10.9,
+    "partial": true,
+    "note": "Partial week — only Mon data available (Mon)"
   }
 }
