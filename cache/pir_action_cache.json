@@ -1,12 +1,12 @@
 {
-  "generated": "2026-07-07",
-  "total": 137,
-  "open": 72,
-  "completed": 65,
-  "completion_rate": 47.45,
+  "generated": "2026-07-08",
+  "total": 136,
+  "open": 69,
+  "completed": 67,
+  "completion_rate": 49.26,
   "stale_count": 1,
   "stale_pct": 1.4,
-  "no_due_date_count": 71,
+  "no_due_date_count": 68,
   "no_due_date_pct": 98.6,
   "teams": [
     {
@@ -21,8 +21,8 @@
     },
     {
       "name": "CRM Experience",
-      "open": 15,
-      "completed": 10
+      "open": 12,
+      "completed": 12
     },
     {
       "name": "Rewards",
@@ -77,11 +77,11 @@
   ],
   "categories": {
     "SRE Incident": {
-      "open": 21,
-      "closed": 9
+      "open": 19,
+      "closed": 11
     },
     "Engineering Improvement": {
-      "open": 16,
+      "open": 15,
       "closed": 12
     },
     "System Monitoring": {
@@ -127,9 +127,9 @@
   },
   "open_by_priority": {
     "Urgent": 4,
-    "High": 21,
-    "Normal": 26,
-    "Low": 8,
+    "High": 20,
+    "Normal": 25,
+    "Low": 7,
     "No priority": 13
   }
 }
