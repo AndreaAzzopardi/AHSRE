@@ -1376,17 +1376,17 @@
     "labels": [
       "Brazil Bet",
       "Gembet",
-      "Fast Track",
       "Avento",
+      "Fast Track",
       "Sisutech",
       "Stanleybet.ro",
-      "SoftGenius",
-      "Momentum Group(Spinbet)",
-      "Tuohi",
-      "Bravo Bet (Suprema)"
+      "Ambition Red",
+      "Atomo",
+      "Bravo Bet (Suprema)",
+      "Momentum Group(Spinbet)"
     ],
     "counts": [
-      11,
+      12,
       5,
       4,
       4,
@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonuses are being granted to H2Bet users when BetConstruct returns an HTTP 503 error after already crediting a bonus, causing our retry logic to grant the same bonus a second time. The pattern has been recurring for roughly 24 weeks and continues to leak duplicate bonuses at around 300 extra grants per week as of 18 June 2026.\n\nImpact: Recurring bonus leakage for H2Bet users, with approximately 300\u2013500 extra bonus grants per week over the past 24 weeks affecting both FreeSpins and Cash bonuses. During the weekend of 6\u20137 June 2026 no new duplicates were observed despite multiple BetConstruct 5xx bursts, but the underlying risk remains and duplicates resumed at ~300/week afterward.\n\nCause: BetConstruct can return HTTP 503 after a bonus has actually been credited to the player. Fast Track then retries the request, which results in the same bonus being granted more than once. This is not the expected behavior of the operator API and is what causes the duplicate grants \u2014 the retry path treats an indeterminate response as a failure.\n\nActions Taken: Enhanced logging and monitoring were deployed so duplicate events can be detected in minutes rather than hours (crm-bonus-distributor PR #123 merged 2026-06-09). A behavioural mitigation to keep the idempotency lock on indeterminate proxy errors (PR #122) is closed unmerged pending H2Bet approval; PR #124 is scoped to a different code path. H2Bet has rejected the '503-as-success' workaround due to traceability concerns. Two follow-ups remain open: partner-side approval of a scoped mitigation, and BetConstruct engagement on a long-term idempotency-safe fix. No technical mitigation has been deployed yet and the core issue remains unresolved."
+        "summary": "Problem: Duplicate bonuses are being granted to H2Bet players when BetConstruct returns HTTP 503/5xx after already crediting a bonus, causing Fast Track's retry to grant the same bonus again. The pattern has persisted for 24+ weeks.\n\nImpact: Recurring bonus leakage: approximately 275\u2013936 users affected per week over the past 24 weeks; both FreeSpins and Cash bonuses are affected. Weekend of 6\u20137 June 2026 saw no new duplicates but the risk persists \u2014 ~300 extra grants continued to occur weekly as of 11 June 2026.\n\nCause: BetConstruct returns HTTP 503 after successfully crediting a bonus, which triggers Fast Track's retry paths. This is not the expected behavior of the operator API and the underlying root cause is upstream at BetConstruct. Fast Track's crm-bonus-distributor PR #122 (behavioural mitigation) is closed unmerged; PR #123 added observability only.\n\nActions Taken: Enhanced logging + monitoring deployed (PR #123, merged 2026-06-09), giving minute-scale duplicate detection. Partner-specific workaround (treating 503 as success) proposed but rejected by H2Bet due to traceability concerns. Two follow-ups remain open \u2014 H2Bet approval of a scoped 503-as-success workaround, and BetConstruct API/idempotency outreach. No technical mitigation deployed yet; incident remains in Monitoring pending BetConstruct upstream fix or H2Bet mitigation approval."
       },
       {
         "reference": "INC-8219",
@@ -4637,7 +4637,7 @@
         "status": "Fixing",
         "reported_at": "2026-07-02T13:40:45Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12022",
-        "summary": "Problem: Shortlinks and unsubscribe links for multiple partner brands were redirecting users to a Cloudflare 'Forbidden' page instead of the intended landing page. The regression broke normal email and campaign link behaviour for the affected brands.\n\nImpact: Users for the affected brands could not open shortlinks or unsubscribe links and were shown a Forbidden error. Confirmed brands affected include Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania, and Estelarbet. The blocked links prevented players from reaching landing pages, opting out, or completing intended actions from CRM emails.\n\nCause: A Cloudflare-origin check was requiring shortlink and unsubscribe requests to pass through Cloudflare, which caused legitimate brand links to be rejected with a 403 forbidden. A separate, unrelated file-serving change was also blocking access to deleted images and contributed to broken assets.\n\nActions Taken: The Cloudflare-origin check was removed for the affected brand paths and the fix was merged. The deleted-image file access change was reverted, a new stable platform version was cut, and link functionality was confirmed working again for Estelarbet and the reported templates. The incident is currently in 'Fixing' status while the team validates the fix across the remaining brands before moving to Monitoring/Resolved."
+        "summary": "Problem: Shortlinks and unsubscribe links for multiple partner brands started returning a 'Forbidden' page instead of resolving to the expected content. This blocked customer-facing link flows for six brands.\n\nImpact: End users on Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania and Estelarbet could not follow shortlinks or click unsubscribe links \u2014 they received a Cloudflare-origin 'Forbidden' error. This affected campaign-driven acquisition and outbound messaging flows for the impacted brands.\n\nCause: A Cloudflare-origin check was added that required shortlink and unsubscribe requests to pass through Cloudflare \u2014 this rejected valid brand traffic. A separate file-serving change was also blocking deleted images from being served, contributing to platform errors.\n\nActions Taken: The Cloudflare-origin check was removed for the affected brand paths and the fix merged. The file-serving change was reverted, a new stable platform version was rolled out, and shortlinks were validated as working again for Estelarbet and the reported templates. Incident status moved to Fixing 2026-07-06 as the change proceeds through the deploy pipeline \u2014 awaiting production confirmation before Resolved."
       }
     ],
     "alert_volume": {
@@ -4800,32 +4800,33 @@
     "p1_quality_incidentio": {
       "true_p1": 1,
       "false_p1": 3,
-      "unclassified": 0
+      "unclassified": 3
     },
     "incident_volume": {
-      "total": 93,
-      "P1": 4,
-      "P2": 41,
-      "P3": 44,
+      "total": 134,
+      "P1": 7,
+      "P2": 57,
+      "P3": 65,
       "P4": 3,
-      "ic_ticket_count": 21
+      "ic_ticket_count": 26
     },
     "alert_volume": {
-      "total": 910,
+      "total": 1275,
       "by_source": {
         "Cloudflare AI Loop": 1,
-        "Database Security AI Loop": 1,
-        "Dead Man's Snitch": 55,
-        "Grafana SOC alerts": 301,
-        "Grafana alerts": 273,
-        "HTTP DMS FTML Alerts": 1,
-        "HTTP alerts": 254,
-        "Intercom": 24
+        "Cloudflare Security Scanner": 2,
+        "Database Security AI Loop": 2,
+        "Dead Man's Snitch": 69,
+        "Grafana SOC alerts": 333,
+        "Grafana alerts": 322,
+        "HTTP DMS FTML Alerts": 2,
+        "HTTP alerts": 515,
+        "Intercom": 29
       }
     },
     "mtta": {
       "P1": {
-        "n": 4,
+        "n": 7,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -4833,55 +4834,69 @@
         "mean_mtta_min": null
       },
       "P2": {
-        "n": 41,
-        "n_acked": 21,
+        "n": 57,
+        "n_acked": 29,
         "ack_rate": 0.51,
         "mtta_minutes": [
-          2.27,
-          4.12,
-          5.47,
-          7.43,
-          7.63,
-          9.58,
+          2.267,
+          2.317,
+          3.667,
+          4.117,
+          4.35,
+          5.467,
+          7.433,
+          7.633,
+          9.583,
+          10.317,
           13.2,
-          17.08,
+          16.3,
+          17.083,
           18.0,
+          18.767,
+          19.5,
+          19.517,
           28.2,
-          53.97,
-          70.43,
-          72.63,
+          53.967,
+          70.433,
+          72.633,
           74.7,
           90.85,
-          93.27,
-          108.88,
-          152.12,
-          265.73,
+          93.267,
+          108.883,
+          152.117,
+          265.733,
           278.05,
-          451.83
+          451.833
         ],
-        "median_mtta_min": 53.97,
-        "mean_mtta_min": 86.9
+        "median_mtta_min": 18.8,
+        "mean_mtta_min": 66.2
       },
       "P3": {
-        "n": 44,
-        "n_acked": 12,
+        "n": 66,
+        "n_acked": 18,
         "ack_rate": 0.27,
         "mtta_minutes": [
-          3.78,
-          11.18,
-          13.12,
+          3.783,
+          4.983,
+          9.8,
+          11.183,
+          13.117,
           14.2,
-          14.23,
+          14.233,
           16.3,
-          16.58,
-          18.03,
-          21.48,
-          104.73,
-          218.17,
-          494.17
+          16.583,
+          16.933,
+          18.033,
+          20.3,
+          21.483,
+          41.883,
+          69.45,
+          104.733,
+          218.167,
+          494.167
         ],
-        "median_mtta_min": 16.44,
-        "mean_mtta_min": 78.8
+        "median_mtta_min": 16.8,
+        "mean_mtta_min": 61.6
       },
       "P4": {
         "n": 3,
@@ -4893,33 +4908,37 @@
       }
     },
     "p1_frt_sla": {
-      "total": 3,
-      "hit": 3,
+      "total": 5,
+      "hit": 5,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 9.1,
-      "mean_frt_min": 12.9,
+      "median_frt_min": 7.9,
+      "mean_frt_min": 9.5,
       "frt_seconds": [
+        67,
         367,
+        475,
         545,
         1395
       ]
     },
     "p1_brands": {
-      "Mystake ": 1,
+      "Brazil Bet": 1,
       "Rhino Entertainment": 1,
+      "VBet": 1,
+      "Mystake": 1,
       "Ambition Red": 1
     },
     "p1_frt_breaches": [],
     "csat": {
-      "total": 19,
-      "rated": 6,
-      "avg_score": 4.83,
+      "total": 23,
+      "rated": 8,
+      "avg_score": 4.88,
       "pct_positive": 100.0,
-      "pct_perfect": 83.3,
-      "response_rate": 31.6,
+      "pct_perfect": 87.5,
+      "response_rate": 34.8,
       "score_dist": {
-        "5": 5,
+        "5": 7,
         "4": 1,
         "3": 0,
         "2": 0,
@@ -4928,18 +4947,20 @@
     },
     "csat_low_scores": [],
     "partner_tickets": {
-      "p1_responded": 3,
+      "p1_responded": 4,
       "p2_responded": 11,
-      "p3_responded": 3,
+      "p3_responded": 5,
       "p1_open": 0,
       "p2_open": 0,
-      "p3_open": 0,
-      "total_count": 17,
-      "avg_response_min": 12.9,
-      "median_response_min": 6.6,
+      "p3_open": 1,
+      "total_count": 21,
+      "avg_response_min": 14.0,
+      "median_response_min": 6.5,
       "response_times_s": [
         30,
+        56,
         60,
+        67,
         135,
         136,
         191,
@@ -4954,18 +4975,20 @@
         647,
         1220,
         1395,
+        3512,
         5520
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 14,
+      "hit": 16,
       "missed": 0,
-      "total": 14,
+      "total": 16,
       "hit_rate": 100.0,
-      "mean_response_min": 12.9,
+      "mean_response_min": 15.0,
       "median_response_min": 6.5,
       "response_times_s": [
         30,
+        56,
         60,
         135,
         136,
@@ -4978,6 +5001,7 @@
         644,
         647,
         1220,
+        3512,
         5520
       ]
     },
@@ -4986,21 +5010,61 @@
       {
         "reference": "INC-12768",
         "name": "[P1] Intercom Incident : Mystake Production",
-        "status": "Waiting on Partner",
+        "status": "Closed",
         "reported_at": "2026-07-08T14:59:58Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12768",
-        "summary": "Problem: Singularity RTD (real-time delivery) is processing very slowly, which is delaying customer activities across the platform. The slow processing is severe enough that scheduled activities are not being delivered on time for a set of brands.\n\nImpact: Activities are being delayed significantly for a small number of brands, and the delays can cascade into the customer journey for affected players \u2014 including notifications, campaign triggers, and time-sensitive interactions. Mystake Production surfaced the issue via Intercom, but the underlying RTD backlog affects other brands as well.\n\nCause: The delay is tied to a broader ongoing incident affecting Singularity services, where the RTD pipeline is processing significantly slower than usual. The exact root cause of the RTD slowness is still being investigated as part of the parent Singularity Services issue.\n\nActions Taken: Declan is actively working on the RTD slowness. The incident is currently in 'Waiting on Partner' status while the team monitors processing throughput and coordinates recovery with the platform teams. Once RTD catches up on the backlog, the queued activities will be delivered."
+        "summary": "Problem: Fast Track's Singularity RTD service was processing player activity extremely slowly on 2026-07-08 for the Mystake brand, delaying activity ingestion and downstream lifecycle triggers.\n\nImpact: Player activities were delayed significantly for a small number of brands including Mystake, which can also delay the customer journey (deposit-driven triggers, campaigns, SMS/email touchpoints). Duration was ~4 hours from Reported to Identified; Resolved 2026-07-09 10:53 UTC.\n\nCause: The incident is linked to a wider degradation of the Singularity RTD service \u2014 the same real-time delivery pipeline experienced slow processing that morning. Root cause under review with the Singularity team.\n\nActions Taken: Declan led investigation from the Singularity side. RTD throughput recovered and the incident was closed 2026-07-09 10:53 UTC. Follow-up analysis and any capacity/throughput hardening will be tracked as a separate action; classification is 'True P1'."
       }
     ],
     "engineer_workload": {
       "tickets": [
         {
+          "reference": "INC-13048",
+          "lead": "Simon Grenefalk",
+          "severity": "P1",
+          "reported_at": "2026-07-09T19:21:42Z",
+          "resolved_at": "2026-07-09T19:49:34Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-12984",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-09T14:12:11Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-12919",
+          "lead": "James Hodgson",
+          "severity": "P1",
+          "reported_at": "2026-07-09T09:27:08Z",
+          "resolved_at": "2026-07-09T10:45:29Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-12909",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-09T08:32:54Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-12906",
+          "lead": "James Hodgson",
+          "severity": "P3",
+          "reported_at": "2026-07-09T08:05:06Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
           "reference": "INC-12768",
           "lead": "Matteo Rapisarda",
           "severity": "P1",
           "reported_at": "2026-07-08T14:59:58Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-09T10:53:10Z",
+          "closed": true
         },
         {
           "reference": "INC-12766",
@@ -5039,8 +5103,8 @@
           "lead": "Jason",
           "severity": "P2",
           "reported_at": "2026-07-08T09:32:27Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-09T07:14:16Z",
+          "closed": true
         },
         {
           "reference": "INC-12602",
