@@ -1,12 +1,12 @@
 {
-  "generated": "2026-07-08",
-  "total": 136,
-  "open": 69,
+  "generated": "2026-07-09",
+  "total": 137,
+  "open": 70,
   "completed": 67,
-  "completion_rate": 49.26,
+  "completion_rate": 48.91,
   "stale_count": 1,
   "stale_pct": 1.4,
-  "no_due_date_count": 68,
+  "no_due_date_count": 69,
   "no_due_date_pct": 98.6,
   "teams": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "name": "Integrations FBI",
-      "open": 8,
+      "open": 9,
       "completed": 2
     },
     {
@@ -104,6 +104,10 @@
       "open": 2,
       "closed": 1
     },
+    "Other": {
+      "open": 1,
+      "closed": 1
+    },
     "Incident Management": {
       "open": 1,
       "closed": 6
@@ -116,10 +120,6 @@
       "open": 1,
       "closed": 1
     },
-    "Other": {
-      "open": 0,
-      "closed": 1
-    },
     "Product Knowledge": {
       "open": 0,
       "closed": 1
@@ -130,6 +130,6 @@
     "High": 20,
     "Normal": 25,
     "Low": 7,
-    "No priority": 13
+    "No priority": 14
   }
 }
