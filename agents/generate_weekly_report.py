@@ -722,24 +722,35 @@ pir_total        = pir_cache.get("total", 0)
 pir_comp_rate    = pir_cache.get("completion_rate", 0.0)
 pir_stale        = pir_cache.get("stale_count", 0)
 pir_stale_pct    = pir_cache.get("stale_pct", 0.0)
-pir_no_due_count = pir_cache.get("no_due_date_count", 0)
-pir_no_due_pct   = pir_cache.get("no_due_date_pct", 0.0)
 pir_teams        = pir_cache.get("teams", [])
 pir_categories   = pir_cache.get("categories", {})
+# Class split (added 2026-07-10): "critical" = items born from Critical Incident /
+# P1 postmortems (no "sre incident" tag); "sre_incident" = day-to-day improvement
+# suggestions SRE raises to teams. Serve different purposes — visualised apart.
+pir_classes      = pir_cache.get("classes") or {}
+pir_crit         = pir_classes.get("critical", {})
+pir_sre          = pir_classes.get("sre_incident", {})
 
-pir_comp_cls   = "c-green" if pir_comp_rate >= 85 else "c-amber" if pir_comp_rate >= 65 else "c-red"
+def _pir_rate_cls(rate):
+    return "c-green" if rate >= 85 else "c-amber" if rate >= 65 else "c-red"
+
+pir_comp_cls   = _pir_rate_cls(pir_comp_rate)
 pir_stale_cls  = "c-red" if pir_stale_pct >= 50 else "c-amber" if pir_stale_pct >= 25 else "c-green"
-pir_no_due_cls = "c-red" if pir_no_due_pct >= 75 else "c-amber" if pir_no_due_pct >= 50 else "c-green"
 
 pir_cat_labels  = list(pir_categories.keys())
 pir_cat_open    = [v.get("open", 0)   if isinstance(v, dict) else v for v in pir_categories.values()]
 pir_cat_closed  = [v.get("closed", 0) if isinstance(v, dict) else 0 for v in pir_categories.values()]
 
 # Top 5 pain points — sorted by open count descending
+# "SRE Incident" is excluded — it's a class of its own (see the split cards),
+# not a Critical-PIR pain-point category. Top 5 selected by open count, then
+# displayed by total bar length (open+done) so the stacked bars read ordered.
 _pir_cat_sorted = sorted(
-    [(k, v.get("open", 0), v.get("closed", 0)) for k, v in pir_categories.items()],
+    [(k, v.get("open", 0), v.get("closed", 0)) for k, v in pir_categories.items()
+     if k != "SRE Incident"],
     key=lambda x: x[1], reverse=True
 )[:5]
+_pir_cat_sorted.sort(key=lambda x: (x[1] + x[2], x[1]), reverse=True)
 pir_top5_labels = [x[0] for x in _pir_cat_sorted]
 pir_top5_open   = [x[1] for x in _pir_cat_sorted]
 pir_top5_done   = [x[2] for x in _pir_cat_sorted]
@@ -750,6 +761,49 @@ pir_team_open   = [t["open"]      for t in pir_teams_chart]
 pir_team_closed = [t["completed"] for t in pir_teams_chart]
 pir_team_table_html = render_pir_team_table(pir_teams)
 
+# PIR stat cards — split by class when the snapshot carries it: Critical
+# Incident PIRs (red accent) vs SRE Improvements (cyan accent). Falls back to
+# the old global two-card row for snapshots without "classes".
+if pir_classes:
+    _crit_rate = pir_crit.get("completion_rate", 0.0)
+    _sre_rate  = pir_sre.get("completion_rate", 0.0)
+    pir_cards_html = f'''  <div class="stat-grid-4">
+    <div class="stat-card" style="border-left:3px solid #ef4444">
+      <div class="card-label">Open &middot; Critical Incident PIRs</div>
+      <div class="card-value c-amber">{pir_crit.get("open", 0)}</div>
+      <div class="card-subnote">From Critical Incident &amp; P1 postmortems &middot; {pir_crit.get("total", 0)} tracked</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #ef4444">
+      <div class="card-label">Completion &middot; Critical PIRs</div>
+      <div class="card-value {_pir_rate_cls(_crit_rate)}">{int(round(_crit_rate))}%</div>
+      <div class="card-subnote">{pir_crit.get("completed", 0)} of {pir_crit.get("total", 0)} done &middot; Target: 85%</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #38bdf8">
+      <div class="card-label">Open &middot; SRE Improvements</div>
+      <div class="card-value c-amber">{pir_sre.get("open", 0)}</div>
+      <div class="card-subnote">Day-to-day SRE suggestions to teams &middot; {pir_sre.get("total", 0)} tracked</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #38bdf8">
+      <div class="card-label">Completion &middot; SRE Improvements</div>
+      <div class="card-value {_pir_rate_cls(_sre_rate)}">{int(round(_sre_rate))}%</div>
+      <div class="card-subnote">{pir_sre.get("completed", 0)} of {pir_sre.get("total", 0)} done &middot; Target: 85%</div>
+    </div>
+  </div>'''
+else:
+    pir_cards_html = f'''  <div class="stat-grid-2">
+    <div class="stat-card">
+      <div class="card-label">Open PIR Items</div>
+      <div class="card-value c-amber">{pir_open}</div>
+      <div class="card-subnote">{pir_total} total tracked</div>
+    </div>
+    <div class="stat-card">
+      <div class="card-label">Completion Rate</div>
+      <div class="card-value {pir_comp_cls}">{int(round(pir_comp_rate))}%</div>
+      <div class="card-subnote">{pir_completed} of {pir_total} done</div>
+      <div class="card-subnote">Target: 85%</div>
+    </div>
+  </div>'''
+
 # ── PIR HISTORY — write current week snapshot & build chart arrays ────────────
 _pir_snap_key = pir_cache.get("generated", current_week)
 pir_history[_pir_snap_key] = {
@@ -757,15 +811,28 @@ pir_history[_pir_snap_key] = {
     "completed": pir_completed,
     "total":     pir_total,
     "rate":      round(pir_comp_rate, 1),
+    **({"crit_rate": pir_crit.get("completion_rate"),
+        "sre_rate":  pir_sre.get("completion_rate")} if pir_classes else {}),
 }
 with open(PIR_HISTORY_FILE, "w") as _f:
     json.dump(dict(sorted(pir_history.items())), _f, indent=2)
 
-# Snapshots are daily now (GitHub Action) — cap the trend chart to the last 13
-# points so it stays readable, mirroring the 13-week cap on WEEK_KEYS.
-_pir_hist_keys  = sorted(pir_history.keys())[-13:]
-pir_hist_labels = [fmt_week_label(k, False) for k in _pir_hist_keys]
-pir_hist_rate   = [pir_history[k]["rate"] for k in _pir_hist_keys]
+# Snapshots are daily now (GitHub Action) — the trend chart is WEEKLY: one
+# point per week (the latest snapshot inside that week wins), capped to the
+# last 13 weeks to mirror WEEK_KEYS. The current week's point moves daily
+# until the week closes, so it carries the usual '*' marker.
+_pir_by_week = {}
+for _d in sorted(pir_history.keys()):
+    _dt  = datetime.strptime(_d, "%Y-%m-%d")
+    _mon = (_dt - timedelta(days=_dt.weekday())).strftime("%Y-%m-%d")
+    _pir_by_week[_mon] = pir_history[_d]
+_pir_hist_keys  = sorted(_pir_by_week.keys())[-13:]
+pir_hist_labels = [fmt_week_label(k, k == current_week) for k in _pir_hist_keys]
+pir_hist_rate   = [_pir_by_week[k]["rate"] for k in _pir_hist_keys]
+# Per-class rates (tracked from 9 Jul 2026) — null before that, so the class
+# lines simply start where the data does.
+pir_hist_crit   = [_pir_by_week[k].get("crit_rate") for k in _pir_hist_keys]
+pir_hist_sre    = [_pir_by_week[k].get("sre_rate")  for k in _pir_hist_keys]
 
 # ── P1 INCIDENT SLIDE GENERATION ─────────────────────────────────────────────
 # Two fixed slides: "Current Week" (in-page ‹ › pager, 2 cards per view) and
@@ -1676,12 +1743,20 @@ pir_cat_chart_js = (
 # ── PIR TREND CHART JS ───────────────────────────────────────────────────────
 _pir_hist_lbl_js  = js_str_arr(pir_hist_labels)
 _pir_hist_rate_js = js_arr(pir_hist_rate)
+_pir_hist_crit_js = js_arr(pir_hist_crit)
+_pir_hist_sre_js  = js_arr(pir_hist_sre)
 pir_trend_chart_js = (
     "new Chart(document.getElementById('cPIRTrend'),{"
     "type:'line',data:{labels:" + _pir_hist_lbl_js + ",datasets:["
-    "{label:'Completion %',data:" + _pir_hist_rate_js + ","
+    "{label:'All items',data:" + _pir_hist_rate_js + ","
     "borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.08)',tension:0.3,fill:true,"
-    "pointRadius:5,pointBackgroundColor:'#a78bfa',pointBorderColor:'#0d1629',pointBorderWidth:2},"
+    "pointRadius:4,pointBackgroundColor:'#a78bfa',pointBorderColor:'#0d1629',pointBorderWidth:2},"
+    "{label:'Critical PIRs',data:" + _pir_hist_crit_js + ",spanGaps:true,"
+    "borderColor:'#ef4444',tension:0.3,fill:false,"
+    "pointRadius:4,pointBackgroundColor:'#ef4444',pointBorderColor:'#0d1629',pointBorderWidth:2},"
+    "{label:'SRE Improvements',data:" + _pir_hist_sre_js + ",spanGaps:true,"
+    "borderColor:'#38bdf8',tension:0.3,fill:false,"
+    "pointRadius:4,pointBackgroundColor:'#38bdf8',pointBorderColor:'#0d1629',pointBorderWidth:2},"
     "{label:'Target 85%',data:Array(" + str(len(pir_hist_rate)) + ").fill(85),"
     "borderColor:'#22c55e',borderDash:[5,4],borderWidth:2,pointRadius:0,fill:false,tension:0}"
     "]},options:{responsive:true,maintainAspectRatio:false,"
@@ -1835,25 +1910,7 @@ html = f'''<!DOCTYPE html>
   <div class="group-label">PIR Action Items
     <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; ClickUp post-incident reviews &middot; excl. SRE internal &middot; as of {pir_generated}</span>
   </div>
-  <div class="stat-grid-3">
-    <div class="stat-card">
-      <div class="card-label">Open PIR Items</div>
-      <div class="card-value c-amber">{pir_open}</div>
-      <div class="card-subnote">{pir_total} total tracked</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">Completion Rate</div>
-      <div class="card-value {pir_comp_cls}">{int(round(pir_comp_rate))}%</div>
-      <div class="card-subnote">{pir_completed} of {pir_total} done</div>
-      <div class="card-subnote">Target: 85%</div>
-    </div>
-    <div class="stat-card">
-      <div class="card-label">No Due Date Set</div>
-      <div class="card-value {pir_no_due_cls}">{int(round(pir_no_due_pct))}%</div>
-      <div class="card-subnote">{pir_no_due_count} of {pir_open} open items</div>
-      <div class="card-subnote">Target: &lt;25% without date</div>
-    </div>
-  </div>
+{pir_cards_html}
   <div style="flex:1;min-height:0;display:flex;gap:12px;margin-top:0">
     <div style="flex:1;min-height:0;display:flex;flex-direction:column">
 {pir_team_table_html}

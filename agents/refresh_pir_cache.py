@@ -108,6 +108,13 @@ def main():
     teams = {}
     categories = {}
     open_by_priority = {k: 0 for k in PRIORITY_KEYS}
+    # Class split: items tagged "sre incident" are day-to-day SRE improvement
+    # suggestions to teams; everything else comes from Critical Incident / P1
+    # postmortems. Each task is classed exactly once.
+    classes = {
+        "critical":     {"open": 0, "completed": 0},
+        "sre_incident": {"open": 0, "completed": 0},
+    }
 
     for t in raw:
         status = ((t.get("status") or {}).get("status") or "").lower()
@@ -129,6 +136,9 @@ def main():
         for cat in (cats or ["Other"]):
             c = categories.setdefault(cat, {"open": 0, "closed": 0})
             c["open" if bucket == "open" else "closed"] += 1
+
+        cls = "sre_incident" if "sre incident" in tags else "critical"
+        classes[cls][bucket] += 1
 
         if bucket == "open":
             pri = ((t.get("priority") or {}).get("priority") or "").capitalize()
@@ -154,6 +164,10 @@ def main():
         return 1
 
     rate = round(n_done / total * 100, 2)
+    for cls in classes.values():
+        cls_total = cls["open"] + cls["completed"]
+        cls["total"] = cls_total
+        cls["completion_rate"] = round(cls["completed"] / cls_total * 100, 2) if cls_total else 0.0
     snapshot = {
         "generated": now.strftime("%Y-%m-%d"),
         "total": total,
@@ -170,6 +184,7 @@ def main():
         ),
         "categories": dict(sorted(categories.items(), key=lambda kv: -kv[1]["open"])),
         "open_by_priority": open_by_priority,
+        "classes": classes,
     }
     with open(CACHE_FILE, "w") as f:
         json.dump(snapshot, f, indent=2)
@@ -183,6 +198,8 @@ def main():
         history = {}
     history[snapshot["generated"]] = {
         "open": n_open, "completed": n_done, "total": total, "rate": round(rate, 1),
+        "crit_rate": classes["critical"]["completion_rate"],
+        "sre_rate":  classes["sre_incident"]["completion_rate"],
     }
     with open(HISTORY_FILE, "w") as f:
         json.dump(dict(sorted(history.items())), f, indent=2)
