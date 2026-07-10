@@ -1288,7 +1288,7 @@ _inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
 
 _exec_inc_rows = ""
 if _ew_p1_incs:
-    for _inc in _ew_p1_incs[:6]:
+    for _inc in _ew_p1_incs:
         _ref  = _inc.get("reference", "")
         _nm   = _inc.get("name", "")
         _nm = _clean_inc_name(_nm)
@@ -1318,9 +1318,6 @@ if _ew_p1_incs:
             + (f'<div style="font-size:{_inc_detail_sz};color:#94a3b8;line-height:1.4;margin-top:3px">{_detail}</div>' if _detail else '')
             + f'</div>'
         )
-    _n_more_exec = len(_ew_p1_incs) - 6
-    if _n_more_exec > 0:
-        _exec_inc_rows += f'<div style="font-size:12px;color:#475569;padding-top:8px">+{_n_more_exec} more — see P1 Incidents slides</div>'
 else:
     _exec_inc_rows = '<div style="font-size:13px;color:#22c55e;padding:10px 0">No True P1 incidents this week.</div>'
 
