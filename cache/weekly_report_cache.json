@@ -4786,13 +4786,49 @@
       }
     ],
     "p1_theme": {
-      "label": "JWT_SECRET_MISCONFIG",
-      "summary": "Four of this week's six True P1s were driven by JWT-secret / auth-token misconfiguration across the rewards backend and FT AI services (H2Bet, Atomo, BrazilBet, and cross-brand FT AI).",
+      "label": "SECURITY_RELEASE_FALLOUT",
+      "summary": "4 of 7 True P1s were fallout from the 24 Jun \u2013 1 Jul security release \u2014 three failure modes, all silent: detected by partners, not monitoring.",
       "incident_refs": [
-        "INC-11639",
-        "INC-11602",
         "INC-11554",
-        "INC-11390"
+        "INC-11602",
+        "INC-11639",
+        "INC-11390",
+        "INC-11707"
+      ],
+      "themes": [
+        {
+          "label": "JWT \u00b7 end-user secret",
+          "summary": "Vault migration auto-created wrong end-user JWT secrets \u2014 login & Rewards down on 4 brands, 401 spikes on ~16 more.",
+          "detail": "Vault migration's create-if-not-found logic auto-generated mismatched end-user JWT secrets (fusion_api vs fusion-api). Login & Rewards down on BrazilBet, Atomo, H2Bet, Seubet; 401 rates up to 63% across ~16 further brands. Fixed, but secret persistence in Vault unconfirmed.",
+          "incident_refs": [
+            "INC-11554",
+            "INC-11602",
+            "INC-11639"
+          ],
+          "status": "FIXED",
+          "status_note": ""
+        },
+        {
+          "label": "JWT \u00b7 FT AI rotation",
+          "summary": "crm-api and FT AI left on different secrets \u2014 FT AI clicks invalidated sessions, logout loops on 20+ brands.",
+          "detail": "crm-api and the FT AI services ended up on different JWT secrets after rotation, so any FT AI interaction invalidated the user's session \u2014 logout loops across 20+ brands including We88, Corestar, Starcasino, Mystake, Leaderbet, Zunado.",
+          "incident_refs": [
+            "INC-11390"
+          ],
+          "status": "FIXED",
+          "status_note": ""
+        },
+        {
+          "label": "Session IP binding",
+          "summary": "New enforcement killed sessions on IP change \u2014 Betpipo & Galabet force-logouts persisted after JWT fixes.",
+          "detail": "New session-IP-binding enforcement invalidated sessions whenever requests arrived from a different IP than login (VPN/proxy/dynamic-IP users). Betpipo & Galabet kept force-logging users out even after the JWT fixes; mitigated by disabling AUTH_IP_BINDING_ENABLED on both brands \u2014 a security-control rollback. Permanent fix pending.",
+          "incident_refs": [
+            "INC-11390",
+            "INC-11707"
+          ],
+          "status": "FIXED",
+          "status_note": ""
+        }
       ]
     }
   },

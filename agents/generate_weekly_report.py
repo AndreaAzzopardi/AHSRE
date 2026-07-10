@@ -673,8 +673,11 @@ def _collect_all_relevant_p1s():
 _theme_by_ref = {}
 for _wk in WEEK_KEYS:
     _th = cache.get(_wk, {}).get("p1_theme") or {}
-    for _ref in _th.get("incident_refs", []):
-        _theme_by_ref[_ref] = _th.get("label", "")
+    # multi-theme weeks carry sub-themes under "themes"; single-theme weeks
+    # keep label/incident_refs at the top level
+    for _sub in (_th.get("themes") or [_th]):
+        for _ref in _sub.get("incident_refs", []):
+            _theme_by_ref[_ref] = _sub.get("label", _th.get("label", ""))
 
 def _parse_summary_sections(summary):
     sections = []
@@ -1478,29 +1481,78 @@ _inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
 _theme_widget_html = ""
 if _ew_theme and _ew_theme.get("summary"):
     _theme_permalinks = {inc.get("reference", ""): inc.get("permalink", "") for inc in _ew_p1_incs}
-    _theme_ref_chips = ""
-    for _ref in _ew_theme.get("incident_refs", []):
-        _href = _theme_permalinks.get(_ref, "")
-        _chip_style = ("font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:#c4b5fd;"
-                       "background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);"
-                       "border-radius:4px;padding:2px 8px;text-decoration:none;white-space:nowrap")
-        _theme_ref_chips += (f'<a href="{_href}" target="_blank" style="{_chip_style}">{_ref}</a>'
-                             if _href else f'<span style="{_chip_style}">{_ref}</span>')
-    _theme_widget_html = (
-        f'  <div style="margin-bottom:10px;padding:10px 16px;background:rgba(167,139,250,0.07);'
-        f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
-        f'display:flex;align-items:center;gap:16px;flex-shrink:0">\n'
-        f'    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;min-width:0">\n'
-        f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
-        f'text-transform:uppercase;white-space:nowrap">Theme of the week</span>\n'
-        f'      <span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;'
-        f'color:#e2e8f0">{_ew_theme.get("label", "")}</span>\n'
-        f'    </div>\n'
-        f'    <div style="flex:1;min-width:0;font-size:13px;color:#cbd5e1;line-height:1.5">'
-        f'{_ew_theme.get("summary", "")}</div>\n'
-        f'    <div style="flex-shrink:0;display:flex;gap:6px;align-items:center">{_theme_ref_chips}</div>\n'
-        f'  </div>\n'
-    )
+    _chip_style = ("font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:#c4b5fd;"
+                   "background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);"
+                   "border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap")
+
+    def _theme_chips(refs):
+        chips = ""
+        for _ref in refs:
+            _href = _theme_permalinks.get(_ref, "")
+            chips += (f'<a href="{_href}" target="_blank" style="{_chip_style}">{_ref}</a>'
+                      if _href else f'<span style="{_chip_style}">{_ref}</span>')
+        return chips
+
+    _sub_themes = _ew_theme.get("themes") or []
+    if _sub_themes:
+        # Multi-theme week: header + one single-line row per failure mode.
+        # Summaries are ellipsis-clipped to guarantee one line; the full
+        # detail is exposed as a hover tooltip.
+        _STATUS_COLS = {"FIXED": "#22c55e", "MITIGATED": "#f59e0b"}
+        _theme_rows = ""
+        for _sub in _sub_themes:
+            _st      = _sub.get("status", "")
+            _st_col  = _STATUS_COLS.get(_st, "#94a3b8")
+            _st_note = _sub.get("status_note", "")
+            _st_tip  = f' title="{_st_note}"' if _st_note else ''
+            _st_html = (f'<span style="width:76px;flex-shrink:0;text-align:right;font-size:10px;'
+                        f'font-weight:700;color:{_st_col};white-space:nowrap"{_st_tip}>{_st}'
+                        + ('<span style="color:#f59e0b">*</span>' if _st_note and _st == "FIXED" else '')
+                        + '</span>')
+            _tip = (_sub.get("detail") or _sub.get("summary", "")).replace('"', '&quot;')
+            _theme_rows += (
+                f'    <div style="display:flex;align-items:center;gap:12px;padding:5px 0;'
+                f'border-top:1px solid rgba(167,139,250,0.12)">\n'
+                f'      <span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;'
+                f'color:#c4b5fd;white-space:nowrap;flex-shrink:0;width:158px;overflow:hidden;'
+                f'text-overflow:ellipsis">{_sub.get("label", "")}</span>\n'
+                f'      <span style="flex:1;min-width:0;font-size:12px;color:#cbd5e1;white-space:nowrap;'
+                f'overflow:hidden;text-overflow:ellipsis" title="{_tip}">{_sub.get("summary", "")}</span>\n'
+                f'      {_st_html}\n'
+                f'      <span style="flex-shrink:0;display:flex;gap:4px;align-items:center;'
+                f'width:236px;justify-content:flex-end">{_theme_chips(_sub.get("incident_refs", []))}</span>\n'
+                f'    </div>\n'
+            )
+        _theme_widget_html = (
+            f'  <div style="margin-bottom:10px;padding:8px 16px 4px;background:rgba(167,139,250,0.07);'
+            f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
+            f'flex-shrink:0">\n'
+            f'    <div style="display:flex;align-items:center;gap:12px;padding-bottom:6px">\n'
+            f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
+            f'text-transform:uppercase;white-space:nowrap">Themes of the week</span>\n'
+            f'      <span style="flex:1;min-width:0;font-size:12px;color:#94a3b8;white-space:nowrap;'
+            f'overflow:hidden;text-overflow:ellipsis">{_ew_theme.get("summary", "")}</span>\n'
+            f'    </div>\n'
+            + _theme_rows
+            + f'  </div>\n'
+        )
+    else:
+        # Single-theme week: original one-line banner
+        _theme_widget_html = (
+            f'  <div style="margin-bottom:10px;padding:10px 16px;background:rgba(167,139,250,0.07);'
+            f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
+            f'display:flex;align-items:center;gap:16px;flex-shrink:0">\n'
+            f'    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;min-width:0">\n'
+            f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
+            f'text-transform:uppercase;white-space:nowrap">Theme of the week</span>\n'
+            f'      <span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;'
+            f'color:#e2e8f0">{_ew_theme.get("label", "")}</span>\n'
+            f'    </div>\n'
+            f'    <div style="flex:1;min-width:0;font-size:13px;color:#cbd5e1;line-height:1.5">'
+            f'{_ew_theme.get("summary", "")}</div>\n'
+            f'    <div style="flex-shrink:0;display:flex;gap:6px;align-items:center">{_theme_chips(_ew_theme.get("incident_refs", []))}</div>\n'
+            f'  </div>\n'
+        )
 
 exec_slide_html = (
     '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY ════════════════════════ -->\n'
@@ -1536,8 +1588,10 @@ exec_slide_html = (
     + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'
     + f'        <span style="font-size:12px;color:#475569">{_ew_range} · {_ew_true_p1} incident{"s" if _ew_true_p1 != 1 else ""}</span>\n'
     + f'      </div>\n'
+    + '      <div style="flex:1;min-height:0;overflow-y:auto">\n'
     + _exec_inc_rows
-    + '\n    </div>\n'
+    + '\n      </div>\n'
+    + '    </div>\n'
     + '  </div>\n'
     + '</div></div>\n'
 )
