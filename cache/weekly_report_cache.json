@@ -4634,10 +4634,10 @@
       {
         "reference": "INC-12022",
         "name": "Shortlinks Redirecting to \"Forbidden\" page",
-        "status": "Fixing",
+        "status": "Monitoring",
         "reported_at": "2026-07-02T13:40:45Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12022",
-        "summary": "Problem: Shortlinks and unsubscribe links for multiple partner brands started returning a 'Forbidden' page instead of resolving to the expected content. This blocked customer-facing link flows for six brands.\n\nImpact: End users on Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania and Estelarbet could not follow shortlinks or click unsubscribe links \u2014 they received a Cloudflare-origin 'Forbidden' error. This affected campaign-driven acquisition and outbound messaging flows for the impacted brands.\n\nCause: A Cloudflare-origin check was added that required shortlink and unsubscribe requests to pass through Cloudflare \u2014 this rejected valid brand traffic. A separate file-serving change was also blocking deleted images from being served, contributing to platform errors.\n\nActions Taken: The Cloudflare-origin check was removed for the affected brand paths and the fix merged. The file-serving change was reverted, a new stable platform version was rolled out, and shortlinks were validated as working again for Estelarbet and the reported templates. Incident status moved to Fixing 2026-07-06 as the change proceeds through the deploy pipeline \u2014 awaiting production confirmation before Resolved."
+        "summary": "Problem: Shortlinks and unsubscribe links for affected brands were redirecting users to a forbidden page.\n\nImpact: Users for affected brands could not open shortlinks or unsubscribe links and saw a forbidden error. We confirmed this affected Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania, and Estelarbet.\n\nCause: We required shortlink and unsubscribe requests to pass through Cloudflare, which caused valid brand links to be rejected with a forbidden response.\n\nActions Taken: We removed the Cloudflare-origin check for the affected brand paths and merged the fix. We also reverted the deleted-image file access change, created a new stable platform version, and confirmed the links were working again \u2014 awaiting partner confirmation before closing."
       }
     ],
     "alert_volume": {
