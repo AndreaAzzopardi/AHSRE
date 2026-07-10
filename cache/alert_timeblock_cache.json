@@ -27,7 +27,13 @@
     "total": 867,
     "total_declined": 411,
     "total_accepted": 456,
-    "overall_waste_pct": 47.4
+    "overall_waste_pct": 47.4,
+    "incident_blocks": {
+      "day": 92,
+      "evening": 54,
+      "night": 54,
+      "total": 200
+    }
   },
   "2026-05-11": {
     "days_in_week": 7,
@@ -57,7 +63,13 @@
     "total": 604,
     "total_declined": 380,
     "total_accepted": 224,
-    "overall_waste_pct": 62.9
+    "overall_waste_pct": 62.9,
+    "incident_blocks": {
+      "day": 69,
+      "evening": 54,
+      "night": 34,
+      "total": 157
+    }
   },
   "2026-05-18": {
     "days_in_week": 7,
@@ -87,7 +99,13 @@
     "total": 549,
     "total_declined": 411,
     "total_accepted": 138,
-    "overall_waste_pct": 74.9
+    "overall_waste_pct": 74.9,
+    "incident_blocks": {
+      "day": 46,
+      "evening": 25,
+      "night": 16,
+      "total": 87
+    }
   },
   "2026-06-01": {
     "days_in_week": 7,
@@ -117,7 +135,13 @@
     "total": 1281,
     "total_declined": 376,
     "total_accepted": 905,
-    "overall_waste_pct": 29.4
+    "overall_waste_pct": 29.4,
+    "incident_blocks": {
+      "day": 58,
+      "evening": 31,
+      "night": 48,
+      "total": 137
+    }
   },
   "2026-06-08": {
     "days_in_week": 7,
@@ -147,7 +171,13 @@
     "total": 723,
     "total_declined": 41,
     "total_accepted": 682,
-    "overall_waste_pct": 5.7
+    "overall_waste_pct": 5.7,
+    "incident_blocks": {
+      "day": 77,
+      "evening": 28,
+      "night": 41,
+      "total": 146
+    }
   },
   "2026-05-25": {
     "days_in_week": 5,
@@ -177,7 +207,13 @@
     "total": 361,
     "total_declined": 197,
     "total_accepted": 164,
-    "overall_waste_pct": 54.6
+    "overall_waste_pct": 54.6,
+    "incident_blocks": {
+      "day": 63,
+      "evening": 39,
+      "night": 31,
+      "total": 133
+    }
   },
   "2026-06-15": {
     "days_in_week": 7,
@@ -207,7 +243,13 @@
     "total": 773,
     "total_declined": 55,
     "total_accepted": 718,
-    "overall_waste_pct": 7.1
+    "overall_waste_pct": 7.1,
+    "incident_blocks": {
+      "day": 69,
+      "evening": 21,
+      "night": 40,
+      "total": 130
+    }
   },
   "2026-06-22": {
     "days_in_week": 7,
@@ -237,7 +279,13 @@
     "total": 1546,
     "total_declined": 99,
     "total_accepted": 1447,
-    "overall_waste_pct": 6.4
+    "overall_waste_pct": 6.4,
+    "incident_blocks": {
+      "day": 84,
+      "evening": 51,
+      "night": 39,
+      "total": 174
+    }
   },
   "2026-06-29": {
     "days_in_week": 7,
@@ -267,7 +315,13 @@
     "total": 2114,
     "total_declined": 467,
     "total_accepted": 1647,
-    "overall_waste_pct": 22.1
+    "overall_waste_pct": 22.1,
+    "incident_blocks": {
+      "day": 91,
+      "evening": 66,
+      "night": 33,
+      "total": 190
+    }
   },
   "2026-07-06": {
     "days_in_week": 3,
@@ -299,6 +353,12 @@
     "total": 932,
     "total_declined": 144,
     "total_accepted": 788,
-    "overall_waste_pct": 15.5
+    "overall_waste_pct": 15.5,
+    "incident_blocks": {
+      "day": 89,
+      "evening": 33,
+      "night": 46,
+      "total": 168
+    }
   }
 }

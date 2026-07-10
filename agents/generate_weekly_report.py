@@ -184,7 +184,9 @@ p1Hit_arr  = [get(wk, "p1_frt_sla", "hit", default=0) for wk in WEEK_KEYS]
 p1Miss_arr = [get(wk, "p1_frt_sla", "missed", default=0) for wk in WEEK_KEYS]
 p1Rate_arr = [get(wk, "p1_frt_sla", "hit_rate") for wk in WEEK_KEYS]
 
-# MTTA — WK19 only
+# MTTA — arrays kept although the "MTTA by Severity" chart was dropped
+# 2026-07-10 (P1 line null since ~5 Jun, incident.io Accepted-at regression).
+# Reinstate the chart from git history once upstream stamping is fixed.
 mP1_arr = [get(wk, "mtta", "P1", "median_mtta_min") for wk in WEEK_KEYS]
 mP2_arr = [get(wk, "mtta", "P2", "median_mtta_min") for wk in WEEK_KEYS]
 mP3_arr = [get(wk, "mtta", "P3", "median_mtta_min") for wk in WEEK_KEYS]
@@ -261,13 +263,17 @@ def tb_get(week, block, key, default=0):
 def tb_week_val(week, key, default=None):
     return tb_cache.get(week, {}).get(key, default)
 
-tbDay_arr    = [tb_get(wk, "day",     "total")     for wk in WK19_KEYS]
-tbEve_arr    = [tb_get(wk, "evening", "total")     for wk in WK19_KEYS]
-tbNight_arr  = [tb_get(wk, "night",   "total")     for wk in WK19_KEYS]
-tbDayW_arr   = [tb_get(wk, "day",     "waste_pct") for wk in WK19_KEYS]
-tbEveW_arr   = [tb_get(wk, "evening", "waste_pct") for wk in WK19_KEYS]
-tbNightW_arr = [tb_get(wk, "night",   "waste_pct") for wk in WK19_KEYS]
-tbTotalW_arr = [tb_week_val(wk, "overall_waste_pct") for wk in WK19_KEYS]
+# INCIDENT counts per 8-hr block (incident_blocks, fetched from incident.io by
+# Step 2G since 2026-07-10) — a true workload view that reconciles with
+# incident_volume, unlike alert counts where one incident can absorb many
+# alerts. The declined/noise angle was dropped the same day: waste%% has been
+# flat 5-7%% since early June (reinstate from git history if it regresses).
+def tb_inc(week, block):
+    return (tb_cache.get(week, {}).get("incident_blocks") or {}).get(block, 0)
+
+tbDay_arr    = [tb_inc(wk, "day")     for wk in WK19_KEYS]
+tbEve_arr    = [tb_inc(wk, "evening") for wk in WK19_KEYS]
+tbNight_arr  = [tb_inc(wk, "night")   for wk in WK19_KEYS]
 
 # ── STAT CARD CALCULATIONS ───────────────────────────────────────────────────
 _stat_week_partial = not week_is_complete(stat_week)
@@ -351,8 +357,35 @@ else:
 # Reinstate from git history once upstream stamping is fixed.
 
 cw_conv_rate = round(cw_inc_total / cw_alerts * 100, 1) if cw_alerts else None
-pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
-conv_delta_cls, conv_delta = delta_str(cw_conv_rate, pw_conv_rate, "%", higher_is_better=False)
+
+# Alerts by time block — share of the week's alerts per 8-hr UTC block
+# (replaced the Alert→Incident Rate card 2026-07-10). Uses the timeblock
+# cache totals (accepted + declined = everything that fired).
+def _tb_shares(week):
+    blocks = tb_cache.get(week, {}).get("blocks", {})
+    counts = {b: (blocks.get(b) or {}).get("total", 0) or 0 for b in ("day", "evening", "night")}
+    total = sum(counts.values())
+    if not total:
+        return None
+    return {b: (c, round(c / total * 100)) for b, c in counts.items()}, total
+
+_tb_cw = _tb_shares(stat_week)
+_tb_pw = _tb_shares(stat_prev_week)
+if _tb_cw:
+    _shares, _tb_cw_total = _tb_cw
+    _dom_block, (_dom_n, _dom_pct) = max(_shares.items(), key=lambda kv: kv[1][0])
+    tb_card_value   = f"{_dom_pct}% {_dom_block.capitalize()}"
+    tb_card_subnote = " &middot; ".join(
+        f"{b.capitalize()}: {n} ({p}%)" for b, (n, p) in _shares.items()
+    ) + f" &middot; {_tb_cw_total} alerts"
+else:
+    tb_card_value, tb_card_subnote = "—", "no time-block data for this week"
+if _tb_pw:
+    tb_card_delta = "prev wk: " + " &middot; ".join(
+        f"{b.capitalize()} {p}%" for b, (n, p) in _tb_pw[0].items()
+    )
+else:
+    tb_card_delta = ""
 
 # ── BREACH BLOCKS ────────────────────────────────────────────────────────────
 week_label_long = (f"Week of {fmt_date_dmy(stat_week)} {datetime.strptime(stat_week, '%Y-%m-%d').year}"
@@ -1998,9 +2031,10 @@ html = f'''<!DOCTYPE html>
       <div class="card-delta {alerts_delta_cls}">{alerts_delta}</div>
     </div>
     <div class="stat-card">
-      <div class="card-label">Alert&#x2192;Incident Rate ({cw_date})</div>
-      <div class="card-value c-muted">{fmt_conv_rate(cw_conv_rate)}</div>
-      <div class="card-delta {conv_delta_cls}">{conv_delta}</div>
+      <div class="card-label">Alerts by Time Block ({cw_date})</div>
+      <div class="card-value c-muted">{tb_card_value}</div>
+      <div class="card-subnote">{tb_card_subnote}</div>
+      <div class="card-delta c-muted">{tb_card_delta}</div>
     </div>
   </div>
   <div class="charts-area">
@@ -2016,21 +2050,9 @@ html = f'''<!DOCTYPE html>
         <div class="chart-container"><canvas id="cAVol" style="width:100%;height:100%"></canvas></div>
       </div>
       <div class="chart-section">
-        <div class="chart-title">MTTA by Severity</div>
-        <div class="chart-note">incident.io &middot; {wk19_first_dt.day if wk19_first_dt else '4'} {wk19_first_dt.strftime('%b %Y') if wk19_first_dt else 'May 2026'} onwards &middot; Median min to ack &middot; P1/P2/P3</div>
-        <div class="chart-container"><canvas id="cMTTA" style="width:100%;height:100%"></canvas></div>
-      </div>
-    </div>
-    <div class="chart-row">
-      <div class="chart-section">
-        <div class="chart-title">Accepted & Declined by Time Block</div>
-        <div class="chart-note">incident.io &middot; W19 onwards &middot; 8-hr UTC blocks &middot; Line = overall noise rate %</div>
+        <div class="chart-title">Incidents by Time Block</div>
+        <div class="chart-note">incident.io &middot; W19 onwards &middot; Accepted incidents per 8-hr UTC block &middot; workload view</div>
         <div class="chart-container"><canvas id="cTBVol" style="width:100%;height:100%"></canvas></div>
-      </div>
-      <div class="chart-section">
-        <div class="chart-title">Declined Rate by Time Block</div>
-        <div class="chart-note">incident.io &middot; W19 onwards &middot; Declined as % of total per block per week</div>
-        <div class="chart-container"><canvas id="cTBWaste" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
   </div>
@@ -2060,9 +2082,6 @@ const p1Hit  = {js_arr(p1Hit_arr)};
 const p1Miss = {js_arr(p1Miss_arr)};
 const p1Rate = {js_arr(p1Rate_arr)};
 
-const mP1 = {js_arr(mP1_arr)};
-const mP2 = {js_arr(mP2_arr)};
-const mP3 = {js_arr(mP3_arr)};
 
 const p23Hit  = {js_arr(p23Hit_arr)};
 const p23Miss = {js_arr(p23Miss_arr)};
@@ -2101,10 +2120,6 @@ const aPD_BO  = {js_arr(aPD_BO_arr)};
 const tbDay    = {js_arr(tbDay_arr)};
 const tbEve    = {js_arr(tbEve_arr)};
 const tbNight  = {js_arr(tbNight_arr)};
-const tbDayW   = {js_arr(tbDayW_arr)};
-const tbEveW   = {js_arr(tbEveW_arr)};
-const tbNightW = {js_arr(tbNightW_arr)};
-const tbTotalW = {js_arr(tbTotalW_arr)};
 
 const pirCatLabels = {js_str_arr(pir_top5_labels)};
 const pirCatOpen   = {js_arr(pir_top5_open)};
@@ -2132,13 +2147,6 @@ new Chart(document.getElementById('cP1F'),{{type:'bar',data:{{labels:WK,datasets
   {{label:'SLA Hit Rate %',type:'line',data:p1Rate,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:3,pointBackgroundColor:'#a78bfa'}},
   {{label:'90% target',type:'line',data:T90,borderColor:'rgba(167,139,250,0.3)',borderDash:[5,5],pointRadius:0,fill:false,yAxisID:'rate'}}
 ]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{...LG,labels:{{...LG.labels,filter:noT}}}},tooltip:TT}},scales:{{x:XA,y:YL(true),rate:RA}}}}}});
-
-new Chart(document.getElementById('cMTTA'),{{type:'line',data:{{labels:WK19,datasets:[
-  {{label:'P1 Median',data:mP1.slice(-WK19.length),borderColor:'#ef4444',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#ef4444'}},
-  {{label:'P2 Median',data:mP2.slice(-WK19.length),borderColor:'#f59e0b',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#f59e0b'}},
-  {{label:'P3 Median',data:mP3.slice(-WK19.length),borderColor:'#3b82f6',backgroundColor:'transparent',tension:0.3,fill:false,spanGaps:false,pointRadius:3,pointBackgroundColor:'#3b82f6'}},
-  {{label:'5-min target',data:Array(WK19.length).fill(5),borderColor:'rgba(167,139,250,0.4)',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,tension:0}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:{{type:'linear',beginAtZero:true,ticks:{{color:'#64748b',callback:v=>v+' min'}},grid:{{color:'rgba(255,255,255,0.05)'}}}}}}}}}});
 
 new Chart(document.getElementById('cP23F'),{{type:'bar',data:{{labels:WK,datasets:[
   {{label:'Hit',   data:p23Hit, backgroundColor:'#22c55e',stack:'f2'}},
@@ -2184,15 +2192,8 @@ new Chart(document.getElementById('cAVol'),{{type:'bar',data:{{labels:WK19,datas
 new Chart(document.getElementById('cTBVol'),{{type:'bar',data:{{labels:WK19,datasets:[
   {{label:'Day (08–16 UTC)',    data:tbDay,   backgroundColor:'#38bdf8',stack:'tb'}},
   {{label:'Evening (16–00 UTC)',data:tbEve,   backgroundColor:'#f59e0b',stack:'tb'}},
-  {{label:'Night (00–08 UTC)', data:tbNight, backgroundColor:'#64748b',stack:'tb'}},
-  {{label:'Noise Rate %',type:'line',data:tbTotalW,borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,fill:false,yAxisID:'rate',pointRadius:4,pointBackgroundColor:'#a78bfa'}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true),rate:RA}}}}}});
-
-new Chart(document.getElementById('cTBWaste'),{{type:'bar',data:{{labels:WK19,datasets:[
-  {{label:'Day (08–16 UTC)',    data:tbDayW,   backgroundColor:'#38bdf8',barPercentage:0.8}},
-  {{label:'Evening (16–00 UTC)',data:tbEveW,   backgroundColor:'#f59e0b',barPercentage:0.8}},
-  {{label:'Night (00–08 UTC)', data:tbNightW, backgroundColor:'#64748b',barPercentage:0.8}}
-]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YPct}}}}}});
+  {{label:'Night (00–08 UTC)', data:tbNight, backgroundColor:'#64748b',stack:'tb'}}
+]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:LG,tooltip:TT}},scales:{{x:XA,y:YL(true)}}}}}});
 
 {pir_cat_chart_js}
 {pir_trend_chart_js}

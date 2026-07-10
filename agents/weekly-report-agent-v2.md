@@ -643,6 +643,14 @@ cache_tb[week] = {
 }
 ```
 
+**Incident blocks (added 2026-07-10):** alongside the alert blocks, count **incidents** per block for the same fetch range — this feeds the Incident Ops "Incidents by Time Block" chart (which must reconcile with `incident_volume` totals, unlike alert counts where one incident can absorb many alerts). For each fetched day D and each block window above, make ONE `incident_list` call with `created_after`/`created_before` set to the block bounds and `page_size: 1`, and read `pagination.total_count` (3 extra calls/day; use DEFAULT filters — no status/mode params — which exclude declined/canceled/merged, matching Step 2C's population). Sum per block across the week's days and store on the week row:
+
+```json
+  "incident_blocks": {"day": N, "evening": N, "night": N, "total": N}
+```
+
+Same partial-week day handling as the alert blocks. Private incidents can't be filtered out of these count-only calls — accept the ≤1–2 skew.
+
 **Data integrity guard:** apply the same rule as every other source — if an `alert_stats` call errors or the connector is unavailable, do NOT overwrite an existing complete week with empty/partial data; retain the cached value and log the failure. Write `json.dump(..., ensure_ascii=False, indent=2)`.
 
 ---
@@ -740,7 +748,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `true_p1_incidents`: each entry has `reference`, `name`, `status`, `reported_at`, `permalink`, `summary`
 - [ ] `summary` field has all four sections: Problem / Impact / Cause / Actions Taken (exact labels; colon after each; blank line between sections; no markdown)
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
-- [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; pre-existing week keys preserved
+- [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; `incident_blocks` (day/evening/night/total incident counts via `incident_list` `page_size:1` `total_count`) written for the same fetch range; pre-existing week keys preserved
 - [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
 
 ---
