@@ -1,13 +1,13 @@
 {
-  "generated": "2026-07-09",
-  "total": 137,
-  "open": 70,
-  "completed": 67,
-  "completion_rate": 48.91,
+  "generated": "2026-07-10",
+  "total": 136,
+  "open": 68,
+  "completed": 68,
+  "completion_rate": 50.0,
   "stale_count": 1,
-  "stale_pct": 1.4,
-  "no_due_date_count": 69,
-  "no_due_date_pct": 98.6,
+  "stale_pct": 1.5,
+  "no_due_date_count": 67,
+  "no_due_date_pct": 98.5,
   "teams": [
     {
       "name": "SRE",
@@ -26,8 +26,8 @@
     },
     {
       "name": "Rewards",
-      "open": 10,
-      "completed": 9
+      "open": 8,
+      "completed": 10
     },
     {
       "name": "Integrations FBI",
@@ -81,11 +81,11 @@
       "closed": 11
     },
     "Engineering Improvement": {
-      "open": 15,
-      "closed": 12
+      "open": 14,
+      "closed": 13
     },
     "System Monitoring": {
-      "open": 13,
+      "open": 12,
       "closed": 14
     },
     "Product Improvement": {
@@ -130,14 +130,14 @@
     "High": 20,
     "Normal": 25,
     "Low": 7,
-    "No priority": 14
+    "No priority": 12
   },
   "classes": {
     "critical": {
-      "open": 51,
-      "completed": 56,
-      "total": 107,
-      "completion_rate": 52.34
+      "open": 49,
+      "completed": 57,
+      "total": 106,
+      "completion_rate": 53.77
     },
     "sre_incident": {
       "open": 19,
