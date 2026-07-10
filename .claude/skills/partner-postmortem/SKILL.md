@@ -5,7 +5,7 @@ description: Drafts and reviews Fast Track partner-facing post-incident reports 
 
 # Fast Track Partner Postmortem
 
-You produce and review partner-facing post-incident reports to Fast Track's Partner Postmortem Standard. The full standard — structure, tone rules, brand voice, worked examples, and the quality gate — is in `references/postmortem-standard.md`. **Read it before drafting or reviewing anything.**
+You produce and review client-facing post-incident reports to Fast Track's Partner Postmortem Standard v2.0. The full standard — structure, voice rules, worked examples, and the quality gate — is in `references/postmortem-standard.md`. **Read it before drafting or reviewing anything.** The gold-standard reference output is the INC-10938 executive rewrite; match its structure, voice, and depth exactly.
 
 ## Modes
 
@@ -20,21 +20,26 @@ Detect the mode from the request. Drafting with incomplete inputs always ends in
 ## Workflow (Draft mode)
 
 1. Read `references/postmortem-standard.md` in full.
-2. Extract and verify the facts: convert ALL timestamps to UTC, compute the impact window (first customer impact → verified restoration, never "declared to closed"), and compute every response metric in the standard's section 3.4.
-3. Build the propagation chain as a single arrow sequence. If you cannot, the root cause analysis is incomplete — say so.
-4. Draft in the standard's section order: header block, executive summary (4 paragraphs, ≤250 words), partner impact, response metrics, timeline ([COMMS] markers), RCA (trigger / propagation / why-not-caught / contributing factors), mitigation and recovery, corrective actions, "What this means for you", appendix.
-5. Map every detection/monitoring gap in the RCA to a corrective action and vice versa. Every action needs owner, due date, status, and a verification criterion. Flag proposed dates as requiring owner commitment.
-6. Run the Part 4 quality gate on your own draft before presenting it.
-7. Append an internal author's note listing every fact you could not establish (the Mode 3 list). **Never fabricate a fact for a postmortem — a fabricated fact is a severity-one documentation failure.**
+2. Extract and verify the facts: convert ALL timestamps to UTC; compute the impact window **per affected service** (first client impact → verified restoration — trigger time and any precautionary-offline time are different events with different windows); identify every severity transition; establish the specific trigger (which deployment/change, what mechanism).
+3. Classify every service interruption as **failure** or **deliberate protective action** — the framing differs and must be factually right.
+4. Establish the data-safety reasoning: what the affected component holds and does not hold. If this cannot be established from inputs, it goes on the MISSING INFORMATION list — never assert "no data loss" without the reasoning.
+5. Draft in the standard's Part 3 order: header block (with severity transition history and Confidential classification) → three-paragraph unheaded opening narrative → Incident Overview → Root Cause Analysis → Impact Assessment → Timeline (three-column: Timestamp | Action | Description, ISO timestamps, [COMMS] markers, severity-transition rows) → Containment and Remediation (inline CA references with status) → Next Steps (systemic review commitment + contact route) → confidentiality footer verbatim.
+6. Map every contributing factor in the RCA to a corrective action and vice versa. Completed CAs are referenced inline ("CA-01 – completed"); open CAs get the compact table with owner and due date, plus a status-update date in Next Steps.
+7. Run the Part 4 quality gate on your own draft before presenting it — including the placeholder sweep (no `XX:XX` anywhere) and the voice sweep (no "you/we/our/your").
+8. Append an internal author's note listing every fact you could not establish (the Mode 3 list). **Never fabricate a fact for a postmortem — a fabricated fact is a severity-one documentation failure.**
 
 ## Hard rules (non-negotiable)
 
-- UTC throughout; UK English exclusively; "partner", never "customer" or "client".
+- **Formal third-person voice: "the Provider" / "the Client"** — no "you", "we", direct address, or marketing-style sections. UK English exclusively. UTC throughout; prose dates "26 June 2026" (no ordinals); timeline timestamps `2026-06-26 09:00`.
+- **Name the trigger precisely** ("a deployment corrupted X") — never "a fault occurred". Distinguish deliberate precautionary actions from failures. Record severity transitions.
+- **Prove data safety, don't assert it** — state what the affected component holds and does not hold; close with "No client data was altered or exposed" when true.
 - Cause-first, active voice; name systems and commands, never individuals.
 - No minimisers attached to quantified impact; no self-praise; no humour; no blame-shifting to third-party suppliers.
-- Bad response metrics are stated plainly with the corrective action that fixes them. Hiding a bad number is worse than the number.
-- The gold-standard reference output is the INC-85241 v2.0 rewrite; match its depth and tone.
+- **Describe the fix, never its magnitude** — no "substantial/significant/major/complex" attached to the Provider's own work; state what was done and let the facts carry the scale.
+- Honest detection story: if the client reported it first, say so and cross-reference the corrective action.
+- **No placeholders in a published report** — no `XX:XX`; `[HH:MM]` only on [COMMS] rows pending comms-log confirmation, flagged in the author's note.
+- Confidentiality footer verbatim at the end of every report.
 
 ## Output
 
-Markdown by default. If the user wants the distributable document, generate docx per the standard's design rules (Inter Tight, FT Purple headers, FT Dark Orange for severity callouts, ≤2 accent colours, confidentiality footer) and run the generate → validate → PDF → image QA pipeline before delivering.
+Markdown by default. If the user wants the distributable document, generate docx per the standard's Part 6 design rules (Inter Tight, composed and plain, at most one accent colour, confidentiality footer) and run the generate → validate → PDF → image QA pipeline before delivering.

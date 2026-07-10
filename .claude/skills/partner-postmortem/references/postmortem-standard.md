@@ -1,205 +1,168 @@
 # FAST TRACK PARTNER POSTMORTEM STANDARD
-**Version 1.1 — June 2026 | Owner: Head of SRE | Classification: Internal (template), Confidential (completed reports)**
-*Aligned with the Fast Track brand and tone of voice framework (UK English, six tone traits, partner-first positioning).*
+**Version 2.0 — July 2026 | Owner: Head of SRE | Classification: Internal (template), Confidential (completed reports)**
 
-This document defines how Fast Track writes partner-facing post-incident reports. It covers structure, tone, required facts, and quality gates. It is written to be executable by a human author or an AI agent: every section states what must be present, what good looks like, and what disqualifies a draft.
+This document defines how Fast Track writes client-facing post-incident reports. It covers structure, tone, required facts, and quality gates. It is written to be executable by a human author or an AI agent: every section states what must be present, what good looks like, and what disqualifies a draft.
+
+**v2.0 supersedes v1.1 entirely.** The reference format is the INC-10938 executive rewrite (CEO/CTO version). Changes from v1.1: formal third-person Provider/Client voice replaces the "you/we" personal voice; the "What This Means for You" and "Response Metrics" sections are removed; the document skeleton, timeline format, and closing disclaimer now follow the INC-10938 executive version exactly.
 
 ---
 
 ## PART 1 — PRINCIPLES
 
-A world-class postmortem does five things. If a draft fails any of these, it is not done.
+A world-class postmortem does six things. If a draft fails any of these, it is not done.
 
-1. **It answers the partner's five questions in the first 200 words.** What happened, who was affected, how badly, what caused it, what stops it happening again. A commercial director should be able to read only the executive summary and brief their CEO accurately.
-2. **It is cause-first and active-voice.** "A defect in our migration process caused X" — never "X was experienced by some players." We name the action, the system, and the failure. We never name the individual. (AWS convention: name the command, not the operator.)
-3. **It quantifies everything.** Counts, rates, durations, percentages. "167,108 accounts" beats "a large number of accounts." Vague numbers signal that we don't understand our own incident.
-4. **It is honest about detection and response, not just root cause.** The hardest section to write is "why we didn't catch this sooner." World-class postmortems (Anthropic's September 2025 report is the benchmark) explicitly admit evaluation gaps, slow detection, and confusing signals. Partners trust reports that include the uncomfortable parts.
-5. **Every corrective action is verifiable.** Owner, due date, status, and a completion criterion. An action without a date is a wish. An action without a verification criterion can be marked "done" without changing anything.
+1. **It answers the client's five questions in the opening narrative.** What happened, what was affected, how badly, what caused it, what stops it happening again. A commercial director should be able to read only the opening narrative and brief their CEO accurately.
+2. **It names the trigger precisely.** "A deployment to the Singularity Resources API corrupted the service's dashboard resources" — never "a fault occurred in a component." If the true cause is known, state it plainly; vagueness reads as evasion and destroys the credibility of everything around it. Owning the specific failure reads as *more* trustworthy, not less.
+3. **It distinguishes deliberate actions from failures.** "The backoffice was taken offline as a precautionary measure while the investigation was ongoing" is materially different from "the backoffice went down" — and it is evidence of good judgment. Never let a controlled, protective decision read as an uncontrolled outage.
+4. **It quantifies everything and tracks severity honestly.** Exact impact windows per affected service (they usually differ), durations, counts. Severity transitions are recorded: "P1 (Critical) until backoffice restoration (11:50 UTC); P2 thereafter." This bounds the critical window truthfully in both directions.
+5. **It proves data safety rather than asserting it.** "No data loss" alone is insufficient for any incident involving corruption or a shared component. Explain *what the affected component holds and does not hold*, so the client can verify the reasoning: "The Singularity Resources API holds no client data — only the markup and code used by the dashboard container. No client data was altered or exposed."
+6. **It is honest about detection.** If the client reported the issue before internal monitoring caught it, say so, and cross-reference the corrective action that fixes it. Hiding a bad detection story is worse than the story.
 
-**The communication is a product.** The report is often the only artifact the partner's leadership ever sees from this incident. It carries Fast Track's operational reputation.
+**The report is a product.** It is often the only artifact the client's leadership ever sees from the incident. It carries Fast Track's operational reputation.
 
 ---
 
 ## PART 2 — TONE AND LANGUAGE RULES
 
+**Voice: formal, contractual, third person.** The report refers to **"the Provider"** (Fast Track) and **"the Client"** throughout. No "you", no "we", no direct address, no marketing-style sections. The document should read like a formal engineering record exchanged between two companies — precise, calm, and self-assured.
+
 | Rule | Do | Don't |
 |---|---|---|
+| Name the trigger | "A deployment to the Singularity Resources API corrupted the service's dashboard resources." | "A fault in a central component required urgent remediation." |
+| Deliberate vs failure | "The backoffice was taken offline as a precautionary measure while the investigation was ongoing." | "Remediation work took the dependent services offline." |
 | Active voice, cause first | "The import process coerced 'true'/'false' strings to 0." | "Incorrect values were observed in the database." |
 | Plain language | "The email provider blocked all sending for 10 hours." | "Email egress experienced a sustained throughput constraint." |
 | Flat, technical, no heroics | "The fix was tested and deployed at 14:06." | "Our engineers worked tirelessly around the clock." |
+| Describe the fix, never its magnitude | "Restoring Data Studio required a recovery job to restore the corrupted dashboard resources." | "Data Studio required a more substantial fix." |
 | No minimising adverbs | "167,108 players received an incorrect bonus." | "A subset of players may have briefly received…" |
 | Name systems, not people | "An operator command removed more capacity than intended; the tool did not enforce a floor." | "An engineer made a typo." |
-| State uncertainty plainly | "We were unable to reproduce the issue on Service X but rolled the change back as a precaution." | Silence about anything unconfirmed. |
-| One timezone | All times in **UTC**, with CET in parentheses only in the header and executive summary. | Mixing CET and UTC mid-timeline. |
-| Absolute dates | "17 March 2026, 03:01 UTC" | "yesterday morning," "last week" |
-| No legal hedging in the narrative | Facts as established. | "allegedly," "it appears that," "we believe" (unless genuinely unconfirmed — then say *why* it's unconfirmed) |
+| State uncertainty plainly | "The Provider was unable to reproduce the issue on Service X but rolled the change back as a precaution." | Silence about anything unconfirmed. |
+| Explain longer restorations | "During the recovery the API was also moved to per-brand hosting; this is why Data Studio's restoration extended into 27 June." | An unexplained 28-hour gap. |
 
-**Forbidden phrases:** "unforeseen circumstances," "perfect storm," "human error" (as a root cause — it never is; the tooling or process that allowed it is), "we apologise for any inconvenience" (apologise specifically or not at all), "isolated incident" (you don't know that yet).
+**Dates and times:**
+- All times **UTC**. One timezone only.
+- Prose and headers: "26 June 2026" (no ordinal suffixes — never "26th June").
+- Timeline table: ISO format — `2026-06-26 09:00`.
+- Impact windows written as "10:00 UTC, 26 June 2026 → 11:50 UTC, 26 June 2026 (1h 50m)" — always with the computed duration.
+- Impact windows run from **first client impact to verified restoration** per service — never "declared to closed". Each affected service gets its own window; they usually differ (the trigger time and the protective-offline time are different events).
+- Time-of-day words must agree with the stated UTC time: never "restored on the afternoon of 26 June at 11:50 UTC" — 11:50 UTC is not afternoon. When a timestamp is given, drop the time-of-day word.
 
-**Length targets:** Executive summary ≤ 250 words. Full report 1,200–2,500 words plus tables. If it's longer, the incident narrative has absorbed detail that belongs in tables or the timeline.
+**Placeholders:** A published report contains **no `XX:XX` or unresolved placeholders**. If a timestamp cannot be established, either cut the row or mark it explicitly `[HH:MM]` pending confirmation — permissible only for [COMMS] rows awaiting comms-log verification, and flagged in the internal author's note. Template fill-ins (`[Client / brand name]`, `[Report date]`) must be resolved before the report leaves the Provider.
 
----
+**Language:** UK English exclusively — organisation, behaviour, analyse, prioritise, centre, licence (noun) / license (verb). Correct product names — Fast Track CRM, Fast Track AI, Rewards, Greco, Singularity Model, RTD.
 
-## PART 2B — SOUNDING LIKE FAST TRACK
+**Forbidden:** "unforeseen circumstances"; "perfect storm"; "human error" as a root cause (the tooling or process that allowed it is the cause); "we apologise for any inconvenience"; "isolated incident"; self-praise of any kind ("industry-leading", "world-class"); humour or wit anywhere; minimisers attached to quantified impact; blame-shifting to third-party suppliers (name them factually; the Client's contract is with the Provider); vague fault language ("an issue occurred", "a fault was experienced") when the specific trigger is known; dramatic characterisation of the Provider's own work — magnitude adjectives ("substantial", "significant", "major", "complex", "extensive", "challenging") applied to a fix, effort, or investigation. State what was done; the reader infers the scale from the facts.
 
-A postmortem is not marketing, but it is brand. For many partner stakeholders it is the most consequential document Fast Track ever sends them — the brand promise ("we've got your back; we're your partner to the future") is tested precisely here, when something broke. The Fast Track tone framework applies, adapted for incident reporting:
+**Severity:** always stated with its transition history when severity changed during the incident: *"P1 (Critical) until backoffice restoration (11:50 UTC, 26 June); P2 thereafter – Resolved; corrective actions completed."* The downgrade also appears as a timeline row.
 
-| Trait | In a postmortem this means | Status |
-|---|---|---|
-| **Clear** | Ten words where others use fifty. No buzzwords, no filler, no consultancy prose. The partner's commercial team can read it unaided. | Required |
-| **Informative** | The partner learns something real about their platform and our operations from every section. Technical depth is respect, not risk. | Required |
-| **Bold** | Direct ownership. "Our import process coerced the values" — stated plainly, without softening, in the first paragraph. Bold is the confidence to own a failure without being asked. | Required |
-| **Personal** | Written by people, to people. "You" and "we" throughout — never "the client" or "the vendor." Sign it from a named role. | Encouraged |
-| **Optimistic** | Applies to the *future* sections only (corrective actions, closing). The forward path is framed through what becomes possible, not through fear of recurrence. It never applies to the facts: impact is stated at full weight, no silver-lining the numbers. | Encouraged (scoped) |
-| **Witty** | Never. No humour anywhere in a postmortem. | Excluded |
-
-**Language and naming rules:**
-
-- **UK English exclusively** — organisation, behaviour, analyse, apologise, personalisation, licence (noun) / license (verb), centre, programme.
-- **"Partner," never "customer" or "client."** Section 3.3 is "Partner Impact." This is the Fast Track relationship model, and it should be visible in our most difficult documents, not just our website.
-- **Correct product names** — Fast Track CRM, Fast Track AI, Rewards, Greco, Singularity Model, RTD. Generic internal service names ("Lifecycle Engine," "Email Distributor") are fine for subsystems, but where a partner-facing product is involved, use its real name.
-- **Own the outcome, including third parties.** Name suppliers factually ("Brevo blocked outbound sending in response to the volume") but never frame them as the cause — the partner's contract is with Fast Track, and the trigger was ours. Blame-shifting to a vendor fails the Bold trait and reads as exactly what it is.
-- **No self-praise.** Never "our industry-leading response" or "our world-class SOC." The response metrics table makes the case or it doesn't. Show, never tell — the Leader archetype is expressed through the quality of the document, not claimed in it.
-- **The content truth standard applies in full.** Every claim substantiated. If a number, timing, or cause cannot be proven, it is marked as under investigation — never asserted.
-- **The human test.** Read the executive summary aloud. Does it sound like a capable person explaining what happened to someone they respect, or like a legal department? If the latter, rewrite.
-
-**Document design (partner-facing PDF/docx output):**
-
-- Typeface: **Inter Tight** (Arial fallback in docx)
-- Headers: bold ALL-CAPS, left-aligned; black body text on white
-- Official Fast Track colours only: FT Pink `#E96092`, FT Purple `#832081`, FT Blue `#63B6E6`, FT Yellow `#FFDB14`, FT Dark Orange `#E54F35`, FT Orange `#F4A300`
-- Colour is functional, not decorative: FT Purple for section headers and table header rows; FT Dark Orange reserved for severity/impact callouts; FT Blue for partner-action items. Maximum two accent colours per report — a postmortem should look composed, not branded like a campaign.
-- Footer on every page: incident ID, version, classification ("Confidential — prepared for [Partner]"), page number.
+**The human test:** read the opening narrative aloud. It should sound like a capable engineering organisation explaining, precisely and without defensiveness, what happened. Not marketing, not legal.
 
 ---
 
 ## PART 3 — DOCUMENT STRUCTURE
 
-Sections in order. Required = report cannot be published without it.
+The skeleton below is the INC-10938 executive format. Sections in this order; Required = the report cannot be published without it.
 
 ### 3.1 Header Block (required)
 
-A metadata table at the top:
+Title: **Incident Report INC-XXXXX**. Then a metadata table:
 
 | Field | Rule |
 |---|---|
-| Incident ID | Internal reference (e.g. INC-85241) |
-| Severity | P-level **plus one-line definition** ("P1 — material impact to player-facing functionality for one or more partners") |
-| Status | Resolved / Monitoring / Actions in progress |
-| Affected services | Partner-recognisable names |
-| Impact window | Start of customer impact → end of customer impact (UTC). Not "declared to closed" — partners care about when *they* were affected, not when our process started. |
-| Detection time | When we first knew something was wrong |
-| Publish date + version | Reports may be revised; version them |
-| Next review | Date the partner will receive the corrective-action status update |
+| Incident ref | Internal reference (e.g. INC-10938) |
+| Client environment | Client / brand name |
+| Date of incident | Date(s), e.g. "26 June 2026" |
+| Report date | Publication date |
+| Severity / Status | P-level **with transition history and resolution state**: "P1 (Critical) until backoffice restoration (11:50 UTC, 26 June); P2 thereafter – Resolved; corrective actions completed" |
+| Classification | "Confidential – shared between the Provider and the Client" |
 
-> **Why "impact window" matters:** our current reports state duration as "incident declared to closed." In INC-85241 the impact began at 03:01 UTC but the incident was declared at 09:56 UTC. Reporting 7h37m when the true customer-impact window was ~15 hours (bonus issuance to data restoration) reads as minimisation if a partner does the maths themselves. Always let the partner's clock win.
+### 3.2 Opening Narrative (required, unheaded, directly after the header table)
 
-### 3.2 Executive Summary (required, ≤ 250 words)
+Three paragraphs of plain prose — no heading, no bullets. This is the section a CEO reads.
 
-Exactly four paragraphs:
+1. **Trigger and immediate effect.** The specific change and mechanism ("On 26 June 2026 at 09:00 UTC a deployment to the Singularity Resources API corrupted the service's dashboard resources"), what the affected component is and — critically — what it does *not* hold ("it holds no client data"), which services became unavailable and why, and any deliberate protective decision, framed as such ("at 10:00 UTC the backoffice was taken offline as a precautionary measure while the investigation was ongoing").
+2. **What kept working, and restoration.** What was unaffected and why ("The core CRM engine does not depend on this component and continued to run throughout — all lifecycles, activities and send-outs executed as scheduled, no campaign was halted and there was no data loss"), then each restoration with its timestamp, including an explanation of any extended restoration ("the API was also moved from a central, shared service to per-brand hosting; this removed the central dependency and is why Data Studio's restoration took longer").
+3. **Closure.** One line: "No further impact was observed following restoration."
 
-1. **What happened and the trigger** — one or two sentences, cause-first, with the headline numbers.
-2. **Impact** — who, how many, what they experienced, financial/operational consequence in plain terms.
-3. **Root cause in one sentence** — comprehensible to a non-engineer.
-4. **Resolution and commitment** — when service was restored, the single most important corrective action, and when the partner will hear from us next.
+**Disqualifiers:** passive-voice trigger sentence; vague cause; a protective action framed as an outage; missing restoration times; any sentence a commercial director could not parse.
 
-**Good example (based on INC-85241):**
+### 3.3 Incident Overview (required)
 
-> On 17 March 2026 at 03:01 UTC, a defect in Fast Track's data migration process caused 167,108 player accounts to be marked as unverified. An active lifecycle campaign acted on this incorrect data, crediting a casino bonus to all 167,108 accounts and triggering notification emails to each.
->
-> 13,878 of those emails reached players before the email provider blocked all outbound sending, a block that also held back 59 legitimate emails from other campaigns for approximately 10 hours. Your support team handled the resulting player complaints and issued manual goodwill bonuses.
->
-> The root cause: the migration file used the text values "true"/"false" where our import expected 1/0, and the import silently converted every value to 0. Our post-migration checks verified record counts but not field values, so the error went undetected until the campaign had already fired.
->
-> Correct player data was restored by 15:12 UTC and email delivery by 16:57 UTC via a secondary provider. The primary fix — a field-level validation gate that blocks any import where source and database do not match 100% — ships by [date]. You will receive a corrective-action status update on [date].
+Dash-bulleted fact list — the scannable version of the narrative:
 
-**Disqualifiers:** passive voice in paragraph 1; any sentence a commercial director couldn't parse; missing numbers; no next-contact date.
+- **Primary impacted systems:** partner-recognisable service names.
+- **Not affected:** what kept running; explicit "no data loss".
+- **Origin:** one sentence naming the trigger and the dependency that propagated it.
+- **Impact window** — one bullet **per affected service**, each with start → end (UTC, full dates) and computed duration. The windows differ when trigger time and protective-offline time differ; report both honestly.
+- **Detection method:** how the Provider first learned of the impact. If detection came from client reports, state it and cross-reference the corrective action ("availability alerting on the backoffice was insufficient to detect the loss of service internally first (addressed under CA-02)").
+- **Severity / Status:** with transition history, matching the header.
 
-### 3.3 Partner Impact (required)
+### 3.4 Root Cause Analysis (required)
 
-Quantify from the **partner's perspective**, not the system's. Structure:
+Prose, then bullets. Structure:
 
-- **Players affected** — unique count, what they experienced
-- **Financial/bonus impact** — what was credited, exposure, and what reduced it (e.g. "only 8.3% of emails delivered, so most players were unaware of the bonus")
-- **Operational impact on the partner** — complaint volume, manual work, reputational handling
-- **Collateral impact** — anything beyond the triggering failure (e.g. the 59 legitimate blocked emails). Never bury collateral damage; partners always find it.
-- **Metrics table** — every measurable count in one table
+**Prose (2–3 paragraphs):**
+1. What the affected component is, what it holds, and — for any incident touching data — what it does **not** hold. This paragraph is the data-safety proof.
+2. What the trigger did, mechanically, and how the fault propagated to each affected service; any point where the cause was not yet known and a precautionary decision was taken, stated as such; how the investigation identified the origin.
+3. The restoration path, including why any service's restoration took longer (e.g. a structural fix performed during recovery), and what structural change resulted.
 
-**Rules:** Every number must be exact or explicitly approximate ("~137,000"). Resolve every dangling fact — if you write "one user received a duplicate bonus," say why and whether it was corrected. Unexplained loose threads are credibility leaks.
+**Bullets (each one line, bolded label):**
+- **Key enabler:** the architectural condition that let one fault affect multiple services (e.g. "a single shared central component created a common dependency").
+- **Contributing factor(s):** conditions that enlarged impact or delayed detection — each must map to a corrective action.
+- **Mitigation:** what fixed it and what structural change prevents recurrence, with inline CA references ("…now runs as a local, per-brand service, removing the single point of dependency (CA-01). Availability alerting has been added to the backoffice service (CA-02).").
 
-### 3.4 Response Metrics (required — new section)
+Apply five-whys internally before writing; publish the synthesis, not the Q&A scaffolding. Real component names, real mechanisms — vagueness here destroys the credibility built everywhere else.
 
-A short table that makes our response speed transparent and comparable across incidents. This is the section that demonstrates operational maturity better than any prose:
+### 3.5 Impact Assessment (required)
 
-| Metric | Definition | INC-85241 example |
-|---|---|---|
-| Time to impact | Trigger → first customer impact | 0 min (immediate) |
-| Time to detect | First impact → first internal signal | 6h 29m |
-| Time to engage | Detection → SOC acknowledgement | 1 min |
-| Time to declare | Detection → formal P1 | 1h 26m |
-| Time to root cause | Declaration → confirmed root cause | 2h 8m |
-| Time to mitigate | Root cause → impact stopped/contained | 2h 54m |
-| Time to restore | Detection → full service restoration | ~7h 30m |
+Dash bullets, quantified from the Client's perspective:
 
-Where a metric is bad, **say so in one sentence and point to the corrective action that fixes it.** Example: "Detection took 6.5 hours because no alerting existed on bulk action throughput; AI-06 addresses this." Hiding a bad number is worse than the number.
+- **Availability, per affected service:** window (start → end, UTC, full dates), duration, what the Client's teams could not do, and operational context ("including during Friday campaign preparation"). Protective offlines described as such.
+- **Campaign execution / core operations:** what ran unaffected, stated positively and precisely ("all lifecycles, activities and email and action send-outs ran as planned; no campaign was halted").
+- **Data integrity:** not just "no data loss" — the *reasoning*: what the affected component holds, why the damage was bounded, confirmation of full restoration, and the explicit closing sentence "No client data was altered or exposed."
+- **Collateral impact:** anything beyond the listed services, or "none identified beyond the services listed above." Never bury collateral damage; clients always find it.
 
-### 3.5 Timeline (required)
+Every number exact or explicitly approximate ("~28h"). Every anomaly mentioned anywhere in the report is either explained or marked under investigation — unexplained loose threads are credibility leaks.
 
-- One table, all times **UTC**, date repeated on day changes
-- Every row: timestamp + factual event, ≤ 2 sentences
-- Must include: trigger, first impact, detection, partner contact (both directions), declaration, root-cause confirmation, each mitigation step, partner verifications, resolution
-- Mark partner-communication rows so reviewers can audit comms latency at a glance (e.g. prefix **[COMMS]**)
-- Pre-incident context rows (e.g. "lifecycle created 12 March") are encouraged — they let the reader understand the setup without a separate "lead-up" section
+### 3.6 Timeline of Key Events (UTC) (required)
 
-**Disqualifiers:** mixed timezones; gaps longer than 1 hour during active response with no row explaining what was happening; rows that editorialise ("team worked diligently").
+Italic lead line: *Rows marked [COMMS] are communications between the Provider and the Client.*
 
-### 3.6 Root Cause Analysis (required)
+**Three-column table: Timestamp (UTC) | Action | Description.**
 
-Four subsections, in this order — this is the AWS propagation-path pattern:
+- Timestamps in ISO format (`2026-06-26 09:00`); `~` for approximations; day-level rows ("2026-06-26 evening") acceptable for multi-hour work blocks.
+- **Action** is a 1–3 word category label: *Deployment fault, Impact reported, Incident declared, Precautionary measure, Origin identified, Scope confirmed, Mitigation, Severity downgraded, Stabilisation, Development, Deployment, [COMMS] Client informed.*
+- **Description**: factual, ≤ 2 sentences, no editorialising.
+- Required rows: trigger; first client impact / impact reported; incident declared; every deliberate protective action; origin identified; scope confirmed; each restoration; **each severity transition**; each [COMMS] exchange in both directions.
+- No `XX:XX`. `[HH:MM]` only on [COMMS] rows pending comms-log confirmation.
 
-**a) What happened (the trigger).** The specific change or action, the mechanism of failure, at the technical depth of: *"The migration used `LOAD DATA LOCAL INFILE` into a temporary table whose boolean columns expected 1/0. The file contained the strings 'true'/'false'. MySQL coerced the non-numeric strings to 0 without raising an error."* Real commands, real field names, real error behaviour. Partners' technical teams read this section; vagueness here destroys the credibility built everywhere else.
+**Disqualifiers:** mixed timezones; two-column format; gaps > 1 hour during active response with no row explaining what was happening; editorial rows ("team worked diligently").
 
-**b) The propagation path.** How a local fault became customer impact. Write it as a chain: *incorrect data → active lifecycle consumed it → 167,108 players added in 4 minutes (peak 43,939/min) → 334,216 actions fired in 7 minutes → email provider flagged the volume as abnormal → all partner email blocked.* One chain, each link explicit. If you cannot write the chain in one line of arrows, the analysis isn't finished.
+### 3.7 Containment and Remediation Measures (required)
 
-**c) Why it was not caught earlier.** The honesty section. Cover *every* layer that could have caught it and didn't: pre-import validation, post-import verification, monitoring of action throughput, alerting on email volume, the gap between impact (03:01) and detection (09:30). Each miss must map to a corrective action. The Anthropic benchmark here: they explicitly wrote "we relied too heavily on noisy evaluations" — that sentence costs nothing and buys enormous trust.
+Dash bullets, chronological — what was done, when, and what it achieved:
 
-**d) Contributing factors.** Bulleted, each one a condition that didn't cause the incident but enlarged it (e.g. "active lifecycles meant incorrect data was acted on within hours of import" — a blast-radius observation).
+- Protective actions taken before the cause was known, framed as deliberate ("Took the backoffice offline as a precautionary measure when it began behaving irregularly, before the cause had been identified.").
+- Interim restorations with timestamps.
+- The permanent fix, distinguished explicitly from the interim measure, with inline corrective-action references and status: "…removing the single point of dependency (**CA-01 – completed**)."
+- Detection improvements: "(**CA-02 – completed**)."
 
-**Method note:** apply five-whys internally before writing, but publish the synthesis, not the Q&A scaffolding.
+Completed corrective actions are referenced inline this way. **If any corrective action is still open at publication**, add a compact table after the bullets — ID | Action | Owner (team) | Due date | Status — and commit in Next Steps to a written status update on a named date. An action without a date is a wish.
 
-### 3.7 Mitigation and Recovery (required)
+### 3.8 Next Steps (required)
 
-Chronological prose: what stopped the bleeding, what fixed the data, what restored service, who verified what. Two rules:
+Dash bullets, forward-looking:
 
-- **Distinguish hotfix from permanent fix** explicitly ("the hotfix deployed during the incident accepts both formats; the permanent safeguard is the validation gate in AI-01").
-- **Show joint verification.** Every "partner confirmed X" line demonstrates we don't self-certify recovery.
+- Continued monitoring of the Client environment following the fix.
+- A **systemic review commitment** — extending the lesson beyond this incident ("Review of availability alerting coverage across other client-facing services to confirm equivalent detection is in place."). Every postmortem closes with at least one action that generalises the lesson.
+- Status-update date for any open corrective actions.
+- Contact route: "Questions are welcome through the Client's usual contact at the Provider, or the Provider's Head of SRE, who owns this report."
 
-### 3.8 Corrective Actions (required)
+### 3.9 Confidentiality Footer (required)
 
-This is where our current format needs the most upgrade. Required columns:
+Verbatim, italic, at the end of the document:
 
-| ID | Action | Owner (team) | Priority | Due date | Status | Verification criterion |
-|---|---|---|---|---|---|---|
-| AI-01 | Field-level post-import validation comparing every CSV field against the database; any mismatch blocks go-live. | Engineering | P1 | 2026-04-15 | In progress | A deliberately corrupted test file is rejected by the pipeline in staging; evidence linked. |
-
-Rules:
-
-- **Every action has a due date.** "Committed to making sure this cannot happen again" without dates is a platitude.
-- **Verification criterion = how we'll prove it's done**, not a restatement of the action. Prefer "a deliberately injected failure is caught" over "validation implemented."
-- **Tag each action by horizon:** *Immediate* (done during incident), *Short-term* (≤ 30 days), *Architectural* (structural, may take quarters). Partners should see we operate on all three.
-- **Map actions to RCA gaps.** Every miss named in 3.6c has a corresponding action; every action references the gap it closes.
-- **Commit to a status update date** — and put it in the header block.
-
-### 3.9 What This Means for You (required — new section, ≤ 150 words)
-
-Close facing the partner, not the system:
-
-- What's already different today (hotfixes, monitoring live now)
-- What changes for their workflows, if anything (e.g. new sign-off gate before imports)
-- When they'll hear from us next (corrective-action review date)
-- Where to raise questions (named channel)
-
-This converts the report from a confession into a partnership artifact.
+> *This document is confidential and shared solely between the Provider and the Client for the purpose of incident review and remediation. It must not be distributed, reproduced, or disclosed to any third party without prior written consent. Findings reflect the Provider's assessment as of the report date and may be updated if new information becomes available.*
 
 ### 3.10 Appendices (optional)
 
@@ -209,78 +172,94 @@ Raw delivery logs, affected activity IDs, query outputs, glossary. Anything that
 
 ## PART 4 — QUALITY GATE (AI-AGENT CHECKLIST)
 
-A draft must pass all gates before publication. This list is written so an AI agent can evaluate each item as pass/fail and report what is missing.
+A draft must pass all gates before publication. Each item is evaluable as pass/fail.
 
 **Completeness — facts that must exist:**
-- [ ] Impact window (first customer impact → last customer impact), UTC
-- [ ] Detection time and detection source (alert / partner report / manual)
-- [ ] Exact affected counts (players, actions, emails, bonuses) or explicit approximations
-- [ ] Trigger named as a specific change/command/config
-- [ ] Propagation chain written as a single arrow sequence
-- [ ] Every detection/monitoring layer that failed, listed
-- [ ] All seven response metrics computed
-- [ ] Hotfix vs permanent fix distinguished
-- [ ] Every corrective action has owner, due date, status, verification criterion
-- [ ] Every RCA gap maps to ≥ 1 corrective action (and vice versa)
-- [ ] Partner verification steps present in timeline
-- [ ] Next-update date stated in header and closing
-- [ ] No dangling facts (every anomaly mentioned is explained or explicitly marked under investigation)
+- [ ] Header block complete: incident ref, client environment, date of incident, report date, severity/status with transition history, Confidential classification
+- [ ] Trigger named as a specific change/deployment/command with its mechanism ("deployment corrupted dashboard resources"), not a vague fault
+- [ ] Every deliberate protective action identified and framed as precautionary, with its own timestamp distinct from the trigger
+- [ ] Impact window per affected service (first client impact → verified restoration, UTC, with duration) — windows differ when trigger and protective-offline differ
+- [ ] Severity transitions recorded in header, overview, and as timeline rows
+- [ ] Detection method stated honestly; client-reported detection cross-referenced to its corrective action
+- [ ] Data-safety reasoning present: what the affected component holds and does not hold; "No client data was altered or exposed" (or the factual equivalent)
+- [ ] Extended restorations explained (why one service took longer)
+- [ ] Interim measure vs permanent fix distinguished
+- [ ] Every RCA contributing factor maps to a corrective action and vice versa
+- [ ] Completed CAs referenced inline with status; open CAs in a table with owner and due date, plus a status-update date in Next Steps
+- [ ] Next Steps includes a systemic review commitment and the contact route
+- [ ] Confidentiality footer present verbatim
+- [ ] No dangling facts — every anomaly explained or explicitly under investigation
+- [ ] **No `XX:XX` or unresolved placeholders anywhere**; `[HH:MM]` only on [COMMS] rows pending confirmation
 
-**Tone — automatic flags:**
-- [ ] No passive voice in executive summary paragraph 1
-- [ ] No forbidden phrases (Part 2 list)
+**Tone and voice — automatic flags:**
+- [ ] Third person throughout: "the Provider" / "the Client" — no "you", "we", "our", "your" (flag every instance)
+- [ ] No marketing-style sections or direct-address headings ("What you experienced", "What this means for you")
+- [ ] No passive voice in the opening narrative's first sentence
+- [ ] No forbidden phrases (Part 2 list); no self-praise; no humour
+- [ ] No dramatic characterisation of fixes or effort — flag magnitude adjectives ("substantial", "significant", "major", "complex", "extensive") attached to the Provider's own work; the fix is described, not sized
 - [ ] No named or identifiable individuals
-- [ ] No minimisers ("briefly," "small number," "may have") attached to quantified impact
-- [ ] Single timezone throughout timeline
-- [ ] Executive summary ≤ 250 words; readable by a non-engineer (agent test: summarise it for a CEO — if information is lost, it fails)
+- [ ] No minimisers attached to quantified impact
+- [ ] Protective decisions never read as outages, and outages never read as maintenance
 
-**Brand voice — Fast Track checks (Part 2B):**
+**Format and consistency — cross-checks:**
+- [ ] Section order matches Part 3 exactly; no extra sections
+- [ ] Timeline is three-column (Timestamp | Action | Description), ISO timestamps, monotonic
+- [ ] Single timezone (UTC); prose dates "26 June 2026" (no ordinals); timeline `2026-06-26 09:00`
+- [ ] Time-of-day words ("morning", "afternoon", "evening") agree with the accompanying UTC timestamp — flag any mismatch
+- [ ] Every timestamp/duration in the narrative matches the timeline and the impact windows
+- [ ] Severity in header matches overview and timeline transition rows
+- [ ] Affected services in the overview all appear in the narrative and timeline
 - [ ] UK English throughout (flag: organization, behavior, analyze, apologize, center)
-- [ ] "Partner" used, never "customer"/"client"
-- [ ] No self-praise ("industry-leading," "world-class," "best-in-class" about Fast Track or its response)
-- [ ] No humour or wit anywhere
-- [ ] Third-party suppliers named factually, never framed as root cause
 - [ ] Product names correct (Fast Track CRM, Fast Track AI, Rewards, Greco, Singularity Model, RTD)
-- [ ] Closing section is forward-looking and partner-outcome-framed; factual sections carry no optimistic spin
-- [ ] Document design: Inter Tight, official FT colours only, ≤ 2 accent colours, confidentiality footer present
+- [ ] No broken formatting: no stray bold markers, no empty headings, no missing spaces after full stops
 
-**Consistency — cross-checks:**
-- [ ] Every number in the executive summary matches the impact tables
-- [ ] Timeline timestamps are monotonic and match durations claimed in metrics
-- [ ] Severity classification matches the stated severity definition
-- [ ] Affected services in header all appear in the narrative
-
-**Escalation rule for the agent:** if any *Completeness* item cannot be filled from available inputs (incident channel, logs, timeline), the agent must output a "MISSING INFORMATION" list addressed to the incident commander rather than guessing. Fabricated facts in a postmortem are a severity-one documentation failure.
+**Escalation rule for the agent:** if any *Completeness* item cannot be filled from available inputs (incident channel, logs, timeline), output a **MISSING INFORMATION** list addressed to the incident commander rather than guessing. Fabricated facts in a postmortem are a severity-one documentation failure.
 
 ---
 
-## PART 5 — WORKED EXAMPLE: BEFORE / AFTER
+## PART 5 — WORKED EXAMPLE: BEFORE / AFTER (INC-10938)
 
-Using real text from INC-85241 to show the standard applied.
+The gold-standard reference is the INC-10938 executive rewrite. These are the actual deltas between the first draft and the published version — each is a rule in this standard.
 
-**Before (current):**
-> DURATION: 7 hours 37 minutes (incident declared to closed)
+**Vague fault → named trigger:**
+> *Before:* "The root cause was a fault in the central Singularity Resources component."
+> *After:* "On 26 June at 09:00 UTC a deployment to the Singularity Resources API corrupted the dashboard resources it holds."
 
-**After:**
-> IMPACT WINDOW: 17 Mar 2026 03:01 UTC – 17 Mar 2026 17:31 UTC (14h 30m from first incorrect bonus to verified restoration). Email delivery for unrelated campaigns was blocked 06:00–15:47 UTC.
+**Outage framing → precautionary framing (and a factual correction):**
+> *Before:* "Urgent remediation work on that component took the dependent services offline while it was carried out."
+> *After:* "At that point the cause of the irregular behaviour was not yet known, and at 10:00 UTC the backoffice was taken offline as a precautionary measure while the investigation was ongoing."
 
-**Before:**
-> The provider is committed to making sure this type of incident cannot happen again. The following actions have been identified and assigned to named teams.
+**Flat severity → transition history:**
+> *Before:* "Severity: P1"
+> *After:* "P1 (Critical) until backoffice restoration (11:50 UTC, 26 June); P2 thereafter – Resolved; corrective actions completed" — with a "Severity downgraded" timeline row.
 
-**After:**
-> Five corrective actions are in progress, each with an owner, due date, and verification criterion below. Three address the import pipeline directly; two address the detection gaps that delayed our response by 6.5 hours. We will send you a written status update on each action on 15 April 2026.
+**Assertion → data-safety proof:**
+> *Before:* "…and there was no data loss."
+> *After:* "The Singularity Resources API holds no client data – only the markup and code used by the dashboard container to display dashboards – so the corruption was limited to those dashboard resources, which were fully restored by the recovery job. No client data was altered or exposed."
 
-**Before (detection, implicit):**
-> The Provider SOC received an alert that 2 emails were not delivered…
+**Dramatic characterisation → the fix itself:**
+> *Before:* "Data Studio required a more substantial fix: its access to the central Singularity Resources component was re-architected…"
+> *After:* "Restoring Data Studio required a recovery job to restore the corrupted dashboard resources." — the work is named, not sized; the reader infers the scale from the facts.
 
-**After (explicit honesty, new in RCA 3.6c):**
-> The campaign fired 334,216 actions in seven minutes at 03:01 UTC, yet our first signal arrived at 09:30 UTC — and it was an alert about two undelivered emails, not the mass send itself. We had no alerting on bulk action throughput or abnormal email volume. A campaign 100x normal size should page us within minutes, not surface as a side effect six hours later. Corrective action AI-06 introduces throughput anomaly alerting on the action pipeline.
+**Placeholders → resolved timestamps:**
+> *Before:* "26th June XX:XX — Partner impact reported"
+> *After:* "2026-06-26 09:35 | Impact reported | First client reports received that the backoffice and Data Studio were unavailable."
+
+**Single impact window → per-service windows:**
+> *Before:* both services from 10:00 UTC.
+> *After:* Data Studio 09:00 UTC (the deployment) → 13:00 UTC 27 June; backoffice 10:00 UTC (the precautionary offline) → 11:50 UTC.
+
+**Point fixes only → systemic Next Steps:**
+> *Before:* two corrective actions, both scoped to this incident.
+> *After:* adds "Review of availability alerting coverage across other client-facing services to confirm equivalent detection is in place."
 
 ---
 
 ## PART 6 — PROCESS NOTES
 
-- **Internal vs partner version:** the internal postmortem may contain partner-identifying details, personnel context, and commercial discussion. The partner version is derived from it, never the reverse. Same facts, same numbers — redaction only, no re-narration.
-- **Publication SLA:** preliminary summary within 48 hours of resolution; full report within 5 business days; revised versions are versioned and change-logged.
-- **Review chain:** author (IC or SOC Team Lead) → Head of SRE → CTO for P1s → publish. AI agent runs the Part 4 gate before each human review.
-- **Action follow-through:** corrective actions are tracked in the incident tooling; the next-review date in the header is a calendar commitment, not decoration. A postmortem whose actions silently expire is worse than no postmortem.
+- **Gold-standard reference:** the INC-10938 executive rewrite. Match its structure, voice, and depth exactly. (The former reference, INC-85241 v2.0, predates the v2.0 format.)
+- **Internal vs client version:** the internal postmortem may contain client-identifying details, personnel context, and commercial discussion. The client version is derived from it, never the reverse. Same facts, same numbers — redaction only, no re-narration.
+- **Publication SLA:** preliminary summary within 48 hours of resolution; full report within 5 business days; revised versions are versioned and change-logged ("Findings reflect the Provider's assessment as of the report date").
+- **Review chain:** author (IC or SOC Team Lead) → Head of SRE → CTO for P1s → publish. The AI agent runs the Part 4 gate before each human review.
+- **Action follow-through:** corrective actions are tracked in the incident tooling; any status-update date committed in Next Steps is a calendar commitment, not decoration. A postmortem whose actions silently expire is worse than no postmortem.
+- **Document output:** typeface Inter Tight (Arial fallback in docx); composed and plain — this is a formal engineering record, not a branded campaign. Headers bold, left-aligned; black body text on white; at most one accent colour (FT Purple for section headers) if any. Confidentiality footer (3.9) on the document; page footer with incident ID, version, classification, page number.
