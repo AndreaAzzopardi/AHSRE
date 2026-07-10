@@ -89,8 +89,12 @@ def week_is_complete(iso_monday):
     return today >= start + timedelta(days=7)
 
 complete_weeks = [k for k in WEEK_KEYS if week_is_complete(k)]
-stat_week      = complete_weeks[-1]
-stat_prev_week = complete_weeks[-2]
+# Stat cards track the CURRENT (in-progress) week — the nightly run refreshes it
+# daily, so cards show live numbers with a "· in progress" marker until the week
+# completes. Deltas compare against the previous week. (Changed 2026-07-10; was
+# complete_weeks[-1].)
+stat_week      = WEEK_KEYS[-1]
+stat_prev_week = WEEK_KEYS[-2]
 
 # Week labels
 WK = [fmt_week_label(k, k == current_week) for k in WEEK_KEYS]
@@ -221,7 +225,13 @@ iP1_arr = [get(wk, "incident_volume", "P1", default=0) for wk in WEEK_KEYS]
 iP2_arr = [get(wk, "incident_volume", "P2", default=0) for wk in WEEK_KEYS]
 iP3_arr = [get(wk, "incident_volume", "P3", default=0) for wk in WEEK_KEYS]
 iP4_arr = [get(wk, "incident_volume", "P4", default=0) for wk in WEEK_KEYS]
-iUnk_arr = [get(wk, "incident_volume", "Unknown", default=0) for wk in WEEK_KEYS]
+# Unknown/unsevered = computed remainder (total − P1..P4) so the stack always
+# reconciles to the card total — in-flight incidents on the current partial week
+# often have no severity assigned yet and appear in total only.
+iUnk_arr = [max(0, (get(wk, "incident_volume", "total", default=0) or 0)
+                   - (iP1_arr[i] or 0) - (iP2_arr[i] or 0)
+                   - (iP3_arr[i] or 0) - (iP4_arr[i] or 0))
+            for i, wk in enumerate(WEEK_KEYS)]
 
 def _src(wk, *keys):
     return sum(get(wk, "alert_volume", "by_source", k, default=0) for k in keys)
@@ -260,7 +270,8 @@ tbNightW_arr = [tb_get(wk, "night",   "waste_pct") for wk in WK19_KEYS]
 tbTotalW_arr = [tb_week_val(wk, "overall_waste_pct") for wk in WK19_KEYS]
 
 # ── STAT CARD CALCULATIONS ───────────────────────────────────────────────────
-cw_date = fmt_date_dmy(stat_week)
+_stat_week_partial = not week_is_complete(stat_week)
+cw_date = fmt_date_dmy(stat_week) + (" · in progress" if _stat_week_partial else "")
 
 # S1 cards
 cw_true_p1, cw_false_p1, cw_unclass, cw_fp_rate = p1_quality_row(stat_week)
@@ -316,6 +327,9 @@ cw_inc_p1 = get(stat_week, "incident_volume", "P1", default=0)
 cw_inc_p2 = get(stat_week, "incident_volume", "P2", default=0)
 cw_inc_p3 = get(stat_week, "incident_volume", "P3", default=0)
 cw_inc_p4 = get(stat_week, "incident_volume", "P4", default=0)
+cw_inc_unk = max(0, (cw_inc_total or 0) - (cw_inc_p1 or 0) - (cw_inc_p2 or 0)
+                    - (cw_inc_p3 or 0) - (cw_inc_p4 or 0))
+cw_inc_unk_note = f" &middot; Unclassified: {cw_inc_unk}" if cw_inc_unk else ""
 inc_delta_cls, inc_delta = delta_str(cw_inc_total, pw_inc_total, "", higher_is_better=False, decimals=0)
 
 cw_alerts = get(stat_week, "alert_volume", "total", default=0)
@@ -341,7 +355,8 @@ pw_conv_rate = round(pw_inc_total / pw_alerts * 100, 1) if pw_alerts else None
 conv_delta_cls, conv_delta = delta_str(cw_conv_rate, pw_conv_rate, "%", higher_is_better=False)
 
 # ── BREACH BLOCKS ────────────────────────────────────────────────────────────
-week_label_long = f"Week of {fmt_date_dmy(stat_week)} {datetime.strptime(stat_week, '%Y-%m-%d').year}"
+week_label_long = (f"Week of {fmt_date_dmy(stat_week)} {datetime.strptime(stat_week, '%Y-%m-%d').year}"
+                   + (" (in progress)" if _stat_week_partial else ""))
 
 def render_p1_breach_block(week):
     breaches = cache.get(week, {}).get("p1_frt_breaches", None)
@@ -649,24 +664,6 @@ def _build_brand_strip(brands, range_note):
 
 brand_strip_html = _build_brand_strip(_ranked[:5], brand_range_note)
 
-def _collect_all_relevant_p1s():
-    seen = set()
-    result = []
-    for inc in (cache.get(stat_week, {}).get("true_p1_incidents") or []):
-        ref = inc.get("reference", "")
-        seen.add(ref)
-        result.append(inc)
-    for wk in reversed(WEEK_KEYS):
-        if wk == stat_week:
-            continue
-        for inc in (cache.get(wk, {}).get("true_p1_incidents") or []):
-            ref = inc.get("reference", "")
-            if ref not in seen and _p1_status_cls(inc.get("status", "")) != "c-green":
-                seen.add(ref)
-                # copy so the carry-over marker never leaks into the cache dict
-                result.append({**inc, "_carryover": True})
-    return result
-
 # Recurring-cause themes: weeks may carry a "p1_theme" key (written by Step 2E
 # when >=2 True P1s share a root cause). Map ref -> theme label so incident
 # cards can be tagged, including carry-overs from earlier themed weeks.
@@ -691,43 +688,6 @@ def _parse_summary_sections(summary):
         else:
             sections.append(("", para))
     return sections
-
-def _build_p1_full_cards(incidents):
-    if not incidents:
-        return '    <div class="p1-no-data c-muted">No True P1 incidents this week.</div>'
-    cards = []
-    for inc in incidents:
-        status = inc.get("status", "—")
-        sc = _p1_status_cls(status)
-        status_label, _ = _exec_status(status)
-        dt_str = _fmt_dt_short(inc.get("reported_at", ""))
-        ref = inc.get("reference", "")
-        name = inc.get("name", "")
-        name = _clean_inc_name(name)
-        href = inc.get("permalink", "")
-        ref_html = f'<a href="{href}" target="_blank" class="p1-ref">{ref}</a>' if href else f'<span class="p1-ref">{ref}</span>'
-        sections = _parse_summary_sections(inc.get("summary", ""))
-        sections_html = ""
-        for label, body in sections:
-            if label:
-                sections_html += f'      <div class="p1-section"><div class="p1-section-label">{label}</div><div class="p1-section-body">{body}</div></div>\n'
-            else:
-                sections_html += f'      <div class="p1-section"><div class="p1-section-body">{body}</div></div>\n'
-        active_cls = " active" if not cards else ""
-        cards.append(f'''    <div class="p1-full-card{active_cls}" data-ref="{ref}">
-      <div class="p1-inc-header">
-        {ref_html}
-        <span class="p1-status-badge {sc}">{status_label}</span>
-        <span class="p1-inc-date">{dt_str}</span>
-      </div>
-      <div class="p1-inc-title">{name}</div>
-      <div class="p1-sections">
-{sections_html}      </div>
-    </div>''')
-    return "\n".join(cards)
-
-_all_p1s = _collect_all_relevant_p1s()
-p1_full_cards_html = _build_p1_full_cards(_all_p1s)
 
 # ── WK19 first date label ─────────────────────────────────────────────────────
 wk19_first_dt = datetime.strptime(WK19_KEYS[0], "%Y-%m-%d") if WK19_KEYS else None
@@ -808,15 +768,16 @@ pir_hist_labels = [fmt_week_label(k, False) for k in _pir_hist_keys]
 pir_hist_rate   = [pir_history[k]["rate"] for k in _pir_hist_keys]
 
 # ── P1 INCIDENT SLIDE GENERATION ─────────────────────────────────────────────
-# Two incidents per slide (the p1-two-up container holds a pair of cards).
-_p1_chunks    = [_all_p1s[i:i+2] for i in range(0, len(_all_p1s), 2)] if _all_p1s else [[]]
-_n_p1_slides  = len(_p1_chunks)
+# Two fixed slides: "Current Week" (in-page ‹ › pager, 2 cards per view) and
+# "Past Weeks" (scrollable archive of every cached prior-week True P1).
 _idx_p1perf   = 1
-_idx_pir      = 2 + _n_p1_slides
-_idx_partner  = _idx_pir + 1
-_idx_ops      = _idx_partner + 1
-_idx_eng      = _idx_ops + 1
-_total_slides = _idx_eng + 1
+_idx_p1cur    = 2
+_idx_p1past   = 3
+_idx_pir      = 4
+_idx_partner  = 5
+_idx_ops      = 6
+_idx_eng      = 7
+_total_slides = 8
 
 # ── ENGINEER WORKLOAD SLIDE (pre-built string; IC-ticket leads, all teams) ────
 def _eng_parse_iso(ts):
@@ -1149,250 +1110,152 @@ def _build_p1_pair_cards(chunk):
     </div>''')
     return "\n".join(cards)
 
-p1_tab_btns_html = ""
-p1_all_slides_html = ""
-for _i, _chunk in enumerate(_p1_chunks):
-    _si = 2 + _i
-    _tab_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents {_i+1}/{_n_p1_slides}"
-    _grp_lbl   = "P1 Incidents" if _n_p1_slides == 1 else f"P1 Incidents · {_i+1} of {_n_p1_slides}"
-    # A slide of only carry-overs is labelled as such — those incidents are
-    # from earlier weeks and must not read as new this week.
-    if _chunk and all(inc.get("_carryover") for inc in _chunk):
-        _grp_suffix = "Carry-over · still open"
-    else:
-        _grp_suffix = cw_date
-    _chars     = sum(len(inc.get("summary", "")) for inc in _chunk)
-    _fs        = 13 if _chars > 2000 else (14 if _chars > 1400 else 15)
-    p1_tab_btns_html += f'    <button class="slide-tab" onclick="showSlide({_si})">{_tab_lbl}</button>\n'
-    _cards = _build_p1_pair_cards(_chunk)
-    p1_all_slides_html += f'''
-<!-- ═══ P1 INCIDENTS {_i+1} ════════════════════════════════════ -->
-<div class="slide" id="s1_{_i+1}"><div class="page">
-  <div class="group-label">{_grp_lbl} · {_grp_suffix}</div>
-  <div class="p1-two-up" style="font-size: {_fs}px;">
-{_cards}
-  </div>
+p1_tab_btns_html = (
+    f'    <button class="slide-tab" onclick="showSlide({_idx_p1cur})">P1 Incidents · Current Week</button>\n'
+    f'    <button class="slide-tab" onclick="showSlide({_idx_p1past})">P1 Incidents · Past Weeks</button>\n'
+)
+
+_nav_btn_style = ("width:24px;height:22px;display:flex;align-items:center;justify-content:center;"
+                  "background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);"
+                  "border-radius:4px;color:#e2e8f0;font-size:14px;cursor:pointer;padding:0")
+
+# ── Slide: P1 Incidents · Current Week (in-page pager, 2 cards per view) ─────
+_cw_p1_incs  = cache.get(stat_week, {}).get("true_p1_incidents") or []
+_cw_p1_pages = [_cw_p1_incs[i:i+2] for i in range(0, len(_cw_p1_incs), 2)] or [[]]
+_p1cw_pages_html = ""
+for _pi, _pg in enumerate(_cw_p1_pages):
+    _chars = sum(len(inc.get("summary", "")) for inc in _pg)
+    _fs    = 13 if _chars > 2000 else (14 if _chars > 1400 else 15)
+    _disp  = "flex" if _pi == 0 else "none"
+    _p1cw_pages_html += (
+        f'  <div class="p1-two-up p1cw-page" style="font-size:{_fs}px;display:{_disp}">\n'
+        + _build_p1_pair_cards(_pg) + '\n  </div>\n'
+    )
+_p1cw_nav_html = ""
+if len(_cw_p1_pages) > 1:
+    _p1cw_nav_html = (
+        f'    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">\n'
+        f'      <button type="button" id="p1cwPrev" onclick="p1cwNav(-1)" title="Previous incidents" style="{_nav_btn_style}">&#8249;</button>\n'
+        f'      <span id="p1cwPos" style="font-size:11px;color:#64748b;font-family:\'DM Mono\',monospace;white-space:nowrap"></span>\n'
+        f'      <button type="button" id="p1cwNext" onclick="p1cwNav(1)" title="Next incidents" style="{_nav_btn_style}">&#8250;</button>\n'
+        f'    </div>\n'
+    )
+_p1cw_n = len(_cw_p1_incs)
+p1_all_slides_html = f'''
+<!-- ═══ P1 INCIDENTS · CURRENT WEEK ════════════════════════════ -->
+<div class="slide" id="sP1cur"><div class="page">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0">
+    <div class="group-label" style="margin-bottom:0">P1 Incidents · Current Week · {cw_date} · {_p1cw_n} incident{"s" if _p1cw_n != 1 else ""}</div>
+{_p1cw_nav_html}  </div>
+{_p1cw_pages_html}</div></div>
+'''
+
+# ── Slide: P1 Incidents · Past Weeks (per-week slider, like the exec nav) ────
+# One view per cached prior week, deduped by reference (newest occurrence wins;
+# refs already shown on the Current Week slide are skipped). ‹ › header buttons
+# flip between weeks, most recent past week shown by default.
+_seen_p1_refs = {inc.get("reference", "") for inc in _cw_p1_incs}
+_p1pw_views = []  # (range_str, count, open_n, cards_html) — collected newest first for dedupe
+for _wk in reversed([w for w in WEEK_KEYS if w != stat_week]):
+    _wk_incs = [inc for inc in (cache.get(_wk, {}).get("true_p1_incidents") or [])
+                if inc.get("reference", "") not in _seen_p1_refs]
+    if not _wk_incs:
+        continue
+    _seen_p1_refs.update(inc.get("reference", "") for inc in _wk_incs)
+    _wk_end = fmt_date_dmy((datetime.strptime(_wk, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+    _open_n = sum(1 for inc in _wk_incs if _p1_status_cls(inc.get("status", "")) != "c-green")
+    _p1pw_views.append((f"{fmt_date_dmy(_wk)} – {_wk_end}", len(_wk_incs), _open_n,
+                        _build_p1_pair_cards(_wk_incs)))
+_p1pw_views.reverse()  # oldest → newest, so the default index (last) is the most recent
+
+_p1pw_divs = ""
+for _vi, (_rng, _n, _open_n, _cards) in enumerate(_p1pw_views):
+    _disp = "flex" if _vi == len(_p1pw_views) - 1 else "none"
+    _p1pw_divs += (
+        f'  <div class="p1pw-week" data-range="{_rng}" data-count="{_n}" data-open="{_open_n}" '
+        f'style="display:{_disp};flex-direction:column;flex:1;min-height:0">\n'
+        f'    <div style="flex:1;min-height:0;overflow-y:auto;font-size:13px;padding-right:6px">\n'
+        f'      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">\n'
+        + _cards + '\n      </div>\n    </div>\n  </div>\n'
+    )
+if not _p1pw_divs:
+    _p1pw_divs = '  <div class="p1-no-data c-muted">No prior-week True P1 incidents in the cache window.</div>\n'
+
+_p1pw_nav_html = ""
+if len(_p1pw_views) > 1:
+    _p1pw_nav_html = (
+        f'    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">\n'
+        f'      <button type="button" id="p1pwPrev" onclick="p1pwNav(-1)" title="Older week" style="{_nav_btn_style}">&#8249;</button>\n'
+        f'      <span id="p1pwPos" style="font-size:11px;color:#64748b;font-family:\'DM Mono\',monospace;white-space:nowrap"></span>\n'
+        f'      <button type="button" id="p1pwNext" onclick="p1pwNav(1)" title="Newer week" style="{_nav_btn_style}">&#8250;</button>\n'
+        f'    </div>\n'
+    )
+
+p1_all_slides_html += f'''
+<!-- ═══ P1 INCIDENTS · PAST WEEKS ══════════════════════════════ -->
+<div class="slide" id="sP1past"><div class="page">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0">
+    <div class="group-label" style="margin-bottom:0">P1 Incidents · Past Weeks · <span id="p1pwRange"></span></div>
+    <span id="p1pwMeta" style="font-size:11px;color:#64748b;white-space:nowrap"></span>
+{_p1pw_nav_html}  </div>
+{_p1pw_divs}  <div style="font-size:11px;color:#475569;padding-top:6px;flex-shrink:0">Incident-level detail is cached from 25 May 2026; earlier weeks appear in the P1 Quality trend only.</div>
 </div></div>
+<script>
+(function(){{
+  var pages = document.querySelectorAll('#sP1cur .p1cw-page');
+  if (!pages.length) return;
+  var idx = 0;
+  function render(){{
+    for (var i = 0; i < pages.length; i++) pages[i].style.display = (i === idx ? 'flex' : 'none');
+    var pos = document.getElementById('p1cwPos');
+    if (pos) pos.textContent = (idx + 1) + ' / ' + pages.length;
+    var p = document.getElementById('p1cwPrev'), n = document.getElementById('p1cwNext');
+    if (p) {{ p.disabled = (idx === 0);                p.style.opacity = (idx === 0 ? 0.35 : 1); }}
+    if (n) {{ n.disabled = (idx === pages.length - 1); n.style.opacity = (idx === pages.length - 1 ? 0.35 : 1); }}
+  }}
+  window.p1cwNav = function(d){{ idx = Math.max(0, Math.min(pages.length - 1, idx + d)); render(); }};
+  render();
+}})();
+(function(){{
+  var weeks = document.querySelectorAll('#sP1past .p1pw-week');
+  if (!weeks.length) return;
+  var idx = weeks.length - 1;
+  function render(){{
+    for (var i = 0; i < weeks.length; i++) weeks[i].style.display = (i === idx ? 'flex' : 'none');
+    var w = weeks[idx];
+    document.getElementById('p1pwRange').textContent = w.getAttribute('data-range');
+    var open = parseInt(w.getAttribute('data-open') || '0', 10);
+    var meta = w.getAttribute('data-count') + ' True P1' + (w.getAttribute('data-count') === '1' ? '' : 's');
+    document.getElementById('p1pwMeta').innerHTML = meta +
+      (open ? ' &middot; <span style="color:#f59e0b">' + open + ' still open</span>' : '');
+    var pos = document.getElementById('p1pwPos');
+    if (pos) pos.textContent = (idx + 1) + ' / ' + weeks.length;
+    var p = document.getElementById('p1pwPrev'), n = document.getElementById('p1pwNext');
+    if (p) {{ p.disabled = (idx === 0);                p.style.opacity = (idx === 0 ? 0.35 : 1); }}
+    if (n) {{ n.disabled = (idx === weeks.length - 1); n.style.opacity = (idx === weeks.length - 1 ? 0.35 : 1); }}
+  }}
+  window.p1pwNav = function(d){{ idx = Math.max(0, Math.min(weeks.length - 1, idx + d)); render(); }};
+  render();
+}})();
+</script>
 '''
 
 # ── EXECUTIVE SUMMARY SLIDE (pre-built to avoid f-string brace-escaping) ─────
 # Exec slide always reports on the last complete week (prev_week), not the partial current week
-_ew         = prev_week
-_ew_true_p1 = p1_quality_row(_ew)[0]
-_ew_p1_frt  = get(_ew, "p1_frt_sla", "hit_rate")
-_ew_csat    = get(_ew, "csat", "avg_score")
-_ew_p23     = get(_ew, "p2p3_frt_sla", "hit_rate")
-_ew_p1_incs = cache.get(_ew, {}).get("true_p1_incidents") or []
-_ew_theme   = cache.get(_ew, {}).get("p1_theme") or None
-_ew_date    = fmt_date_dmy(_ew)
-_ew_end     = fmt_date_dmy((datetime.strptime(_ew, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
-_ew_range   = f"{_ew_date} – {_ew_end}"
-
-_p1_val_color  = 'c-green' if _ew_true_p1 == 0 else 'c-red'
-_p1_frt_color  = color_pct(_ew_p1_frt)
-_csat_color    = color_csat(_ew_csat)
-_p23_color     = color_pct(_ew_p23)
-
-# 12-week average for true P1s (all complete weeks before current)
-_p1_12wk_keys = WEEK_KEYS[:-1]
-_p1_12wk_vals = [p1_quality_row(wk)[0] for wk in _p1_12wk_keys]
-_p1_12wk_vals = [v for v in _p1_12wk_vals if v is not None]
-_p1_4wk_avg   = round(sum(_p1_12wk_vals) / len(_p1_12wk_vals), 1) if _p1_12wk_vals else None
-_p1_12wk_n    = len(_p1_12wk_vals)
-
-# 12-week averages for exec banner chips (all complete weeks before current)
-_frt_prior   = [v for v in p1Rate_arr[:-1]  if v is not None]
-_csat_prior  = [v for v in csA_arr[:-1]     if v is not None]
-_p23_prior   = [v for v in p23Rate_arr[:-1] if v is not None]
-_exec_frt_avg  = round(sum(_frt_prior)  / len(_frt_prior))  if _frt_prior  else None
-_exec_csat_avg = round(sum(_csat_prior) / len(_csat_prior), 2) if _csat_prior else None
-_exec_p23_avg  = round(sum(_p23_prior)  / len(_p23_prior))  if _p23_prior  else None
-_exec_p1_avg   = round(sum(_p1_12wk_vals) / len(_p1_12wk_vals)) if _p1_12wk_vals else None
-
-# Story narrative — two lines: incident quality headline + PIR concern
+# ═══ EXECUTIVE SUMMARY — one pre-rendered view per complete week ═════════════
+# The exec slide is navigable: ‹ › header buttons flip between per-week views,
+# newest shown by default. Averages / trend arrows are computed as-of each week
+# (trailing window up to and including it). The PIR chip and the PIR narrative
+# line read the CURRENT ClickUp snapshot (not week-keyed), so they render only
+# on the latest view. Incident statuses shown are as cached today, not as they
+# stood during that week.
 import math as _math
-def _build_exec_narrative():
-    _avg = _math.ceil(_p1_4wk_avg) if _p1_4wk_avg is not None else None
-    _n   = _p1_12wk_n
-    _active_n = sum(1 for inc in _ew_p1_incs
-                    if inc.get("status", "").lower() not in ("closed", "resolved", "postmortem"))
-    # Line 1: incident quality headline
-    if _ew_true_p1 == 0:
-        _l1 = "No True P1 incidents this week — all response and quality metrics are on target."
-    elif _avg is not None and _ew_true_p1 <= _avg:
-        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still in Monitoring, awaiting resolution."
-                if _active_n else "")
-        _l1 = (f"Incident handling is in good shape — response times, SLAs, and CSAT are all on target "
-               f"and trending in the right direction. P1 count is consistent with the {_n}-week average.{_mon}")
-    else:
-        _parts = []
-        if _avg is not None and _ew_true_p1 > _avg:
-            _parts.append(f"{_ew_true_p1} True P1s vs {_avg}/wk {_n}-week average")
-        if _ew_p1_frt is not None and _ew_p1_frt < 0.90:
-            _parts.append(f"P1 FRT SLA {fmt_rate(_ew_p1_frt, 0)}")
-        if _ew_csat is not None and _ew_csat < 4.5:
-            _parts.append(f"CSAT {fmt_csat(_ew_csat)}")
-        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still open."
-                if _active_n else "")
-        _l1 = (f"Elevated week — {'; '.join(_parts)}.{_mon}" if _parts
-               else f"Elevated week — {_ew_true_p1} True P1s this week.{_mon}")
-    # Line 2: PIR concern (shown when below 85% target)
-    _l2 = ""
-    if pir_comp_rate < 85:
-        _pct = int(round(pir_comp_rate))
-        _worst = sorted([t for t in pir_teams if t.get("open", 0) > 0],
-                        key=lambda t: t.get("open", 0), reverse=True)
-        if len(_worst) >= 2:
-            _l2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%, "
-                   f"this is a persistent gap. {_worst[0]['name']} ({_worst[0]['open']} open) and "
-                   f"{_worst[1]['name']} ({_worst[1]['open']} open) are the largest contributors and need attention.")
-        elif len(_worst) == 1:
-            _l2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%. "
-                   f"{_worst[0]['name']} ({_worst[0]['open']} open) is the largest contributor.")
-        else:
-            _l2 = f"PIR action completion is at {_pct}% vs 85% target — needs attention."
-    return _l1, _l2
-_exec_line1, _exec_line2 = _build_exec_narrative()
-
-# Brands affected this week (exec week = prev_week)
-_cw_brands_raw = cache.get(_ew, {}).get("p1_brands", {})
-_cw_brand_list = sorted(
-    [(b, c) for b, c in _cw_brands_raw.items() if b and b not in ("", "None", "No company")],
-    key=lambda x: x[1], reverse=True
-)[:5]
-_brands_line = ""
-if _cw_brand_list:
-    _brands_line = "  ".join(
-        f'<span style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:2px 8px;font-size:11px;color:#93c5fd">{b} <span style="font-family:DM Mono,monospace;font-weight:600">{c}</span></span>'
-        for b, c in _cw_brand_list
-    )
-
-# Plain-English status with risk framing
-# PIR worst offender (most open items, not at 100%)
-_pir_worst_team = None
-for _t in pir_teams:
-    _tt = _t["open"] + _t["completed"]
-    if _tt == 0 or _t["open"] == 0:
-        continue
-    if _pir_worst_team is None or _t["open"] > _pir_worst_team["open"]:
-        _pir_worst_team = {**_t, "rate_pct": int(round(_t["completed"] / _tt * 100))}
-
-# P1 incidents compact list — one header row + one detail line per incident
 import re as _re
+
 def _first_sentence(txt):
     m = _re.search(r'[.!?]', txt)
     return txt[:m.end()].strip() if m else txt.strip()
 
-_p1_inc_n      = len(_ew_p1_incs)
-_inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
-
-_exec_inc_rows = ""
-if _ew_p1_incs:
-    for _inc in _ew_p1_incs:
-        _ref  = _inc.get("reference", "")
-        _nm   = _inc.get("name", "")
-        _nm = _clean_inc_name(_nm)
-        _st_raw = _inc.get("status", "—")
-        _st_label, _st_col = _exec_status(_st_raw)
-        _dt   = _fmt_dt_short(_inc.get("reported_at", ""))
-        _href = _inc.get("permalink", "")
-        _rh   = (f'<a href="{_href}" target="_blank" style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</a>'
-                 if _href else f'<span style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</span>')
-        _secs     = {lbl: body for lbl, body in _parse_summary_sections(_inc.get("summary", ""))}
-        _s_prob   = _first_sentence(_secs.get("Problem", ""))
-        _s_impact = _first_sentence(_secs.get("Impact", ""))
-        _s_action = _first_sentence(_secs.get("Actions Taken", _secs.get("Steps to resolve", _secs.get("Action / Next steps", _secs.get("Next steps", "")))))
-        # 2-3 sentences: Problem + Impact + Actions Taken
-        _sentences = [s for s in [_s_prob, _s_impact, _s_action] if s][:3]
-        _detail = " ".join(_sentences)
-        _exec_inc_rows += (
-            f'<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
-            # Row 1: ref · title · status · date
-            f'<div style="display:flex;align-items:center;gap:8px;min-width:0">'
-            f'{_rh}'
-            f'<span style="flex:1;font-size:13px;color:#e2e8f0;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0">{_nm}</span>'
-            f'<span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.05);color:{_st_col};white-space:nowrap;flex-shrink:0">{_st_label}</span>'
-            f'<span style="font-size:11px;color:#475569;white-space:nowrap;flex-shrink:0">{_dt}</span>'
-            f'</div>'
-            # Row 2: 2-sentence summary — Impact + Actions Taken
-            + (f'<div style="font-size:{_inc_detail_sz};color:#94a3b8;line-height:1.4;margin-top:3px">{_detail}</div>' if _detail else '')
-            + f'</div>'
-        )
-else:
-    _exec_inc_rows = '<div style="font-size:13px;color:#22c55e;padding:10px 0">No True P1 incidents this week.</div>'
-
-# Overall RAG status for exec slide
-# CRITICAL   = P1s still actively impacting users (not in Monitoring/Resolved)
-# MONITORING = P1 count significantly above the rolling average
-# STABLE     = P1s on trend, all in Monitoring or Resolved, or no P1s with prior risks
-# ON TRACK   = no P1s at all this week
-_current_week_refs   = {inc.get("reference", "") for inc in _ew_p1_incs}
-_prior_open_p1s      = [inc for inc in _all_p1s if inc.get("reference", "") not in _current_week_refs]
-_has_prior_risk      = len(_prior_open_p1s) > 0
-_has_truly_active_p1 = any(
-    inc.get("status", "").lower() not in ("closed", "resolved", "postmortem", "monitoring", "documenting")
-    for inc in _ew_p1_incs
-)
-_p1_above_avg        = (
-    (_exec_p1_avg is not None and _ew_true_p1 > _exec_p1_avg + 2)
-    or _ew_true_p1 >= 5
-)
-
-if _has_truly_active_p1:
-    _rag_label = "CRITICAL"
-    _rag_hex   = "#ef4444"
-    _rag_bg    = "rgba(239,68,68,0.08)"
-    _rag_bdr   = "rgba(239,68,68,0.25)"
-elif _p1_above_avg:
-    _rag_label = "MONITORING"
-    _rag_hex   = "#f59e0b"
-    _rag_bg    = "rgba(245,158,11,0.08)"
-    _rag_bdr   = "rgba(245,158,11,0.25)"
-elif _ew_true_p1 == 0:
-    _rag_label = "ON TRACK"
-    _rag_hex   = "#22c55e"
-    _rag_bg    = "rgba(34,197,94,0.06)"
-    _rag_bdr   = "rgba(34,197,94,0.20)"
-else:
-    _rag_label = "STABLE"
-    _rag_hex   = "#22c55e"
-    _rag_bg    = "rgba(34,197,94,0.06)"
-    _rag_bdr   = "rgba(34,197,94,0.20)"
-
-# P1 MTTA colour for exec card
-_mtta_color   = "c-muted"
-if cw_p1_mtta is not None:
-    _mtta_color = "c-green" if cw_p1_mtta <= 15 else ("c-amber" if cw_p1_mtta <= 30 else "c-red")
-_mtta_val_str = f"{round(cw_p1_mtta, 1)}" if cw_p1_mtta is not None else "—"
-
-# Prior-week open P1 rows (Open Risks section)
-_prior_risk_rows = ""
-for _inc in _prior_open_p1s[:5]:
-    _ref  = _inc.get("reference", "")
-    _nm   = _inc.get("name", "")
-    if _nm.startswith("[P1] Intercom Incident : "): _nm = _nm[25:]
-    elif _nm.startswith("[P1] "): _nm = _nm[5:]
-    _st_raw = _inc.get("status", "—")
-    _st_label_r, _st_col_r = _exec_status(_st_raw)
-    _href = _inc.get("permalink", "")
-    _rh_r = (f'<a href="{_href}" target="_blank" style="font-family:DM Mono,monospace;font-size:11px;color:#38bdf8;text-decoration:none;font-weight:500;white-space:nowrap">{_ref}</a>'
-             if _href else f'<span style="font-family:DM Mono,monospace;font-size:11px;color:#38bdf8;font-weight:500;white-space:nowrap">{_ref}</span>')
-    _secs_r = {lbl: body for lbl, body in _parse_summary_sections(_inc.get("summary", ""))}
-    _impact_r = _secs_r.get("Impact", _secs_r.get("Problem", ""))
-    _prior_risk_rows += (
-        f'<div style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
-        f'<div style="display:flex;align-items:baseline;gap:7px;margin-bottom:3px">'
-        f'{_rh_r}'
-        f'<span style="flex:1;font-size:11px;color:#e2e8f0;font-weight:600;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{_nm}">{_nm}</span>'
-        f'<span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;background:rgba(245,158,11,0.1);color:{_st_col_r};white-space:nowrap">{_st_label_r}</span>'
-        f'</div>'
-        + (f'<div style="font-size:10px;color:#64748b;line-height:1.4;padding-left:2px">{_impact_r[:120]}{"…" if len(_impact_r) > 120 else ""}</div>' if _impact_r else '')
-        + f'</div>'
-    )
-if not _prior_risk_rows:
-    _prior_risk_rows = '<div style="font-size:12px;color:#22c55e;padding:10px 0;display:flex;align-items:center;gap:6px"><span style="font-size:16px">✓</span> No open risks carried from prior weeks.</div>'
-
-# Exec metric chips — 3-col grid in status banner
 def _exec_chip(label, value, context, val_color="#e2e8f0", bg="rgba(255,255,255,0.04)",
                bdr="rgba(255,255,255,0.09)", ctx_color="#64748b"):
     return (
@@ -1406,191 +1269,391 @@ def _exec_chip(label, value, context, val_color="#e2e8f0", bg="rgba(255,255,255,
         f'</div>'
     )
 
-_exec_chips = []
-# True P1s
-if _exec_p1_avg is not None:
-    _p1_arrow = "↓" if _ew_true_p1 < _exec_p1_avg else ("↑" if _ew_true_p1 > _exec_p1_avg else "↔")
-    _p1_ctx   = f'{_p1_12wk_n}w avg {_exec_p1_avg} {_p1_arrow}'
-else:
-    _p1_ctx = '—'
-_exec_chips.append(_exec_chip("True P1s", str(_ew_true_p1), _p1_ctx))
-# P1 FRT SLA
-if _ew_p1_frt is not None:
-    _frt_val   = fmt_rate(_ew_p1_frt, 0)
-    _frt_color = "#22c55e" if _ew_p1_frt >= 0.90 else ("#f59e0b" if _ew_p1_frt >= 0.75 else "#ef4444")
-    _frt_bg    = ("rgba(34,197,94,0.07)"  if _ew_p1_frt >= 0.90 else
-                  "rgba(245,158,11,0.07)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.07)")
-    _frt_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p1_frt >= 0.90 else
-                  "rgba(245,158,11,0.25)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.25)")
-    _frt_arrow = ("↑" if _ew_p1_frt * 100 > (_exec_frt_avg or 0)
-                  else "↓" if _ew_p1_frt * 100 < (_exec_frt_avg or 100) else "→")
-    _frt_ctx   = f'{_p1_12wk_n}w avg {_exec_frt_avg}% {_frt_arrow}' if _exec_frt_avg is not None else '—'
-    _exec_chips.append(_exec_chip("P1 FRT SLA", _frt_val, _frt_ctx, _frt_color, _frt_bg, _frt_bdr))
-# CSAT
-if _ew_csat is not None:
-    _cs_val   = fmt_csat(_ew_csat)
-    _cs_color = "#22c55e" if _ew_csat >= 4.5 else ("#f59e0b" if _ew_csat >= 4.0 else "#ef4444")
-    _cs_bg    = ("rgba(34,197,94,0.07)"  if _ew_csat >= 4.5 else
-                 "rgba(245,158,11,0.07)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.07)")
-    _cs_bdr   = ("rgba(34,197,94,0.20)"  if _ew_csat >= 4.5 else
-                 "rgba(245,158,11,0.25)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.25)")
-    _cs_arrow = ("↑" if _ew_csat > (_exec_csat_avg or 0)
-                 else "↓" if _ew_csat < (_exec_csat_avg or 5) else "→")
-    _cs_ctx   = f'{_p1_12wk_n}w avg {_exec_csat_avg} {_cs_arrow}' if _exec_csat_avg is not None else '—'
-    _exec_chips.append(_exec_chip("CSAT", _cs_val, _cs_ctx, _cs_color, _cs_bg, _cs_bdr))
-# Partner FRT SLA (P2/P3)
-if _ew_p23 is not None:
-    _p23_val   = fmt_rate(_ew_p23, 0)
-    _p23_color = "#22c55e" if _ew_p23 >= 0.90 else ("#f59e0b" if _ew_p23 >= 0.75 else "#ef4444")
-    _p23_bg    = ("rgba(34,197,94,0.07)"  if _ew_p23 >= 0.90 else
-                  "rgba(245,158,11,0.07)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.07)")
-    _p23_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p23 >= 0.90 else
-                  "rgba(245,158,11,0.25)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.25)")
-    _p23_arrow = ("↑" if _ew_p23 * 100 > (_exec_p23_avg or 0)
-                  else "↓" if _ew_p23 * 100 < (_exec_p23_avg or 100) else "→")
-    _p23_ctx   = f'{_p1_12wk_n}w avg {_exec_p23_avg}% {_p23_arrow}' if _exec_p23_avg is not None else '—'
-    _exec_chips.append(_exec_chip("Partner FRT SLA", _p23_val, _p23_ctx, _p23_color, _p23_bg, _p23_bdr))
-# PIR Completion
-_pir_chip_color = "#22c55e" if pir_comp_rate >= 85 else ("#f59e0b" if pir_comp_rate >= 65 else "#ef4444")
-_pir_chip_bg    = ("rgba(34,197,94,0.07)"  if pir_comp_rate >= 85 else
-                   "rgba(245,158,11,0.07)" if pir_comp_rate >= 65 else "rgba(239,68,68,0.07)")
-_pir_chip_bdr   = ("rgba(34,197,94,0.20)"  if pir_comp_rate >= 85 else
-                   "rgba(245,158,11,0.25)" if pir_comp_rate >= 65 else "rgba(239,68,68,0.25)")
-_pir_ctx_txt    = "target 85% ⚠" if pir_comp_rate < 85 else "target 85% ✓"
-_pir_ctx_col    = "#f59e0b"       if pir_comp_rate < 85 else "#22c55e"
-_exec_chips.append(_exec_chip("PIR Completion", fmt_rate(pir_comp_rate, 0), _pir_ctx_txt,
-                               _pir_chip_color, _pir_chip_bg, _pir_chip_bdr, _pir_ctx_col))
+def _build_exec_week_view(_ew, _wk_i, _is_latest):
+    """Return (range_str, inner_html) for the exec-summary view of week _ew
+    (index _wk_i in WEEK_KEYS)."""
+    _ew_true_p1 = p1_quality_row(_ew)[0]
+    _ew_p1_frt  = get(_ew, "p1_frt_sla", "hit_rate")
+    _ew_csat    = get(_ew, "csat", "avg_score")
+    _ew_p23     = get(_ew, "p2p3_frt_sla", "hit_rate")
+    _ew_p1_incs = cache.get(_ew, {}).get("true_p1_incidents") or []
+    _ew_theme   = cache.get(_ew, {}).get("p1_theme") or None
+    _ew_date    = fmt_date_dmy(_ew)
+    _ew_end     = fmt_date_dmy((datetime.strptime(_ew, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+    _ew_range   = f"{_ew_date} – {_ew_end}"
 
-_exec_chip_grid_html = (
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;'
-    'padding-top:6px;border-top:1px solid rgba(255,255,255,0.05)">'
-    + ''.join(_exec_chips)
-    + '</div>'
-)
+    # As-of averages: complete weeks up to and including this one
+    _p1_hist_vals = [v for v in (p1_quality_row(w)[0] for w in WEEK_KEYS[:_wk_i + 1]) if v is not None]
+    _p1_4wk_avg   = round(sum(_p1_hist_vals) / len(_p1_hist_vals), 1) if _p1_hist_vals else None
+    _p1_12wk_n    = len(_p1_hist_vals)
+    _frt_prior   = [v for v in p1Rate_arr[:_wk_i + 1]  if v is not None]
+    _csat_prior  = [v for v in csA_arr[:_wk_i + 1]     if v is not None]
+    _p23_prior   = [v for v in p23Rate_arr[:_wk_i + 1] if v is not None]
+    _exec_frt_avg  = round(sum(_frt_prior)  / len(_frt_prior))     if _frt_prior  else None
+    _exec_csat_avg = round(sum(_csat_prior) / len(_csat_prior), 2) if _csat_prior else None
+    _exec_p23_avg  = round(sum(_p23_prior)  / len(_p23_prior))     if _p23_prior  else None
+    _exec_p1_avg   = round(sum(_p1_hist_vals) / len(_p1_hist_vals)) if _p1_hist_vals else None
 
-# Detail row font: shrink when many incidents so rows fit in the allotted flex space
-_inc_detail_sz = "11px" if _p1_inc_n >= 3 else "12px"
-
-# ── Theme of the week — standalone widget below the status banner ────────────
-# Rendered only when Step 2E wrote a p1_theme for the exec week (>=2 True P1s
-# sharing a root cause). Incident refs link to incident.io where a permalink
-# is known from the week's true_p1_incidents.
-_theme_widget_html = ""
-if _ew_theme and _ew_theme.get("summary"):
-    _theme_permalinks = {inc.get("reference", ""): inc.get("permalink", "") for inc in _ew_p1_incs}
-    _chip_style = ("font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:#c4b5fd;"
-                   "background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);"
-                   "border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap")
-
-    def _theme_chips(refs):
-        chips = ""
-        for _ref in refs:
-            _href = _theme_permalinks.get(_ref, "")
-            chips += (f'<a href="{_href}" target="_blank" style="{_chip_style}">{_ref}</a>'
-                      if _href else f'<span style="{_chip_style}">{_ref}</span>')
-        return chips
-
-    _sub_themes = _ew_theme.get("themes") or []
-    if _sub_themes:
-        # Multi-theme week: header + one single-line row per failure mode.
-        # Summaries are ellipsis-clipped to guarantee one line; the full
-        # detail is exposed as a hover tooltip.
-        _STATUS_COLS = {"FIXED": "#22c55e", "MITIGATED": "#f59e0b"}
-        _theme_rows = ""
-        for _sub in _sub_themes:
-            _st      = _sub.get("status", "")
-            _st_col  = _STATUS_COLS.get(_st, "#94a3b8")
-            _st_note = _sub.get("status_note", "")
-            _st_tip  = f' title="{_st_note}"' if _st_note else ''
-            _st_html = (f'<span style="width:76px;flex-shrink:0;text-align:right;font-size:10px;'
-                        f'font-weight:700;color:{_st_col};white-space:nowrap"{_st_tip}>{_st}'
-                        + ('<span style="color:#f59e0b">*</span>' if _st_note and _st == "FIXED" else '')
-                        + '</span>')
-            _tip = (_sub.get("detail") or _sub.get("summary", "")).replace('"', '&quot;')
-            _theme_rows += (
-                f'    <div style="display:flex;align-items:center;gap:12px;padding:5px 0;'
-                f'border-top:1px solid rgba(167,139,250,0.12)">\n'
-                f'      <span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;'
-                f'color:#c4b5fd;white-space:nowrap;flex-shrink:0;width:158px;overflow:hidden;'
-                f'text-overflow:ellipsis">{_sub.get("label", "")}</span>\n'
-                f'      <span style="flex:1;min-width:0;font-size:12px;color:#cbd5e1;white-space:nowrap;'
-                f'overflow:hidden;text-overflow:ellipsis" title="{_tip}">{_sub.get("summary", "")}</span>\n'
-                f'      {_st_html}\n'
-                f'      <span style="flex-shrink:0;display:flex;gap:4px;align-items:center;'
-                f'width:236px;justify-content:flex-end">{_theme_chips(_sub.get("incident_refs", []))}</span>\n'
-                f'    </div>\n'
-            )
-        _theme_widget_html = (
-            f'  <div style="margin-bottom:10px;padding:8px 16px 4px;background:rgba(167,139,250,0.07);'
-            f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
-            f'flex-shrink:0">\n'
-            f'    <div style="display:flex;align-items:center;gap:12px;padding-bottom:6px">\n'
-            f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
-            f'text-transform:uppercase;white-space:nowrap">Themes of the week</span>\n'
-            f'      <span style="flex:1;min-width:0;font-size:12px;color:#94a3b8;white-space:nowrap;'
-            f'overflow:hidden;text-overflow:ellipsis">{_ew_theme.get("summary", "")}</span>\n'
-            f'    </div>\n'
-            + _theme_rows
-            + f'  </div>\n'
-        )
+    # Story narrative — incident quality headline + PIR concern (latest view only)
+    _avg = _math.ceil(_p1_4wk_avg) if _p1_4wk_avg is not None else None
+    _active_n = sum(1 for inc in _ew_p1_incs
+                    if inc.get("status", "").lower() not in ("closed", "resolved", "postmortem"))
+    if _ew_true_p1 == 0:
+        _exec_line1 = "No True P1 incidents this week — all response and quality metrics are on target."
+    elif _avg is not None and _ew_true_p1 <= _avg:
+        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still in Monitoring, awaiting resolution."
+                if _active_n else "")
+        _exec_line1 = (f"Incident handling is in good shape — response times, SLAs, and CSAT are all on target "
+                       f"and trending in the right direction. P1 count is consistent with the {_p1_12wk_n}-week average.{_mon}")
     else:
-        # Single-theme week: original one-line banner
-        _theme_widget_html = (
-            f'  <div style="margin-bottom:10px;padding:10px 16px;background:rgba(167,139,250,0.07);'
-            f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
-            f'display:flex;align-items:center;gap:16px;flex-shrink:0">\n'
-            f'    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;min-width:0">\n'
-            f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
-            f'text-transform:uppercase;white-space:nowrap">Theme of the week</span>\n'
-            f'      <span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;'
-            f'color:#e2e8f0">{_ew_theme.get("label", "")}</span>\n'
-            f'    </div>\n'
-            f'    <div style="flex:1;min-width:0;font-size:13px;color:#cbd5e1;line-height:1.5">'
-            f'{_ew_theme.get("summary", "")}</div>\n'
-            f'    <div style="flex-shrink:0;display:flex;gap:6px;align-items:center">{_theme_chips(_ew_theme.get("incident_refs", []))}</div>\n'
-            f'  </div>\n'
-        )
+        _parts = []
+        if _avg is not None and _ew_true_p1 > _avg:
+            _parts.append(f"{_ew_true_p1} True P1s vs {_avg}/wk {_p1_12wk_n}-week average")
+        if _ew_p1_frt is not None and _ew_p1_frt < 0.90:
+            _parts.append(f"P1 FRT SLA {fmt_rate(_ew_p1_frt, 0)}")
+        if _ew_csat is not None and _ew_csat < 4.5:
+            _parts.append(f"CSAT {fmt_csat(_ew_csat)}")
+        _mon = (f" {_active_n} incident{'s' if _active_n != 1 else ''} still open." if _active_n else "")
+        _exec_line1 = (f"Elevated week — {'; '.join(_parts)}.{_mon}" if _parts
+                       else f"Elevated week — {_ew_true_p1} True P1s this week.{_mon}")
+    _exec_line2 = ""
+    if _is_latest and pir_comp_rate < 85:
+        _pct = int(round(pir_comp_rate))
+        _worst = sorted([t for t in pir_teams if t.get("open", 0) > 0],
+                        key=lambda t: t.get("open", 0), reverse=True)
+        if len(_worst) >= 2:
+            _exec_line2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%, "
+                           f"this is a persistent gap. {_worst[0]['name']} ({_worst[0]['open']} open) and "
+                           f"{_worst[1]['name']} ({_worst[1]['open']} open) are the largest contributors and need attention.")
+        elif len(_worst) == 1:
+            _exec_line2 = (f"The key concern remains PIR action completion — at {_pct}% against a target of 85%. "
+                           f"{_worst[0]['name']} ({_worst[0]['open']} open) is the largest contributor.")
+        else:
+            _exec_line2 = f"PIR action completion is at {_pct}% vs 85% target — needs attention."
+
+    # P1 incidents compact list — one header row + one detail line per incident
+    _inc_detail_sz = "11px" if len(_ew_p1_incs) >= 3 else "12px"
+    _exec_inc_rows = ""
+    if _ew_p1_incs:
+        for _inc in _ew_p1_incs:
+            _ref  = _inc.get("reference", "")
+            _nm   = _inc.get("name", "")
+            _nm = _clean_inc_name(_nm)
+            _st_raw = _inc.get("status", "—")
+            _st_label, _st_col = _exec_status(_st_raw)
+            _dt   = _fmt_dt_short(_inc.get("reported_at", ""))
+            _href = _inc.get("permalink", "")
+            _rh   = (f'<a href="{_href}" target="_blank" style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;text-decoration:none;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</a>'
+                     if _href else f'<span style="font-family:DM Mono,monospace;font-size:12px;color:#38bdf8;font-weight:500;white-space:nowrap;flex-shrink:0">{_ref}</span>')
+            _secs     = {lbl: body for lbl, body in _parse_summary_sections(_inc.get("summary", ""))}
+            _s_prob   = _first_sentence(_secs.get("Problem", ""))
+            _s_impact = _first_sentence(_secs.get("Impact", ""))
+            _s_action = _first_sentence(_secs.get("Actions Taken", _secs.get("Steps to resolve", _secs.get("Action / Next steps", _secs.get("Next steps", "")))))
+            # 2-3 sentences: Problem + Impact + Actions Taken
+            _sentences = [s for s in [_s_prob, _s_impact, _s_action] if s][:3]
+            _detail = " ".join(_sentences)
+            _exec_inc_rows += (
+                f'<div style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05)">'
+                # Row 1: ref · title · status · date
+                f'<div style="display:flex;align-items:center;gap:8px;min-width:0">'
+                f'{_rh}'
+                f'<span style="flex:1;font-size:13px;color:#e2e8f0;font-weight:600;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0">{_nm}</span>'
+                f'<span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.05);color:{_st_col};white-space:nowrap;flex-shrink:0">{_st_label}</span>'
+                f'<span style="font-size:11px;color:#475569;white-space:nowrap;flex-shrink:0">{_dt}</span>'
+                f'</div>'
+                # Row 2: 2-sentence summary — Impact + Actions Taken
+                + (f'<div style="font-size:{_inc_detail_sz};color:#94a3b8;line-height:1.4;margin-top:3px">{_detail}</div>' if _detail else '')
+                + f'</div>'
+            )
+    elif _ew_true_p1:
+        _exec_inc_rows = (f'<div style="font-size:12px;color:#64748b;padding:10px 0">'
+                          f'{_ew_true_p1} True P1{"s" if _ew_true_p1 != 1 else ""} recorded, but incident-level '
+                          f'detail is not cached for this week (kept from 25 May 2026 onward).</div>')
+    else:
+        _exec_inc_rows = '<div style="font-size:13px;color:#22c55e;padding:10px 0">No True P1 incidents this week.</div>'
+
+    # Overall RAG status
+    # CRITICAL   = P1s still actively impacting users (not in Monitoring/Resolved)
+    # MONITORING = P1 count significantly above the rolling average
+    # STABLE     = P1s on trend, all in Monitoring or Resolved
+    # ON TRACK   = no P1s at all this week
+    _has_truly_active_p1 = any(
+        inc.get("status", "").lower() not in ("closed", "resolved", "postmortem", "monitoring", "documenting")
+        for inc in _ew_p1_incs
+    )
+    _p1_above_avg = (
+        (_exec_p1_avg is not None and _ew_true_p1 > _exec_p1_avg + 2)
+        or _ew_true_p1 >= 5
+    )
+    if _has_truly_active_p1:
+        _rag_label = "CRITICAL"
+        _rag_hex   = "#ef4444"
+        _rag_bg    = "rgba(239,68,68,0.08)"
+        _rag_bdr   = "rgba(239,68,68,0.25)"
+    elif _p1_above_avg:
+        _rag_label = "MONITORING"
+        _rag_hex   = "#f59e0b"
+        _rag_bg    = "rgba(245,158,11,0.08)"
+        _rag_bdr   = "rgba(245,158,11,0.25)"
+    elif _ew_true_p1 == 0:
+        _rag_label = "ON TRACK"
+        _rag_hex   = "#22c55e"
+        _rag_bg    = "rgba(34,197,94,0.06)"
+        _rag_bdr   = "rgba(34,197,94,0.20)"
+    else:
+        _rag_label = "STABLE"
+        _rag_hex   = "#22c55e"
+        _rag_bg    = "rgba(34,197,94,0.06)"
+        _rag_bdr   = "rgba(34,197,94,0.20)"
+
+    # Exec metric chips — 3-col grid in status banner
+    _exec_chips = []
+    # True P1s
+    if _exec_p1_avg is not None:
+        _p1_arrow = "↓" if _ew_true_p1 < _exec_p1_avg else ("↑" if _ew_true_p1 > _exec_p1_avg else "↔")
+        _p1_ctx   = f'{_p1_12wk_n}w avg {_exec_p1_avg} {_p1_arrow}'
+    else:
+        _p1_ctx = '—'
+    _exec_chips.append(_exec_chip("True P1s", str(_ew_true_p1), _p1_ctx))
+    # P1 FRT SLA
+    if _ew_p1_frt is not None:
+        _frt_val   = fmt_rate(_ew_p1_frt, 0)
+        _frt_color = "#22c55e" if _ew_p1_frt >= 0.90 else ("#f59e0b" if _ew_p1_frt >= 0.75 else "#ef4444")
+        _frt_bg    = ("rgba(34,197,94,0.07)"  if _ew_p1_frt >= 0.90 else
+                      "rgba(245,158,11,0.07)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.07)")
+        _frt_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p1_frt >= 0.90 else
+                      "rgba(245,158,11,0.25)" if _ew_p1_frt >= 0.75 else "rgba(239,68,68,0.25)")
+        _frt_arrow = ("↑" if _ew_p1_frt * 100 > (_exec_frt_avg or 0)
+                      else "↓" if _ew_p1_frt * 100 < (_exec_frt_avg or 100) else "→")
+        _frt_ctx   = f'{_p1_12wk_n}w avg {_exec_frt_avg}% {_frt_arrow}' if _exec_frt_avg is not None else '—'
+        _exec_chips.append(_exec_chip("P1 FRT SLA", _frt_val, _frt_ctx, _frt_color, _frt_bg, _frt_bdr))
+    # CSAT
+    if _ew_csat is not None:
+        _cs_val   = fmt_csat(_ew_csat)
+        _cs_color = "#22c55e" if _ew_csat >= 4.5 else ("#f59e0b" if _ew_csat >= 4.0 else "#ef4444")
+        _cs_bg    = ("rgba(34,197,94,0.07)"  if _ew_csat >= 4.5 else
+                     "rgba(245,158,11,0.07)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.07)")
+        _cs_bdr   = ("rgba(34,197,94,0.20)"  if _ew_csat >= 4.5 else
+                     "rgba(245,158,11,0.25)" if _ew_csat >= 4.0 else "rgba(239,68,68,0.25)")
+        _cs_arrow = ("↑" if _ew_csat > (_exec_csat_avg or 0)
+                     else "↓" if _ew_csat < (_exec_csat_avg or 5) else "→")
+        _cs_ctx   = f'{_p1_12wk_n}w avg {_exec_csat_avg} {_cs_arrow}' if _exec_csat_avg is not None else '—'
+        _exec_chips.append(_exec_chip("CSAT", _cs_val, _cs_ctx, _cs_color, _cs_bg, _cs_bdr))
+    # Partner FRT SLA (P2/P3)
+    if _ew_p23 is not None:
+        _p23_val   = fmt_rate(_ew_p23, 0)
+        _p23_color = "#22c55e" if _ew_p23 >= 0.90 else ("#f59e0b" if _ew_p23 >= 0.75 else "#ef4444")
+        _p23_bg    = ("rgba(34,197,94,0.07)"  if _ew_p23 >= 0.90 else
+                      "rgba(245,158,11,0.07)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.07)")
+        _p23_bdr   = ("rgba(34,197,94,0.20)"  if _ew_p23 >= 0.90 else
+                      "rgba(245,158,11,0.25)" if _ew_p23 >= 0.75 else "rgba(239,68,68,0.25)")
+        _p23_arrow = ("↑" if _ew_p23 * 100 > (_exec_p23_avg or 0)
+                      else "↓" if _ew_p23 * 100 < (_exec_p23_avg or 100) else "→")
+        _p23_ctx   = f'{_p1_12wk_n}w avg {_exec_p23_avg}% {_p23_arrow}' if _exec_p23_avg is not None else '—'
+        _exec_chips.append(_exec_chip("Partner FRT SLA", _p23_val, _p23_ctx, _p23_color, _p23_bg, _p23_bdr))
+    # PIR Completion — the latest view reads the live snapshot; historical views
+    # read the closest pir_history snapshot dated on/before that week's Sunday
+    # (snapshots exist from 25 May 2026; older weeks simply omit the chip).
+    _pir_rate = None
+    if _is_latest:
+        _pir_rate    = pir_comp_rate
+        _pir_ctx_txt = "target 85% ⚠" if pir_comp_rate < 85 else "target 85% ✓"
+        _pir_ctx_col = "#f59e0b"       if pir_comp_rate < 85 else "#22c55e"
+    else:
+        _week_end_iso = (datetime.strptime(_ew, "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d")
+        _snaps = [d for d in pir_history if d <= _week_end_iso]
+        if _snaps:
+            _snap_d      = max(_snaps)
+            _pir_rate    = pir_history[_snap_d]["rate"]
+            _pir_ctx_txt = f"as of {fmt_date_dmy(_snap_d)}"
+            _pir_ctx_col = "#64748b"
+    if _pir_rate is not None:
+        _pir_chip_color = "#22c55e" if _pir_rate >= 85 else ("#f59e0b" if _pir_rate >= 65 else "#ef4444")
+        _pir_chip_bg    = ("rgba(34,197,94,0.07)"  if _pir_rate >= 85 else
+                           "rgba(245,158,11,0.07)" if _pir_rate >= 65 else "rgba(239,68,68,0.07)")
+        _pir_chip_bdr   = ("rgba(34,197,94,0.20)"  if _pir_rate >= 85 else
+                           "rgba(245,158,11,0.25)" if _pir_rate >= 65 else "rgba(239,68,68,0.25)")
+        _exec_chips.append(_exec_chip("PIR Completion", fmt_rate(_pir_rate, 0), _pir_ctx_txt,
+                                       _pir_chip_color, _pir_chip_bg, _pir_chip_bdr, _pir_ctx_col))
+
+    _exec_chip_grid_html = (
+        '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;'
+        'padding-top:6px;border-top:1px solid rgba(255,255,255,0.05)">'
+        + ''.join(_exec_chips)
+        + '</div>'
+    )
+
+    # ── Theme of the week — standalone widget below the status banner ────────
+    # Rendered only when the week carries a p1_theme (>=2 True P1s sharing a
+    # root cause). Incident refs link to incident.io where a permalink is known.
+    _theme_widget_html = ""
+    if _ew_theme and _ew_theme.get("summary"):
+        _theme_permalinks = {inc.get("reference", ""): inc.get("permalink", "") for inc in _ew_p1_incs}
+        _chip_style = ("font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:#c4b5fd;"
+                       "background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.28);"
+                       "border-radius:4px;padding:1px 6px;text-decoration:none;white-space:nowrap")
+
+        def _theme_chips(refs):
+            chips = ""
+            for _ref in refs:
+                _href = _theme_permalinks.get(_ref, "")
+                chips += (f'<a href="{_href}" target="_blank" style="{_chip_style}">{_ref}</a>'
+                          if _href else f'<span style="{_chip_style}">{_ref}</span>')
+            return chips
+
+        _sub_themes = _ew_theme.get("themes") or []
+        if _sub_themes:
+            # Multi-theme week: header + one single-line row per failure mode.
+            # Summaries are ellipsis-clipped to guarantee one line; the full
+            # detail is exposed as a hover tooltip.
+            _STATUS_COLS = {"FIXED": "#22c55e", "MITIGATED": "#f59e0b"}
+            _theme_rows = ""
+            for _sub in _sub_themes:
+                _st      = _sub.get("status", "")
+                _st_col  = _STATUS_COLS.get(_st, "#94a3b8")
+                _st_note = _sub.get("status_note", "")
+                _st_tip  = f' title="{_st_note}"' if _st_note else ''
+                _st_html = (f'<span style="width:76px;flex-shrink:0;text-align:right;font-size:10px;'
+                            f'font-weight:700;color:{_st_col};white-space:nowrap"{_st_tip}>{_st}'
+                            + ('<span style="color:#f59e0b">*</span>' if _st_note and _st == "FIXED" else '')
+                            + '</span>')
+                _tip = (_sub.get("detail") or _sub.get("summary", "")).replace('"', '&quot;')
+                _theme_rows += (
+                    f'    <div style="display:flex;align-items:center;gap:12px;padding:5px 0;'
+                    f'border-top:1px solid rgba(167,139,250,0.12)">\n'
+                    f'      <span style="font-family:\'DM Mono\',monospace;font-size:12px;font-weight:600;'
+                    f'color:#c4b5fd;white-space:nowrap;flex-shrink:0;width:158px;overflow:hidden;'
+                    f'text-overflow:ellipsis">{_sub.get("label", "")}</span>\n'
+                    f'      <span style="flex:1;min-width:0;font-size:12px;color:#cbd5e1;white-space:nowrap;'
+                    f'overflow:hidden;text-overflow:ellipsis" title="{_tip}">{_sub.get("summary", "")}</span>\n'
+                    f'      {_st_html}\n'
+                    f'      <span style="flex-shrink:0;display:flex;gap:4px;align-items:center;'
+                    f'width:236px;justify-content:flex-end">{_theme_chips(_sub.get("incident_refs", []))}</span>\n'
+                    f'    </div>\n'
+                )
+            _theme_widget_html = (
+                f'  <div style="margin-bottom:10px;padding:8px 16px 4px;background:rgba(167,139,250,0.07);'
+                f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
+                f'flex-shrink:0">\n'
+                f'    <div style="display:flex;align-items:center;gap:12px;padding-bottom:6px">\n'
+                f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
+                f'text-transform:uppercase;white-space:nowrap">Themes of the week</span>\n'
+                f'      <span style="flex:1;min-width:0;font-size:12px;color:#94a3b8;white-space:nowrap;'
+                f'overflow:hidden;text-overflow:ellipsis">{_ew_theme.get("summary", "")}</span>\n'
+                f'    </div>\n'
+                + _theme_rows
+                + f'  </div>\n'
+            )
+        else:
+            # Single-theme week: original one-line banner
+            _theme_widget_html = (
+                f'  <div style="margin-bottom:10px;padding:10px 16px;background:rgba(167,139,250,0.07);'
+                f'border:1px solid rgba(167,139,250,0.30);border-left:4px solid #a78bfa;border-radius:6px;'
+                f'display:flex;align-items:center;gap:16px;flex-shrink:0">\n'
+                f'    <div style="flex-shrink:0;display:flex;flex-direction:column;gap:2px;min-width:0">\n'
+                f'      <span style="font-size:10px;font-weight:800;letter-spacing:0.12em;color:#a78bfa;'
+                f'text-transform:uppercase;white-space:nowrap">Theme of the week</span>\n'
+                f'      <span style="font-family:\'DM Mono\',monospace;font-size:15px;font-weight:600;'
+                f'color:#e2e8f0">{_ew_theme.get("label", "")}</span>\n'
+                f'    </div>\n'
+                f'    <div style="flex:1;min-width:0;font-size:13px;color:#cbd5e1;line-height:1.5">'
+                f'{_ew_theme.get("summary", "")}</div>\n'
+                f'    <div style="flex-shrink:0;display:flex;gap:6px;align-items:center">{_theme_chips(_ew_theme.get("incident_refs", []))}</div>\n'
+                f'  </div>\n'
+            )
+
+    _inner = (
+        # ── STATUS BANNER ─────────────────────────────────────────────────────
+        f'  <div style="margin-bottom:10px;padding:12px 16px;background:{_rag_bg};border:1px solid {_rag_bdr};border-radius:6px;display:flex;flex-direction:column;gap:8px;flex-shrink:0">\n'
+        # Row 1: RAG dot + 2-line story narrative
+        f'    <div style="display:flex;align-items:flex-start;gap:12px">\n'
+        f'      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;padding-top:2px">'
+        f'<div style="width:13px;height:13px;border-radius:50%;background:{_rag_hex};box-shadow:0 0 7px {_rag_hex}"></div>'
+        f'<span style="font-size:13px;font-weight:800;color:{_rag_hex};letter-spacing:0.12em;white-space:nowrap">{_rag_label}</span>'
+        f'</div>\n'
+        f'      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">\n'
+        f'        <span style="font-size:14px;color:#e2e8f0;font-weight:600;line-height:1.5">{_exec_line1}</span>\n'
+        + (f'        <span style="font-size:13px;color:#94a3b8;line-height:1.5">'
+           f'<span style="color:#f59e0b;font-weight:600">{_exec_line2}</span></span>\n'
+           if _exec_line2 else '')
+        + f'      </div>\n'
+        f'    </div>\n'
+        # Row 2: metric chip grid (3 columns)
+        f'    {_exec_chip_grid_html}\n'
+        f'  </div>\n'
+
+        # ── THEME OF THE WEEK widget (own card, below the banner) ────────────
+        + _theme_widget_html
+
+        # ── BODY: P1 Incidents This Week (full width, scrolls internally) ────
+        + '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
+        + f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
+        + f'      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0">\n'
+        + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'
+        + f'        <span style="font-size:12px;color:#475569">{_ew_range} · {_ew_true_p1} incident{"s" if _ew_true_p1 != 1 else ""}</span>\n'
+        + f'      </div>\n'
+        + '      <div style="flex:1;min-height:0;overflow-y:auto">\n'
+        + _exec_inc_rows
+        + '\n      </div>\n'
+        + '    </div>\n'
+        + '  </div>\n'
+    )
+    return _ew_range, _inner
+
+# Build one view per complete week in the window (oldest → newest)
+_exec_week_keys = [wk for wk in WEEK_KEYS[:-1] if p1_quality_row(wk)[0] is not None]
+if not _exec_week_keys:
+    _exec_week_keys = [prev_week]
+_exec_views = [
+    _build_exec_week_view(_wk, WEEK_KEYS.index(_wk), _wk == _exec_week_keys[-1])
+    for _wk in _exec_week_keys
+]
+
+_exec_week_divs = ""
+for _vi, (_rng, _view_inner) in enumerate(_exec_views):
+    _disp = "flex" if _vi == len(_exec_views) - 1 else "none"
+    _exec_week_divs += (
+        f'<div class="exec-week" data-range="{_rng}" style="display:{_disp};'
+        f'flex-direction:column;flex:1;min-height:0">\n' + _view_inner + '</div>\n'
+    )
+
+_exec_nav_btn_style = ("width:24px;height:22px;display:flex;align-items:center;justify-content:center;"
+                       "background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);"
+                       "border-radius:4px;color:#e2e8f0;font-size:14px;cursor:pointer;padding:0")
 
 exec_slide_html = (
-    '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY ════════════════════════ -->\n'
+    '<!-- ═══ SLIDE 0 — EXECUTIVE SUMMARY (per-week views + nav) ══════════ -->\n'
     '<div class="slide active" id="sExec"><div class="page">\n'
-    f'  <div class="group-label">Executive Summary · {_ew_range}</div>\n'
-
-    # ── STATUS BANNER ──────────────────────────────────────────────────────────
-    f'  <div style="margin-bottom:10px;padding:12px 16px;background:{_rag_bg};border:1px solid {_rag_bdr};border-radius:6px;display:flex;flex-direction:column;gap:8px;flex-shrink:0">\n'
-    # Row 1: RAG dot + 2-line story narrative
-    f'    <div style="display:flex;align-items:flex-start;gap:12px">\n'
-    f'      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;padding-top:2px">'
-    f'<div style="width:13px;height:13px;border-radius:50%;background:{_rag_hex};box-shadow:0 0 7px {_rag_hex}"></div>'
-    f'<span style="font-size:13px;font-weight:800;color:{_rag_hex};letter-spacing:0.12em;white-space:nowrap">{_rag_label}</span>'
-    f'</div>\n'
-    f'      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">\n'
-    f'        <span style="font-size:14px;color:#e2e8f0;font-weight:600;line-height:1.5">{_exec_line1}</span>\n'
-    + (f'        <span style="font-size:13px;color:#94a3b8;line-height:1.5">'
-       f'<span style="color:#f59e0b;font-weight:600">{_exec_line2}</span></span>\n'
-       if _exec_line2 else '')
-    + f'      </div>\n'
-    f'    </div>\n'
-    # Row 2: metric chip grid (3 columns)
-    f'    {_exec_chip_grid_html}\n'
-    f'  </div>\n'
-
-    # ── THEME OF THE WEEK widget (own card, below the banner) ────────────────
-    + _theme_widget_html
-
-    # ── BODY: P1 Incidents This Week (full width; Notes & Context removed) ──
-    + '  <div style="flex:1;min-height:0;display:flex;flex-direction:row;gap:10px">\n'
-    + f'    <div style="flex:1;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1629;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px 16px">\n'
-    + f'      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0">\n'
-    + f'        <span style="font-size:13px;font-weight:700;color:#e2e8f0;letter-spacing:0.07em;text-transform:uppercase">P1 Incidents This Week</span>\n'
-    + f'        <span style="font-size:12px;color:#475569">{_ew_range} · {_ew_true_p1} incident{"s" if _ew_true_p1 != 1 else ""}</span>\n'
-    + f'      </div>\n'
-    + '      <div style="flex:1;min-height:0;overflow-y:auto">\n'
-    + _exec_inc_rows
-    + '\n      </div>\n'
+    '  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-shrink:0">\n'
+    + f'    <div class="group-label" style="margin-bottom:0">Executive Summary · <span id="execWkRange">{_exec_views[-1][0]}</span></div>\n'
+    + '    <span id="execHistTag" style="display:none;font-size:10px;font-weight:800;letter-spacing:0.1em;'
+      'color:#f59e0b;border:1px solid rgba(245,158,11,0.4);border-radius:4px;padding:1px 7px;'
+      'white-space:nowrap">PAST WEEK</span>\n'
+    + '    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">\n'
+    + f'      <button type="button" id="execPrevBtn" onclick="execNav(-1)" title="Previous week" style="{_exec_nav_btn_style}">‹</button>\n'
+    + '      <span id="execWkPos" style="font-size:11px;color:#64748b;font-family:\'DM Mono\',monospace;white-space:nowrap"></span>\n'
+    + f'      <button type="button" id="execNextBtn" onclick="execNav(1)" title="Next week" style="{_exec_nav_btn_style}">›</button>\n'
     + '    </div>\n'
     + '  </div>\n'
-    + '</div></div>\n'
+    + _exec_week_divs
+    + '<script>\n'
+    '(function(){\n'
+    '  var weeks = document.querySelectorAll("#sExec .exec-week");\n'
+    '  var idx = weeks.length - 1;\n'
+    '  function render(){\n'
+    '    for (var i = 0; i < weeks.length; i++) weeks[i].style.display = (i === idx ? "flex" : "none");\n'
+    '    document.getElementById("execWkRange").textContent = weeks[idx].getAttribute("data-range");\n'
+    '    document.getElementById("execWkPos").textContent = (idx + 1) + " / " + weeks.length;\n'
+    '    document.getElementById("execHistTag").style.display = (idx === weeks.length - 1 ? "none" : "inline-block");\n'
+    '    var p = document.getElementById("execPrevBtn"), n = document.getElementById("execNextBtn");\n'
+    '    p.disabled = (idx === 0);                 p.style.opacity = (idx === 0 ? 0.35 : 1);\n'
+    '    n.disabled = (idx === weeks.length - 1);  n.style.opacity = (idx === weeks.length - 1 ? 0.35 : 1);\n'
+    '  }\n'
+    '  window.execNav = function(d){ idx = Math.max(0, Math.min(weeks.length - 1, idx + d)); render(); };\n'
+    '  render();\n'
+    '})();\n'
+    '</script>\n'
+    '</div></div>\n'
 )
 
 # ── PIR CATEGORY CHART JS (pre-built to avoid f-string brace-escaping) ───────
@@ -1868,7 +1931,7 @@ html = f'''<!DOCTYPE html>
     <div class="stat-card">
       <div class="card-label">Incidents This Week ({cw_date})</div>
       <div class="card-value c-muted">{cw_inc_total}</div>
-      <div class="card-subnote">P1: {cw_inc_p1} &middot; P2: {cw_inc_p2} &middot; P3: {cw_inc_p3} &middot; P4: {cw_inc_p4}</div>
+      <div class="card-subnote">P1: {cw_inc_p1} &middot; P2: {cw_inc_p2} &middot; P3: {cw_inc_p3} &middot; P4: {cw_inc_p4}{cw_inc_unk_note}</div>
       <div class="card-delta {inc_delta_cls}">{inc_delta}</div>
     </div>
     <div class="stat-card">
