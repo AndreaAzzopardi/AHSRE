@@ -671,7 +671,9 @@ The generator (`generate_weekly_report.py`) still idempotently re-appends the tr
 
 Feeds the **Servicing** slide from `cache/service_split_cache.json`. Load the file and **preserve `roster` and `method`** — never rewrite them. Roster changes are edited manually in the cache; the generator re-buckets at render time.
 
-**Every run maintains the CURRENT week's row** (create it on the week's first run with `"partial": true`); when a week closes, the next run finalises it (one last refresh, then remove the `partial` flag). Completed weeks without a `partial` flag are frozen — never re-fetch them.
+**Every run maintains the CURRENT week's row** (create it on the week's first run with `"partial": true`); when a week closes, the next run finalises its escalation data (one last classification pass, then remove the `partial` flag).
+
+**Leads lag behind reality — re-fetch them for the last 3 complete weeks every run** (same rationale as Step 2's re-fetch window): the Incident Lead can be reassigned days after an incident (e.g. SRE takes over from SOC), and retrospective incidents get declared after the fact with backdated `reported_at`. So each night recompute `total` + `leads` (procedure 1 below, ~5 calls/week) for the current week AND the 3 most recent complete weeks. **Escalation data of a finalised week stays frozen** — escalations are stamped by when the page fired and transitions are immutable, so those numbers cannot change retroactively.
 
 For the current week W (Monday 00:00 UTC → now):
 
@@ -778,7 +780,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
 - [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; `incident_blocks` (day/evening/night/total incident counts via `incident_list` `page_size:1` `total_count`) written for the same fetch range; pre-existing week keys preserved
 - [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
-- [ ] Servicing split (Step 2I): `cache/service_split_cache.json` — current week's row refreshed (leads wholesale, climbs/cover incremental via `escalations.classified`, ≤60 new classifications/run with backlog note); `total` matches `incident_volume.total` ±2; closed week finalised (`partial` dropped); `roster`/`method`/frozen weeks preserved
+- [ ] Servicing split (Step 2I): `cache/service_split_cache.json` — current week's row refreshed (leads wholesale, climbs/cover incremental via `escalations.classified`, ≤60 new classifications/run with backlog note); **leads + total also re-fetched for the last 3 complete weeks** (lead reassignments & retrospective incidents lag); escalation data of finalised weeks untouched; `total` matches `incident_volume.total` ±2; `roster`/`method` preserved
 
 ---
 
