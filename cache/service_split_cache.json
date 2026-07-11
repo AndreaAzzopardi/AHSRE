@@ -4,7 +4,8 @@
     "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
     "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
     "climbs": "escalations on SOC+SRE path EP009 whose SRE-tier page followed a level_timeout (SOC did not ack within 15 min) — classified per-escalation via transitions",
-    "sre_l1_cover": "EP009 pages where the SRE-tier user was targeted at level 1 (on the SOC rotation or manually paged directly) — SRE covering SOC duty, NOT escalation"
+    "sre_l1_cover": "EP009 pages where the SRE-tier user was targeted at level 1 (on the SOC rotation or manually paged directly) — SRE covering SOC duty, NOT escalation",
+    "handoffs": "human-created escalations (list entries WITHOUT alert_id; verified creator.type=user) on the SRE + team paths (Rewards, AI, FT ML, Security), bucketed by created_at into 8-hr UTC blocks; destination sre = SRE path, other = team paths; private-incident escalations excluded"
   },
   "roster": {
     "soc": [
@@ -47,6 +48,18 @@
         "explicit_sre_path": 5,
         "ladder_climbs": 4,
         "sre_l1_cover": 68
+      },
+      "handoffs": {
+        "sre": {
+          "night": 0,
+          "day": 2,
+          "evening": 3
+        },
+        "other": {
+          "night": 0,
+          "day": 5,
+          "evening": 1
+        }
       }
     },
     "2026-06-15": {
@@ -73,6 +86,18 @@
         "explicit_sre_path": 10,
         "ladder_climbs": 3,
         "sre_l1_cover": 41
+      },
+      "handoffs": {
+        "sre": {
+          "night": 3,
+          "day": 5,
+          "evening": 2
+        },
+        "other": {
+          "night": 0,
+          "day": 1,
+          "evening": 1
+        }
       }
     },
     "2026-06-22": {
@@ -97,6 +122,18 @@
         "explicit_sre_path": 13,
         "ladder_climbs": 5,
         "sre_l1_cover": 36
+      },
+      "handoffs": {
+        "sre": {
+          "night": 1,
+          "day": 5,
+          "evening": 7
+        },
+        "other": {
+          "night": 0,
+          "day": 0,
+          "evening": 1
+        }
       }
     },
     "2026-06-29": {
@@ -123,6 +160,18 @@
         "explicit_sre_path": 7,
         "ladder_climbs": 135,
         "sre_l1_cover": 1
+      },
+      "handoffs": {
+        "sre": {
+          "night": 2,
+          "day": 1,
+          "evening": 4
+        },
+        "other": {
+          "night": 1,
+          "day": 0,
+          "evening": 2
+        }
       }
     }
   }

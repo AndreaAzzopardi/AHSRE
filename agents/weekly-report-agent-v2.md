@@ -679,7 +679,15 @@ For the current week W (Monday 00:00 UTC → now):
 
 1. **Lead histogram (recomputed wholesale, cheap ~5 calls)** — `incident_list` with `created_after=W`, `created_before=W+7d`, `page_size=50`, `include: ["roles"]`, paginate to `has_more=false`. Keep only incidents with `reported_at` strictly inside `[W, W+7d)` (created filters are loose) and `visibility == "public"`. Build `{lead name: count}` from the Incident Lead role; unassigned → `"NO LEAD"`. `total` = kept count. **Cross-check:** `total` ≈ Step 2C's `incident_volume.total` ±2; warn if it diverges by more, still write.
 
-2. **Explicit SOC→SRE hand-offs (1 call)** — `escalation_stats` with `escalation_path: ["01KQAC6W276G6PDR2ECTR18B09"]` (the dedicated **SRE** path EP010), window W..now, `group_by: []` → total count. Human-created deliberate hand-off pages.
+2. **Hand-offs by destination × time block (~5 calls)** — for each of these paths, `escalation_list` with the path filter, window W..now, `page_size=50`, paginate:
+   - SRE `01KQAC6W276G6PDR2ECTR18B09`, Rewards Team `01JDSK63F7ZSS6TDQY1QGFHZCF`, AI Team `01KPN1D167PPG4NTH7XDY96GKG`, FT ML On call `01JH030V3J6HSEVQ1VK1TSAA5G`, Security `01KPZCSGBG08ETQYNDM9WBZE0F`
+   Keep ONLY list entries **without an `alert_id`** (present = auto-paged by an alert; absent = human-created hand-off — verified discriminator). Skip entries with `is_private: true` (standing private-incident rule). Bucket each kept escalation's `created_at` into the report's 8-hr UTC blocks (night 00–08, day 08–16, evening 16–24) and by destination (`sre` = SRE path, `other` = the team paths). Store on the week row:
+
+   ```json
+   "handoffs": {"sre": {"night": N, "day": N, "evening": N}, "other": {"night": N, "day": N, "evening": N}}
+   ```
+
+   Also set `escalations.explicit_sre_path` = sum of the `sre` blocks (kept for continuity; must always equal that sum).
 
 3. **Ladder climbs + SOC-shift cover (INCREMENTAL)** — the week row carries `escalations.classified`, a map of `{escalation_id: "climb" | "cover"}` for every SRE-tier page already processed. Each night:
    a. `escalation_list` on the **SOC+SRE** path (`escalation_path: ["01KQ7HJWR2P3J4R23RYZ68W364"]`) filtered to the SRE-tier user IDs (`user: ["01HMA8V4QT907AKSSJ08D0PWR7","01HKQ8YX3GE5FK5GYM9D847KCW","01K56BHY17AP8M8SEFM0GG78RE","01HKQ8YWMSDY335EYJGVXQ1HA6"]` — Simon Grenefalk, Giancarlo Laferla, Simon Brown, Stephen Riolo; keep in sync with `roster.sre`), window W..now, paginate.
@@ -780,7 +788,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
 - [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; `incident_blocks` (day/evening/night/total incident counts via `incident_list` `page_size:1` `total_count`) written for the same fetch range; pre-existing week keys preserved
 - [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
-- [ ] Servicing split (Step 2I): `cache/service_split_cache.json` — current week's row refreshed (leads wholesale, climbs/cover incremental via `escalations.classified`, ≤60 new classifications/run with backlog note); **leads + total also re-fetched for the last 3 complete weeks** (lead reassignments & retrospective incidents lag); escalation data of finalised weeks untouched; `total` matches `incident_volume.total` ±2; `roster`/`method` preserved
+- [ ] Servicing split (Step 2I): `cache/service_split_cache.json` — current week's row refreshed (leads wholesale; `handoffs` per destination × time block via the no-alert_id discriminator, private escalations skipped; climbs/cover incremental via `escalations.classified`, ≤60 new classifications/run with backlog note); **leads + total also re-fetched for the last 3 complete weeks** (lead reassignments & retrospective incidents lag); escalation data of finalised weeks untouched; `explicit_sre_path` == sum of `handoffs.sre` blocks; `total` matches `incident_volume.total` ±2; `roster`/`method` preserved
 
 ---
 

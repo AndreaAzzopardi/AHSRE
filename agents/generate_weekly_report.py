@@ -1855,6 +1855,12 @@ if svc_weeks:
     _t_climb = sum(e.get("ladder_climbs", 0)     for e in _svc_esc.values())
     _t_cover = sum(e.get("sre_l1_cover", 0)      for e in _svc_esc.values())
     _pct = lambda n: f"{round(n / _t_all * 100)}%" if _t_all else "—"
+    # Hand-offs by destination × 8-hr block (human-created pages, no alert_id)
+    _svc_ho = {wk: svc_cache["weeks"][wk].get("handoffs") or
+                   {"sre": {}, "other": {}} for wk in svc_weeks}
+    _t_ho_sre   = sum(sum(h["sre"].values())   for h in _svc_ho.values())
+    _t_ho_other = sum(sum(h["other"].values()) for h in _svc_ho.values())
+    _t_ho       = _t_ho_sre + _t_ho_other
 
     svc_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_svc})">Servicing</button>\n'
 
@@ -1879,9 +1885,9 @@ if svc_weeks:
       <div class="card-subnote">{_t_other} incidents &middot; no lead: {_t_nolead}</div>
     </div>
     <div class="stat-card" style="border-left:3px solid #f59e0b">
-      <div class="card-label">SOC &#8594; SRE Escalations</div>
-      <div class="card-value c-amber">{_t_exp}</div>
-      <div class="card-subnote">Deliberate hand-offs (SRE path) &middot; {round(_t_exp / len(svc_weeks), 1)}/wk</div>
+      <div class="card-label">SOC Hand-offs</div>
+      <div class="card-value c-amber">{_t_ho}</div>
+      <div class="card-subnote">SRE {_t_ho_sre} &middot; other teams {_t_ho_other} &middot; {round(_t_ho / len(svc_weeks), 1)}/wk</div>
       <div class="card-subnote">+ {_t_climb} ladder climbs (missed 15-min ack)</div>
     </div>
   </div>
@@ -1893,8 +1899,8 @@ if svc_weeks:
         <div class="chart-container"><canvas id="cSvcSplit" style="width:100%;height:100%"></canvas></div>
       </div>
       <div class="chart-section">
-        <div class="chart-title">SOC &#8594; SRE Escalations &middot; by Week</div>
-        <div class="chart-note">Hand-offs = pages on the SRE path &middot; Climbs = SOC+SRE ladder roll-ups after 15-min ack timeout &middot; Cover = SRE paged on SOC L1 rotation duty</div>
+        <div class="chart-title">SOC Hand-offs &middot; SRE vs Other Teams &middot; by Time of Day</div>
+        <div class="chart-note">Human-created escalations only (auto alert pages excluded) &middot; left stack = to SRE, right stack = to other teams &middot; 8-hr UTC blocks</div>
         <div class="chart-container"><canvas id="cSvcEsc" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
@@ -1913,9 +1919,12 @@ if svc_weeks:
         "{label:'No lead',data:" + _js("nolead") + ",backgroundColor:'#475569',stack:'s'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
         "new Chart(document.getElementById('cSvcEsc'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
-        "{label:'Hand-offs (SRE path)',data:" + js_arr([_svc_esc[wk].get("explicit_sre_path") for wk in svc_weeks]) + ",backgroundColor:'#f59e0b',barPercentage:0.75},"
-        "{label:'Ladder climbs',data:" + js_arr([_svc_esc[wk].get("ladder_climbs") for wk in svc_weeks]) + ",backgroundColor:'#ef4444',barPercentage:0.75},"
-        "{label:'SOC-shift cover (SRE)',data:" + js_arr([_svc_esc[wk].get("sre_l1_cover") for wk in svc_weeks]) + ",backgroundColor:'rgba(167,139,250,0.45)',barPercentage:0.75}"
+        "{label:'To SRE · Day',data:" + js_arr([_svc_ho[wk]["sre"].get("day", 0) for wk in svc_weeks]) + ",backgroundColor:'#38bdf8',stack:'sre'},"
+        "{label:'To SRE · Evening',data:" + js_arr([_svc_ho[wk]["sre"].get("evening", 0) for wk in svc_weeks]) + ",backgroundColor:'#f59e0b',stack:'sre'},"
+        "{label:'To SRE · Night',data:" + js_arr([_svc_ho[wk]["sre"].get("night", 0) for wk in svc_weeks]) + ",backgroundColor:'#64748b',stack:'sre'},"
+        "{label:'To Other · Day',data:" + js_arr([_svc_ho[wk]["other"].get("day", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(56,189,248,0.4)',stack:'oth'},"
+        "{label:'To Other · Evening',data:" + js_arr([_svc_ho[wk]["other"].get("evening", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(245,158,11,0.4)',stack:'oth'},"
+        "{label:'To Other · Night',data:" + js_arr([_svc_ho[wk]["other"].get("night", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(100,116,139,0.4)',stack:'oth'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});"
     )
 
