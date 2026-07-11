@@ -1811,9 +1811,9 @@ try:
 except FileNotFoundError:
     svc_cache = {}
 
-# Last 4 COMPLETE weeks — Step 2I appends a week only once it closes, but a
-# manually-added partial current week must never shift the window.
-svc_weeks  = [w for w in sorted(svc_cache.get("weeks", {}).keys()) if week_is_complete(w)][-4:]
+# Last 4 weeks, current in-progress week included (Step 2I maintains it
+# nightly — leads wholesale, climb/cover classification incremental).
+svc_weeks  = sorted(svc_cache.get("weeks", {}).keys())[-4:]
 _svc_roster = svc_cache.get("roster", {})
 _svc_soc, _svc_sre = set(_svc_roster.get("soc", [])), set(_svc_roster.get("sre", []))
 _svc_mgmt = set(_svc_roster.get("mgmt", []))
@@ -1840,9 +1840,10 @@ if svc_weeks:
     _svc_rows   = {wk: _svc_buckets(wk) for wk in svc_weeks}
     _svc_esc    = {wk: svc_cache["weeks"][wk].get("escalations", {}) for wk in svc_weeks}
     _svc_totals = {wk: svc_cache["weeks"][wk].get("total", 0) for wk in svc_weeks}
-    _svc_lbls   = [fmt_week_label(wk, False) for wk in svc_weeks]
-    _svc_range  = f"{fmt_date_dmy(svc_weeks[0])} – " + fmt_date_dmy(
+    _svc_lbls   = [fmt_week_label(wk, not week_is_complete(wk)) for wk in svc_weeks]
+    _svc_range  = (f"{fmt_date_dmy(svc_weeks[0])} – " + fmt_date_dmy(
         (datetime.strptime(svc_weeks[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+        + (" · current week in progress" if not week_is_complete(svc_weeks[-1]) else ""))
 
     _t_all   = sum(_svc_totals.values())
     _t_soc   = sum(r["soc"]   for r in _svc_rows.values())
@@ -1860,7 +1861,7 @@ if svc_weeks:
     svc_slide_html = f'''
 <!-- ═══ SLIDE — SERVICING & ESCALATION ═════════════════════════ -->
 <div class="slide" id="sSvc"><div class="page">
-  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks)} complete weeks &middot; {_svc_range}</span></div>
+  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks)} weeks &middot; {_svc_range}</span></div>
   <div class="stat-grid-4">
     <div class="stat-card" style="border-left:3px solid #38bdf8">
       <div class="card-label">Serviced by SOC</div>
