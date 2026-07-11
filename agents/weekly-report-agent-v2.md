@@ -667,6 +667,30 @@ The generator (`generate_weekly_report.py`) still idempotently re-appends the tr
 
 ---
 
+## Step 2I — Incident servicing & escalation split (weekly — first run after a week closes)
+
+Feeds the **Servicing** slide from `cache/service_split_cache.json`. Load the file and **preserve `roster`, `method`, and every existing week key** — you only ever ADD a week. Roster changes (people joining/leaving SOC or SRE) are edited manually in the cache file; the generator re-buckets at render time.
+
+**When to run:** only when `weeks` is missing the most recent COMPLETE week (Monday where `now_utc >= Monday + 7d`). Any other night, log "2I: up to date" and move on. This makes 2I effectively a Monday-night job (~60–150 calls once a week).
+
+For the missing complete week W (Monday 00:00 UTC → next Monday 00:00 UTC):
+
+1. **Lead histogram** — `incident_list` with `created_after=W`, `created_before=W+7d`, `page_size=50`, `include: ["roles"]`, paginate to `has_more=false`. Keep only incidents with `reported_at` strictly inside `[W, W+7d)` (the created filters are loose) and `visibility == "public"`. Build `{lead name: count}` from the Incident Lead role; unassigned → `"NO LEAD"`. `total` = kept count. **Cross-check:** `total` should equal Step 2C's `incident_volume.total` ±2 (private-incident skew); log a warning if it diverges by more, but still write.
+
+2. **Explicit SOC→SRE hand-offs** — `escalation_stats` with `escalation_path: ["01KQAC6W276G6PDR2ECTR18B09"]` (the dedicated **SRE** path EP010), `created_after=W`, `created_before=W+7d`, `group_by: []` → the total count. These are human-created deliberate hand-off pages.
+
+3. **Ladder climbs + SOC-shift cover** — `escalation_list` on the **SOC+SRE** path (`escalation_path: ["01KQ7HJWR2P3J4R23RYZ68W364"]`) filtered to the SRE-tier user IDs (`user: ["01HMA8V4QT907AKSSJ08D0PWR7","01HKQ8YX3GE5FK5GYM9D847KCW","01K56BHY17AP8M8SEFM0GG78RE","01HKQ8YWMSDY335EYJGVXQ1HA6"]` — Simon Grenefalk, Giancarlo Laferla, Simon Brown, Stephen Riolo; keep in sync with `roster.sre`), window W..W+7d, paginate. For EACH result call `escalation_show` and classify by transitions:
+   - **CLIMB** — the SRE-tier user's target `started_at` is >10s after the escalation `created_at`, or a `level_timeout` transition precedes their page (SOC missed the 15-min ack window and the page rolled up).
+   - **L1 DUTY (cover)** — their target `started_at` equals `created_at` (±10s): they were paged at level 1, i.e. serving a SOC rotation shift or manually paged directly.
+   **Identity alone is NOT sufficient — SRE people take SOC L1 rota shifts** (learned 2026-07-11: 145 of 292 SRE-tier pages in June were rota duty, not climbs).
+   **Budget guard:** if the filtered list exceeds **150 escalations** (a storm week like w/c 29 Jun with 136), write `"ladder_climbs": null, "sre_l1_cover": null` plus a `"note"` explaining the skip instead of grinding through — the number can be backfilled interactively.
+
+4. Write `weeks[W] = {"total": N, "leads": {...}, "escalations": {"explicit_sre_path": N, "ladder_climbs": N, "sre_l1_cover": N}}` and save with `ensure_ascii=False, indent=2`.
+
+**Data integrity guard:** as with every source — a failed fetch never deletes or zeroes an existing week; skip and report instead. The generator shows the last 4 complete weeks and renders a placeholder if the cache is empty.
+
+---
+
 ## Step 5C — P2/P3 breach deep-dive (current week only, no cache)
 
 **Skip entirely if no P2/P3 breaches for the current week.**
@@ -750,6 +774,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] `engineer_workload` (Step 2F): RAW `tickets` list written for current week (and re-checked prev week) — each record has `reference`/`lead`/`severity`/`reported_at`/`resolved_at`/`closed`; ALL incident leads (no team filter); boundary-leaked incidents (reported outside the ISO week) excluded; NOT pre-aggregated (the generator computes led/closed/open/avg)
 - [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; `incident_blocks` (day/evening/night/total incident counts via `incident_list` `page_size:1` `total_count`) written for the same fetch range; pre-existing week keys preserved
 - [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
+- [ ] Servicing split (Step 2I): `cache/service_split_cache.json` — ran ONLY if the newest complete week was missing; that week's `total` matches `incident_volume.total` ±2; `roster`/`method`/existing weeks preserved; climbs classified via escalation_show transitions (or nulled with a note past the 150-escalation budget guard)
 
 ---
 

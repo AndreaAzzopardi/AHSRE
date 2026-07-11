@@ -1811,7 +1811,9 @@ try:
 except FileNotFoundError:
     svc_cache = {}
 
-svc_weeks  = sorted(svc_cache.get("weeks", {}).keys())[-4:]
+# Last 4 COMPLETE weeks — Step 2I appends a week only once it closes, but a
+# manually-added partial current week must never shift the window.
+svc_weeks  = [w for w in sorted(svc_cache.get("weeks", {}).keys()) if week_is_complete(w)][-4:]
 _svc_roster = svc_cache.get("roster", {})
 _svc_soc, _svc_sre = set(_svc_roster.get("soc", [])), set(_svc_roster.get("sre", []))
 _svc_mgmt = set(_svc_roster.get("mgmt", []))
