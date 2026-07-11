@@ -1,0 +1,129 @@
+{
+  "generated": "2026-07-11",
+  "method": {
+    "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
+    "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
+    "climbs": "escalations on SOC+SRE path EP009 whose SRE-tier page followed a level_timeout (SOC did not ack within 15 min) — classified per-escalation via transitions",
+    "sre_l1_cover": "EP009 pages where the SRE-tier user was targeted at level 1 (on the SOC rotation or manually paged directly) — SRE covering SOC duty, NOT escalation"
+  },
+  "roster": {
+    "soc": [
+      "Matteo Rapisarda",
+      "Gérard E. Pelayo",
+      "Nazareno",
+      "Joachim Farrugia",
+      "James Hodgson"
+    ],
+    "sre": [
+      "Simon Grenefalk",
+      "Simon Brown",
+      "Giancarlo Laferla",
+      "stephen.riolo"
+    ],
+    "mgmt": [
+      "Andrea Azzopardi",
+      "Patrik Potocki"
+    ]
+  },
+  "weeks": {
+    "2026-06-08": {
+      "total": 146,
+      "leads": {
+        "James Hodgson": 51,
+        "Joachim Farrugia": 24,
+        "Matteo Rapisarda": 21,
+        "Gérard E. Pelayo": 15,
+        "Simon Brown": 9,
+        "Giancarlo Laferla": 9,
+        "Nazareno": 5,
+        "Andrea Envall": 3,
+        "Jeremy": 3,
+        "Andrea Azzopardi": 2,
+        "stephen.riolo": 2,
+        "Daniel Lindengren": 2,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 5,
+        "ladder_climbs": 4,
+        "sre_l1_cover": 68
+      }
+    },
+    "2026-06-15": {
+      "total": 130,
+      "leads": {
+        "James Hodgson": 35,
+        "Matteo Rapisarda": 29,
+        "Joachim Farrugia": 23,
+        "Nazareno": 10,
+        "Andrea Envall": 10,
+        "Simon Brown": 6,
+        "Giancarlo Laferla": 5,
+        "Jeremy": 3,
+        "Gérard E. Pelayo": 2,
+        "Simon Grenefalk": 2,
+        "Jason": 1,
+        "Justin Cassar": 1,
+        "Luke Pullicino": 1,
+        "Andrea Azzopardi": 1,
+        "Agustín Castaño": 1,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 10,
+        "ladder_climbs": 3,
+        "sre_l1_cover": 41
+      }
+    },
+    "2026-06-22": {
+      "total": 174,
+      "leads": {
+        "Joachim Farrugia": 48,
+        "James Hodgson": 36,
+        "Nazareno": 28,
+        "Matteo Rapisarda": 21,
+        "Gérard E. Pelayo": 12,
+        "Simon Grenefalk": 7,
+        "Simon Brown": 7,
+        "Jason": 4,
+        "Jeremy": 3,
+        "stephen.riolo": 3,
+        "Giancarlo Laferla": 2,
+        "Andrea Azzopardi": 2,
+        "Daniel Lindengren": 1,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 13,
+        "ladder_climbs": 5,
+        "sre_l1_cover": 36
+      }
+    },
+    "2026-06-29": {
+      "total": 190,
+      "leads": {
+        "Nazareno": 40,
+        "Joachim Farrugia": 37,
+        "Matteo Rapisarda": 29,
+        "James Hodgson": 29,
+        "Simon Brown": 14,
+        "Simon Grenefalk": 11,
+        "Jeremy": 6,
+        "Gérard E. Pelayo": 5,
+        "Giancarlo Laferla": 4,
+        "Jason": 4,
+        "Andrea Azzopardi": 3,
+        "stephen.riolo": 2,
+        "Daniel Lindengren": 2,
+        "Agustín Castaño": 1,
+        "Patrik Potocki": 1,
+        "NO LEAD": 2
+      },
+      "escalations": {
+        "explicit_sre_path": 7,
+        "ladder_climbs": 135,
+        "sre_l1_cover": 1
+      }
+    }
+  }
+}

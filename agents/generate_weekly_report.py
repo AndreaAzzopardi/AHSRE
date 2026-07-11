@@ -876,8 +876,9 @@ _idx_p1past   = 3
 _idx_pir      = 4
 _idx_partner  = 5
 _idx_ops      = 6
-_idx_eng      = 7
-_total_slides = 8
+_idx_svc      = 7
+_idx_eng      = 8
+_total_slides = 9
 
 # ── ENGINEER WORKLOAD SLIDE (pre-built string; IC-ticket leads, all teams) ────
 def _eng_parse_iso(ts):
@@ -1799,6 +1800,122 @@ pir_trend_chart_js = (
     "});"
 )
 
+# ── SERVICING & ESCALATION SLIDE (cache/service_split_cache.json) ────────────
+# Who serviced each incident (Incident Lead → roster bucket) and how often SOC
+# escalated to SRE — explicit hand-offs (SRE path pages) vs ladder climbs
+# (15-min ack timeout roll-ups on the SOC+SRE path). Added 2026-07-11.
+SVC_CACHE_FILE = os.path.join(_ROOT, "cache", "service_split_cache.json")
+try:
+    with open(SVC_CACHE_FILE) as f:
+        svc_cache = json.load(f)
+except FileNotFoundError:
+    svc_cache = {}
+
+svc_weeks  = sorted(svc_cache.get("weeks", {}).keys())[-4:]
+_svc_roster = svc_cache.get("roster", {})
+_svc_soc, _svc_sre = set(_svc_roster.get("soc", [])), set(_svc_roster.get("sre", []))
+_svc_mgmt = set(_svc_roster.get("mgmt", []))
+
+def _svc_buckets(week):
+    b = {"soc": 0, "sre": 0, "mgmt": 0, "other": 0, "nolead": 0}
+    for name, n in svc_cache["weeks"][week].get("leads", {}).items():
+        if name == "NO LEAD":       b["nolead"] += n
+        elif name in _svc_soc:      b["soc"]    += n
+        elif name in _svc_sre:      b["sre"]    += n
+        elif name in _svc_mgmt:     b["mgmt"]   += n
+        else:                       b["other"]  += n
+    return b
+
+# The slide always renders (positional nav requires a fixed slide count) —
+# without cache data it shows a placeholder.
+svc_charts_js  = ""
+svc_tab_html   = f'    <button class="slide-tab" onclick="showSlide({_idx_svc})">Servicing</button>\n'
+svc_slide_html = ('\n<div class="slide" id="sSvc"><div class="page">\n'
+                  '  <div class="group-label">Incident Servicing &amp; Escalation</div>\n'
+                  '  <div class="p1-no-data c-muted">No servicing data — cache/service_split_cache.json is missing or empty.</div>\n'
+                  '</div></div>\n')
+if svc_weeks:
+    _svc_rows   = {wk: _svc_buckets(wk) for wk in svc_weeks}
+    _svc_esc    = {wk: svc_cache["weeks"][wk].get("escalations", {}) for wk in svc_weeks}
+    _svc_totals = {wk: svc_cache["weeks"][wk].get("total", 0) for wk in svc_weeks}
+    _svc_lbls   = [fmt_week_label(wk, False) for wk in svc_weeks]
+    _svc_range  = f"{fmt_date_dmy(svc_weeks[0])} – " + fmt_date_dmy(
+        (datetime.strptime(svc_weeks[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+
+    _t_all   = sum(_svc_totals.values())
+    _t_soc   = sum(r["soc"]   for r in _svc_rows.values())
+    _t_sre   = sum(r["sre"]   for r in _svc_rows.values())
+    _t_mgmt  = sum(r["mgmt"]  for r in _svc_rows.values())
+    _t_other = sum(r["other"] for r in _svc_rows.values())
+    _t_nolead = sum(r["nolead"] for r in _svc_rows.values())
+    _t_exp   = sum(e.get("explicit_sre_path", 0) for e in _svc_esc.values())
+    _t_climb = sum(e.get("ladder_climbs", 0)     for e in _svc_esc.values())
+    _t_cover = sum(e.get("sre_l1_cover", 0)      for e in _svc_esc.values())
+    _pct = lambda n: f"{round(n / _t_all * 100)}%" if _t_all else "—"
+
+    svc_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_svc})">Servicing</button>\n'
+
+    svc_slide_html = f'''
+<!-- ═══ SLIDE — SERVICING & ESCALATION ═════════════════════════ -->
+<div class="slide" id="sSvc"><div class="page">
+  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks)} complete weeks &middot; {_svc_range}</span></div>
+  <div class="stat-grid-4">
+    <div class="stat-card" style="border-left:3px solid #38bdf8">
+      <div class="card-label">Serviced by SOC</div>
+      <div class="card-value c-muted">{_pct(_t_soc)}</div>
+      <div class="card-subnote">{_t_soc} of {_t_all} incidents &middot; Incident Lead on SOC roster</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #a78bfa">
+      <div class="card-label">Serviced by SRE</div>
+      <div class="card-value c-muted">{_pct(_t_sre)}</div>
+      <div class="card-subnote">{_t_sre} incidents &middot; + management {_t_mgmt}</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #64748b">
+      <div class="card-label">Other Teams</div>
+      <div class="card-value c-muted">{_pct(_t_other)}</div>
+      <div class="card-subnote">{_t_other} incidents &middot; no lead: {_t_nolead}</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #f59e0b">
+      <div class="card-label">SOC &#8594; SRE Escalations</div>
+      <div class="card-value c-amber">{_t_exp}</div>
+      <div class="card-subnote">Deliberate hand-offs (SRE path) &middot; {round(_t_exp / len(svc_weeks), 1)}/wk</div>
+      <div class="card-subnote">+ {_t_climb} ladder climbs (missed 15-min ack)</div>
+    </div>
+  </div>
+  <div class="charts-area">
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">Incidents Serviced &middot; by Team</div>
+        <div class="chart-note">Incident Lead per incident &middot; person &#8594; team via roster</div>
+        <div class="chart-container"><canvas id="cSvcSplit" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">SOC &#8594; SRE Escalations &middot; by Week</div>
+        <div class="chart-note">Hand-offs = pages on the SRE path &middot; Climbs = SOC+SRE ladder roll-ups after 15-min ack timeout &middot; Cover = SRE paged on SOC L1 rotation duty</div>
+        <div class="chart-container"><canvas id="cSvcEsc" style="width:100%;height:100%"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Servicing is attributed by the person holding Incident Lead, mapped to their team — an SRE covering a SOC rotation shift counts under SRE. Escalation counts are pages, not incidents. Private incidents excluded.</div>
+</div></div>
+'''
+
+    _js = lambda key: js_arr([_svc_rows[wk][key] for wk in svc_weeks])
+    svc_charts_js = (
+        "new Chart(document.getElementById('cSvcSplit'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
+        "{label:'SOC',data:" + _js("soc") + ",backgroundColor:'#38bdf8',stack:'s'},"
+        "{label:'SRE',data:" + _js("sre") + ",backgroundColor:'#a78bfa',stack:'s'},"
+        "{label:'Management',data:" + _js("mgmt") + ",backgroundColor:'#f59e0b',stack:'s'},"
+        "{label:'Other teams',data:" + _js("other") + ",backgroundColor:'#64748b',stack:'s'},"
+        "{label:'No lead',data:" + _js("nolead") + ",backgroundColor:'#475569',stack:'s'}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
+        "new Chart(document.getElementById('cSvcEsc'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
+        "{label:'Hand-offs (SRE path)',data:" + js_arr([_svc_esc[wk].get("explicit_sre_path") for wk in svc_weeks]) + ",backgroundColor:'#f59e0b',barPercentage:0.75},"
+        "{label:'Ladder climbs',data:" + js_arr([_svc_esc[wk].get("ladder_climbs") for wk in svc_weeks]) + ",backgroundColor:'#ef4444',barPercentage:0.75},"
+        "{label:'SOC-shift cover (SRE)',data:" + js_arr([_svc_esc[wk].get("sre_l1_cover") for wk in svc_weeks]) + ",backgroundColor:'rgba(167,139,250,0.45)',barPercentage:0.75}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});"
+    )
+
 # ── HTML GENERATION ──────────────────────────────────────────────────────────
 wk_label_cur = fmt_week_label(current_week, True).rstrip("*")
 title_date   = datetime.strptime(current_week, "%Y-%m-%d").strftime("%-d %B %Y")
@@ -1890,7 +2007,7 @@ html = f'''<!DOCTYPE html>
 {p1_tab_btns_html}    <button class="slide-tab" onclick="showSlide({_idx_pir})">PIR Actions</button>
     <button class="slide-tab" onclick="showSlide({_idx_partner})">Partner Tickets</button>
     <button class="slide-tab" onclick="showSlide({_idx_ops})">Incident Ops</button>
-    <button class="slide-tab" onclick="showSlide({_idx_eng})">Engineer Workload</button>
+{svc_tab_html}    <button class="slide-tab" onclick="showSlide({_idx_eng})">Engineer Workload</button>
   </div>
   <div class="topbar-meta">{today_str}</div>
 </div>
@@ -2058,6 +2175,7 @@ html = f'''<!DOCTYPE html>
   </div>
 </div></div>
 
+{svc_slide_html}
 {engineer_workload_slide_html}
 
 </div><!-- /slides-wrap -->
@@ -2198,6 +2316,7 @@ new Chart(document.getElementById('cTBVol'),{{type:'bar',data:{{labels:WK19,data
 {pir_cat_chart_js}
 {pir_trend_chart_js}
 {eng_ac_chart_js}
+{svc_charts_js}
 
 
 
