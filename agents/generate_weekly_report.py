@@ -1812,11 +1812,10 @@ except FileNotFoundError:
     svc_cache = {}
 
 # Charts plot the full cached history (capped 13 weeks, same as WEEK_KEYS);
-# stat cards aggregate only the last 4 weeks so May's very different regime
-# doesn't dilute the headline numbers. Current in-progress week included
-# (Step 2I maintains it nightly — leads wholesale, climb/cover incremental).
+# stat cards show the newest cached week vs the week before it. Current
+# in-progress week included (Step 2I maintains it nightly — leads wholesale,
+# climb/cover classification incremental).
 svc_weeks_all = sorted(svc_cache.get("weeks", {}).keys())[-13:]
-svc_weeks     = svc_weeks_all[-4:]
 _svc_roster = svc_cache.get("roster", {})
 _svc_soc, _svc_sre = set(_svc_roster.get("soc", [])), set(_svc_roster.get("sre", []))
 _svc_mgmt = set(_svc_roster.get("mgmt", []))
@@ -1839,7 +1838,7 @@ svc_slide_html = ('\n<div class="slide" id="sSvc"><div class="page">\n'
                   '  <div class="group-label">Incident Servicing &amp; Escalation</div>\n'
                   '  <div class="p1-no-data c-muted">No servicing data — cache/service_split_cache.json is missing or empty.</div>\n'
                   '</div></div>\n')
-if svc_weeks:
+if svc_weeks_all:
     _svc_rows   = {wk: _svc_buckets(wk) for wk in svc_weeks_all}
     _svc_esc    = {wk: svc_cache["weeks"][wk].get("escalations", {}) for wk in svc_weeks_all}
     _svc_totals = {wk: svc_cache["weeks"][wk].get("total", 0) for wk in svc_weeks_all}
@@ -1848,51 +1847,80 @@ if svc_weeks:
         (datetime.strptime(svc_weeks_all[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
         + (" · current week in progress" if not week_is_complete(svc_weeks_all[-1]) else ""))
 
-    # Stat-card aggregates: last 4 weeks only
-    _t_all   = sum(_svc_totals[wk] for wk in svc_weeks)
-    _t_soc   = sum(_svc_rows[wk]["soc"]   for wk in svc_weeks)
-    _t_sre   = sum(_svc_rows[wk]["sre"]   for wk in svc_weeks)
-    _t_mgmt  = sum(_svc_rows[wk]["mgmt"]  for wk in svc_weeks)
-    _t_other = sum(_svc_rows[wk]["other"] for wk in svc_weeks)
-    _t_nolead = sum(_svc_rows[wk]["nolead"] for wk in svc_weeks)
-    _t_exp   = sum(_svc_esc[wk].get("explicit_sre_path", 0) for wk in svc_weeks)
-    _t_climb = sum(_svc_esc[wk].get("ladder_climbs", 0)     for wk in svc_weeks)
-    _t_cover = sum(_svc_esc[wk].get("sre_l1_cover", 0)      for wk in svc_weeks)
-    _pct = lambda n: f"{round(n / _t_all * 100)}%" if _t_all else "—"
-    # Hand-offs by destination × 8-hr block (human-created pages, no alert_id)
+    # Stat cards: current (newest cached) week vs the week before it
+    _svc_cw = svc_weeks_all[-1]
+    _svc_pw = svc_weeks_all[-2] if len(svc_weeks_all) >= 2 else None
     _svc_ho = {wk: svc_cache["weeks"][wk].get("handoffs") or
                    {"sre": {}, "other": {}} for wk in svc_weeks_all}
-    _t_ho_sre   = sum(sum(_svc_ho[wk]["sre"].values())   for wk in svc_weeks)
-    _t_ho_other = sum(sum(_svc_ho[wk]["other"].values()) for wk in svc_weeks)
-    _t_ho       = _t_ho_sre + _t_ho_other
+
+    def _svc_wk_stats(wk):
+        if wk is None:
+            return None
+        r, tot = _svc_rows[wk], _svc_totals[wk]
+        ho_sre, ho_oth = sum(_svc_ho[wk]["sre"].values()), sum(_svc_ho[wk]["other"].values())
+        pc = lambda n: round(n / tot * 100, 1) if tot else None
+        return {"total": tot, "soc": r["soc"], "sre": r["sre"], "mgmt": r["mgmt"],
+                "other": r["other"], "nolead": r["nolead"],
+                "soc_pct": pc(r["soc"]), "sre_pct": pc(r["sre"]), "other_pct": pc(r["other"]),
+                "ho_sre": ho_sre, "ho_other": ho_oth, "ho": ho_sre + ho_oth,
+                "climbs": _svc_esc[wk].get("ladder_climbs", 0)}
+
+    _scw, _spw = _svc_wk_stats(_svc_cw), _svc_wk_stats(_svc_pw)
+    _svc_cw_date = fmt_date_dmy(_svc_cw) + (" · in progress" if not week_is_complete(_svc_cw) else "")
+
+    def _svc_delta(cur, prev, unit="", higher_is_better=True, decimals=1):
+        # delta_str clone with the servicing prev-week label (cache weeks can
+        # lag the report's stat_prev_week if a nightly run is missed)
+        if cur is None or prev is None or _svc_pw is None:
+            return ("d-muted", "—")
+        diff = cur - prev
+        if abs(diff) < 0.05:
+            return ("d-muted", f"0{unit} vs wk {fmt_date_dmy(_svc_pw)}")
+        sign = "+" if diff > 0 else "−"
+        fmt_diff = str(int(round(abs(diff)))) if decimals == 0 else f"{abs(diff):.{decimals}f}"
+        good = diff > 0 if higher_is_better else diff < 0
+        return ("d-green" if good else "d-red",
+                f"{sign}{fmt_diff}{unit} vs wk {fmt_date_dmy(_svc_pw)}")
+
+    # SOC share up = good (work absorbed at L1); SRE share / hand-offs up = bad
+    # (interrupts on SRE); other-teams share is neutral.
+    _soc_d_cls, _soc_d = _svc_delta(_scw["soc_pct"], _spw and _spw["soc_pct"], "%", True)
+    _sre_d_cls, _sre_d = _svc_delta(_scw["sre_pct"], _spw and _spw["sre_pct"], "%", False)
+    _oth_d_cls, _oth_d = _svc_delta(_scw["other_pct"], _spw and _spw["other_pct"], "%", True)
+    _oth_d_cls = "d-muted"
+    _ho_d_cls, _ho_d = _svc_delta(_scw["ho"], _spw and _spw["ho"], "", False, decimals=0)
+    _fmt_pct = lambda v: f"{round(v)}%" if v is not None else "—"
 
     svc_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_svc})">Servicing</button>\n'
 
     svc_slide_html = f'''
 <!-- ═══ SLIDE — SERVICING & ESCALATION ═════════════════════════ -->
 <div class="slide" id="sSvc"><div class="page">
-  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks_all)} weeks &middot; {_svc_range} &middot; cards: last {len(svc_weeks)} weeks</span></div>
+  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; charts: {len(svc_weeks_all)} weeks &middot; {_svc_range} &middot; cards: week of {_svc_cw_date}</span></div>
   <div class="stat-grid-4">
     <div class="stat-card" style="border-left:3px solid #38bdf8">
-      <div class="card-label">Serviced by SOC</div>
-      <div class="card-value c-muted">{_pct(_t_soc)}</div>
-      <div class="card-subnote">{_t_soc} of {_t_all} incidents &middot; Incident Lead on SOC roster</div>
+      <div class="card-label">Serviced by SOC ({_svc_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_scw["soc_pct"])}</div>
+      <div class="card-delta {_soc_d_cls}">{_soc_d}</div>
+      <div class="card-subnote">{_scw["soc"]} of {_scw["total"]} incidents &middot; Incident Lead on SOC roster</div>
     </div>
     <div class="stat-card" style="border-left:3px solid #a78bfa">
-      <div class="card-label">Serviced by SRE</div>
-      <div class="card-value c-muted">{_pct(_t_sre)}</div>
-      <div class="card-subnote">{_t_sre} incidents &middot; + management {_t_mgmt}</div>
+      <div class="card-label">Serviced by SRE ({_svc_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_scw["sre_pct"])}</div>
+      <div class="card-delta {_sre_d_cls}">{_sre_d}</div>
+      <div class="card-subnote">{_scw["sre"]} incidents &middot; + management {_scw["mgmt"]}</div>
     </div>
     <div class="stat-card" style="border-left:3px solid #64748b">
-      <div class="card-label">Other Teams</div>
-      <div class="card-value c-muted">{_pct(_t_other)}</div>
-      <div class="card-subnote">{_t_other} incidents &middot; no lead: {_t_nolead}</div>
+      <div class="card-label">Other Teams ({_svc_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_scw["other_pct"])}</div>
+      <div class="card-delta {_oth_d_cls}">{_oth_d}</div>
+      <div class="card-subnote">{_scw["other"]} incidents &middot; no lead: {_scw["nolead"]}</div>
     </div>
     <div class="stat-card" style="border-left:3px solid #f59e0b">
-      <div class="card-label">SOC Hand-offs</div>
-      <div class="card-value c-amber">{_t_ho}</div>
-      <div class="card-subnote">SRE {_t_ho_sre} &middot; other teams {_t_ho_other} &middot; {round(_t_ho / len(svc_weeks), 1)}/wk</div>
-      <div class="card-subnote">+ {_t_climb} ladder climbs (missed 15-min ack)</div>
+      <div class="card-label">SOC Hand-offs ({_svc_cw_date})</div>
+      <div class="card-value c-amber">{_scw["ho"]}</div>
+      <div class="card-delta {_ho_d_cls}">{_ho_d}</div>
+      <div class="card-subnote">SRE {_scw["ho_sre"]} &middot; other teams {_scw["ho_other"]} &middot; + {_scw["climbs"]} ladder climbs</div>
     </div>
   </div>
   <div class="charts-area">
@@ -1909,7 +1937,7 @@ if svc_weeks:
       </div>
     </div>
   </div>
-  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Servicing is attributed by the person holding Incident Lead, mapped to their team — an SRE covering a SOC rotation shift counts under SRE. Escalation counts are pages, not incidents. Private incidents excluded.</div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Servicing is attributed by the person holding Incident Lead, mapped to their team — an SRE covering a SOC rotation shift counts under SRE. Escalation counts are pages, not incidents. Private incidents excluded.{" For the in-progress week, recently opened incidents often have no Incident Lead assigned yet — they sit under No lead until triaged, so team shares firm up as the week completes." if not week_is_complete(_svc_cw) else ""}</div>
 </div></div>
 '''
 
