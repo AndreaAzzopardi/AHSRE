@@ -1931,8 +1931,8 @@ if svc_weeks_all:
         <div class="chart-container"><canvas id="cSvcSplit" style="width:100%;height:100%"></canvas></div>
       </div>
       <div class="chart-section">
-        <div class="chart-title">SOC Hand-offs &middot; SRE vs Other Teams &middot; by Time of Day</div>
-        <div class="chart-note">Human-created escalations only (auto alert pages excluded) &middot; left stack = to SRE, right stack = to other teams &middot; 8-hr UTC blocks</div>
+        <div class="chart-title">SOC Hand-offs to SRE &middot; by Time of Day</div>
+        <div class="chart-note">Human-created escalations only (auto alert pages excluded) &middot; 8-hr UTC blocks &middot; hand-offs to other teams tracked in the card, not plotted</div>
         <div class="chart-container"><canvas id="cSvcEsc" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
@@ -1951,12 +1951,9 @@ if svc_weeks_all:
         "{label:'No lead',data:" + _js("nolead") + ",backgroundColor:'#475569',stack:'s'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
         "new Chart(document.getElementById('cSvcEsc'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
-        "{label:'To SRE · Day',data:" + js_arr([_svc_ho[wk]["sre"].get("day", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#38bdf8',stack:'sre'},"
-        "{label:'To SRE · Evening',data:" + js_arr([_svc_ho[wk]["sre"].get("evening", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#f59e0b',stack:'sre'},"
-        "{label:'To SRE · Night',data:" + js_arr([_svc_ho[wk]["sre"].get("night", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#64748b',stack:'sre'},"
-        "{label:'To Other · Day',data:" + js_arr([_svc_ho[wk]["other"].get("day", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(56,189,248,0.4)',stack:'oth'},"
-        "{label:'To Other · Evening',data:" + js_arr([_svc_ho[wk]["other"].get("evening", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(245,158,11,0.4)',stack:'oth'},"
-        "{label:'To Other · Night',data:" + js_arr([_svc_ho[wk]["other"].get("night", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(100,116,139,0.4)',stack:'oth'}"
+        "{label:'Day',data:" + js_arr([_svc_ho[wk]["sre"].get("day", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#38bdf8',stack:'sre'},"
+        "{label:'Evening',data:" + js_arr([_svc_ho[wk]["sre"].get("evening", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#f59e0b',stack:'sre'},"
+        "{label:'Night',data:" + js_arr([_svc_ho[wk]["sre"].get("night", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#64748b',stack:'sre'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});"
     )
 
