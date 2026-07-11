@@ -1811,9 +1811,12 @@ try:
 except FileNotFoundError:
     svc_cache = {}
 
-# Last 4 weeks, current in-progress week included (Step 2I maintains it
-# nightly — leads wholesale, climb/cover classification incremental).
-svc_weeks  = sorted(svc_cache.get("weeks", {}).keys())[-4:]
+# Charts plot the full cached history (capped 13 weeks, same as WEEK_KEYS);
+# stat cards aggregate only the last 4 weeks so May's very different regime
+# doesn't dilute the headline numbers. Current in-progress week included
+# (Step 2I maintains it nightly — leads wholesale, climb/cover incremental).
+svc_weeks_all = sorted(svc_cache.get("weeks", {}).keys())[-13:]
+svc_weeks     = svc_weeks_all[-4:]
 _svc_roster = svc_cache.get("roster", {})
 _svc_soc, _svc_sre = set(_svc_roster.get("soc", [])), set(_svc_roster.get("sre", []))
 _svc_mgmt = set(_svc_roster.get("mgmt", []))
@@ -1837,29 +1840,30 @@ svc_slide_html = ('\n<div class="slide" id="sSvc"><div class="page">\n'
                   '  <div class="p1-no-data c-muted">No servicing data — cache/service_split_cache.json is missing or empty.</div>\n'
                   '</div></div>\n')
 if svc_weeks:
-    _svc_rows   = {wk: _svc_buckets(wk) for wk in svc_weeks}
-    _svc_esc    = {wk: svc_cache["weeks"][wk].get("escalations", {}) for wk in svc_weeks}
-    _svc_totals = {wk: svc_cache["weeks"][wk].get("total", 0) for wk in svc_weeks}
-    _svc_lbls   = [fmt_week_label(wk, not week_is_complete(wk)) for wk in svc_weeks]
-    _svc_range  = (f"{fmt_date_dmy(svc_weeks[0])} – " + fmt_date_dmy(
-        (datetime.strptime(svc_weeks[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
-        + (" · current week in progress" if not week_is_complete(svc_weeks[-1]) else ""))
+    _svc_rows   = {wk: _svc_buckets(wk) for wk in svc_weeks_all}
+    _svc_esc    = {wk: svc_cache["weeks"][wk].get("escalations", {}) for wk in svc_weeks_all}
+    _svc_totals = {wk: svc_cache["weeks"][wk].get("total", 0) for wk in svc_weeks_all}
+    _svc_lbls   = [fmt_week_label(wk, not week_is_complete(wk)) for wk in svc_weeks_all]
+    _svc_range  = (f"{fmt_date_dmy(svc_weeks_all[0])} – " + fmt_date_dmy(
+        (datetime.strptime(svc_weeks_all[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+        + (" · current week in progress" if not week_is_complete(svc_weeks_all[-1]) else ""))
 
-    _t_all   = sum(_svc_totals.values())
-    _t_soc   = sum(r["soc"]   for r in _svc_rows.values())
-    _t_sre   = sum(r["sre"]   for r in _svc_rows.values())
-    _t_mgmt  = sum(r["mgmt"]  for r in _svc_rows.values())
-    _t_other = sum(r["other"] for r in _svc_rows.values())
-    _t_nolead = sum(r["nolead"] for r in _svc_rows.values())
-    _t_exp   = sum(e.get("explicit_sre_path", 0) for e in _svc_esc.values())
-    _t_climb = sum(e.get("ladder_climbs", 0)     for e in _svc_esc.values())
-    _t_cover = sum(e.get("sre_l1_cover", 0)      for e in _svc_esc.values())
+    # Stat-card aggregates: last 4 weeks only
+    _t_all   = sum(_svc_totals[wk] for wk in svc_weeks)
+    _t_soc   = sum(_svc_rows[wk]["soc"]   for wk in svc_weeks)
+    _t_sre   = sum(_svc_rows[wk]["sre"]   for wk in svc_weeks)
+    _t_mgmt  = sum(_svc_rows[wk]["mgmt"]  for wk in svc_weeks)
+    _t_other = sum(_svc_rows[wk]["other"] for wk in svc_weeks)
+    _t_nolead = sum(_svc_rows[wk]["nolead"] for wk in svc_weeks)
+    _t_exp   = sum(_svc_esc[wk].get("explicit_sre_path", 0) for wk in svc_weeks)
+    _t_climb = sum(_svc_esc[wk].get("ladder_climbs", 0)     for wk in svc_weeks)
+    _t_cover = sum(_svc_esc[wk].get("sre_l1_cover", 0)      for wk in svc_weeks)
     _pct = lambda n: f"{round(n / _t_all * 100)}%" if _t_all else "—"
     # Hand-offs by destination × 8-hr block (human-created pages, no alert_id)
     _svc_ho = {wk: svc_cache["weeks"][wk].get("handoffs") or
-                   {"sre": {}, "other": {}} for wk in svc_weeks}
-    _t_ho_sre   = sum(sum(h["sre"].values())   for h in _svc_ho.values())
-    _t_ho_other = sum(sum(h["other"].values()) for h in _svc_ho.values())
+                   {"sre": {}, "other": {}} for wk in svc_weeks_all}
+    _t_ho_sre   = sum(sum(_svc_ho[wk]["sre"].values())   for wk in svc_weeks)
+    _t_ho_other = sum(sum(_svc_ho[wk]["other"].values()) for wk in svc_weeks)
     _t_ho       = _t_ho_sre + _t_ho_other
 
     svc_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_svc})">Servicing</button>\n'
@@ -1867,7 +1871,7 @@ if svc_weeks:
     svc_slide_html = f'''
 <!-- ═══ SLIDE — SERVICING & ESCALATION ═════════════════════════ -->
 <div class="slide" id="sSvc"><div class="page">
-  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks)} weeks &middot; {_svc_range}</span></div>
+  <div class="group-label">Incident Servicing &amp; Escalation <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; {len(svc_weeks_all)} weeks &middot; {_svc_range} &middot; cards: last {len(svc_weeks)} weeks</span></div>
   <div class="stat-grid-4">
     <div class="stat-card" style="border-left:3px solid #38bdf8">
       <div class="card-label">Serviced by SOC</div>
@@ -1909,7 +1913,7 @@ if svc_weeks:
 </div></div>
 '''
 
-    _js = lambda key: js_arr([_svc_rows[wk][key] for wk in svc_weeks])
+    _js = lambda key: js_arr([_svc_rows[wk][key] for wk in svc_weeks_all])
     svc_charts_js = (
         "new Chart(document.getElementById('cSvcSplit'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
         "{label:'SOC',data:" + _js("soc") + ",backgroundColor:'#38bdf8',stack:'s'},"
@@ -1919,12 +1923,12 @@ if svc_weeks:
         "{label:'No lead',data:" + _js("nolead") + ",backgroundColor:'#475569',stack:'s'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
         "new Chart(document.getElementById('cSvcEsc'),{type:'bar',data:{labels:" + js_str_arr(_svc_lbls) + ",datasets:["
-        "{label:'To SRE · Day',data:" + js_arr([_svc_ho[wk]["sre"].get("day", 0) for wk in svc_weeks]) + ",backgroundColor:'#38bdf8',stack:'sre'},"
-        "{label:'To SRE · Evening',data:" + js_arr([_svc_ho[wk]["sre"].get("evening", 0) for wk in svc_weeks]) + ",backgroundColor:'#f59e0b',stack:'sre'},"
-        "{label:'To SRE · Night',data:" + js_arr([_svc_ho[wk]["sre"].get("night", 0) for wk in svc_weeks]) + ",backgroundColor:'#64748b',stack:'sre'},"
-        "{label:'To Other · Day',data:" + js_arr([_svc_ho[wk]["other"].get("day", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(56,189,248,0.4)',stack:'oth'},"
-        "{label:'To Other · Evening',data:" + js_arr([_svc_ho[wk]["other"].get("evening", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(245,158,11,0.4)',stack:'oth'},"
-        "{label:'To Other · Night',data:" + js_arr([_svc_ho[wk]["other"].get("night", 0) for wk in svc_weeks]) + ",backgroundColor:'rgba(100,116,139,0.4)',stack:'oth'}"
+        "{label:'To SRE · Day',data:" + js_arr([_svc_ho[wk]["sre"].get("day", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#38bdf8',stack:'sre'},"
+        "{label:'To SRE · Evening',data:" + js_arr([_svc_ho[wk]["sre"].get("evening", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#f59e0b',stack:'sre'},"
+        "{label:'To SRE · Night',data:" + js_arr([_svc_ho[wk]["sre"].get("night", 0) for wk in svc_weeks_all]) + ",backgroundColor:'#64748b',stack:'sre'},"
+        "{label:'To Other · Day',data:" + js_arr([_svc_ho[wk]["other"].get("day", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(56,189,248,0.4)',stack:'oth'},"
+        "{label:'To Other · Evening',data:" + js_arr([_svc_ho[wk]["other"].get("evening", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(245,158,11,0.4)',stack:'oth'},"
+        "{label:'To Other · Night',data:" + js_arr([_svc_ho[wk]["other"].get("night", 0) for wk in svc_weeks_all]) + ",backgroundColor:'rgba(100,116,139,0.4)',stack:'oth'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});"
     )
 

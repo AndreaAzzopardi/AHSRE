@@ -27,6 +27,175 @@
     ]
   },
   "weeks": {
+    "2026-05-04": {
+      "total": 200,
+      "leads": {
+        "Gérard E. Pelayo": 70,
+        "Joachim Farrugia": 39,
+        "Matteo Rapisarda": 24,
+        "Simon Brown": 20,
+        "stephen.riolo": 18,
+        "Nazareno": 16,
+        "Giancarlo Laferla": 9,
+        "Sam Lundborg": 2,
+        "Andrea Azzopardi": 1,
+        "Andrea Envall": 1,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 9,
+        "ladder_climbs": 32,
+        "sre_l1_cover": 93
+      },
+      "handoffs": {
+        "sre": {
+          "night": 0,
+          "day": 7,
+          "evening": 2
+        },
+        "other": {
+          "night": 0,
+          "day": 4,
+          "evening": 0
+        }
+      }
+    },
+    "2026-05-11": {
+      "total": 157,
+      "leads": {
+        "Gérard E. Pelayo": 77,
+        "Matteo Rapisarda": 27,
+        "Joachim Farrugia": 21,
+        "Giancarlo Laferla": 13,
+        "Nazareno": 8,
+        "Simon Brown": 6,
+        "stephen.riolo": 2,
+        "Daniel Lindengren": 1,
+        "Sam Lundborg": 1,
+        "Patrik Potocki": 1,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 5,
+        "ladder_climbs": 44,
+        "sre_l1_cover": 40
+      },
+      "handoffs": {
+        "sre": {
+          "night": 1,
+          "day": 0,
+          "evening": 4
+        },
+        "other": {
+          "night": 1,
+          "day": 0,
+          "evening": 0
+        }
+      }
+    },
+    "2026-05-18": {
+      "total": 87,
+      "leads": {
+        "Matteo Rapisarda": 31,
+        "Joachim Farrugia": 24,
+        "Gérard E. Pelayo": 8,
+        "Nazareno": 8,
+        "Andrea Envall": 7,
+        "Simon Brown": 5,
+        "Giancarlo Laferla": 2,
+        "stephen.riolo": 1,
+        "NO LEAD": 1
+      },
+      "escalations": {
+        "explicit_sre_path": 3,
+        "ladder_climbs": 3,
+        "sre_l1_cover": 22
+      },
+      "handoffs": {
+        "sre": {
+          "night": 0,
+          "day": 1,
+          "evening": 2
+        },
+        "other": {
+          "night": 0,
+          "day": 0,
+          "evening": 0
+        }
+      }
+    },
+    "2026-05-25": {
+      "total": 133,
+      "leads": {
+        "Gérard E. Pelayo": 33,
+        "Nazareno": 26,
+        "Matteo Rapisarda": 20,
+        "Joachim Farrugia": 18,
+        "Simon Grenefalk": 10,
+        "Simon Brown": 9,
+        "Andrea Azzopardi": 5,
+        "Giancarlo Laferla": 5,
+        "Jeremy": 3,
+        "Daniel Lindengren": 2,
+        "Andrea Envall": 1,
+        "NO LEAD": 1
+      },
+      "escalations": {
+        "explicit_sre_path": 7,
+        "ladder_climbs": 5,
+        "sre_l1_cover": 17
+      },
+      "handoffs": {
+        "sre": {
+          "night": 0,
+          "day": 4,
+          "evening": 3
+        },
+        "other": {
+          "night": 1,
+          "day": 3,
+          "evening": 0
+        }
+      }
+    },
+    "2026-06-01": {
+      "total": 137,
+      "leads": {
+        "Matteo Rapisarda": 35,
+        "Gérard E. Pelayo": 30,
+        "Nazareno": 14,
+        "Giancarlo Laferla": 12,
+        "Joachim Farrugia": 12,
+        "Simon Brown": 11,
+        "James Hodgson": 6,
+        "Andrea Envall": 6,
+        "stephen.riolo": 4,
+        "Andrea Azzopardi": 2,
+        "Sam Lundborg": 1,
+        "Andrew Pirotta": 1,
+        "Ilke": 1,
+        "Daniel Lindengren": 1,
+        "Clayton Spiteri": 1,
+        "NO LEAD": 0
+      },
+      "escalations": {
+        "explicit_sre_path": 11,
+        "ladder_climbs": 5,
+        "sre_l1_cover": 71
+      },
+      "handoffs": {
+        "sre": {
+          "night": 6,
+          "day": 3,
+          "evening": 2
+        },
+        "other": {
+          "night": 0,
+          "day": 0,
+          "evening": 1
+        }
+      }
+    },
     "2026-06-08": {
       "total": 146,
       "leads": {
