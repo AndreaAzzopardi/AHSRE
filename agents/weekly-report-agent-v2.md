@@ -673,8 +673,8 @@ The generator (`generate_weekly_report.py`) still idempotently re-appends the tr
 > 20:03 UTC report run.** Split out 12 Jul 2026: the lead re-fetches are token-heavy (full
 > incident payloads with roles), and bundling them into the main run twice blew the session
 > token limit (10 + 11 Jul runs died before committing). The main run must NOT execute this
-> step; the servicing routine executes ONLY this step and commits ONLY
-> `cache/service_split_cache.json`.
+> step; the servicing routine executes ONLY Steps 2I + 2J and commits ONLY
+> `cache/service_split_cache.json` + `cache/response_quality_cache.json`.
 
 Feeds the **Servicing** slide from `cache/service_split_cache.json`. Load the file and **preserve `roster` and `method`** — never rewrite them. Roster changes are edited manually in the cache; the generator re-buckets at render time.
 
@@ -711,6 +711,24 @@ For the current week W (Monday 00:00 UTC → now):
 **Backfill:** if the most recent COMPLETE week is missing entirely (e.g. runs were down), build it with the same procedure over its full Monday→Monday window before handling the current week.
 
 **Data integrity guard:** as with every source — a failed fetch never deletes or zeroes an existing week; skip and report instead. The generator shows the last 4 weeks (current partial week included, labelled in progress) and renders a placeholder if the cache is empty.
+
+---
+
+## Step 2J — Response quality (DEDICATED ROUTINE — runs with Step 2I, not the main run)
+
+Feeds the **Response Quality** slide from `cache/response_quality_cache.json` (added 12 Jul 2026). Load the file and **preserve `method`** — never rewrite it. Cheap: ~3–12 calls per night. Every run maintains the CURRENT week's row (create on the week's first run with `"partial": true`; drop the flag once the week is complete and every P1 in it is Closed or the row has been refreshed after week end).
+
+For the current week W (Monday):
+
+1. **Detection split (1 call)** — `incident_stats` with `created_after=W`, `created_before=W+6d`, `group_by: ["alert_source"]`, `mode: ["standard","retrospective"]`, `status_category: ["triage","active","post-incident","closed","paused"]`, `max_incident_ids_per_group: 0`. **⚠ `created_before` is inclusive of the entire end date — pass the SUNDAY (W+6d), never W+7d, or the window swallows all of next Monday** (this bug inflated the first backfill by up to +39/week). Store `total` = total_records, `detection.sources` = the full `{alert_source: count}` map, `detection.intercom` = the "Intercom" count (partner-reported), `detection.no_alert` = the "No alert" count (manual). Stats cannot exclude private incidents, so `total` may sit 1–3 above `incident_volume.total` — expected, do not reconcile. The generator derives monitoring = total − intercom − no_alert as the stack remainder.
+
+2. **P1 timestamp chain (1 call)** — `incident_list` with `severity: ["01HKQ8WYP01RYH4XD82M9J93KV"]`, `created_after=W`, `created_before=W+6d`, `include: ["timestamps","durations"]`, `page_size: 50`. Keep only `reported_at` strictly inside `[W, W+7d)` and `visibility == "public"`. Per P1 compute minutes from the "Reported at" timestamp: `identify_min` (→ "Identified at"), `fixed_min` (→ "Fixed at", often absent), `resolve_min` (→ "Resolved at"; fallback = "Incident duration" seconds ÷ 60). Omit a key when its timestamp is missing (open incidents). Note: IC-Ticket incidents stamp Identified/Resolved/Closed together at closure; "Accepted at" is unstamped since ~5 Jun 2026 (MTTA regression) — do not use it.
+
+3. **First comms (INCREMENTAL)** — `incident_update_list` (page_size 50) ONLY for P1s that are new to the cached row or whose cached `status` was not Closed. Sort updates oldest-first: `first_update_min` = minutes to the earliest update **more than 60s after** "Reported at" (the declaration itself posts an update at t=0); `first_msg_min` = minutes to the earliest update carrying a non-empty written `message`; `updates` = update count. Carry forward cached values for Closed P1s untouched.
+
+4. **Row shape** — `weeks[W] = {"total": N, "partial": true, "detection": {"intercom": N, "no_alert": N, "sources": {...}}, "p1": [{"ref","name","type","status","reported_at","identify_min","fixed_min","resolve_min","first_update_min","first_msg_min","updates"}, ...]}` sorted by `reported_at`; save with `indent=1`. Also re-run steps 2–3 for the PREVIOUS week's row while it still contains any non-Closed P1 (timestamps land at closure).
+
+**Data integrity guard:** a failed fetch never deletes or zeroes an existing week — skip and report. Backfill the most recent complete week with the same procedure if it is missing entirely.
 
 ---
 
@@ -798,6 +816,7 @@ WoW trend: current week vs last complete week `false_p1_rate`.
 - [ ] Alert time-block (Step 2G): written to separate `cache/alert_timeblock_cache.json`; current week always re-fetched (complete UTC days only, `partial`/`note` set); completed weeks without a `partial` flag left untouched; per-block `accepted`/`declined` from `has_incident` true/false; `waste_pct` = declined/total; `incident_blocks` (day/evening/night/total incident counts via `incident_list` `page_size:1` `total_count`) written for the same fetch range; pre-existing week keys preserved
 - [ ] PIR Action Items (Step 2H): written to separate `cache/pir_action_cache.json` with `generated` = today; full ClickUp list re-fetched every run (open = to do/acknowledged/blocked/in review, completed = complete); `total = open + completed`; categories from tags (`goalsandmilestones` ignored, untagged → "Other"); teams from the Fast Track Team field (unset excluded); connector failure retains prior snapshot, never zeroes it
 - [ ] Servicing split (Step 2I): **NOT part of this run** — maintained by the dedicated "Servicing Cache — Nightly" routine (22:03 UTC), which commits `cache/service_split_cache.json` with its own gate: current week's row refreshed (leads wholesale; `handoffs` per destination × time block via the no-alert_id discriminator, private escalations skipped; climbs/cover incremental via `escalations.classified`, ≤60 new classifications/run with backlog note); leads + total re-fetched for ONE rotating complete week per night (`day_of_year % 3`); escalation data of finalised weeks untouched; `explicit_sre_path` == sum of `handoffs.sre` blocks; `total` matches `incident_volume.total` ±2; `roster`/`method` preserved
+- [ ] Response quality (Step 2J): **NOT part of this run** — same dedicated routine maintains `cache/response_quality_cache.json` (current week's detection split via alert_source stats with SUNDAY-inclusive `created_before`, P1 timestamp chain, incremental first-comms); `method` preserved; failed fetches never zero a week
 
 ---
 
