@@ -277,8 +277,8 @@
         "Nazareno": 28,
         "Matteo Rapisarda": 21,
         "Gérard E. Pelayo": 12,
-        "Simon Brown": 7,
         "Simon Grenefalk": 7,
+        "Simon Brown": 7,
         "Jason": 4,
         "Jeremy": 3,
         "stephen.riolo": 3,
@@ -344,29 +344,29 @@
       }
     },
     "2026-07-06": {
-      "total": 198,
+      "total": 206,
       "partial": true,
       "leads": {
+        "NO LEAD": 65,
+        "James Hodgson": 32,
         "Matteo Rapisarda": 32,
-        "James Hodgson": 30,
         "Joachim Farrugia": 14,
         "Giancarlo Laferla": 13,
+        "Nazareno": 18,
         "Simon Brown": 10,
-        "Simon Grenefalk": 10,
-        "Nazareno": 9,
         "Gérard E. Pelayo": 7,
+        "Simon Grenefalk": 6,
         "Jeremy": 5,
-        "Andrea Azzopardi": 1,
         "Daniel Lindengren": 1,
         "Jason": 1,
-        "stephen.riolo": 1,
-        "NO LEAD": 64
+        "Andrea Azzopardi": 1,
+        "stephen.riolo": 1
       },
       "handoffs": {
         "sre": {
           "night": 0,
           "day": 2,
-          "evening": 2
+          "evening": 3
         },
         "other": {
           "night": 0,
@@ -375,7 +375,7 @@
         }
       },
       "escalations": {
-        "explicit_sre_path": 4,
+        "explicit_sre_path": 5,
         "ladder_climbs": 38,
         "sre_l1_cover": 229,
         "classified": {
