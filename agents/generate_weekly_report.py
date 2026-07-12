@@ -877,8 +877,9 @@ _idx_pir      = 4
 _idx_partner  = 5
 _idx_ops      = 6
 _idx_svc      = 7
-_idx_eng      = 8
-_total_slides = 9
+_idx_rq       = 8
+_idx_eng      = 9
+_total_slides = 10
 
 # ── ENGINEER WORKLOAD SLIDE (pre-built string; IC-ticket leads, all teams) ────
 def _eng_parse_iso(ts):
@@ -1957,6 +1958,151 @@ if svc_weeks_all:
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});"
     )
 
+# ── RESPONSE QUALITY SLIDE (cache/response_quality_cache.json) ───────────────
+# End-to-end handling quality: did our monitoring catch the incident
+# (self-detected vs partner-reported via Intercom vs manual), how fast P1s
+# move through the timestamp chain (identify → resolve), and how quickly the
+# first written status update lands. Added 2026-07-12.
+RQ_CACHE_FILE = os.path.join(_ROOT, "cache", "response_quality_cache.json")
+try:
+    with open(RQ_CACHE_FILE) as f:
+        rq_cache = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    rq_cache = {}
+
+rq_weeks_all  = sorted(rq_cache.get("weeks", {}).keys())[-13:]
+rq_charts_js  = ""
+rq_tab_html   = f'    <button class="slide-tab" onclick="showSlide({_idx_rq})">Response Quality</button>\n'
+rq_slide_html = ('\n<div class="slide" id="sRq"><div class="page">\n'
+                 '  <div class="group-label">Response Quality</div>\n'
+                 '  <div class="p1-no-data c-muted">No response-quality data — cache/response_quality_cache.json is missing or empty.</div>\n'
+                 '</div></div>\n')
+if rq_weeks_all:
+    _rq_w    = rq_cache["weeks"]
+    _rq_lbls = [fmt_week_label(wk, not week_is_complete(wk)) for wk in rq_weeks_all]
+    _rq_range = (f"{fmt_date_dmy(rq_weeks_all[0])} – " + fmt_date_dmy(
+        (datetime.strptime(rq_weeks_all[-1], "%Y-%m-%d") + timedelta(days=6)).strftime("%Y-%m-%d"))
+        + (" · current week in progress" if not week_is_complete(rq_weeks_all[-1]) else ""))
+    _rq_cw = rq_weeks_all[-1]
+    _rq_pw = rq_weeks_all[-2] if len(rq_weeks_all) >= 2 else None
+
+    def _rq_wk_stats(wk):
+        if wk is None:
+            return None
+        r, det, tot = _rq_w[wk], _rq_w[wk]["detection"], _rq_w[wk]["total"]
+        mon = max(tot - det["intercom"] - det["no_alert"], 0)
+        pc = lambda n: round(n / tot * 100, 1) if tot else None
+        p1s = r.get("p1", [])
+        med = lambda k: _median([p[k] for p in p1s if p.get(k) is not None])
+        return {"total": tot, "mon": mon, "partner": det["intercom"],
+                "manual": det["no_alert"], "mon_pct": pc(mon),
+                "partner_pct": pc(det["intercom"]), "p1_n": len(p1s),
+                "med_resolve": med("resolve_min"), "med_identify": med("identify_min"),
+                "med_msg": med("first_msg_min"),
+                "msg30": sum(1 for p in p1s if (p.get("first_msg_min") or 1e9) <= 30),
+                "msg_n": sum(1 for p in p1s if p.get("first_msg_min") is not None)}
+
+    _rqc, _rqp = _rq_wk_stats(_rq_cw), _rq_wk_stats(_rq_pw)
+    _rq_cw_date = fmt_date_dmy(_rq_cw) + (" · in progress" if not week_is_complete(_rq_cw) else "")
+
+    def _rq_delta(cur, prev, unit="", higher_is_better=True, decimals=1):
+        if cur is None or prev is None or _rq_pw is None:
+            return ("d-muted", "—")
+        diff = cur - prev
+        if abs(diff) < 0.05:
+            return ("d-muted", f"0{unit} vs wk {fmt_date_dmy(_rq_pw)}")
+        sign = "+" if diff > 0 else "−"
+        fmt_diff = str(int(round(abs(diff)))) if decimals == 0 else f"{abs(diff):.{decimals}f}"
+        good = diff > 0 if higher_is_better else diff < 0
+        return ("d-green" if good else "d-red",
+                f"{sign}{fmt_diff}{unit} vs wk {fmt_date_dmy(_rq_pw)}")
+
+    def _rq_dur_delta(cur, prev):
+        # duration deltas compare in hours when either side is ≥90min
+        if cur is not None and prev is not None and max(cur, prev) >= 90:
+            return _rq_delta(cur / 60, prev / 60, "h", False)
+        return _rq_delta(cur, prev, "m", False, decimals=0)
+
+    _fmt_hm  = lambda m: "—" if m is None else (f"{int(round(m))}m" if m < 90 else f"{m/60:.1f}h")
+    _fmt_pct = lambda v: f"{round(v)}%" if v is not None else "—"
+
+    _det_d_cls, _det_d = _rq_delta(_rqc["mon_pct"], _rqp and _rqp["mon_pct"], "%", True)
+    _par_d_cls, _par_d = _rq_delta(_rqc["partner_pct"], _rqp and _rqp["partner_pct"], "%", False)
+    _res_d_cls, _res_d = _rq_dur_delta(_rqc["med_resolve"], _rqp and _rqp["med_resolve"])
+    _msg_d_cls, _msg_d = _rq_dur_delta(_rqc["med_msg"], _rqp and _rqp["med_msg"])
+
+    rq_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_rq})">Response Quality</button>\n'
+
+    rq_slide_html = f'''
+<!-- ═══ SLIDE — RESPONSE QUALITY ═══════════════════════════════ -->
+<div class="slide" id="sRq"><div class="page">
+  <div class="group-label">Response Quality <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; charts: {len(rq_weeks_all)} weeks &middot; {_rq_range} &middot; cards: week of {_rq_cw_date}</span></div>
+  <div class="stat-grid-4">
+    <div class="stat-card" style="border-left:3px solid #22c55e">
+      <div class="card-label">Self-Detection Rate ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_rqc["mon_pct"])}</div>
+      <div class="card-delta {_det_d_cls}">{_det_d}</div>
+      <div class="card-subnote">{_rqc["mon"]} of {_rqc["total"]} incidents raised by our monitoring &middot; manual {_rqc["manual"]}</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #ef4444">
+      <div class="card-label">Partner-Reported ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_rqc["partner_pct"])}</div>
+      <div class="card-delta {_par_d_cls}">{_par_d}</div>
+      <div class="card-subnote">{_rqc["partner"]} incidents first surfaced by a partner via Intercom &middot; each is a detection gap</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #a78bfa">
+      <div class="card-label">P1 Median Time to Resolve ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_hm(_rqc["med_resolve"])}</div>
+      <div class="card-delta {_res_d_cls}">{_res_d}</div>
+      <div class="card-subnote">{_rqc["p1_n"]} P1s &middot; median time to identify {_fmt_hm(_rqc["med_identify"])}</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #38bdf8">
+      <div class="card-label">P1 First Comms ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_hm(_rqc["med_msg"])}</div>
+      <div class="card-delta {_msg_d_cls}">{_msg_d}</div>
+      <div class="card-subnote">median to first written status update &middot; &le;30min on {_rqc["msg30"]} of {_rqc["msg_n"]} P1s with updates</div>
+    </div>
+  </div>
+  <div class="charts-area">
+    <div class="chart-row">
+      <div class="chart-section">
+        <div class="chart-title">Detection Source &middot; by Week</div>
+        <div class="chart-note">Alert source per incident &middot; Monitoring = any alerting pipeline &middot; Partner = Intercom conversation &middot; Manual = no alert attached</div>
+        <div class="chart-container"><canvas id="cRqDet" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">P1 Response &middot; Weekly Medians</div>
+        <div class="chart-note">Bars: median time to resolve (hours, left) &middot; Line: median time to first written update (minutes, right)</div>
+        <div class="chart-container"><canvas id="cRqP1" style="width:100%;height:100%"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Detection counts come from incident.io alert-source stats and may sit 1&ndash;2 above other slides (private incidents cannot be excluded from stats). First-comms measures incident.io status updates &mdash; a comms-discipline proxy, not the partner-facing Intercom reply. P1 &ldquo;Accepted at&rdquo; is unavailable since ~5 Jun (MTTA regression), so the chain starts at Identified. IC-Ticket incidents stamp Identified/Resolved together at closure.</div>
+</div></div>
+'''
+
+    def _rq_series(key):
+        return js_arr([_rq_wk_stats(wk)[key] for wk in rq_weeks_all])
+
+    _rq_res_h = js_arr([None if _rq_wk_stats(wk)["med_resolve"] is None
+                        else round(_rq_wk_stats(wk)["med_resolve"] / 60, 1)
+                        for wk in rq_weeks_all])
+    rq_charts_js = (
+        "new Chart(document.getElementById('cRqDet'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
+        "{label:'Monitoring',data:" + _rq_series("mon") + ",backgroundColor:'#22c55e',stack:'d'},"
+        "{label:'Partner-reported',data:" + _rq_series("partner") + ",backgroundColor:'#ef4444',stack:'d'},"
+        "{label:'Manual',data:" + _rq_series("manual") + ",backgroundColor:'#64748b',stack:'d'}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
+        "new Chart(document.getElementById('cRqP1'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
+        "{type:'line',label:'First written update (min)',data:" + _rq_series("med_msg") + ",yAxisID:'y2',spanGaps:true,"
+        "borderColor:'#38bdf8',tension:0.3,fill:false,pointRadius:4,pointBackgroundColor:'#38bdf8',pointBorderColor:'#0d1629',pointBorderWidth:2},"
+        "{label:'Median resolve (h)',data:" + _rq_res_h + ",backgroundColor:'#a78bfa'}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+        "scales:{x:XA,"
+        "y:{ticks:{color:'#64748b',font:{size:11},callback:function(v){return v+'h'}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true},"
+        "y2:{position:'right',ticks:{color:'#38bdf8',font:{size:11},callback:function(v){return v+'m'}},grid:{drawOnChartArea:false},beginAtZero:true}}}});"
+    )
+
 # ── HTML GENERATION ──────────────────────────────────────────────────────────
 wk_label_cur = fmt_week_label(current_week, True).rstrip("*")
 title_date   = datetime.strptime(current_week, "%Y-%m-%d").strftime("%-d %B %Y")
@@ -2048,7 +2194,7 @@ html = f'''<!DOCTYPE html>
 {p1_tab_btns_html}    <button class="slide-tab" onclick="showSlide({_idx_pir})">PIR Actions</button>
     <button class="slide-tab" onclick="showSlide({_idx_partner})">Partner Tickets</button>
     <button class="slide-tab" onclick="showSlide({_idx_ops})">Incident Ops</button>
-{svc_tab_html}    <button class="slide-tab" onclick="showSlide({_idx_eng})">Engineer Workload</button>
+{svc_tab_html}{rq_tab_html}    <button class="slide-tab" onclick="showSlide({_idx_eng})">Engineer Workload</button>
   </div>
   <div class="topbar-meta">{today_str}</div>
 </div>
@@ -2217,6 +2363,7 @@ html = f'''<!DOCTYPE html>
 </div></div>
 
 {svc_slide_html}
+{rq_slide_html}
 {engineer_workload_slide_html}
 
 </div><!-- /slides-wrap -->
@@ -2358,6 +2505,7 @@ new Chart(document.getElementById('cTBVol'),{{type:'bar',data:{{labels:WK19,data
 {pir_trend_chart_js}
 {eng_ac_chart_js}
 {svc_charts_js}
+{rq_charts_js}
 
 
 
