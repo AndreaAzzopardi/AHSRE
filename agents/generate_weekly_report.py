@@ -2088,12 +2088,17 @@ if rq_weeks_all:
     <div class="chart-row">
       <div class="chart-section">
         <div class="chart-title">Cause of Incident &middot; by Week</div>
-        <div class="chart-note">incident.io &ldquo;Cause of Incident&rdquo; field &middot; multi-select, so bars can sum above the week&rsquo;s incident count &middot; INC refs kept in the cache for deep-dives</div>
+        <div class="chart-note">incident.io &ldquo;Cause of Incident&rdquo; field &middot; untagged incidents excluded (coverage on the card) &middot; multi-select &middot; INC refs in the cache for deep-dives</div>
         <div class="chart-container"><canvas id="cRqCause" style="width:100%;height:100%"></canvas></div>
       </div>
       <div class="chart-section">
+        <div class="chart-title">Time to Inform Partners &middot; by Week</div>
+        <div class="chart-note">First ftcrm-* post vs declaration &middot; bars: median &middot; line: p90 &middot; minutes</div>
+        <div class="chart-container"><canvas id="cRqInform" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
         <div class="chart-title">Partner MTTR &middot; Weekly Medians</div>
-        <div class="chart-note">Intercom &middot; clock from first SOC/SRE inbox assignment to last close &middot; P1 = 24/7 hours &middot; P2/P3 = office hours (Mon&ndash;Fri 09:00&ndash;17:00 UTC)</div>
+        <div class="chart-note">Intercom &middot; first SOC/SRE inbox assignment &#8594; last close &middot; P1 = 24/7 hours &middot; P2/P3 = office hours (Mon&ndash;Fri 09:00&ndash;17:00 UTC)</div>
         <div class="chart-container"><canvas id="cRqMttr" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
@@ -2118,8 +2123,8 @@ if rq_weeks_all:
         sum(v["count"] for lbl, v in _rq_w[wk].get("cause", {}).get("causes", {}).items()
             if lbl != "None" and lbl not in _top_causes)
         for wk in rq_weeks_all])
-    _unset_series = js_arr([_rq_w[wk].get("cause", {}).get("causes", {}).get("None", {}).get("count", 0)
-                            for wk in rq_weeks_all])
+    _inform_p90 = js_arr([_rq_w[wk].get("inform", {}).get("p90_min") for wk in rq_weeks_all])
+    _inform_n   = js_arr([_rq_w[wk].get("inform", {}).get("informed", 0) for wk in rq_weeks_all])
     _CAUSE_COLORS = ['#38bdf8', '#a78bfa', '#f59e0b', '#22c55e', '#ef4444', '#e879f9']
     _cause_ds = ",".join(
         "{label:" + json.dumps(lbl.replace("Partner - ", "P· ").replace("FT - ", "FT· ").replace("AI - ", "AI· ")) +
@@ -2135,18 +2140,19 @@ if rq_weeks_all:
     rq_charts_js = (
         "new Chart(document.getElementById('cRqCause'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
         + _cause_ds + ","
-        "{label:'Other causes',data:" + _other_series + ",backgroundColor:'#64748b',stack:'c'},"
-        "{label:'Not set',data:" + _unset_series + ",backgroundColor:'#475569',stack:'c'}"
+        "{label:'Other causes',data:" + _other_series + ",backgroundColor:'#64748b',stack:'c'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
+        "new Chart(document.getElementById('cRqInform'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
+        "{label:'Median (min)',data:" + _inform_med + ",backgroundColor:'#38bdf8'},"
+        "{type:'line',label:'p90 (min)',data:" + _inform_p90 + ",spanGaps:true,"
+        "borderColor:'#f59e0b',borderDash:[5,4],tension:0.3,fill:false,pointRadius:3,pointBackgroundColor:'#f59e0b',pointBorderColor:'#0d1629',pointBorderWidth:2}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
+        "scales:{x:XA,y:{ticks:{color:'#64748b',font:{size:11},callback:function(v){return v+'m'}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true}}}});\n"
         "new Chart(document.getElementById('cRqMttr'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
-        "{type:'line',label:'Inform partners (min)',data:" + _inform_med + ",yAxisID:'y2',spanGaps:true,"
-        "borderColor:'#38bdf8',tension:0.3,fill:false,pointRadius:4,pointBackgroundColor:'#38bdf8',pointBorderColor:'#0d1629',pointBorderWidth:2},"
         "{label:'P1 median (h)',data:" + _mttr_p1_h + ",backgroundColor:'#ef4444'},"
         "{label:'P2/P3 median (office h)',data:" + _mttr_oth_h + ",backgroundColor:'#f59e0b'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
-        "scales:{x:XA,"
-        "y:{ticks:{color:'#64748b',font:{size:11},callback:function(v){return v+'h'}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true},"
-        "y2:{position:'right',ticks:{color:'#38bdf8',font:{size:11},callback:function(v){return v+'m'}},grid:{drawOnChartArea:false},beginAtZero:true}}}});"
+        "scales:{x:XA,y:{ticks:{color:'#64748b',font:{size:11},callback:function(v){return v+'h'}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true}}}});"
     )
 
 # ── HTML GENERATION ──────────────────────────────────────────────────────────

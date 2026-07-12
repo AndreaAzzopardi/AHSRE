@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-12T20:19:25Z",
+ "generated": "2026-07-12T20:56:38Z",
  "method": {
   "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select \u2014 counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
   "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident \u2014 multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation \u00b11s). Author logged per entry (informer log).",
@@ -153,7 +153,453 @@
      "first_update_min": 3.1,
      "first_msg_min": 70.0
     }
-   ]
+   ],
+   "cause": {
+    "total": 87,
+    "causes": {
+     "Partner - Partner System Issues": {
+      "count": 30,
+      "refs": [
+       "INC-7930",
+       "INC-7900",
+       "INC-7886",
+       "INC-7874",
+       "INC-7824",
+       "INC-7821",
+       "INC-7820",
+       "INC-7819",
+       "INC-7814",
+       "INC-7789",
+       "INC-7777",
+       "INC-7773",
+       "INC-7753",
+       "INC-7751",
+       "INC-7750",
+       "INC-7707",
+       "INC-7610",
+       "INC-7609",
+       "INC-7595",
+       "INC-7569",
+       "INC-7568",
+       "INC-7546",
+       "INC-7531",
+       "INC-7528",
+       "INC-7527",
+       "INC-7493",
+       "INC-7492",
+       "INC-7481",
+       "INC-7478",
+       "INC-7468"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 17,
+      "refs": [
+       "INC-7917",
+       "INC-7912",
+       "INC-7909",
+       "INC-7907",
+       "INC-7904",
+       "INC-7903",
+       "INC-7902",
+       "INC-7898",
+       "INC-7870",
+       "INC-7850",
+       "INC-7849",
+       "INC-7830",
+       "INC-7794",
+       "INC-7783",
+       "INC-7760",
+       "INC-7727",
+       "INC-7638"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 10,
+      "refs": [
+       "INC-7940",
+       "INC-7836",
+       "INC-7809",
+       "INC-7709",
+       "INC-7631",
+       "INC-7629",
+       "INC-7625",
+       "INC-7606",
+       "INC-7565",
+       "INC-7476"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 8,
+      "refs": [
+       "INC-7888",
+       "INC-7845",
+       "INC-7834",
+       "INC-7828",
+       "INC-7775",
+       "INC-7693",
+       "INC-7575",
+       "INC-7493"
+      ]
+     },
+     "None": {
+      "count": 4,
+      "refs": [
+       "INC-7822",
+       "INC-7553",
+       "INC-7533",
+       "INC-7475"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 4,
+      "refs": [
+       "INC-7915",
+       "INC-7789",
+       "INC-7561",
+       "INC-7511"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 4,
+      "refs": [
+       "INC-7826",
+       "INC-7681",
+       "INC-7513",
+       "INC-7506"
+      ]
+     },
+     "FT - Integration Specialists": {
+      "count": 3,
+      "refs": [
+       "INC-7771",
+       "INC-7752",
+       "INC-7481"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 3,
+      "refs": [
+       "INC-7778",
+       "INC-7506",
+       "INC-7479"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 2,
+      "refs": [
+       "INC-7812",
+       "INC-7706"
+      ]
+     },
+     "FT - Configs Misconfiguration": {
+      "count": 2,
+      "refs": [
+       "INC-7919",
+       "INC-7769"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 1,
+      "refs": [
+       "INC-7521"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 1,
+      "refs": [
+       "INC-7779"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 1,
+      "refs": [
+       "INC-7720"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 1,
+      "refs": [
+       "INC-7895"
+      ]
+     }
+    }
+   },
+   "inform": {
+    "informed": 17,
+    "median_min": 25.92,
+    "p90_min": 87.82,
+    "entries": [
+     {
+      "inc": "INC-7468",
+      "channel": "ftcrm-kyngs",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-18T08:18:24Z",
+      "reported_at": "2026-05-18T08:02:08Z",
+      "severity": "P2",
+      "delay_min": 16.27
+     },
+     {
+      "inc": "INC-7481",
+      "channel": "ftcrm-sisutech",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-18T11:42:27Z",
+      "reported_at": "2026-05-18T10:49:16Z",
+      "severity": "P2",
+      "delay_min": 53.18
+     },
+     {
+      "inc": "INC-7492",
+      "channel": "ftcrm-sweeplasvegas-trueigtech",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-18T13:37:36Z",
+      "reported_at": "2026-05-18T12:30:32Z",
+      "severity": "P2",
+      "delay_min": 67.07
+     },
+     {
+      "inc": "INC-7568",
+      "channel": "ftcrm-wb-ventures-winxbet-betconstruct",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-19T09:05:57Z",
+      "reported_at": "2026-05-19T08:53:37Z",
+      "severity": "P2",
+      "delay_min": 12.33
+     },
+     {
+      "inc": "INC-7569",
+      "channel": "ftcrm-wb-ventures-kasino-vegas",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-19T09:06:22Z",
+      "reported_at": "2026-05-19T08:55:10Z",
+      "severity": "P2",
+      "delay_min": 11.2
+     },
+     {
+      "inc": "INC-7595",
+      "channel": "ftcrm-synovatech",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-19T13:32:28Z",
+      "reported_at": "2026-05-19T12:34:35Z",
+      "severity": "P2",
+      "delay_min": 57.88
+     },
+     {
+      "inc": "INC-7750",
+      "channel": "ftcrm-sweeplasvegas-trueigtech",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-21T08:27:04Z",
+      "reported_at": "2026-05-21T08:16:10Z",
+      "severity": "P2",
+      "delay_min": 10.9
+     },
+     {
+      "inc": "INC-7751",
+      "channel": "ftcrm-softgenius",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-21T08:38:13Z",
+      "reported_at": "2026-05-21T08:19:29Z",
+      "severity": "P2",
+      "delay_min": 18.73
+     },
+     {
+      "inc": "INC-7753",
+      "channel": "ftcrm-mtm",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-21T09:33:14Z",
+      "reported_at": "2026-05-21T09:17:35Z",
+      "severity": "P3",
+      "delay_min": 15.65
+     },
+     {
+      "inc": "INC-7771",
+      "channel": "ftcrm-sisutech",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-21T12:51:34Z",
+      "reported_at": "2026-05-21T12:25:39Z",
+      "severity": "P2",
+      "delay_min": 25.92
+     },
+     {
+      "inc": "INC-7777",
+      "channel": "ftcrm-leonbets",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-21T17:18:34Z",
+      "reported_at": "2026-05-21T14:51:42Z",
+      "severity": "P3",
+      "delay_min": 146.87
+     },
+     {
+      "inc": "INC-7821",
+      "channel": "ftcrm-betoffice",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-22T10:55:47Z",
+      "reported_at": "2026-05-22T10:16:22Z",
+      "severity": "P2",
+      "delay_min": 39.42
+     },
+     {
+      "inc": "INC-7824",
+      "channel": "ftcrm-multiverse-hawx",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-22T11:55:25Z",
+      "reported_at": "2026-05-22T11:00:17Z",
+      "severity": "P2",
+      "delay_min": 55.13
+     },
+     {
+      "inc": "INC-7867",
+      "channel": "ftcrm-aventomt",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-23T05:28:06Z",
+      "reported_at": "2026-05-23T04:56:22Z",
+      "severity": "P3",
+      "delay_min": 31.73
+     },
+     {
+      "inc": "INC-7886",
+      "channel": "ftcrm-betoffice",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-23T11:20:46Z",
+      "reported_at": "2026-05-23T10:55:01Z",
+      "severity": "P2",
+      "delay_min": 25.75
+     },
+     {
+      "inc": "INC-7888",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-23T11:51:18Z",
+      "reported_at": "2026-05-23T11:34:00Z",
+      "severity": "P2",
+      "delay_min": 17.3
+     },
+     {
+      "inc": "INC-7915",
+      "channel": "ftcrm-mmb",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-24T06:43:03Z",
+      "reported_at": "2026-05-24T05:15:14Z",
+      "severity": "P2",
+      "delay_min": 87.82
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 2,
+     "open": 0,
+     "median_h": 10.277,
+     "p90_h": 17.763
+    },
+    "other": {
+     "closed": 7,
+     "open": 0,
+     "median_office_min": 602.57,
+     "p90_office_min": 1028.35
+    },
+    "items": [
+     {
+      "id": "215560992566624",
+      "p1": false,
+      "created_at": 1779438326,
+      "start": 1779438326,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779467675,
+      "raw_h": 8.152,
+      "office_min": 454.58,
+      "reopens": 0
+     },
+     {
+      "id": "215560992127150",
+      "p1": false,
+      "created_at": 1779373739,
+      "start": 1779373739,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779467493,
+      "raw_h": 26.043,
+      "office_min": 602.57,
+      "reopens": 0
+     },
+     {
+      "id": "215560990597461",
+      "p1": false,
+      "created_at": 1779277788,
+      "start": 1779277788,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779460840,
+      "raw_h": 50.848,
+      "office_min": 1130.87,
+      "reopens": 0
+     },
+     {
+      "id": "215560992655156",
+      "p1": false,
+      "created_at": 1779442525,
+      "start": 1779442525,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779453075,
+      "raw_h": 2.931,
+      "office_min": 175.83,
+      "reopens": 0
+     },
+     {
+      "id": "215560992127061",
+      "p1": true,
+      "created_at": 1779373732,
+      "start": 1779373732,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779444416,
+      "raw_h": 19.634,
+      "office_min": 218.07,
+      "reopens": 0
+     },
+     {
+      "id": "215560990342017",
+      "p1": false,
+      "created_at": 1779263609,
+      "start": 1779263610,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779386743,
+      "raw_h": 34.204,
+      "office_min": 960.0,
+      "reopens": 0
+     },
+     {
+      "id": "215560991977764",
+      "p1": true,
+      "created_at": 1779371458,
+      "start": 1779371458,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779374768,
+      "raw_h": 0.919,
+      "office_min": 55.17,
+      "reopens": 0
+     },
+     {
+      "id": "215560989436778",
+      "p1": false,
+      "created_at": 1779182561,
+      "start": 1779182561,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779199680,
+      "raw_h": 4.755,
+      "office_min": 285.32,
+      "reopens": 0
+     },
+     {
+      "id": "215560988495956",
+      "p1": false,
+      "created_at": 1779092296,
+      "start": 1779092296,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779199865,
+      "raw_h": 29.88,
+      "office_min": 791.08,
+      "reopens": 0
+     }
+    ]
+   }
   },
   "2026-05-25": {
    "p1": [
@@ -244,7 +690,671 @@
      "first_update_min": 16.7,
      "first_msg_min": 16.9
     }
-   ]
+   ],
+   "cause": {
+    "total": 134,
+    "causes": {
+     "Partner - Partner System Issues": {
+      "count": 40,
+      "refs": [
+       "INC-8431",
+       "INC-8404",
+       "INC-8382",
+       "INC-8326",
+       "INC-8313",
+       "INC-8308",
+       "INC-8301",
+       "INC-8300",
+       "INC-8299",
+       "INC-8266",
+       "INC-8241",
+       "INC-8235",
+       "INC-8234",
+       "INC-8219",
+       "INC-8212",
+       "INC-8185",
+       "INC-8164",
+       "INC-8159",
+       "INC-8158",
+       "INC-8155",
+       "INC-8146",
+       "INC-8143",
+       "INC-8122",
+       "INC-8121",
+       "INC-8077",
+       "INC-8068",
+       "INC-8067",
+       "INC-8061",
+       "INC-8050",
+       "INC-8046",
+       "INC-8043",
+       "INC-8042",
+       "INC-8039",
+       "INC-8013",
+       "INC-8001",
+       "INC-7992",
+       "INC-7990",
+       "INC-7980",
+       "INC-7963",
+       "INC-7957"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 30,
+      "refs": [
+       "INC-8428",
+       "INC-8426",
+       "INC-8425",
+       "INC-8414",
+       "INC-8389",
+       "INC-8384",
+       "INC-8381",
+       "INC-8380",
+       "INC-8378",
+       "INC-8377",
+       "INC-8368",
+       "INC-8333",
+       "INC-8328",
+       "INC-8294",
+       "INC-8269",
+       "INC-8260",
+       "INC-8186",
+       "INC-8156",
+       "INC-8141",
+       "INC-8116",
+       "INC-8114",
+       "INC-8112",
+       "INC-8109",
+       "INC-8105",
+       "INC-8082",
+       "INC-8078",
+       "INC-8029",
+       "INC-8002",
+       "INC-8000",
+       "INC-7996"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 15,
+      "refs": [
+       "INC-8354",
+       "INC-8319",
+       "INC-8264",
+       "INC-8195",
+       "INC-8181",
+       "INC-8154",
+       "INC-8135",
+       "INC-8128",
+       "INC-8125",
+       "INC-8119",
+       "INC-8073",
+       "INC-8052",
+       "INC-8026",
+       "INC-8004",
+       "INC-7998"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 13,
+      "refs": [
+       "INC-8285",
+       "INC-8274",
+       "INC-8147",
+       "INC-8133",
+       "INC-8095",
+       "INC-8048",
+       "INC-8041",
+       "INC-8038",
+       "INC-8036",
+       "INC-8032",
+       "INC-7981",
+       "INC-7960",
+       "INC-7958"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 8,
+      "refs": [
+       "INC-8352",
+       "INC-8284",
+       "INC-8276",
+       "INC-8273",
+       "INC-8203",
+       "INC-8202",
+       "INC-8188",
+       "INC-8137"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 7,
+      "refs": [
+       "INC-8393",
+       "INC-8386",
+       "INC-8236",
+       "INC-8234",
+       "INC-8222",
+       "INC-8215",
+       "INC-8157"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 6,
+      "refs": [
+       "INC-8414",
+       "INC-8351",
+       "INC-8246",
+       "INC-8140",
+       "INC-8093",
+       "INC-7984"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 5,
+      "refs": [
+       "INC-8288",
+       "INC-8192",
+       "INC-8161",
+       "INC-7999",
+       "INC-7991"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 3,
+      "refs": [
+       "INC-8307",
+       "INC-8280",
+       "INC-8199"
+      ]
+     },
+     "None": {
+      "count": 3,
+      "refs": [
+       "INC-8297",
+       "INC-8111",
+       "INC-8064"
+      ]
+     },
+     "FT - General Release": {
+      "count": 3,
+      "refs": [
+       "INC-8038",
+       "INC-8032",
+       "INC-8023"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 3,
+      "refs": [
+       "INC-8296",
+       "INC-8278",
+       "INC-8212"
+      ]
+     },
+     "FT - Integration Specialists": {
+      "count": 2,
+      "refs": [
+       "INC-7980",
+       "INC-7968"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 2,
+      "refs": [
+       "INC-8185",
+       "INC-8028"
+      ]
+     },
+     "FT - Configs Misconfiguration": {
+      "count": 1,
+      "refs": [
+       "INC-7985"
+      ]
+     }
+    }
+   },
+   "inform": {
+    "informed": 21,
+    "median_min": 27.48,
+    "p90_min": 63.18,
+    "entries": [
+     {
+      "inc": "INC-7984",
+      "channel": "ftcrm-play-betconstruct",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-25T15:02:00Z",
+      "reported_at": "2026-05-25T13:11:40Z",
+      "severity": "P3",
+      "delay_min": 110.33
+     },
+     {
+      "inc": "INC-7999",
+      "channel": "ftcrm-betoffice",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-25T18:12:32Z",
+      "reported_at": "2026-05-25T17:59:09Z",
+      "severity": "P2",
+      "delay_min": 13.38
+     },
+     {
+      "inc": "INC-8067",
+      "channel": "ftcrm-leonbets",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-26T18:58:28Z",
+      "reported_at": "2026-05-26T15:59:02Z",
+      "severity": "P2",
+      "delay_min": 179.43
+     },
+     {
+      "inc": "INC-8111",
+      "channel": "ftcrm-h2bet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-27T03:39:54Z",
+      "reported_at": "2026-05-27T02:36:43Z",
+      "severity": "P3",
+      "delay_min": 63.18
+     },
+     {
+      "inc": "INC-8143",
+      "channel": "ftcrm-betoffice",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-27T14:57:20Z",
+      "reported_at": "2026-05-27T14:29:51Z",
+      "severity": "P2",
+      "delay_min": 27.48
+     },
+     {
+      "inc": "INC-8157",
+      "channel": "ftcrm-rhino",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-27T18:55:39Z",
+      "reported_at": "2026-05-27T18:05:40Z",
+      "severity": "P2",
+      "delay_min": 49.98
+     },
+     {
+      "inc": "INC-8158",
+      "channel": "ftcrm-sbtsolutions",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-27T21:01:34Z",
+      "reported_at": "2026-05-27T20:14:36Z",
+      "severity": "P2",
+      "delay_min": 46.97
+     },
+     {
+      "inc": "INC-8199",
+      "channel": "ftcrm-meridianbet",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-05-28T10:42:42Z",
+      "reported_at": "2026-05-28T10:28:29Z",
+      "severity": "P2",
+      "delay_min": 14.22
+     },
+     {
+      "inc": "INC-8215",
+      "channel": "ftcrm-multiverse-hawx",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-05-28T13:40:35Z",
+      "reported_at": "2026-05-28T12:43:03Z",
+      "severity": "P2",
+      "delay_min": 57.53
+     },
+     {
+      "inc": "INC-8259",
+      "channel": "ftcrm-pridespins",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-29T02:24:13Z",
+      "reported_at": "2026-05-29T01:48:41Z",
+      "severity": "P2",
+      "delay_min": 35.53
+     },
+     {
+      "inc": "INC-8280",
+      "channel": "ftcrm-tuohi",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-05-29T09:33:54Z",
+      "reported_at": "2026-05-29T08:38:31Z",
+      "severity": "P2",
+      "delay_min": 55.38
+     },
+     {
+      "inc": "INC-8300",
+      "channel": "ftcrm-leonbets",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-29T14:59:13Z",
+      "reported_at": "2026-05-29T14:52:54Z",
+      "severity": "P2",
+      "delay_min": 6.32
+     },
+     {
+      "inc": "INC-8299",
+      "channel": "ftcrm-igtech-tglab",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-05-29T15:02:52Z",
+      "reported_at": "2026-05-29T14:48:59Z",
+      "severity": "P2",
+      "delay_min": 13.88
+     },
+     {
+      "inc": "INC-8326",
+      "channel": "ftcrm-leonbets",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-29T22:13:53Z",
+      "reported_at": "2026-05-29T22:23:52Z",
+      "severity": "P3",
+      "delay_min": -9.98
+     },
+     {
+      "inc": "INC-8328",
+      "channel": "ftcrm-zunado-coretaker",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-05-29T23:15:29Z",
+      "reported_at": "2026-05-29T22:43:50Z",
+      "severity": "P2",
+      "delay_min": 31.65
+     },
+     {
+      "inc": "INC-8367",
+      "channel": "ftcrm-razed-terragon",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-30T22:10:49Z",
+      "reported_at": "2026-05-30T21:47:47Z",
+      "severity": "P2",
+      "delay_min": 23.03
+     },
+     {
+      "inc": "INC-8370",
+      "channel": "ftcrm-leonbets",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-30T23:18:25Z",
+      "reported_at": "2026-05-30T23:03:06Z",
+      "severity": "P2",
+      "delay_min": 15.32
+     },
+     {
+      "inc": "INC-8374",
+      "channel": "ftcrm-mtm",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-31T01:05:33Z",
+      "reported_at": "2026-05-31T00:54:14Z",
+      "severity": "P3",
+      "delay_min": 11.32
+     },
+     {
+      "inc": "INC-8376",
+      "channel": "ftcrm-mtm",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-05-31T02:14:57Z",
+      "reported_at": "2026-05-31T01:58:44Z",
+      "severity": "P2",
+      "delay_min": 16.22
+     },
+     {
+      "inc": "INC-8399",
+      "channel": "ftcrm-mtm",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-05-31T07:48:18Z",
+      "reported_at": "2026-05-31T07:04:14Z",
+      "severity": "P3",
+      "delay_min": 44.07
+     },
+     {
+      "inc": "INC-8404",
+      "channel": "ftcrm-tanzania",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-05-31T10:21:24Z",
+      "reported_at": "2026-05-31T09:59:15Z",
+      "severity": "P2",
+      "delay_min": 22.15
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 4,
+     "open": 0,
+     "median_h": 25.567,
+     "p90_h": 692.473
+    },
+    "other": {
+     "closed": 17,
+     "open": 0,
+     "median_office_min": 870.33,
+     "p90_office_min": 2254.96
+    },
+    "items": [
+     {
+      "id": "215560995034900",
+      "p1": true,
+      "created_at": 1779806452,
+      "start": 1779806452,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783325445,
+      "raw_h": 977.498,
+      "office_min": 13579.13,
+      "reopens": 1
+     },
+     {
+      "id": "215560996727311",
+      "p1": false,
+      "created_at": 1779966725,
+      "start": 1779966725,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781849068,
+      "raw_h": 522.873,
+      "office_min": 7547.92,
+      "reopens": 1
+     },
+     {
+      "id": "215560994700402",
+      "p1": false,
+      "created_at": 1779788334,
+      "start": 1779788334,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779890967,
+      "raw_h": 28.509,
+      "office_min": 750.55,
+      "reopens": 1
+     },
+     {
+      "id": "215560994761024",
+      "p1": false,
+      "created_at": 1779792765,
+      "start": 1779792765,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779890965,
+      "raw_h": 27.278,
+      "office_min": 676.67,
+      "reopens": 2
+     },
+     {
+      "id": "215560996439741",
+      "p1": false,
+      "created_at": 1779951864,
+      "start": 1779951864,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780397508,
+      "raw_h": 123.79,
+      "office_min": 1551.8,
+      "reopens": 2
+     },
+     {
+      "id": "215560994434641",
+      "p1": false,
+      "created_at": 1779762599,
+      "start": 1779762599,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780477925,
+      "raw_h": 198.702,
+      "office_min": 2892.08,
+      "reopens": 1
+     },
+     {
+      "id": "215560994742999",
+      "p1": false,
+      "created_at": 1779791379,
+      "start": 1779791380,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779957315,
+      "raw_h": 46.093,
+      "office_min": 870.33,
+      "reopens": 0
+     },
+     {
+      "id": "215560995917038",
+      "p1": false,
+      "created_at": 1779893199,
+      "start": 1779893200,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780406213,
+      "raw_h": 142.504,
+      "office_min": 1830.22,
+      "reopens": 0
+     },
+     {
+      "id": "215560997146667",
+      "p1": false,
+      "created_at": 1779985381,
+      "start": 1779985381,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780324539,
+      "raw_h": 94.211,
+      "office_min": 852.63,
+      "reopens": 0
+     },
+     {
+      "id": "215560998638065",
+      "p1": false,
+      "created_at": 1780059353,
+      "start": 1780059353,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780320085,
+      "raw_h": 72.426,
+      "office_min": 505.53,
+      "reopens": 0
+     },
+     {
+      "id": "215560998092327",
+      "p1": false,
+      "created_at": 1780046281,
+      "start": 1780046281,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780059316,
+      "raw_h": 3.621,
+      "office_min": 217.25,
+      "reopens": 0
+     },
+     {
+      "id": "215560994816080",
+      "p1": false,
+      "created_at": 1779795887,
+      "start": 1779795887,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780050188,
+      "raw_h": 70.639,
+      "office_min": 1358.35,
+      "reopens": 1
+     },
+     {
+      "id": "215560997124373",
+      "p1": true,
+      "created_at": 1779984021,
+      "start": 1779984022,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779995569,
+      "raw_h": 3.208,
+      "office_min": 59.63,
+      "reopens": 0
+     },
+     {
+      "id": "215560994727050",
+      "p1": false,
+      "created_at": 1779790178,
+      "start": 1779798031,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779964683,
+      "raw_h": 46.292,
+      "office_min": 857.53,
+      "reopens": 0
+     },
+     {
+      "id": "215560995485065",
+      "p1": false,
+      "created_at": 1779873458,
+      "start": 1779873458,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779954814,
+      "raw_h": 22.599,
+      "office_min": 462.37,
+      "reopens": 0
+     },
+     {
+      "id": "215560994739594",
+      "p1": false,
+      "created_at": 1779791103,
+      "start": 1779791103,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779951954,
+      "raw_h": 44.681,
+      "office_min": 874.95,
+      "reopens": 0
+     },
+     {
+      "id": "215560994568482",
+      "p1": true,
+      "created_at": 1779781500,
+      "start": 1779781500,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779880187,
+      "raw_h": 27.413,
+      "office_min": 609.78,
+      "reopens": 1
+     },
+     {
+      "id": "215560994040779",
+      "p1": false,
+      "created_at": 1779701055,
+      "start": 1779701055,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779878664,
+      "raw_h": 49.336,
+      "office_min": 1040.15,
+      "reopens": 0
+     },
+     {
+      "id": "215560994676122",
+      "p1": true,
+      "created_at": 1779786658,
+      "start": 1779786658,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779872050,
+      "raw_h": 23.72,
+      "office_min": 469.03,
+      "reopens": 0
+     },
+     {
+      "id": "215560994728783",
+      "p1": false,
+      "created_at": 1779790308,
+      "start": 1779790308,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779868945,
+      "raw_h": 21.844,
+      "office_min": 408.2,
+      "reopens": 0
+     },
+     {
+      "id": "215560993967106",
+      "p1": false,
+      "created_at": 1779693390,
+      "start": 1779693390,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1779865680,
+      "raw_h": 47.858,
+      "office_min": 960.0,
+      "reopens": 0
+     }
+    ]
+   }
   },
   "2026-06-01": {
    "p1": [
@@ -296,7 +1406,699 @@
      "first_update_min": 3936.1,
      "first_msg_min": 3936.1
     }
-   ]
+   ],
+   "cause": {
+    "total": 138,
+    "causes": {
+     "Partner - Partner System Issues": {
+      "count": 41,
+      "refs": [
+       "INC-9096",
+       "INC-9069",
+       "INC-9065",
+       "INC-9029",
+       "INC-9024",
+       "INC-9019",
+       "INC-8993",
+       "INC-8964",
+       "INC-8949",
+       "INC-8936",
+       "INC-8933",
+       "INC-8928",
+       "INC-8921",
+       "INC-8902",
+       "INC-8892",
+       "INC-8770",
+       "INC-8742",
+       "INC-8629",
+       "INC-8601",
+       "INC-8594",
+       "INC-8582",
+       "INC-8548",
+       "INC-8546",
+       "INC-8543",
+       "INC-8535",
+       "INC-8527",
+       "INC-8523",
+       "INC-8522",
+       "INC-8508",
+       "INC-8504",
+       "INC-8497",
+       "INC-8479",
+       "INC-8478",
+       "INC-8477",
+       "INC-8471",
+       "INC-8466",
+       "INC-8459",
+       "INC-8457",
+       "INC-8445",
+       "INC-8444",
+       "INC-8443"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 29,
+      "refs": [
+       "INC-9104",
+       "INC-9030",
+       "INC-8916",
+       "INC-8905",
+       "INC-8903",
+       "INC-8884",
+       "INC-8846",
+       "INC-8817",
+       "INC-8816",
+       "INC-8674",
+       "INC-8666",
+       "INC-8664",
+       "INC-8640",
+       "INC-8637",
+       "INC-8631",
+       "INC-8624",
+       "INC-8623",
+       "INC-8620",
+       "INC-8584",
+       "INC-8557",
+       "INC-8533",
+       "INC-8510",
+       "INC-8501",
+       "INC-8499",
+       "INC-8498",
+       "INC-8441",
+       "INC-8439",
+       "INC-8437",
+       "INC-8436"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 20,
+      "refs": [
+       "INC-9047",
+       "INC-9040",
+       "INC-8998",
+       "INC-8944",
+       "INC-8934",
+       "INC-8916",
+       "INC-8895",
+       "INC-8893",
+       "INC-8865",
+       "INC-8841",
+       "INC-8805",
+       "INC-8780",
+       "INC-8732",
+       "INC-8722",
+       "INC-8717",
+       "INC-8621",
+       "INC-8614",
+       "INC-8579",
+       "INC-8570",
+       "INC-8472"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 12,
+      "refs": [
+       "INC-9044",
+       "INC-9043",
+       "INC-8956",
+       "INC-8947",
+       "INC-8943",
+       "INC-8898",
+       "INC-8618",
+       "INC-8612",
+       "INC-8602",
+       "INC-8571",
+       "INC-8534",
+       "INC-8466"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 11,
+      "refs": [
+       "INC-8926",
+       "INC-8911",
+       "INC-8795",
+       "INC-8731",
+       "INC-8660",
+       "INC-8611",
+       "INC-8599",
+       "INC-8597",
+       "INC-8595",
+       "INC-8592",
+       "INC-8469"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 6,
+      "refs": [
+       "INC-9106",
+       "INC-9059",
+       "INC-8931",
+       "INC-8762",
+       "INC-8609",
+       "INC-8544"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 5,
+      "refs": [
+       "INC-8916",
+       "INC-8767",
+       "INC-8764",
+       "INC-8575",
+       "INC-8472"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 5,
+      "refs": [
+       "INC-8600",
+       "INC-8594",
+       "INC-8520",
+       "INC-8517",
+       "INC-8459"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 4,
+      "refs": [
+       "INC-8604",
+       "INC-8519",
+       "INC-8467",
+       "INC-8440"
+      ]
+     },
+     "FT - Configs Misconfiguration": {
+      "count": 4,
+      "refs": [
+       "INC-9027",
+       "INC-8953",
+       "INC-8950",
+       "INC-8918"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 3,
+      "refs": [
+       "INC-8593",
+       "INC-8592",
+       "INC-8591"
+      ]
+     },
+     "None": {
+      "count": 2,
+      "refs": [
+       "INC-8598",
+       "INC-8524"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 2,
+      "refs": [
+       "INC-8920",
+       "INC-8464"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 2,
+      "refs": [
+       "INC-8741",
+       "INC-8609"
+      ]
+     }
+    }
+   },
+   "inform": {
+    "informed": 18,
+    "median_min": 31.39,
+    "p90_min": 454.12,
+    "entries": [
+     {
+      "inc": "INC-8442",
+      "channel": "ftcrm-razed-terragon",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-01T03:47:04Z",
+      "reported_at": "2026-06-01T03:15:18Z",
+      "severity": "P2",
+      "delay_min": 31.77
+     },
+     {
+      "inc": "INC-8492",
+      "channel": "ftcrm-seubet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-01T22:30:19Z",
+      "reported_at": "2026-06-01T22:09:56Z",
+      "severity": "P2",
+      "delay_min": 20.38
+     },
+     {
+      "inc": "INC-8497",
+      "channel": "ftcrm-betpipo",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-02T02:19:06Z",
+      "reported_at": "2026-06-02T02:01:23Z",
+      "severity": "P2",
+      "delay_min": 17.72
+     },
+     {
+      "inc": "INC-8527",
+      "channel": "ftcrm-gembet",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-02T09:19:20Z",
+      "reported_at": "2026-06-02T08:36:10Z",
+      "severity": "P2",
+      "delay_min": 43.17
+     },
+     {
+      "inc": "INC-8534",
+      "channel": "ftcrm-pridespins",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-02T12:09:27Z",
+      "reported_at": "2026-06-02T11:59:09Z",
+      "severity": "P2",
+      "delay_min": 10.3
+     },
+     {
+      "inc": "INC-8594",
+      "channel": "ftcrm-igtech-momentum",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-03T12:14:51Z",
+      "reported_at": "2026-06-03T10:07:08Z",
+      "severity": "P2",
+      "delay_min": 127.72
+     },
+     {
+      "inc": "INC-8601",
+      "channel": "ftcrm-sbtsolutions",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-03T12:35:25Z",
+      "reported_at": "2026-06-03T12:00:21Z",
+      "severity": "P2",
+      "delay_min": 35.07
+     },
+     {
+      "inc": "INC-8612",
+      "channel": "ftcrm-luckybunny",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-03T15:03:43Z",
+      "reported_at": "2026-06-03T14:32:43Z",
+      "severity": "P2",
+      "delay_min": 31.0
+     },
+     {
+      "inc": "INC-8466",
+      "channel": "ftcrm-mtm",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-04T01:36:21Z",
+      "reported_at": "2026-06-01T11:55:27Z",
+      "severity": "P2",
+      "delay_min": 3700.9
+     },
+     {
+      "inc": "INC-8742",
+      "channel": "ftcrm-softgenius",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-04T10:58:48Z",
+      "reported_at": "2026-06-04T10:37:01Z",
+      "severity": "P2",
+      "delay_min": 21.78
+     },
+     {
+      "inc": "INC-8821",
+      "channel": "ftcrm-mtm",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-04T18:13:08Z",
+      "reported_at": "2026-06-04T17:57:49Z",
+      "severity": "P2",
+      "delay_min": 15.32
+     },
+     {
+      "inc": "INC-8888",
+      "channel": "ftcrm-galabet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-05T01:26:34Z",
+      "reported_at": "2026-06-05T01:13:21Z",
+      "severity": "P2",
+      "delay_min": 13.22
+     },
+     {
+      "inc": "INC-8893",
+      "channel": "ftcrm-glitnor",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-05T04:21:36Z",
+      "reported_at": "2026-06-05T03:16:33Z",
+      "severity": "P3",
+      "delay_min": 65.05
+     },
+     {
+      "inc": "INC-8884",
+      "channel": "ftcrm-pridespins",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-05T07:51:56Z",
+      "reported_at": "2026-06-05T00:17:49Z",
+      "severity": "P2",
+      "delay_min": 454.12
+     },
+     {
+      "inc": "INC-8956",
+      "channel": "ftcrm-rivalo",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-05T23:38:03Z",
+      "reported_at": "2026-06-05T16:16:14Z",
+      "severity": "P2",
+      "delay_min": 441.82
+     },
+     {
+      "inc": "INC-9024",
+      "channel": "ftcrm-galabet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-06T10:47:32Z",
+      "reported_at": "2026-06-06T10:38:02Z",
+      "severity": "P3",
+      "delay_min": 9.5
+     },
+     {
+      "inc": "INC-9027",
+      "channel": "ftcrm-betoffice",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-06T11:44:01Z",
+      "reported_at": "2026-06-06T11:35:48Z",
+      "severity": "P2",
+      "delay_min": 8.22
+     },
+     {
+      "inc": "INC-9065",
+      "channel": "ftcrm-happydot",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-07T05:26:14Z",
+      "reported_at": "2026-06-07T04:15:36Z",
+      "severity": "P2",
+      "delay_min": 70.63
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 4,
+     "open": 0,
+     "median_h": 46.065,
+     "p90_h": 108.32
+    },
+    "other": {
+     "closed": 22,
+     "open": 0,
+     "median_office_min": 681.55,
+     "p90_office_min": 2671.08
+    },
+    "items": [
+     {
+      "id": "215561003983433",
+      "p1": true,
+      "created_at": 1780495203,
+      "start": 1780495203,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780911094,
+      "raw_h": 115.525,
+      "office_min": 1171.52,
+      "reopens": 0
+     },
+     {
+      "id": "215561003464454",
+      "p1": false,
+      "created_at": 1780470915,
+      "start": 1780470916,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781696251,
+      "raw_h": 340.371,
+      "office_min": 4957.52,
+      "reopens": 2
+     },
+     {
+      "id": "215561007205510",
+      "p1": false,
+      "created_at": 1780673557,
+      "start": 1780673557,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781528155,
+      "raw_h": 237.388,
+      "office_min": 2723.3,
+      "reopens": 0
+     },
+     {
+      "id": "215561002986121",
+      "p1": false,
+      "created_at": 1780411154,
+      "start": 1780411154,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781193852,
+      "raw_h": 217.416,
+      "office_min": 3444.97,
+      "reopens": 1
+     },
+     {
+      "id": "215561006235625",
+      "p1": false,
+      "created_at": 1780585988,
+      "start": 1780585988,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781033871,
+      "raw_h": 124.412,
+      "office_min": 1546.87,
+      "reopens": 1
+     },
+     {
+      "id": "215561003360169",
+      "p1": false,
+      "created_at": 1780460338,
+      "start": 1780460338,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781012463,
+      "raw_h": 153.368,
+      "office_min": 2201.05,
+      "reopens": 1
+     },
+     {
+      "id": "215561008542788",
+      "p1": false,
+      "created_at": 1780771715,
+      "start": 1780771715,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781010409,
+      "raw_h": 66.304,
+      "office_min": 726.82,
+      "reopens": 0
+     },
+     {
+      "id": "215561007160865",
+      "p1": true,
+      "created_at": 1780669797,
+      "start": 1780669797,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780999221,
+      "raw_h": 91.507,
+      "office_min": 690.4,
+      "reopens": 0
+     },
+     {
+      "id": "215561007426683",
+      "p1": false,
+      "created_at": 1780685230,
+      "start": 1780685230,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780916513,
+      "raw_h": 64.245,
+      "office_min": 121.88,
+      "reopens": 0
+     },
+     {
+      "id": "215561006032203",
+      "p1": false,
+      "created_at": 1780580707,
+      "start": 1780580707,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780903384,
+      "raw_h": 89.632,
+      "office_min": 674.88,
+      "reopens": 0
+     },
+     {
+      "id": "215561007155879",
+      "p1": false,
+      "created_at": 1780669438,
+      "start": 1780669438,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780897488,
+      "raw_h": 63.347,
+      "office_min": 156.03,
+      "reopens": 0
+     },
+     {
+      "id": "215561005849862",
+      "p1": false,
+      "created_at": 1780576003,
+      "start": 1780576004,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780665868,
+      "raw_h": 24.962,
+      "office_min": 537.73,
+      "reopens": 0
+     },
+     {
+      "id": "215561006801497",
+      "p1": false,
+      "created_at": 1780649093,
+      "start": 1780649093,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780667404,
+      "raw_h": 5.086,
+      "office_min": 290.07,
+      "reopens": 0
+     },
+     {
+      "id": "215561006143194",
+      "p1": false,
+      "created_at": 1780582286,
+      "start": 1780582286,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780664776,
+      "raw_h": 22.914,
+      "office_min": 414.83,
+      "reopens": 0
+     },
+     {
+      "id": "215561003496072",
+      "p1": false,
+      "created_at": 1780472917,
+      "start": 1780472917,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780663299,
+      "raw_h": 52.884,
+      "office_min": 1181.65,
+      "reopens": 0
+     },
+     {
+      "id": "215561006956332",
+      "p1": false,
+      "created_at": 1780657049,
+      "start": 1780657049,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780661165,
+      "raw_h": 1.143,
+      "office_min": 68.6,
+      "reopens": 1
+     },
+     {
+      "id": "215561003662083",
+      "p1": false,
+      "created_at": 1780481682,
+      "start": 1780481682,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780657695,
+      "raw_h": 48.892,
+      "office_min": 1013.55,
+      "reopens": 0
+     },
+     {
+      "id": "215561006970647",
+      "p1": true,
+      "created_at": 1780658127,
+      "start": 1780658127,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780658181,
+      "raw_h": 0.015,
+      "office_min": 0.9,
+      "reopens": 0
+     },
+     {
+      "id": "215561003642132",
+      "p1": false,
+      "created_at": 1780480382,
+      "start": 1780480823,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780650870,
+      "raw_h": 47.235,
+      "office_min": 914.12,
+      "reopens": 0
+     },
+     {
+      "id": "215561003039009",
+      "p1": false,
+      "created_at": 1780414497,
+      "start": 1780414497,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780570990,
+      "raw_h": 43.47,
+      "office_min": 688.22,
+      "reopens": 0
+     },
+     {
+      "id": "215561005475709",
+      "p1": false,
+      "created_at": 1780564511,
+      "start": 1780564511,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780566210,
+      "raw_h": 0.472,
+      "office_min": 28.32,
+      "reopens": 0
+     },
+     {
+      "id": "215561004015079",
+      "p1": true,
+      "created_at": 1780496932,
+      "start": 1780496932,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780499173,
+      "raw_h": 0.623,
+      "office_min": 37.35,
+      "reopens": 0
+     },
+     {
+      "id": "215561001563156",
+      "p1": false,
+      "created_at": 1780313256,
+      "start": 1780313256,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780495177,
+      "raw_h": 50.534,
+      "office_min": 1112.02,
+      "reopens": 0
+     },
+     {
+      "id": "215561003453426",
+      "p1": false,
+      "created_at": 1780470322,
+      "start": 1780470322,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780483831,
+      "raw_h": 3.752,
+      "office_min": 110.52,
+      "reopens": 0
+     },
+     {
+      "id": "215561002024171",
+      "p1": false,
+      "created_at": 1780335701,
+      "start": 1780335701,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780477451,
+      "raw_h": 39.375,
+      "office_min": 484.18,
+      "reopens": 0
+     },
+     {
+      "id": "215561001574973",
+      "p1": false,
+      "created_at": 1780314096,
+      "start": 1780314097,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780324781,
+      "raw_h": 2.968,
+      "office_min": 178.07,
+      "reopens": 0
+     }
+    ]
+   }
   },
   "2026-06-08": {
    "p1": [
@@ -450,7 +2252,705 @@
      "first_update_min": 42.2,
      "first_msg_min": 42.2
     }
-   ]
+   ],
+   "cause": {
+    "total": 146,
+    "causes": {
+     "FT - Slow Processing": {
+      "count": 33,
+      "refs": [
+       "INC-9644",
+       "INC-9615",
+       "INC-9523",
+       "INC-9508",
+       "INC-9479",
+       "INC-9467",
+       "INC-9466",
+       "INC-9446",
+       "INC-9445",
+       "INC-9444",
+       "INC-9355",
+       "INC-9332",
+       "INC-9327",
+       "INC-9323",
+       "INC-9312",
+       "INC-9264",
+       "INC-9224",
+       "INC-9205",
+       "INC-9204",
+       "INC-9201",
+       "INC-9194",
+       "INC-9191",
+       "INC-9190",
+       "INC-9185",
+       "INC-9154",
+       "INC-9149",
+       "INC-9134",
+       "INC-9121",
+       "INC-9119",
+       "INC-9113",
+       "INC-9112",
+       "INC-9109",
+       "INC-9107"
+      ]
+     },
+     "Partner - Partner System Issues": {
+      "count": 33,
+      "refs": [
+       "INC-9695",
+       "INC-9682",
+       "INC-9622",
+       "INC-9606",
+       "INC-9605",
+       "INC-9604",
+       "INC-9543",
+       "INC-9501",
+       "INC-9493",
+       "INC-9482",
+       "INC-9394",
+       "INC-9392",
+       "INC-9353",
+       "INC-9346",
+       "INC-9345",
+       "INC-9344",
+       "INC-9315",
+       "INC-9313",
+       "INC-9294",
+       "INC-9289",
+       "INC-9288",
+       "INC-9285",
+       "INC-9281",
+       "INC-9273",
+       "INC-9268",
+       "INC-9247",
+       "INC-9234",
+       "INC-9233",
+       "INC-9210",
+       "INC-9207",
+       "INC-9202",
+       "INC-9138",
+       "INC-9130"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 18,
+      "refs": [
+       "INC-9707",
+       "INC-9677",
+       "INC-9669",
+       "INC-9632",
+       "INC-9631",
+       "INC-9618",
+       "INC-9615",
+       "INC-9509",
+       "INC-9487",
+       "INC-9474",
+       "INC-9465",
+       "INC-9424",
+       "INC-9334",
+       "INC-9319",
+       "INC-9271",
+       "INC-9223",
+       "INC-9217",
+       "INC-9215"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 10,
+      "refs": [
+       "INC-9597",
+       "INC-9480",
+       "INC-9478",
+       "INC-9404",
+       "INC-9276",
+       "INC-9221",
+       "INC-9203",
+       "INC-9132",
+       "INC-9131",
+       "INC-9124"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 8,
+      "refs": [
+       "INC-9693",
+       "INC-9663",
+       "INC-9583",
+       "INC-9496",
+       "INC-9311",
+       "INC-9299",
+       "INC-9209",
+       "INC-9133"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 7,
+      "refs": [
+       "INC-9478",
+       "INC-9456",
+       "INC-9453",
+       "INC-9377",
+       "INC-9290",
+       "INC-9286",
+       "INC-9228"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 6,
+      "refs": [
+       "INC-9512",
+       "INC-9483",
+       "INC-9477",
+       "INC-9335",
+       "INC-9287",
+       "INC-9206"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 6,
+      "refs": [
+       "INC-9197",
+       "INC-9193",
+       "INC-9189",
+       "INC-9127",
+       "INC-9120",
+       "INC-9117"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 6,
+      "refs": [
+       "INC-9629",
+       "INC-9497",
+       "INC-9406",
+       "INC-9405",
+       "INC-9351",
+       "INC-9300"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 5,
+      "refs": [
+       "INC-9366",
+       "INC-9322",
+       "INC-9276",
+       "INC-9226",
+       "INC-9216"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 5,
+      "refs": [
+       "INC-9494",
+       "INC-9277",
+       "INC-9140",
+       "INC-9139",
+       "INC-9128"
+      ]
+     },
+     "FT - Configs Misconfiguration": {
+      "count": 4,
+      "refs": [
+       "INC-9364",
+       "INC-9229",
+       "INC-9200",
+       "INC-9188"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 3,
+      "refs": [
+       "INC-9359",
+       "INC-9291",
+       "INC-9145"
+      ]
+     },
+     "FT - Integration Specialists": {
+      "count": 2,
+      "refs": [
+       "INC-9507",
+       "INC-9199"
+      ]
+     },
+     "FT - Planned Maintenance": {
+      "count": 1,
+      "refs": [
+       "INC-9293"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 1,
+      "refs": [
+       "INC-9196"
+      ]
+     },
+     "FT - General Release": {
+      "count": 1,
+      "refs": [
+       "INC-9231"
+      ]
+     }
+    }
+   },
+   "inform": {
+    "informed": 13,
+    "median_min": 30.95,
+    "p90_min": 125.93,
+    "entries": [
+     {
+      "inc": "INC-9138",
+      "channel": "ftcrm-happydot",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-08T15:20:43Z",
+      "reported_at": "2026-06-08T14:49:46Z",
+      "severity": "P3",
+      "delay_min": 30.95
+     },
+     {
+      "inc": "INC-9234",
+      "channel": "ftcrm-tanzania",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-09T17:19:43Z",
+      "reported_at": "2026-06-09T16:23:42Z",
+      "severity": "P2",
+      "delay_min": 56.02
+     },
+     {
+      "inc": "INC-9281",
+      "channel": "ftcrm-mtm",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-10T11:00:50Z",
+      "reported_at": "2026-06-10T10:53:05Z",
+      "severity": "P3",
+      "delay_min": 7.75
+     },
+     {
+      "inc": "INC-9294",
+      "channel": "ftcrm-wb-ventures-winxbet-betconstruct",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-10T17:15:13Z",
+      "reported_at": "2026-06-10T15:09:17Z",
+      "severity": "P2",
+      "delay_min": 125.93
+     },
+     {
+      "inc": "INC-9299",
+      "channel": "ftcrm-tanzania",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-10T17:49:51Z",
+      "reported_at": "2026-06-10T17:05:45Z",
+      "severity": "P2",
+      "delay_min": 44.1
+     },
+     {
+      "inc": "INC-9311",
+      "channel": "ftcrm-betoffice",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-10T20:02:39Z",
+      "reported_at": "2026-06-10T20:02:02Z",
+      "severity": "P2",
+      "delay_min": 0.62
+     },
+     {
+      "inc": "INC-9312",
+      "channel": "ftcrm-play-betconstruct",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-10T21:03:26Z",
+      "reported_at": "2026-06-10T20:52:17Z",
+      "severity": "P2",
+      "delay_min": 11.15
+     },
+     {
+      "inc": "INC-9364",
+      "channel": "ftcrm-rhino",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-11T16:18:43Z",
+      "reported_at": "2026-06-11T15:09:13Z",
+      "severity": "P1",
+      "delay_min": 69.5
+     },
+     {
+      "inc": "INC-9453",
+      "channel": "ftcrm-synovatech",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-12T05:19:17Z",
+      "reported_at": "2026-06-12T03:43:00Z",
+      "severity": "P2",
+      "delay_min": 96.28
+     },
+     {
+      "inc": "INC-9549",
+      "channel": "ftcrm-pridespins",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-13T13:46:28Z",
+      "reported_at": "2026-06-13T04:01:55Z",
+      "severity": "P2",
+      "delay_min": 584.55
+     },
+     {
+      "inc": "INC-9604",
+      "channel": "ftcrm-galabet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-13T21:20:39Z",
+      "reported_at": "2026-06-13T21:14:31Z",
+      "severity": "P3",
+      "delay_min": 6.13
+     },
+     {
+      "inc": "INC-9605",
+      "channel": "ftcrm-betiro",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-13T21:49:40Z",
+      "reported_at": "2026-06-13T21:27:10Z",
+      "severity": "P2",
+      "delay_min": 22.5
+     },
+     {
+      "inc": "INC-9695",
+      "channel": "ftcrm-igtech-momentum",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-14T22:08:27Z",
+      "reported_at": "2026-06-14T21:50:48Z",
+      "severity": "P2",
+      "delay_min": 17.65
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 10,
+     "open": 0,
+     "median_h": 1.474,
+     "p90_h": 33.173
+    },
+    "other": {
+     "closed": 19,
+     "open": 0,
+     "median_office_min": 509.73,
+     "p90_office_min": 2013.87
+    },
+    "items": [
+     {
+      "id": "215561013804586",
+      "p1": false,
+      "created_at": 1781072913,
+      "start": 1781072913,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782387511,
+      "raw_h": 365.166,
+      "office_min": 5438.52,
+      "reopens": 2
+     },
+     {
+      "id": "215561015661650",
+      "p1": false,
+      "created_at": 1781178428,
+      "start": 1781178428,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782300990,
+      "raw_h": 311.823,
+      "office_min": 4309.37,
+      "reopens": 0
+     },
+     {
+      "id": "215561020000597",
+      "p1": true,
+      "created_at": 1781466774,
+      "start": 1781466774,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781777736,
+      "raw_h": 86.378,
+      "office_min": 1515.6,
+      "reopens": 0
+     },
+     {
+      "id": "215561019993943",
+      "p1": false,
+      "created_at": 1781466492,
+      "start": 1781466492,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781767377,
+      "raw_h": 83.579,
+      "office_min": 1440.0,
+      "reopens": 1
+     },
+     {
+      "id": "215561016923598",
+      "p1": false,
+      "created_at": 1781264666,
+      "start": 1781264666,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781534320,
+      "raw_h": 74.904,
+      "office_min": 654.23,
+      "reopens": 0
+     },
+     {
+      "id": "215561016621774",
+      "p1": false,
+      "created_at": 1781250869,
+      "start": 1781250869,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781537024,
+      "raw_h": 79.487,
+      "office_min": 863.73,
+      "reopens": 1
+     },
+     {
+      "id": "215561017334558",
+      "p1": false,
+      "created_at": 1781280514,
+      "start": 1781280514,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781523624,
+      "raw_h": 67.531,
+      "office_min": 211.83,
+      "reopens": 0
+     },
+     {
+      "id": "215561018815215",
+      "p1": true,
+      "created_at": 1781372549,
+      "start": 1781372549,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781470689,
+      "raw_h": 27.261,
+      "office_min": 0.0,
+      "reopens": 0
+     },
+     {
+      "id": "215561016951579",
+      "p1": false,
+      "created_at": 1781266713,
+      "start": 1781266713,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781280692,
+      "raw_h": 3.883,
+      "office_min": 232.98,
+      "reopens": 0
+     },
+     {
+      "id": "215561014478641",
+      "p1": false,
+      "created_at": 1781105591,
+      "start": 1781105591,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781272285,
+      "raw_h": 46.304,
+      "office_min": 858.23,
+      "reopens": 0
+     },
+     {
+      "id": "215561015663959",
+      "p1": false,
+      "created_at": 1781178614,
+      "start": 1781178614,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781270347,
+      "raw_h": 25.481,
+      "office_min": 568.88,
+      "reopens": 0
+     },
+     {
+      "id": "215561012778260",
+      "p1": false,
+      "created_at": 1780992694,
+      "start": 1780992694,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781190725,
+      "raw_h": 55.009,
+      "office_min": 1332.08,
+      "reopens": 0
+     },
+     {
+      "id": "215561016112384",
+      "p1": true,
+      "created_at": 1781200717,
+      "start": 1781200718,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781205026,
+      "raw_h": 1.197,
+      "office_min": 0.0,
+      "reopens": 0
+     },
+     {
+      "id": "215561015917624",
+      "p1": true,
+      "created_at": 1781187452,
+      "start": 1781187452,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781193522,
+      "raw_h": 1.686,
+      "office_min": 101.17,
+      "reopens": 0
+     },
+     {
+      "id": "215561015250837",
+      "p1": false,
+      "created_at": 1781166017,
+      "start": 1781166017,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781181198,
+      "raw_h": 4.217,
+      "office_min": 213.3,
+      "reopens": 0
+     },
+     {
+      "id": "215561014225817",
+      "p1": false,
+      "created_at": 1781094880,
+      "start": 1781094880,
+      "start_basis": "created_at",
+      "last_close_at": 1781169681,
+      "raw_h": 20.778,
+      "office_min": 286.68,
+      "reopens": 0
+     },
+     {
+      "id": "215561015012657",
+      "p1": true,
+      "created_at": 1781129712,
+      "start": 1781129712,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781130472,
+      "raw_h": 0.211,
+      "office_min": 0.0,
+      "reopens": 0
+     },
+     {
+      "id": "215561013261193",
+      "p1": false,
+      "created_at": 1781012585,
+      "start": 1781012585,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781100769,
+      "raw_h": 24.496,
+      "office_min": 509.73,
+      "reopens": 0
+     },
+     {
+      "id": "215561011937370",
+      "p1": false,
+      "created_at": 1780918750,
+      "start": 1780918751,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781099646,
+      "raw_h": 50.249,
+      "office_min": 1094.92,
+      "reopens": 4
+     },
+     {
+      "id": "215561013387111",
+      "p1": true,
+      "created_at": 1781017284,
+      "start": 1781017285,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781094486,
+      "raw_h": 21.445,
+      "office_min": 326.68,
+      "reopens": 0
+     },
+     {
+      "id": "215561013372141",
+      "p1": true,
+      "created_at": 1781016287,
+      "start": 1781016288,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781089572,
+      "raw_h": 20.357,
+      "office_min": 261.4,
+      "reopens": 0
+     },
+     {
+      "id": "215561014059715",
+      "p1": true,
+      "created_at": 1781084291,
+      "start": 1781084291,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781085988,
+      "raw_h": 0.471,
+      "office_min": 28.28,
+      "reopens": 1
+     },
+     {
+      "id": "215561012694116",
+      "p1": false,
+      "created_at": 1780985911,
+      "start": 1780985911,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781015976,
+      "raw_h": 8.351,
+      "office_min": 339.6,
+      "reopens": 0
+     },
+     {
+      "id": "215561011995630",
+      "p1": false,
+      "created_at": 1780922580,
+      "start": 1780922580,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780997483,
+      "raw_h": 20.806,
+      "office_min": 288.38,
+      "reopens": 0
+     },
+     {
+      "id": "215561011940136",
+      "p1": false,
+      "created_at": 1780918963,
+      "start": 1780918963,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780986277,
+      "raw_h": 18.698,
+      "office_min": 317.28,
+      "reopens": 2
+     },
+     {
+      "id": "215561012204018",
+      "p1": true,
+      "created_at": 1780930389,
+      "start": 1780930389,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780934931,
+      "raw_h": 1.262,
+      "office_min": 75.7,
+      "reopens": 0
+     },
+     {
+      "id": "215561011695921",
+      "p1": false,
+      "created_at": 1780905377,
+      "start": 1780905378,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780921678,
+      "raw_h": 4.528,
+      "office_min": 207.97,
+      "reopens": 0
+     },
+     {
+      "id": "215561011238244",
+      "p1": false,
+      "created_at": 1780886642,
+      "start": 1780886643,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780914511,
+      "raw_h": 7.741,
+      "office_min": 88.52,
+      "reopens": 0
+     },
+     {
+      "id": "215561011854909",
+      "p1": true,
+      "created_at": 1780913471,
+      "start": 1780913471,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1780914420,
+      "raw_h": 0.264,
+      "office_min": 15.82,
+      "reopens": 0
+     }
+    ]
+   }
   },
   "2026-06-15": {
    "p1": [
