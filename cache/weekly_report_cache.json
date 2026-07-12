@@ -1375,27 +1375,27 @@
   "_p1_brands_top10": {
     "labels": [
       "Brazil Bet",
-      "Gembet",
-      "Avento",
-      "Fast Track",
       "Sisutech",
       "Stanleybet.ro",
-      "Ambition Red",
+      "Avento",
+      "Gembet",
+      "Seguro Bet",
+      "Mystake",
       "Atomo",
-      "Bravo Bet (Suprema)",
-      "Momentum Group(Spinbet)"
+      "Momentum Group(Spinbet)",
+      "Rhino Entertainment"
     ],
     "counts": [
-      12,
-      5,
-      4,
-      4,
+      8,
       4,
       4,
       3,
       3,
       3,
-      3
+      3,
+      3,
+      2,
+      2
     ]
   },
   "2026-05-25": {
@@ -1576,7 +1576,7 @@
         "status": "Monitoring",
         "reported_at": "2026-05-26T15:47:42Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/8064",
-        "summary": "Problem: Duplicate bonuses are being granted to H2Bet players when BetConstruct returns HTTP 503/5xx after already crediting a bonus, causing Fast Track's retry to grant the same bonus again. The pattern has persisted for 24+ weeks.\n\nImpact: Recurring bonus leakage: approximately 275–936 users affected per week over the past 24 weeks; both FreeSpins and Cash bonuses are affected. Weekend of 6–7 June 2026 saw no new duplicates but the risk persists — ~300 extra grants continued to occur weekly as of 11 June 2026.\n\nCause: BetConstruct returns HTTP 503 after successfully crediting a bonus, which triggers Fast Track's retry paths. This is not the expected behavior of the operator API and the underlying root cause is upstream at BetConstruct. Fast Track's crm-bonus-distributor PR #122 (behavioural mitigation) is closed unmerged; PR #123 added observability only.\n\nActions Taken: Enhanced logging + monitoring deployed (PR #123, merged 2026-06-09), giving minute-scale duplicate detection. Partner-specific workaround (treating 503 as success) proposed but rejected by H2Bet due to traceability concerns. Two follow-ups remain open — H2Bet approval of a scoped 503-as-success workaround, and BetConstruct API/idempotency outreach. No technical mitigation deployed yet; incident remains in Monitoring pending BetConstruct upstream fix or H2Bet mitigation approval."
+        "summary": "Problem: Duplicate bonuses have been granted to H2Bet players on a recurring basis whenever BetConstruct returns an HTTP 503 error after already having credited the bonus internally. Fast Track's retry logic then reissues the request, producing a second grant for the same bonus event. This has been an ongoing, unresolved issue for at least 24 weeks.\n\nImpact: H2Bet has experienced recurring bonus leakage of roughly 300-500 extra grants per week across both FreeSpins and Cash bonuses, sustained over 24-plus weeks. The exposure continues on a weekly basis as of the most recent monitoring check in mid-June 2026, with no confirmed reduction.\n\nCause: BetConstruct's operator API can return a 503 error after a bonus has, in fact, already been credited to the player, which is non-standard behavior for the API. Fast Track's system interprets the 503 as a failure and retries the request, resulting in the bonus being granted a second time. The root cause lies with BetConstruct's API and has not been fixed on their side.\n\nActions Taken: Fast Track deployed enhanced logging and monitoring that lets the team detect and validate duplicate-grant events within minutes rather than hours. A proposed workaround of treating 503 responses as success (PR #122) was rejected by H2Bet over traceability concerns and remains closed and unmerged; an observability-only change (PR #123) has merged but does not alter retry behavior; a further change (PR #124) is approved but scoped narrowly and does not address the 503-after-credit duplication. No technical fix has been deployed, the root cause remains open, and the incident stays in Monitoring status while Fast Track pursues direct engagement with BetConstruct and awaits H2Bet's approval of a mitigation."
       },
       {
         "reference": "INC-8219",
@@ -4637,7 +4637,7 @@
         "status": "Monitoring",
         "reported_at": "2026-07-02T13:40:45Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12022",
-        "summary": "Problem: Shortlinks and unsubscribe links for affected brands were redirecting users to a forbidden page.\n\nImpact: Users for affected brands could not open shortlinks or unsubscribe links and saw a forbidden error. We confirmed this affected Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania, and Estelarbet.\n\nCause: We required shortlink and unsubscribe requests to pass through Cloudflare, which caused valid brand links to be rejected with a forbidden response.\n\nActions Taken: We removed the Cloudflare-origin check for the affected brand paths and merged the fix. We also reverted the deleted-image file access change, created a new stable platform version, and confirmed the links were working again — awaiting partner confirmation before closing."
+        "summary": "Problem: Shortlinks and unsubscribe links for multiple Fast Track brands began redirecting users to a \"Forbidden\" error page instead of resolving normally. The issue affected outbound marketing and account-management links across at least six brands.\n\nImpact: Users of Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania and Estelarbet could not open shortlinks or unsubscribe links and were shown a forbidden response instead. This blocked players from managing email/SMS subscription preferences and from following campaign links for the affected brands.\n\nCause: A newly introduced requirement that shortlink and unsubscribe requests pass through Cloudflare caused valid brand link requests to be rejected with a forbidden response. A separate, unrelated file-serving change that blocked access to deleted images was also identified during the investigation and reverted as a contributing fix.\n\nActions Taken: The team removed the Cloudflare-origin check for the affected brand paths and merged the fix, and separately reverted the deleted-image file-serving change; a new stable platform version was created and links were confirmed working again for Estelarbet and the reported templates. The incident remains in Monitoring status as of 10 Jul while the team watches for recurrence across all affected brands before closing."
       }
     ],
     "alert_volume": {
@@ -4839,105 +4839,138 @@
       "unclassified": 0
     },
     "incident_volume": {
-      "total": 134,
-      "P1": 7,
-      "P2": 57,
-      "P3": 65,
-      "P4": 3,
-      "ic_ticket_count": 26
+      "total": 203,
+      "P1": 8,
+      "P2": 81,
+      "P3": 107,
+      "P4": 4,
+      "ic_ticket_count": 32
     },
     "alert_volume": {
-      "total": 1275,
+      "total": 2022,
       "by_source": {
-        "Cloudflare AI Loop": 1,
-        "Cloudflare Security Scanner": 2,
-        "Database Security AI Loop": 2,
-        "Dead Man's Snitch": 69,
-        "Grafana SOC alerts": 333,
-        "Grafana alerts": 322,
-        "HTTP DMS FTML Alerts": 2,
-        "HTTP alerts": 515,
-        "Intercom": 29
+        "Cloudflare AI Loop": 2,
+        "Cloudflare Security Scanner": 3,
+        "Database Security AI Loop": 8,
+        "Dead Man's Snitch": 101,
+        "Grafana SOC alerts": 380,
+        "Grafana alerts": 447,
+        "HTTP DMS FTML Alerts": 3,
+        "HTTP alerts": 1043,
+        "Intercom": 35
       }
     },
     "mtta": {
       "P1": {
-        "n": 7,
+        "n": 8,
         "n_acked": 0,
-        "ack_rate": 0.0,
+        "ack_rate": 0,
         "mtta_minutes": [],
         "median_mtta_min": null,
         "mean_mtta_min": null
       },
       "P2": {
-        "n": 57,
-        "n_acked": 29,
-        "ack_rate": 0.51,
+        "n": 81,
+        "n_acked": 49,
+        "ack_rate": 0.6,
         "mtta_minutes": [
-          2.267,
-          2.317,
-          3.667,
-          4.117,
-          4.35,
-          5.467,
-          7.433,
-          7.633,
-          9.583,
-          10.317,
+          2.3,
+          2.3,
+          2.3,
+          2.5,
+          3.7,
+          4.1,
+          4.2,
+          4.4,
+          4.5,
+          4.5,
+          5.5,
+          6.2,
+          7.4,
+          7.6,
+          9.6,
+          10.3,
+          10.4,
+          11.9,
+          12.5,
           13.2,
+          15.4,
           16.3,
-          17.083,
-          18.0,
-          18.767,
+          17,
+          17.1,
+          18,
+          18.2,
+          18.8,
           19.5,
-          19.517,
+          19.5,
+          22.2,
           28.2,
-          53.967,
-          70.433,
-          72.633,
+          28.2,
+          32.1,
+          54,
+          57,
+          67.8,
+          70.4,
+          72.6,
           74.7,
-          90.85,
-          93.267,
-          108.883,
-          152.117,
-          265.733,
-          278.05,
-          451.833
+          89.8,
+          90.9,
+          93.3,
+          108.9,
+          152.1,
+          265.7,
+          278.1,
+          451.8,
+          465.5,
+          1208.2
         ],
-        "median_mtta_min": 18.8,
-        "mean_mtta_min": 66.2
+        "median_mtta_min": 18,
+        "mean_mtta_min": 81.6
       },
       "P3": {
-        "n": 66,
-        "n_acked": 18,
-        "ack_rate": 0.27,
+        "n": 107,
+        "n_acked": 31,
+        "ack_rate": 0.29,
         "mtta_minutes": [
-          3.783,
-          4.983,
+          1.1,
+          1.5,
+          1.7,
+          2.4,
+          3.8,
+          4.1,
+          5,
+          6.6,
           9.8,
-          11.183,
-          13.117,
+          11.2,
+          12.2,
+          12.6,
+          13.1,
           14.2,
-          14.233,
+          14.2,
           16.3,
-          16.583,
-          16.933,
-          18.033,
+          16.6,
+          16.9,
+          18,
+          18.5,
           20.3,
-          21.483,
-          41.883,
-          69.45,
-          104.733,
-          218.167,
-          494.167
+          21.5,
+          29.1,
+          40,
+          41.9,
+          69.5,
+          104.7,
+          145.1,
+          218.2,
+          239.3,
+          494.2
         ],
-        "median_mtta_min": 16.8,
-        "mean_mtta_min": 61.6
+        "median_mtta_min": 16.3,
+        "mean_mtta_min": 52.4
       },
       "P4": {
-        "n": 3,
+        "n": 4,
         "n_acked": 0,
-        "ack_rate": 0.0,
+        "ack_rate": 0,
         "mtta_minutes": [],
         "median_mtta_min": null,
         "mean_mtta_min": null
@@ -4967,15 +5000,15 @@
     },
     "p1_frt_breaches": [],
     "csat": {
-      "total": 23,
-      "rated": 8,
-      "avg_score": 4.88,
+      "total": 26,
+      "rated": 10,
+      "avg_score": 4.8,
       "pct_positive": 100.0,
-      "pct_perfect": 87.5,
-      "response_rate": 34.8,
+      "pct_perfect": 80.0,
+      "response_rate": 38.5,
       "score_dist": {
-        "5": 7,
-        "4": 1,
+        "5": 8,
+        "4": 2,
         "3": 0,
         "2": 0,
         "1": 0
@@ -4985,63 +5018,79 @@
     "partner_tickets": {
       "p1_responded": 4,
       "p2_responded": 11,
-      "p3_responded": 5,
+      "p3_responded": 8,
       "p1_open": 0,
       "p2_open": 0,
-      "p3_open": 1,
-      "total_count": 21,
-      "avg_response_min": 14.0,
-      "median_response_min": 6.5,
+      "p3_open": 0,
+      "total_count": 23,
+      "avg_response_min": 62.0,
+      "median_response_min": 9.1,
       "response_times_s": [
-        30,
         56,
-        60,
         67,
-        135,
-        136,
-        191,
-        204,
-        367,
-        391,
-        395,
-        545,
-        630,
-        636,
-        644,
-        647,
-        1220,
-        1395,
+        3012,
+        2233,
+        63479,
         3512,
-        5520
+        545,
+        1395,
+        136,
+        636,
+        135,
+        191,
+        1220,
+        60,
+        204,
+        30,
+        391,
+        644,
+        395,
+        367,
+        5520,
+        630,
+        647
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 16,
-      "missed": 0,
-      "total": 16,
-      "hit_rate": 100.0,
-      "mean_response_min": 15.0,
-      "median_response_min": 6.5,
+      "hit": 18,
+      "missed": 1,
+      "total": 19,
+      "hit_rate": 94.7,
+      "mean_response_min": 72.9,
+      "median_response_min": 10.5,
       "response_times_s": [
-        30,
         56,
-        60,
-        135,
-        136,
-        191,
-        204,
-        391,
-        395,
-        630,
-        636,
-        644,
-        647,
-        1220,
+        3012,
+        2233,
+        63479,
         3512,
-        5520
+        136,
+        636,
+        135,
+        191,
+        1220,
+        60,
+        204,
+        30,
+        391,
+        644,
+        395,
+        5520,
+        630,
+        647
       ]
     },
-    "p2p3_frt_breaches": [],
+    "p2p3_frt_breaches": [
+      {
+        "conv_id": "215561056444210",
+        "company": "Momentum (IG Tech)",
+        "severity": "P3",
+        "oh_frt_min": 1058.0,
+        "opened_at": 1783585214,
+        "first_reply_at": 1783648693,
+        "summary": "SRE first response took ~17.6 office hours (past the 2-hour P2/P3 SLA) after Partner Support escalated a P3 ticket from Momentum (IG Tech) about a blank/empty Test User page; SRE (Giancarlo Laferla) ultimately determined it was expected behavior due to a missing Testing:Users:Manage permission, not a bug."
+      }
+    ],
     "true_p1_incidents": [
       {
         "reference": "INC-12768",
@@ -5049,7 +5098,7 @@
         "status": "Closed",
         "reported_at": "2026-07-08T14:59:58Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12768",
-        "summary": "Problem: Singularity time and RTD services were processing player activity extremely slowly on 8 Jul for brands deployed that day; Mystake raised a P1 as activity ingestion and downstream lifecycle triggers were delayed.\n\nImpact: Player activity processing was delayed across 8 brands (Gamdom, Mystake, Vaycasino, Alpha-Iota/QPone, Betlive, Norabahis, Orisbet, Leader-bet), delaying deposit-driven triggers, campaigns and SMS/email touchpoints while singularity RabbitMQ queues backed up. Detection lagged ~4 hours because a slow-acking consumer kept the queues alive, so no zero-consumer alert fired.\n\nCause: Helm templating defect in the singularity-model-engine chart (rtd-configmap.yaml) — Helm evaluated the encryption conditional before the Argo Vault plugin substituted enable_pii_encryption, so all GCP KMS entries (including GCP_PROJECT_ID) were omitted from the ConfigMap and services failed with 'failed to initialise GCP key service: GCP project ID is required'. Hit every brand deployed with the Project Zero release-candidate PV that day; platform incident tracked as INC-12761.\n\nActions Taken: argo-deployments commit 69ad447 set encryption explicitly in the Argo manifests so the chart reads the GCP values from Vault; the blocked Argo sync was terminated and the ConfigMap force-synced — pods recovered and queues resumed at ~18:12 CEST on 8 Jul. Comms sent to affected brands that had not raised it. Long-term Helm chart fix tracked in singularity-model-engine PR #454."
+        "summary": "Problem: Singularity time and RTD services were processing player activity extremely slowly on 8 Jul for brands deployed that day; Mystake raised a P1 as activity ingestion and downstream lifecycle triggers were delayed.\n\nImpact: Player activity processing was delayed across 8 brands (Gamdom, Mystake, Vaycasino, Alpha-Iota/QPone, Betlive, Norabahis, Orisbet, Leader-bet), delaying deposit-driven triggers, campaigns and SMS/email touchpoints while singularity RabbitMQ queues backed up. Detection lagged roughly 4 hours because a slow-acking consumer kept the queues alive, so no zero-consumer alert fired.\n\nCause: A Helm templating defect in the singularity-model-engine chart (rtd-configmap.yaml) evaluated the encryption conditional before the Argo Vault plugin substituted enable_pii_encryption, so all GCP KMS entries (including GCP_PROJECT_ID) were omitted from the ConfigMap and services failed with \"failed to initialise GCP key service: GCP project ID is required\". It hit every brand deployed with the Project Zero release-candidate that day; the underlying platform incident is tracked as INC-12761.\n\nActions Taken: Argo-deployments commit 69ad447 set encryption explicitly in the Argo manifests so the chart reads the GCP values from Vault, the blocked Argo sync was terminated, and the ConfigMap was force-synced, with pods recovering and queues resuming at approximately 18:12 CEST on 8 Jul. Comms were sent to affected brands that had not already raised the issue, and a long-term Helm chart fix is tracked in singularity-model-engine PR #454. The incident is fully resolved and closed."
       },
       {
         "reference": "INC-12856",
@@ -5057,11 +5106,59 @@
         "status": "Monitoring",
         "reported_at": "2026-07-09T03:55:26Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12856",
-        "summary": "Problem: MemoryDB cluster 274 reached 90% memory usage and became stuck mid-upgrade, halting scheduled-actions processing.\n\nImpact: Scheduled actions were delayed for 21 brands while their scheduledactions queues backed up with no consumers.\n\nCause: AWS service-level issue - shards and new hosts got stuck during host creation, stalling the MemoryDB scaling operation.\n\nActions Taken: Scaled MemoryDB 274 up to db.r6gd.4xlarge, validated key-count consistency (~5.43M keys), re-enabled scheduled actions, and raised an AWS support ticket escalated to the MemoryDB team for an official RCA."
+        "summary": "Problem: MemoryDB instance 274 reached 90% memory usage and became stuck mid-upgrade when an in-flight scale-up to a larger node type stalled, disrupting the scheduled-actions-manager service used across many brands. The stall left scheduled-actions queues without active consumers, so queued work could not be processed.\n\nImpact: Scheduled actions were delayed for 21 affected brands, including Multiverse, Segurobet, Play, Seu Bet, Galabet, Betpipo, Maxima, Supremabet, Moovbet, Maltech, BetOffice, Vbet Latam, Padisahbet and ClaroBet, as their scheduled-actions queues backed up with no consumers. Backlogs reached into the hundreds of thousands of messages for the worst-affected brands (e.g. over 297,000 for Seu Bet and over 100,000 for Galabet) before recovery.\n\nCause: AWS indicated the scaling stall was likely a service-level issue on their side, with shards or new hosts getting stuck during host creation while MemoryDB 274 was being scaled up. The root cause sits with AWS's MemoryDB infrastructure rather than a Fast Track configuration or code change, and AWS has not yet issued a confirmed root-cause explanation.\n\nActions Taken: The team completed scaling MemoryDB 274 up to db.r6gd.4xlarge and re-enabled scheduled actions, validating key-count consistency (approximately 5.43M keys) after cutover. A support ticket has been raised with AWS and escalated to the MemoryDB team, but an official RCA and preventive guidance from AWS are still pending, and the team continues monitoring the instance for stability while the incident remains open."
       }
     ],
     "engineer_workload": {
       "tickets": [
+        {
+          "reference": "INC-13235",
+          "lead": "Gérard E. Pelayo",
+          "severity": "P4",
+          "reported_at": "2026-07-10T16:20:16Z",
+          "resolved_at": "2026-07-10T16:27:46Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-13220",
+          "lead": "Gérard E. Pelayo",
+          "severity": "P3",
+          "reported_at": "2026-07-10T14:31:29Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-13176",
+          "lead": "Gérard E. Pelayo",
+          "severity": "P2",
+          "reported_at": "2026-07-10T11:06:44Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-13171",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-10T10:41:10Z",
+          "resolved_at": "2026-07-10T15:03:55Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-13152",
+          "lead": "Gérard E. Pelayo",
+          "severity": "P3",
+          "reported_at": "2026-07-10T08:29:13Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-13143",
+          "lead": "Giancarlo Laferla",
+          "severity": "P2",
+          "reported_at": "2026-07-10T07:58:58Z",
+          "resolved_at": "2026-07-10T09:04:07Z",
+          "closed": true
+        },
         {
           "reference": "INC-13048",
           "lead": "Simon Grenefalk",
@@ -5069,14 +5166,6 @@
           "reported_at": "2026-07-09T19:21:42Z",
           "resolved_at": "2026-07-09T19:49:34Z",
           "closed": true
-        },
-        {
-          "reference": "INC-12984",
-          "lead": "Matteo Rapisarda",
-          "severity": "P3",
-          "reported_at": "2026-07-09T14:12:11Z",
-          "resolved_at": null,
-          "closed": false
         },
         {
           "reference": "INC-12919",
@@ -5099,8 +5188,8 @@
           "lead": "James Hodgson",
           "severity": "P3",
           "reported_at": "2026-07-09T08:05:06Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-10T08:23:45Z",
+          "closed": true
         },
         {
           "reference": "INC-12768",
@@ -5123,8 +5212,8 @@
           "lead": "Giancarlo Laferla",
           "severity": "P1",
           "reported_at": "2026-07-08T14:41:53Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-10T12:25:52Z",
+          "closed": true
         },
         {
           "reference": "INC-12762",
@@ -5248,8 +5337,8 @@
         },
         {
           "reference": "INC-12436",
-          "lead": "Giancarlo Laferla",
-          "severity": "P3",
+          "lead": "stephen.riolo",
+          "severity": "P2",
           "reported_at": "2026-07-06T07:28:29Z",
           "resolved_at": null,
           "closed": false
@@ -5269,6 +5358,14 @@
           "reported_at": "2026-07-06T06:32:46Z",
           "resolved_at": "2026-07-07T06:12:40Z",
           "closed": true
+        },
+        {
+          "reference": "INC-13582",
+          "lead": "Nazareno",
+          "severity": "P1",
+          "reported_at": "2026-07-12T20:15:45Z",
+          "resolved_at": null,
+          "closed": false
         }
       ]
     }
