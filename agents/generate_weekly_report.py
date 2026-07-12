@@ -1959,10 +1959,13 @@ if svc_weeks_all:
     )
 
 # ── RESPONSE QUALITY SLIDE (cache/response_quality_cache.json) ───────────────
-# End-to-end handling quality: did our monitoring catch the incident
-# (self-detected vs partner-reported via Intercom vs manual), how fast P1s
-# move through the timestamp chain (identify → resolve), and how quickly the
-# first written status update lands. Added 2026-07-12.
+# Partner-facing handling quality, reworked 12 Jul 2026 per Andrea:
+#  · Cause of Incident — incident.io custom field per week (with INC refs in
+#    the cache for deep-dives); multi-select, so bars can sum above totals
+#  · Time to inform partners — first mention in a partner ftcrm-* Slack
+#    channel vs the incident's declaration; multi-brand incidents count once
+#  · Partner MTTR — Intercom conversations to the SOC/SRE inbox; clock from
+#    FIRST inbox assignment to last close; P1 raw 24/7, P2/P3 office hours
 RQ_CACHE_FILE = os.path.join(_ROOT, "cache", "response_quality_cache.json")
 try:
     with open(RQ_CACHE_FILE) as f:
@@ -1970,7 +1973,9 @@ try:
 except (FileNotFoundError, json.JSONDecodeError):
     rq_cache = {}
 
-rq_weeks_all  = sorted(rq_cache.get("weeks", {}).keys())[-13:]
+# only weeks fetched with the v2 metrics (cause/inform/mttr) are plottable
+rq_weeks_all  = sorted(wk for wk, r in rq_cache.get("weeks", {}).items()
+                       if "cause" in r)[-13:]
 rq_charts_js  = ""
 rq_tab_html   = f'    <button class="slide-tab" onclick="showSlide({_idx_rq})">Response Quality</button>\n'
 rq_slide_html = ('\n<div class="slide" id="sRq"><div class="page">\n'
@@ -1989,18 +1994,24 @@ if rq_weeks_all:
     def _rq_wk_stats(wk):
         if wk is None:
             return None
-        r, det, tot = _rq_w[wk], _rq_w[wk]["detection"], _rq_w[wk]["total"]
-        mon = max(tot - det["intercom"] - det["no_alert"], 0)
-        pc = lambda n: round(n / tot * 100, 1) if tot else None
-        p1s = r.get("p1", [])
-        med = lambda k: _median([p[k] for p in p1s if p.get(k) is not None])
-        return {"total": tot, "mon": mon, "partner": det["intercom"],
-                "manual": det["no_alert"], "mon_pct": pc(mon),
-                "partner_pct": pc(det["intercom"]), "p1_n": len(p1s),
-                "med_resolve": med("resolve_min"), "med_identify": med("identify_min"),
-                "med_msg": med("first_msg_min"),
-                "msg30": sum(1 for p in p1s if (p.get("first_msg_min") or 1e9) <= 30),
-                "msg_n": sum(1 for p in p1s if p.get("first_msg_min") is not None)}
+        r = _rq_w[wk]
+        cause  = r.get("cause", {})
+        inform = r.get("inform", {})
+        mttr   = r.get("mttr", {})
+        tot    = cause.get("total", 0)
+        cmap   = cause.get("causes", {})
+        unset  = cmap.get("None", {}).get("count", 0)
+        named  = {k: v["count"] for k, v in cmap.items() if k != "None"}
+        top    = max(named.items(), key=lambda kv: kv[1]) if named else None
+        p1, oth = mttr.get("p1", {}), mttr.get("other", {})
+        return {"total": tot, "unset": unset,
+                "cov": round((tot - unset) / tot * 100, 1) if tot else None,
+                "top_cause": top,
+                "inf_med": inform.get("median_min"), "inf_n": inform.get("informed", 0),
+                "p1_med_min": (p1.get("median_h") * 60 if p1.get("median_h") is not None else None),
+                "p1_closed": p1.get("closed", 0), "p1_open": p1.get("open", 0),
+                "oth_med_min": oth.get("median_office_min"),
+                "oth_closed": oth.get("closed", 0), "oth_open": oth.get("open", 0)}
 
     _rqc, _rqp = _rq_wk_stats(_rq_cw), _rq_wk_stats(_rq_pw)
     _rq_cw_date = fmt_date_dmy(_rq_cw) + (" · in progress" if not week_is_complete(_rq_cw) else "")
@@ -2026,8 +2037,20 @@ if rq_weeks_all:
     _fmt_hm  = lambda m: "—" if m is None else (f"{int(round(m))}m" if m < 90 else f"{m/60:.1f}h")
     _fmt_pct = lambda v: f"{round(v)}%" if v is not None else "—"
 
-    _res_d_cls, _res_d = _rq_dur_delta(_rqc["med_resolve"], _rqp and _rqp["med_resolve"])
-    _msg_d_cls, _msg_d = _rq_dur_delta(_rqc["med_msg"], _rqp and _rqp["med_msg"])
+    _inf_d_cls, _inf_d = _rq_dur_delta(_rqc["inf_med"], _rqp and _rqp["inf_med"])
+    _mp1_d_cls, _mp1_d = _rq_dur_delta(_rqc["p1_med_min"], _rqp and _rqp["p1_med_min"])
+    _mot_d_cls, _mot_d = _rq_dur_delta(_rqc["oth_med_min"], _rqp and _rqp["oth_med_min"])
+    _cov_d_cls, _cov_d = _rq_delta(_rqc["cov"], _rqp and _rqp["cov"], "%", True)
+
+    # informer log across the plotted window (who posts the ftcrm informs)
+    _rq_informers = {}
+    for wk in rq_weeks_all:
+        for e in _rq_w[wk].get("inform", {}).get("entries", []):
+            _rq_informers[e["author"]] = _rq_informers.get(e["author"], 0) + 1
+    _rq_inf_log = " · ".join(f"{n} {c}×" for n, c in
+                             sorted(_rq_informers.items(), key=lambda kv: -kv[1])[:3]) or "—"
+    _rq_top_txt = (f'{_rqc["top_cause"][0]} ({_rqc["top_cause"][1]})'
+                   if _rqc["top_cause"] else "—")
 
     rq_tab_html = f'    <button class="slide-tab" onclick="showSlide({_idx_rq})">Response Quality</button>\n'
 
@@ -2035,44 +2058,91 @@ if rq_weeks_all:
 <!-- ═══ SLIDE — RESPONSE QUALITY ═══════════════════════════════ -->
 <div class="slide" id="sRq"><div class="page">
   <div class="group-label">Response Quality <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; charts: {len(rq_weeks_all)} weeks &middot; {_rq_range} &middot; cards: week of {_rq_cw_date}</span></div>
-  <div class="stat-grid-2">
-    <div class="stat-card" style="border-left:3px solid #a78bfa">
-      <div class="card-label">P1 Median Time to Resolve ({_rq_cw_date})</div>
-      <div class="card-value c-muted">{_fmt_hm(_rqc["med_resolve"])}</div>
-      <div class="card-delta {_res_d_cls}">{_res_d}</div>
-      <div class="card-subnote">{_rqc["p1_n"]} P1s &middot; median time to identify {_fmt_hm(_rqc["med_identify"])}</div>
-    </div>
+  <div class="stat-grid-4">
     <div class="stat-card" style="border-left:3px solid #38bdf8">
-      <div class="card-label">P1 First Comms ({_rq_cw_date})</div>
-      <div class="card-value c-muted">{_fmt_hm(_rqc["med_msg"])}</div>
-      <div class="card-delta {_msg_d_cls}">{_msg_d}</div>
-      <div class="card-subnote">median to first written status update &middot; &le;30min on {_rqc["msg30"]} of {_rqc["msg_n"]} P1s with updates</div>
+      <div class="card-label">Time to Inform Partners ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_hm(_rqc["inf_med"])}</div>
+      <div class="card-delta {_inf_d_cls}">{_inf_d}</div>
+      <div class="card-subnote">median &middot; {_rqc["inf_n"]} incidents informed via ftcrm channels</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #ef4444">
+      <div class="card-label">Partner MTTR &middot; P1 ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_hm(_rqc["p1_med_min"])}</div>
+      <div class="card-delta {_mp1_d_cls}">{_mp1_d}</div>
+      <div class="card-subnote">median, 24/7 clock &middot; {_rqc["p1_closed"]} closed &middot; {_rqc["p1_open"]} open</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #f59e0b">
+      <div class="card-label">Partner MTTR &middot; P2/P3 ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_hm(_rqc["oth_med_min"])}</div>
+      <div class="card-delta {_mot_d_cls}">{_mot_d}</div>
+      <div class="card-subnote">median office hours &middot; {_rqc["oth_closed"]} closed &middot; {_rqc["oth_open"]} open</div>
+    </div>
+    <div class="stat-card" style="border-left:3px solid #22c55e">
+      <div class="card-label">Cause Tagged ({_rq_cw_date})</div>
+      <div class="card-value c-muted">{_fmt_pct(_rqc["cov"])}</div>
+      <div class="card-delta {_cov_d_cls}">{_cov_d}</div>
+      <div class="card-subnote">of {_rqc["total"]} incidents &middot; top: {_rq_top_txt}</div>
     </div>
   </div>
   <div class="charts-area">
     <div class="chart-row">
       <div class="chart-section">
-        <div class="chart-title">P1 Response &middot; Weekly Medians</div>
-        <div class="chart-note">Bars: median time to resolve (hours, left) &middot; Line: median time to first written update (minutes, right)</div>
-        <div class="chart-container"><canvas id="cRqP1" style="width:100%;height:100%"></canvas></div>
+        <div class="chart-title">Cause of Incident &middot; by Week</div>
+        <div class="chart-note">incident.io &ldquo;Cause of Incident&rdquo; field &middot; multi-select, so bars can sum above the week&rsquo;s incident count &middot; INC refs kept in the cache for deep-dives</div>
+        <div class="chart-container"><canvas id="cRqCause" style="width:100%;height:100%"></canvas></div>
+      </div>
+      <div class="chart-section">
+        <div class="chart-title">Partner MTTR &middot; Weekly Medians</div>
+        <div class="chart-note">Intercom &middot; clock from first SOC/SRE inbox assignment to last close &middot; P1 = 24/7 hours &middot; P2/P3 = office hours (Mon&ndash;Fri 09:00&ndash;17:00 UTC)</div>
+        <div class="chart-container"><canvas id="cRqMttr" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
   </div>
-  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; First-comms measures incident.io status updates &mdash; a comms-discipline proxy, not the partner-facing reply (a Slack-based time-to-inform-partners metric is in validation). P1 &ldquo;Accepted at&rdquo; is unavailable since ~5 Jun (MTTA regression), so the chain starts at Identified. IC-Ticket incidents stamp Identified/Resolved together at closure.</div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Inform time = first &ldquo;FT Incident for internal reference: INC-&hellip;&rdquo; post in any partner <b>ftcrm-*</b> Slack channel vs the incident&rsquo;s declaration; multi-brand incidents count once. Informer log ({len(rq_weeks_all)} wks): {_rq_inf_log}. Partner MTTR covers Intercom conversations assigned to the SOC/SRE inbox; conversations still open are excluded from medians.{" Cause tagging lags triage &mdash; the in-progress week&rsquo;s &ldquo;Not set&rdquo; count drains to normal (&lt;8%) as the week settles, so the coverage dip is expected." if not week_is_complete(_rq_cw) else ""}</div>
 </div></div>
 '''
 
-    def _rq_series(key):
-        return js_arr([_rq_wk_stats(wk)[key] for wk in rq_weeks_all])
+    # chart 1 — top causes across the window + Other + Not set
+    _cause_tot = {}
+    for wk in rq_weeks_all:
+        for lbl, v in _rq_w[wk].get("cause", {}).get("causes", {}).items():
+            if lbl != "None":
+                _cause_tot[lbl] = _cause_tot.get(lbl, 0) + v["count"]
+    _top_causes = [lbl for lbl, _ in sorted(_cause_tot.items(), key=lambda kv: -kv[1])[:6]]
 
-    _rq_res_h = js_arr([None if _rq_wk_stats(wk)["med_resolve"] is None
-                        else round(_rq_wk_stats(wk)["med_resolve"] / 60, 1)
-                        for wk in rq_weeks_all])
+    def _cause_series(lbl):
+        return js_arr([_rq_w[wk].get("cause", {}).get("causes", {}).get(lbl, {}).get("count", 0)
+                       for wk in rq_weeks_all])
+
+    _other_series = js_arr([
+        sum(v["count"] for lbl, v in _rq_w[wk].get("cause", {}).get("causes", {}).items()
+            if lbl != "None" and lbl not in _top_causes)
+        for wk in rq_weeks_all])
+    _unset_series = js_arr([_rq_w[wk].get("cause", {}).get("causes", {}).get("None", {}).get("count", 0)
+                            for wk in rq_weeks_all])
+    _CAUSE_COLORS = ['#38bdf8', '#a78bfa', '#f59e0b', '#22c55e', '#ef4444', '#e879f9']
+    _cause_ds = ",".join(
+        "{label:" + json.dumps(lbl.replace("Partner - ", "P· ").replace("FT - ", "FT· ").replace("AI - ", "AI· ")) +
+        ",data:" + _cause_series(lbl) + ",backgroundColor:'" + _CAUSE_COLORS[i % 6] + "',stack:'c'}"
+        for i, lbl in enumerate(_top_causes))
+
+    _mttr_p1_h  = js_arr([None if _rq_wk_stats(wk)["p1_med_min"] is None
+                          else round(_rq_wk_stats(wk)["p1_med_min"] / 60, 1) for wk in rq_weeks_all])
+    _mttr_oth_h = js_arr([None if _rq_wk_stats(wk)["oth_med_min"] is None
+                          else round(_rq_wk_stats(wk)["oth_med_min"] / 60, 1) for wk in rq_weeks_all])
+    _inform_med = js_arr([_rq_wk_stats(wk)["inf_med"] for wk in rq_weeks_all])
+
     rq_charts_js = (
-        "new Chart(document.getElementById('cRqP1'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
-        "{type:'line',label:'First written update (min)',data:" + _rq_series("med_msg") + ",yAxisID:'y2',spanGaps:true,"
+        "new Chart(document.getElementById('cRqCause'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
+        + _cause_ds + ","
+        "{label:'Other causes',data:" + _other_series + ",backgroundColor:'#64748b',stack:'c'},"
+        "{label:'Not set',data:" + _unset_series + ",backgroundColor:'#475569',stack:'c'}"
+        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
+        "new Chart(document.getElementById('cRqMttr'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
+        "{type:'line',label:'Inform partners (min)',data:" + _inform_med + ",yAxisID:'y2',spanGaps:true,"
         "borderColor:'#38bdf8',tension:0.3,fill:false,pointRadius:4,pointBackgroundColor:'#38bdf8',pointBorderColor:'#0d1629',pointBorderWidth:2},"
-        "{label:'Median resolve (h)',data:" + _rq_res_h + ",backgroundColor:'#a78bfa'}"
+        "{label:'P1 median (h)',data:" + _mttr_p1_h + ",backgroundColor:'#ef4444'},"
+        "{label:'P2/P3 median (office h)',data:" + _mttr_oth_h + ",backgroundColor:'#f59e0b'}"
         "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},"
         "scales:{x:XA,"
         "y:{ticks:{color:'#64748b',font:{size:11},callback:function(v){return v+'h'}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true},"

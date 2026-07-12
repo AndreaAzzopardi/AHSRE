@@ -1,24 +1,14 @@
 {
- "generated": "2026-07-12T19:28:57Z",
+ "generated": "2026-07-12T20:19:25Z",
  "method": {
-  "detection": "incident_stats grouped by alert_source per week (created_at window, status filtered to triage/active/post-incident/closed/paused). partner_reported = Intercom-sourced; manual = 'No alert'; monitoring = remainder (total - intercom - no_alert), so stacks reconcile to the total; incidents with alerts from multiple sources are counted once via the remainder. Stats cannot exclude private incidents (counts may sit 1-2 above other slides).",
-  "p1_mttx": "per-P1 named timestamps via incident_list include:timestamps,durations (private excluded); minutes from Reported at. IC Tickets stamp Identified/Resolved/Closed together at ticket closure, so identify_min==resolve_min for most tickets; 'Accepted at' has not been stamped since ~5 Jun 2026 (MTTA regression) and is not used.",
-  "first_comms": "incident_update_list per P1; first_update_min = earliest update >60s after declaration (declaration posts an update at t=0); first_msg_min = earliest update with a written message. Proxy for comms discipline - incident.io updates, not the partner-facing Intercom reply."
+  "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select \u2014 counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
+  "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident \u2014 multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation \u00b11s). Author logged per entry (informer log).",
+  "mttr": "Intercom conversations with team_assignee_id 50045975 bucketed by START week. START = statistics.first_assignment_at (arrival at SOC/SRE inbox) fallback created_at; CLOSE = statistics.last_close_at (standing convention; recover from conversation_parts when statistics null). P1 (tag 193658) = raw hours 24/7; non-P1 = office minutes Mon-Fri 09:00-17:00 UTC. Open conversations counted, excluded from medians. Never use sla_applied.sla_status.",
+  "p1_mttx": "per-P1 named timestamps via incident_list include:timestamps,durations (private excluded, reported_at filtered to the week); kept for deep-dives, not currently on the slide. 'Accepted at' unstamped since ~5 Jun 2026.",
+  "api_trap": "incident.io created_before is INCLUSIVE of the entire end date \u2014 always pass the Sunday, never the next Monday."
  },
  "weeks": {
   "2026-05-04": {
-   "total": 200,
-   "detection": {
-    "intercom": 14,
-    "no_alert": 22,
-    "sources": {
-     "Dead Man's Snitch": 20,
-     "Grafana SOC alerts": 25,
-     "HTTP alerts": 133,
-     "Intercom": 14,
-     "No alert": 22
-    }
-   },
    "p1": [
     {
      "ref": "INC-6057",
@@ -36,18 +26,6 @@
    ]
   },
   "2026-05-11": {
-   "total": 159,
-   "detection": {
-    "intercom": 14,
-    "no_alert": 7,
-    "sources": {
-     "Dead Man's Snitch": 10,
-     "Grafana SOC alerts": 33,
-     "HTTP alerts": 105,
-     "Intercom": 14,
-     "No alert": 7
-    }
-   },
    "p1": [
     {
      "ref": "INC-7005",
@@ -125,18 +103,6 @@
    ]
   },
   "2026-05-18": {
-   "total": 87,
-   "detection": {
-    "intercom": 14,
-    "no_alert": 2,
-    "sources": {
-     "Dead Man's Snitch": 11,
-     "Grafana SOC alerts": 14,
-     "HTTP alerts": 55,
-     "Intercom": 14,
-     "No alert": 2
-    }
-   },
    "p1": [
     {
      "ref": "INC-7706",
@@ -190,18 +156,6 @@
    ]
   },
   "2026-05-25": {
-   "total": 134,
-   "detection": {
-    "intercom": 24,
-    "no_alert": 8,
-    "sources": {
-     "Dead Man's Snitch": 8,
-     "Grafana SOC alerts": 30,
-     "HTTP alerts": 81,
-     "Intercom": 24,
-     "No alert": 8
-    }
-   },
    "p1": [
     {
      "ref": "INC-8023",
@@ -293,19 +247,6 @@
    ]
   },
   "2026-06-01": {
-   "total": 138,
-   "detection": {
-    "intercom": 23,
-    "no_alert": 8,
-    "sources": {
-     "Dead Man's Snitch": 8,
-     "Grafana SOC alerts": 32,
-     "HTTP DMS FTML Alerts": 2,
-     "HTTP alerts": 79,
-     "Intercom": 23,
-     "No alert": 8
-    }
-   },
    "p1": [
     {
      "ref": "INC-8571",
@@ -358,19 +299,6 @@
    ]
   },
   "2026-06-08": {
-   "total": 146,
-   "detection": {
-    "intercom": 38,
-    "no_alert": 1,
-    "sources": {
-     "Dead Man's Snitch": 4,
-     "Grafana SOC alerts": 27,
-     "HTTP DMS FTML Alerts": 1,
-     "HTTP alerts": 86,
-     "Intercom": 38,
-     "No alert": 1
-    }
-   },
    "p1": [
     {
      "ref": "INC-9131",
@@ -525,18 +453,6 @@
    ]
   },
   "2026-06-15": {
-   "total": 131,
-   "detection": {
-    "intercom": 30,
-    "no_alert": 7,
-    "sources": {
-     "Dead Man's Snitch": 12,
-     "Grafana SOC alerts": 26,
-     "HTTP alerts": 64,
-     "Intercom": 30,
-     "No alert": 7
-    }
-   },
    "p1": [
     {
      "ref": "INC-9727",
@@ -666,25 +582,625 @@
      "first_update_min": 34.9,
      "first_msg_min": 0.0
     }
-   ]
-  },
-  "2026-06-22": {
-   "total": 175,
-   "detection": {
-    "intercom": 36,
-    "no_alert": 5,
-    "sources": {
-     "Cloudflare Security Scanner": 1,
-     "Database Security AI Loop": 1,
-     "Dead Man's Snitch": 15,
-     "Grafana SOC alerts": 55,
-     "Grafana alerts": 2,
-     "HTTP DMS FTML Alerts": 2,
-     "HTTP alerts": 84,
-     "Intercom": 36,
-     "No alert": 5
+   ],
+   "cause": {
+    "total": 131,
+    "causes": {
+     "Partner - Partner System Issues": {
+      "count": 30,
+      "refs": [
+       "INC-10332",
+       "INC-10330",
+       "INC-10311",
+       "INC-10277",
+       "INC-10275",
+       "INC-10193",
+       "INC-10188",
+       "INC-10186",
+       "INC-10164",
+       "INC-10159",
+       "INC-10118",
+       "INC-10117",
+       "INC-10086",
+       "INC-10052",
+       "INC-10011",
+       "INC-9996",
+       "INC-9962",
+       "INC-9922",
+       "INC-9915",
+       "INC-9914",
+       "INC-9898",
+       "INC-9897",
+       "INC-9882",
+       "INC-9872",
+       "INC-9839",
+       "INC-9831",
+       "INC-9819",
+       "INC-9788",
+       "INC-9751",
+       "INC-9730"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 29,
+      "refs": [
+       "INC-10356",
+       "INC-10334",
+       "INC-10329",
+       "INC-10307",
+       "INC-10279",
+       "INC-10256",
+       "INC-10233",
+       "INC-10188",
+       "INC-10182",
+       "INC-10168",
+       "INC-10164",
+       "INC-10152",
+       "INC-10098",
+       "INC-10018",
+       "INC-10017",
+       "INC-10011",
+       "INC-9959",
+       "INC-9905",
+       "INC-9894",
+       "INC-9886",
+       "INC-9849",
+       "INC-9830",
+       "INC-9825",
+       "INC-9822",
+       "INC-9813",
+       "INC-9741",
+       "INC-9739",
+       "INC-9721",
+       "INC-9709"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 17,
+      "refs": [
+       "INC-10321",
+       "INC-10319",
+       "INC-10315",
+       "INC-10310",
+       "INC-10308",
+       "INC-10306",
+       "INC-10304",
+       "INC-10099",
+       "INC-10094",
+       "INC-10089",
+       "INC-10064",
+       "INC-10013",
+       "INC-9991",
+       "INC-9986",
+       "INC-9959",
+       "INC-9912",
+       "INC-9816"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 17,
+      "refs": [
+       "INC-10139",
+       "INC-10128",
+       "INC-10104",
+       "INC-10045",
+       "INC-10007",
+       "INC-9940",
+       "INC-9938",
+       "INC-9923",
+       "INC-9919",
+       "INC-9916",
+       "INC-9892",
+       "INC-9844",
+       "INC-9833",
+       "INC-9829",
+       "INC-9824",
+       "INC-9727",
+       "INC-9713"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 10,
+      "refs": [
+       "INC-10052",
+       "INC-10042",
+       "INC-10026",
+       "INC-10025",
+       "INC-10014",
+       "INC-9954",
+       "INC-9913",
+       "INC-9842",
+       "INC-9837",
+       "INC-9769"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 10,
+      "refs": [
+       "INC-10160",
+       "INC-10124",
+       "INC-10101",
+       "INC-9770",
+       "INC-9758",
+       "INC-9754",
+       "INC-9736",
+       "INC-9734",
+       "INC-9733",
+       "INC-9727"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 9,
+      "refs": [
+       "INC-10329",
+       "INC-10316",
+       "INC-10315",
+       "INC-10306",
+       "INC-10302",
+       "INC-10256",
+       "INC-10233",
+       "INC-9986",
+       "INC-9839"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 6,
+      "refs": [
+       "INC-10120",
+       "INC-10081",
+       "INC-10052",
+       "INC-9962",
+       "INC-9759",
+       "INC-9752"
+      ]
+     },
+     "FT - Configs Misconfiguration": {
+      "count": 3,
+      "refs": [
+       "INC-10299",
+       "INC-10043",
+       "INC-9903"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 3,
+      "refs": [
+       "INC-10166",
+       "INC-10121",
+       "INC-9922"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 3,
+      "refs": [
+       "INC-10113",
+       "INC-10005",
+       "INC-9732"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 3,
+      "refs": [
+       "INC-10144",
+       "INC-9823",
+       "INC-9821"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 3,
+      "refs": [
+       "INC-10004",
+       "INC-10003",
+       "INC-9991"
+      ]
+     },
+     "None": {
+      "count": 2,
+      "refs": [
+       "INC-10350",
+       "INC-9820"
+      ]
+     },
+     "AI : General Issue": {
+      "count": 1,
+      "refs": [
+       "INC-10103"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 1,
+      "refs": [
+       "INC-9913"
+      ]
+     },
+     "FT - General Release": {
+      "count": 1,
+      "refs": [
+       "INC-9911"
+      ]
+     },
+     "AI : Tool-Calling / MCP Failure": {
+      "count": 1,
+      "refs": [
+       "INC-10135"
+      ]
+     }
     }
    },
+   "inform": {
+    "informed": 11,
+    "median_min": 33.1,
+    "p90_min": 175.2,
+    "entries": [
+     {
+      "inc": "INC-9813",
+      "channel": "ftcrm-corestar",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-16T05:03:26.278329Z",
+      "reported_at": "2026-06-16T04:12:58Z",
+      "severity": "P2",
+      "delay_min": 50.5
+     },
+     {
+      "inc": "INC-9844",
+      "channel": "ftcrm-reactivaction",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-16T15:50:48.503479Z",
+      "reported_at": "2026-06-16T15:35:22Z",
+      "severity": "P2",
+      "delay_min": 15.4
+     },
+     {
+      "inc": "INC-9847",
+      "channel": "ftcrm-mozzartbet",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-16T19:17:01.660139Z",
+      "reported_at": "2026-06-16T16:54:14Z",
+      "severity": "P3",
+      "delay_min": 142.8
+     },
+     {
+      "inc": "INC-9915",
+      "channel": "ftcrm-luckybunny",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-17T15:53:58.434409Z",
+      "reported_at": "2026-06-17T12:58:46Z",
+      "severity": "P2",
+      "delay_min": 175.2
+     },
+     {
+      "inc": "INC-9940",
+      "channel": "ftcrm-thrill",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-17T17:26:33.071079Z",
+      "reported_at": "2026-06-17T17:16:09Z",
+      "severity": "P3",
+      "delay_min": 10.4
+     },
+     {
+      "inc": "INC-10007",
+      "channel": "ftcrm-luckybunny",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-18T08:44:22.680759Z",
+      "reported_at": "2026-06-18T08:13:25Z",
+      "severity": "P2",
+      "delay_min": 31.0
+     },
+     {
+      "inc": "INC-9965",
+      "channel": "ftcrm-spade",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-18T13:08:02.004549Z",
+      "reported_at": "2026-06-17T22:57:55Z",
+      "severity": "P2",
+      "delay_min": 850.1,
+      "note": "merged into INC-9938; onboarding-brand caveat raised by Andrea"
+     },
+     {
+      "inc": "INC-10086",
+      "channel": "ftcrm-segurobet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-19T04:30:56.406689Z",
+      "reported_at": "2026-06-19T03:53:58Z",
+      "severity": "P2",
+      "delay_min": 37.0
+     },
+     {
+      "inc": "INC-10139",
+      "channel": "ftcrm-aventomt",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-19T12:04:56.305079Z",
+      "reported_at": "2026-06-19T12:00:41Z",
+      "severity": "P2",
+      "delay_min": 4.3,
+      "note": "multi-brand Link Mobility outage, 13 brands"
+     },
+     {
+      "inc": "INC-10256",
+      "channel": "ftcrm-betoffice",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-20T05:29:58.192309Z",
+      "reported_at": "2026-06-20T05:07:06Z",
+      "severity": "P1",
+      "delay_min": 22.9,
+      "note": "multi-brand MemoryDB incident, ~19 brands"
+     },
+     {
+      "inc": "INC-10332",
+      "channel": "ftcrm-slott",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-21T10:27:01.675759Z",
+      "reported_at": "2026-06-21T09:53:57Z",
+      "severity": "P2",
+      "delay_min": 33.1
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 4,
+     "open": 0,
+     "median_h": 10.56,
+     "p90_h": 69.81
+    },
+    "other": {
+     "closed": 14,
+     "open": 1,
+     "median_office_min": 658.6,
+     "p90_office_min": 1704.9
+    },
+    "items": [
+     {
+      "id": "215561022351755",
+      "p1": false,
+      "created_at": 1781612205,
+      "start": 1781612205,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783330421,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 1,
+      "week": "2026-06-15",
+      "state": "open"
+     },
+     {
+      "id": "215561022181883",
+      "p1": false,
+      "created_at": 1781603009,
+      "start": 1781620267,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1783685832,
+      "raw_h": 573.768,
+      "office_min": 8506.08,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026874096",
+      "p1": false,
+      "created_at": 1781860493,
+      "start": 1781860494,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782310162,
+      "raw_h": 124.908,
+      "office_min": 1734.47,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026199629",
+      "p1": false,
+      "created_at": 1781798653,
+      "start": 1781798653,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782299999,
+      "raw_h": 139.263,
+      "office_min": 1635.77,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561027287412",
+      "p1": false,
+      "created_at": 1781879510,
+      "start": 1781879511,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782273961,
+      "raw_h": 109.569,
+      "office_min": 1108.15,
+      "reopens": 1,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561027041072",
+      "p1": true,
+      "created_at": 1781868425,
+      "start": 1781868425,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782198113,
+      "raw_h": 91.58,
+      "office_min": 812.92,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026732752",
+      "p1": false,
+      "created_at": 1781853394,
+      "start": 1781853394,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782132670,
+      "raw_h": 77.577,
+      "office_min": 711.17,
+      "reopens": 1,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561027280319",
+      "p1": false,
+      "created_at": 1781878853,
+      "start": 1781878853,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781900407,
+      "raw_h": 5.987,
+      "office_min": 159.12,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026972457",
+      "p1": false,
+      "created_at": 1781867683,
+      "start": 1781867684,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781875140,
+      "raw_h": 2.071,
+      "office_min": 124.27,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026077610",
+      "p1": false,
+      "created_at": 1781792008,
+      "start": 1781792008,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781867943,
+      "raw_h": 21.093,
+      "office_min": 305.58,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026713881",
+      "p1": false,
+      "created_at": 1781852084,
+      "start": 1781852084,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781861913,
+      "raw_h": 2.73,
+      "office_min": 38.55,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561025063621",
+      "p1": true,
+      "created_at": 1781736153,
+      "start": 1781736154,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781804610,
+      "raw_h": 19.016,
+      "office_min": 480.0,
+      "reopens": 1,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561026251314",
+      "p1": true,
+      "created_at": 1781802569,
+      "start": 1781802569,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781804165,
+      "raw_h": 0.443,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561024036419",
+      "p1": false,
+      "created_at": 1781694513,
+      "start": 1781694513,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781788476,
+      "raw_h": 26.101,
+      "office_min": 606.05,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561022260531",
+      "p1": false,
+      "created_at": 1781605891,
+      "start": 1781605892,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781777451,
+      "raw_h": 47.655,
+      "office_min": 939.32,
+      "reopens": 1,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561021091716",
+      "p1": false,
+      "created_at": 1781524936,
+      "start": 1781524936,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781705860,
+      "raw_h": 50.257,
+      "office_min": 1095.4,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561021108467",
+      "p1": false,
+      "created_at": 1781526006,
+      "start": 1781526006,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781605732,
+      "raw_h": 22.146,
+      "office_min": 368.77,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561021206753",
+      "p1": true,
+      "created_at": 1781532209,
+      "start": 1781532209,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781539782,
+      "raw_h": 2.104,
+      "office_min": 126.22,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     },
+     {
+      "id": "215561021015848",
+      "p1": false,
+      "created_at": 1781522126,
+      "start": 1781522126,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1781540115,
+      "raw_h": 4.997,
+      "office_min": 299.82,
+      "reopens": 0,
+      "week": "2026-06-15",
+      "state": "closed"
+     }
+    ]
+   }
+  },
+  "2026-06-22": {
    "p1": [
     {
      "ref": "INC-10533",
@@ -852,24 +1368,942 @@
      "first_update_min": 486.5,
      "first_msg_min": 486.5
     }
-   ]
-  },
-  "2026-06-29": {
-   "total": 192,
-   "detection": {
-    "intercom": 40,
-    "no_alert": 17,
-    "sources": {
-     "Cloudflare Security Scanner": 12,
-     "Database Security AI Loop": 3,
-     "Dead Man's Snitch": 11,
-     "Grafana SOC alerts": 37,
-     "Grafana alerts": 4,
-     "HTTP alerts": 89,
-     "Intercom": 40,
-     "No alert": 17
+   ],
+   "cause": {
+    "total": 175,
+    "causes": {
+     "FT - Cloud Infra": {
+      "count": 31,
+      "refs": [
+       "INC-11228",
+       "INC-11224",
+       "INC-11195",
+       "INC-11190",
+       "INC-11109",
+       "INC-11058",
+       "INC-11048",
+       "INC-10990",
+       "INC-10984",
+       "INC-10940",
+       "INC-10933",
+       "INC-10855",
+       "INC-10834",
+       "INC-10831",
+       "INC-10827",
+       "INC-10824",
+       "INC-10797",
+       "INC-10718",
+       "INC-10703",
+       "INC-10683",
+       "INC-10666",
+       "INC-10644",
+       "INC-10636",
+       "INC-10606",
+       "INC-10566",
+       "INC-10552",
+       "INC-10534",
+       "INC-10438",
+       "INC-10407",
+       "INC-10395",
+       "INC-10376"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 30,
+      "refs": [
+       "INC-11234",
+       "INC-11233",
+       "INC-11221",
+       "INC-11066",
+       "INC-11051",
+       "INC-11034",
+       "INC-11033",
+       "INC-11031",
+       "INC-11025",
+       "INC-11014",
+       "INC-11008",
+       "INC-11004",
+       "INC-10991",
+       "INC-10985",
+       "INC-10899",
+       "INC-10897",
+       "INC-10896",
+       "INC-10890",
+       "INC-10885",
+       "INC-10696",
+       "INC-10648",
+       "INC-10624",
+       "INC-10601",
+       "INC-10507",
+       "INC-10505",
+       "INC-10482",
+       "INC-10462",
+       "INC-10427",
+       "INC-10395",
+       "INC-10388"
+      ]
+     },
+     "Partner - Partner System Issues": {
+      "count": 21,
+      "refs": [
+       "INC-11258",
+       "INC-11119",
+       "INC-10999",
+       "INC-10803",
+       "INC-10777",
+       "INC-10665",
+       "INC-10660",
+       "INC-10613",
+       "INC-10564",
+       "INC-10542",
+       "INC-10539",
+       "INC-10525",
+       "INC-10518",
+       "INC-10495",
+       "INC-10487",
+       "INC-10483",
+       "INC-10435",
+       "INC-10434",
+       "INC-10426",
+       "INC-10419",
+       "INC-10413"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 16,
+      "refs": [
+       "INC-11191",
+       "INC-11108",
+       "INC-11075",
+       "INC-11006",
+       "INC-10977",
+       "INC-10976",
+       "INC-10892",
+       "INC-10816",
+       "INC-10802",
+       "INC-10796",
+       "INC-10721",
+       "INC-10693",
+       "INC-10690",
+       "INC-10671",
+       "INC-10561",
+       "INC-10466"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 13,
+      "refs": [
+       "INC-11080",
+       "INC-11018",
+       "INC-10995",
+       "INC-10975",
+       "INC-10820",
+       "INC-10723",
+       "INC-10691",
+       "INC-10684",
+       "INC-10673",
+       "INC-10661",
+       "INC-10579",
+       "INC-10433",
+       "INC-10412"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 12,
+      "refs": [
+       "INC-11151",
+       "INC-11120",
+       "INC-11016",
+       "INC-10873",
+       "INC-10599",
+       "INC-10560",
+       "INC-10537",
+       "INC-10490",
+       "INC-10482",
+       "INC-10427",
+       "INC-10421",
+       "INC-10407"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 12,
+      "refs": [
+       "INC-10965",
+       "INC-10936",
+       "INC-10934",
+       "INC-10818",
+       "INC-10798",
+       "INC-10717",
+       "INC-10674",
+       "INC-10672",
+       "INC-10585",
+       "INC-10533",
+       "INC-10446",
+       "INC-10426"
+      ]
+     },
+     "None": {
+      "count": 10,
+      "refs": [
+       "INC-11241",
+       "INC-11079",
+       "INC-10963",
+       "INC-10950",
+       "INC-10949",
+       "INC-10938",
+       "INC-10902",
+       "INC-10810",
+       "INC-10791",
+       "INC-10402"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 7,
+      "refs": [
+       "INC-11235",
+       "INC-11196",
+       "INC-11072",
+       "INC-10888",
+       "INC-10778",
+       "INC-10629",
+       "INC-10410"
+      ]
+     },
+     "FT - General Release": {
+      "count": 7,
+      "refs": [
+       "INC-10997",
+       "INC-10945",
+       "INC-10849",
+       "INC-10779",
+       "INC-10775",
+       "INC-10711",
+       "INC-10666"
+      ]
+     },
+     "FT - Monitoring Failure": {
+      "count": 5,
+      "refs": [
+       "INC-11178",
+       "INC-11124",
+       "INC-11043",
+       "INC-10667",
+       "INC-10502"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 5,
+      "refs": [
+       "INC-10781",
+       "INC-10746",
+       "INC-10623",
+       "INC-10604",
+       "INC-10567"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 5,
+      "refs": [
+       "INC-10845",
+       "INC-10684",
+       "INC-10581",
+       "INC-10563",
+       "INC-10428"
+      ]
+     },
+     "FT - Planned Maintenance": {
+      "count": 3,
+      "refs": [
+       "INC-10809",
+       "INC-10527",
+       "INC-10488"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 3,
+      "refs": [
+       "INC-10827",
+       "INC-10780",
+       "INC-10656"
+      ]
+     },
+     "FT - Security Incident": {
+      "count": 1,
+      "refs": [
+       "INC-10535"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 1,
+      "refs": [
+       "INC-10685"
+      ]
+     },
+     "FT - Integration Specialists": {
+      "count": 1,
+      "refs": [
+       "INC-10419"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 1,
+      "refs": [
+       "INC-10569"
+      ]
+     }
     }
    },
+   "inform": {
+    "informed": 17,
+    "median_min": 25.5,
+    "p90_min": 255.8,
+    "entries": [
+     {
+      "inc": "INC-10413",
+      "channel": "ftcrm-meridianbet",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-22T11:56:49.954859Z",
+      "reported_at": "2026-06-22T11:08:37Z",
+      "severity": "P2",
+      "delay_min": 48.2
+     },
+     {
+      "inc": "INC-10431",
+      "channel": "ftcrm-maximabet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-22T13:51:05.167949Z",
+      "reported_at": "2026-06-22T13:28:33Z",
+      "severity": "P3",
+      "delay_min": 22.5,
+      "note": "paired with INC-10432, single message"
+     },
+     {
+      "inc": "INC-10432",
+      "channel": "ftcrm-maximabet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-22T13:51:05.167949Z",
+      "reported_at": "2026-06-22T13:28:33Z",
+      "severity": "P3",
+      "delay_min": 22.5,
+      "note": "paired with INC-10431, single message"
+     },
+     {
+      "inc": "INC-10438",
+      "channel": "ftcrm-tuohi",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-22T15:42:25.297659Z",
+      "reported_at": "2026-06-22T15:28:42Z",
+      "severity": "P2",
+      "delay_min": 13.7
+     },
+     {
+      "inc": "INC-10463",
+      "channel": "ftcrm-synovatech",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-22T19:05:48.257059Z",
+      "reported_at": "2026-06-22T18:53:30Z",
+      "severity": "P2",
+      "delay_min": 12.3,
+      "note": "declined - partner maintenance"
+     },
+     {
+      "inc": "INC-10466",
+      "channel": "ftcrm-sbtsolutions",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-22T19:27:18.500689Z",
+      "reported_at": "2026-06-22T19:03:12Z",
+      "severity": "P2",
+      "delay_min": 24.1
+     },
+     {
+      "inc": "INC-10495",
+      "channel": "ftcrm-maximabet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-22T22:51:01.467989Z",
+      "reported_at": "2026-06-22T22:35:59Z",
+      "severity": "P2",
+      "delay_min": 15.0
+     },
+     {
+      "inc": "INC-10539",
+      "channel": "ftcrm-crocobet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-23T09:12:43.821499Z",
+      "reported_at": "2026-06-23T08:50:45Z",
+      "severity": "P3",
+      "delay_min": 22.0
+     },
+     {
+      "inc": "INC-10606",
+      "channel": "ftcrm-mozzartbet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-24T06:27:47.225459Z",
+      "reported_at": "2026-06-23T21:58:05Z",
+      "severity": "P2",
+      "delay_min": 509.7
+     },
+     {
+      "inc": "INC-10673",
+      "channel": "ftcrm-aventomt",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-06-24T10:41:14.751939Z",
+      "reported_at": "2026-06-24T09:30:11Z",
+      "severity": "P1",
+      "delay_min": 71.1,
+      "note": "FT AI internal incident, broadcast ~12 ftcrm channels"
+     },
+     {
+      "inc": "INC-10820",
+      "channel": "ftcrm-betoffice",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-25T12:44:08.323179Z",
+      "reported_at": "2026-06-25T12:01:22Z",
+      "severity": "P2",
+      "delay_min": 42.8
+     },
+     {
+      "inc": "INC-10883",
+      "channel": "ftcrm-betoffice",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-26T01:09:08.986089Z",
+      "reported_at": "2026-06-25T21:13:14Z",
+      "severity": "P3",
+      "delay_min": 235.9
+     },
+     {
+      "inc": "INC-10985",
+      "channel": "ftcrm-spade-upgaming",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-26T20:59:52.665479Z",
+      "reported_at": "2026-06-26T16:14:19Z",
+      "severity": "P2",
+      "delay_min": 285.6
+     },
+     {
+      "inc": "INC-11075",
+      "channel": "ftcrm-betoffice",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-27T07:33:26.014739Z",
+      "reported_at": "2026-06-27T07:07:54Z",
+      "severity": "P2",
+      "delay_min": 25.5,
+      "note": "Padisahgroup SMS issues, multi-brand"
+     },
+     {
+      "inc": "INC-11079",
+      "channel": "ftcrm-segurobet",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-27T08:36:15.502499Z",
+      "reported_at": "2026-06-27T08:16:36Z",
+      "severity": "P2",
+      "delay_min": 19.7
+     },
+     {
+      "inc": "INC-11108",
+      "channel": "ftcrm-galabet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-27T18:40:00.642889Z",
+      "reported_at": "2026-06-27T16:29:56Z",
+      "severity": "P2",
+      "delay_min": 130.1
+     },
+     {
+      "inc": "INC-11258",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-06-28T23:52:46.297749Z",
+      "reported_at": "2026-06-28T23:14:32Z",
+      "severity": "P3",
+      "delay_min": 38.2
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 17,
+     "open": 1,
+     "median_h": 2.52,
+     "p90_h": 107.15
+    },
+    "other": {
+     "closed": 17,
+     "open": 1,
+     "median_office_min": 456.6,
+     "p90_office_min": 1417.5
+    },
+    "items": [
+     {
+      "id": "215561036272049",
+      "p1": true,
+      "created_at": 1782464896,
+      "start": 1782464896,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782914841,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 3,
+      "week": "2026-06-22",
+      "state": "open"
+     },
+     {
+      "id": "215561034855180",
+      "p1": false,
+      "created_at": 1782389181,
+      "start": 1782389181,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782460600,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "open"
+     },
+     {
+      "id": "215561036683020",
+      "p1": false,
+      "created_at": 1782483853,
+      "start": 1782483854,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783330569,
+      "raw_h": 235.199,
+      "office_min": 2591.92,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033111349",
+      "p1": true,
+      "created_at": 1782300310,
+      "start": 1782300310,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783325207,
+      "raw_h": 284.694,
+      "office_min": 3694.83,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031399061",
+      "p1": true,
+      "created_at": 1782198722,
+      "start": 1782198722,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782816491,
+      "raw_h": 171.602,
+      "office_min": 2508.18,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034751757",
+      "p1": false,
+      "created_at": 1782382741,
+      "start": 1782382742,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782806413,
+      "raw_h": 117.686,
+      "office_min": 1360.97,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561037018638",
+      "p1": true,
+      "created_at": 1782497096,
+      "start": 1782497096,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782728144,
+      "raw_h": 64.18,
+      "office_min": 75.73,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036954405",
+      "p1": true,
+      "created_at": 1782492783,
+      "start": 1782492783,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782498906,
+      "raw_h": 1.701,
+      "office_min": 6.95,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561037430304",
+      "p1": true,
+      "created_at": 1782508317,
+      "start": 1782508317,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782515352,
+      "raw_h": 1.954,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036377015",
+      "p1": true,
+      "created_at": 1782469928,
+      "start": 1782469928,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782483855,
+      "raw_h": 3.869,
+      "office_min": 232.12,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036346667",
+      "p1": true,
+      "created_at": 1782468500,
+      "start": 1782468500,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782478923,
+      "raw_h": 2.895,
+      "office_min": 173.72,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036422028",
+      "p1": true,
+      "created_at": 1782472296,
+      "start": 1782472296,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782478584,
+      "raw_h": 1.747,
+      "office_min": 104.8,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036368243",
+      "p1": true,
+      "created_at": 1782469487,
+      "start": 1782469487,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782478575,
+      "raw_h": 2.524,
+      "office_min": 151.47,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036393178",
+      "p1": true,
+      "created_at": 1782470798,
+      "start": 1782470799,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782478561,
+      "raw_h": 2.156,
+      "office_min": 129.37,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036466276",
+      "p1": true,
+      "created_at": 1782474016,
+      "start": 1782474016,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782478549,
+      "raw_h": 1.259,
+      "office_min": 75.55,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036266985",
+      "p1": false,
+      "created_at": 1782464574,
+      "start": 1782464574,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782467161,
+      "raw_h": 0.719,
+      "office_min": 43.12,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034684362",
+      "p1": false,
+      "created_at": 1782379070,
+      "start": 1782379070,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782461765,
+      "raw_h": 22.971,
+      "office_min": 462.17,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561030812911",
+      "p1": false,
+      "created_at": 1782143858,
+      "start": 1782143858,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782459279,
+      "raw_h": 87.617,
+      "office_min": 1502.37,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033093071",
+      "p1": false,
+      "created_at": 1782299677,
+      "start": 1782299677,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782384670,
+      "raw_h": 23.609,
+      "office_min": 456.55,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033139164",
+      "p1": false,
+      "created_at": 1782301974,
+      "start": 1782301974,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782382864,
+      "raw_h": 22.469,
+      "office_min": 388.17,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031474781",
+      "p1": false,
+      "created_at": 1782203178,
+      "start": 1782203179,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782369878,
+      "raw_h": 46.305,
+      "office_min": 960.0,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561032953720",
+      "p1": false,
+      "created_at": 1782295064,
+      "start": 1782295064,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782378423,
+      "raw_h": 23.155,
+      "office_min": 429.32,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034620156",
+      "p1": true,
+      "created_at": 1782375401,
+      "start": 1782375402,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782376739,
+      "raw_h": 0.371,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034621338",
+      "p1": false,
+      "created_at": 1782375484,
+      "start": 1782375563,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1782375970,
+      "raw_h": 0.113,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034525182",
+      "p1": true,
+      "created_at": 1782371417,
+      "start": 1782371417,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782374543,
+      "raw_h": 0.868,
+      "office_min": 0.0,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033637047",
+      "p1": true,
+      "created_at": 1782326087,
+      "start": 1782326087,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782327789,
+      "raw_h": 0.473,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033263606",
+      "p1": false,
+      "created_at": 1782308222,
+      "start": 1782308222,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782312610,
+      "raw_h": 1.219,
+      "office_min": 73.13,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031630431",
+      "p1": false,
+      "created_at": 1782212446,
+      "start": 1782212447,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782308857,
+      "raw_h": 26.781,
+      "office_min": 646.83,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561032727853",
+      "p1": true,
+      "created_at": 1782284935,
+      "start": 1782284935,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782297482,
+      "raw_h": 3.485,
+      "office_min": 98.03,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561032810543",
+      "p1": false,
+      "created_at": 1782287375,
+      "start": 1782287462,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1782290249,
+      "raw_h": 0.774,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561030387760",
+      "p1": false,
+      "created_at": 1782116282,
+      "start": 1782116282,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782285111,
+      "raw_h": 46.897,
+      "office_min": 960.0,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561032530212",
+      "p1": true,
+      "created_at": 1782263827,
+      "start": 1782263828,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782274547,
+      "raw_h": 2.978,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031491552",
+      "p1": true,
+      "created_at": 1782203425,
+      "start": 1782203425,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782273966,
+      "raw_h": 19.595,
+      "office_min": 480.0,
+      "reopens": 1,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561030297530",
+      "p1": false,
+      "created_at": 1782111179,
+      "start": 1782111179,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782207394,
+      "raw_h": 26.726,
+      "office_min": 516.57,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031385792",
+      "p1": false,
+      "created_at": 1782197695,
+      "start": 1782197695,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782202152,
+      "raw_h": 1.238,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561030630013",
+      "p1": false,
+      "created_at": 1782131361,
+      "start": 1782131361,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782135066,
+      "raw_h": 1.029,
+      "office_min": 61.75,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     }
+    ]
+   }
+  },
+  "2026-06-29": {
    "p1": [
     {
      "ref": "INC-11288",
@@ -1043,24 +2477,980 @@
      "updates": 2,
      "first_update_min": 1060.0
     }
-   ]
-  },
-  "2026-07-06": {
-   "total": 201,
-   "detection": {
-    "intercom": 32,
-    "no_alert": 7,
-    "sources": {
-     "Cloudflare Security Scanner": 1,
-     "Dead Man's Snitch": 4,
-     "Grafana SOC alerts": 31,
-     "Grafana alerts": 66,
-     "HTTP DMS FTML Alerts": 3,
-     "HTTP alerts": 78,
-     "Intercom": 32,
-     "No alert": 7
+   ],
+   "cause": {
+    "total": 192,
+    "causes": {
+     "FT - Cloud Infra": {
+      "count": 31,
+      "refs": [
+       "INC-12364",
+       "INC-12363",
+       "INC-12340",
+       "INC-12275",
+       "INC-12262",
+       "INC-12236",
+       "INC-12176",
+       "INC-12175",
+       "INC-12172",
+       "INC-12169",
+       "INC-12165",
+       "INC-12160",
+       "INC-12152",
+       "INC-12118",
+       "INC-12117",
+       "INC-12067",
+       "INC-11696",
+       "INC-11684",
+       "INC-11681",
+       "INC-11645",
+       "INC-11644",
+       "INC-11642",
+       "INC-11578",
+       "INC-11531",
+       "INC-11498",
+       "INC-11394",
+       "INC-11361",
+       "INC-11338",
+       "INC-11316",
+       "INC-11282",
+       "INC-11281"
+      ]
+     },
+     "FT - General Release": {
+      "count": 23,
+      "refs": [
+       "INC-12397",
+       "INC-12206",
+       "INC-12196",
+       "INC-12168",
+       "INC-12073",
+       "INC-12072",
+       "INC-12071",
+       "INC-12070",
+       "INC-12069",
+       "INC-12068",
+       "INC-12051",
+       "INC-12038",
+       "INC-12035",
+       "INC-11853",
+       "INC-11746",
+       "INC-11737",
+       "INC-11716",
+       "INC-11700",
+       "INC-11687",
+       "INC-11685",
+       "INC-11554",
+       "INC-11485",
+       "INC-11448"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 23,
+      "refs": [
+       "INC-12253",
+       "INC-12115",
+       "INC-11828",
+       "INC-11814",
+       "INC-11809",
+       "INC-11799",
+       "INC-11796",
+       "INC-11795",
+       "INC-11794",
+       "INC-11792",
+       "INC-11623",
+       "INC-11584",
+       "INC-11560",
+       "INC-11551",
+       "INC-11535",
+       "INC-11466",
+       "INC-11465",
+       "INC-11438",
+       "INC-11437",
+       "INC-11330",
+       "INC-11326",
+       "INC-11321",
+       "INC-11308"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 19,
+      "refs": [
+       "INC-12206",
+       "INC-12196",
+       "INC-11978",
+       "INC-11746",
+       "INC-11723",
+       "INC-11712",
+       "INC-11707",
+       "INC-11612",
+       "INC-11602",
+       "INC-11553",
+       "INC-11524",
+       "INC-11514",
+       "INC-11477",
+       "INC-11448",
+       "INC-11439",
+       "INC-11390",
+       "INC-11387",
+       "INC-11382",
+       "INC-11295"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 17,
+      "refs": [
+       "INC-12352",
+       "INC-12351",
+       "INC-12350",
+       "INC-12332",
+       "INC-12256",
+       "INC-11832",
+       "INC-11788",
+       "INC-11711",
+       "INC-11706",
+       "INC-11693",
+       "INC-11679",
+       "INC-11622",
+       "INC-11499",
+       "INC-11469",
+       "INC-11441",
+       "INC-11421",
+       "INC-11404"
+      ]
+     },
+     "Partner - Partner System Issues": {
+      "count": 16,
+      "refs": [
+       "INC-12366",
+       "INC-12324",
+       "INC-12276",
+       "INC-12248",
+       "INC-12107",
+       "INC-12049",
+       "INC-12037",
+       "INC-11740",
+       "INC-11629",
+       "INC-11621",
+       "INC-11603",
+       "INC-11601",
+       "INC-11351",
+       "INC-11349",
+       "INC-11323",
+       "INC-11305"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 16,
+      "refs": [
+       "INC-12359",
+       "INC-12205",
+       "INC-12191",
+       "INC-12171",
+       "INC-12150",
+       "INC-12146",
+       "INC-11822",
+       "INC-11735",
+       "INC-11644",
+       "INC-11558",
+       "INC-11449",
+       "INC-11420",
+       "INC-11389",
+       "INC-11386",
+       "INC-11307",
+       "INC-11295"
+      ]
+     },
+     "None": {
+      "count": 9,
+      "refs": [
+       "INC-12204",
+       "INC-12183",
+       "INC-12179",
+       "INC-12087",
+       "INC-12047",
+       "INC-12022",
+       "INC-11868",
+       "INC-11867",
+       "INC-11837"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 9,
+      "refs": [
+       "INC-12358",
+       "INC-12143",
+       "INC-11840",
+       "INC-11601",
+       "INC-11591",
+       "INC-11397",
+       "INC-11396",
+       "INC-11288",
+       "INC-11287"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 7,
+      "refs": [
+       "INC-12056",
+       "INC-12013",
+       "INC-11833",
+       "INC-11598",
+       "INC-11585",
+       "INC-11446",
+       "INC-11331"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 6,
+      "refs": [
+       "INC-12297",
+       "INC-12198",
+       "INC-12189",
+       "INC-12168",
+       "INC-12007",
+       "INC-11737"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 6,
+      "refs": [
+       "INC-12317",
+       "INC-12212",
+       "INC-12074",
+       "INC-11750",
+       "INC-11639",
+       "INC-11525"
+      ]
+     },
+     "FT - Security Incident": {
+      "count": 6,
+      "refs": [
+       "INC-12406",
+       "INC-12372",
+       "INC-12113",
+       "INC-11625",
+       "INC-11433",
+       "INC-11310"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 6,
+      "refs": [
+       "INC-12123",
+       "INC-12103",
+       "INC-11642",
+       "INC-11361",
+       "INC-11303",
+       "INC-11300"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 4,
+      "refs": [
+       "INC-12170",
+       "INC-11725",
+       "INC-11720",
+       "INC-11704"
+      ]
+     },
+     "FT - Monitoring Failure": {
+      "count": 4,
+      "refs": [
+       "INC-12104",
+       "INC-11833",
+       "INC-11647",
+       "INC-11292"
+      ]
+     },
+     "AI : General Issue": {
+      "count": 2,
+      "refs": [
+       "INC-12093",
+       "INC-11697"
+      ]
+     }
     }
    },
+   "inform": {
+    "informed": 23,
+    "median_min": 50.3,
+    "p90_min": 281.5,
+    "entries": [
+     {
+      "inc": "INC-11331",
+      "channel": "ftcrm-trustedgaming",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-29T18:25:43.378309Z",
+      "reported_at": "2026-06-29T18:14:47Z",
+      "severity": "P2",
+      "delay_min": 10.9
+     },
+     {
+      "inc": "INC-11323",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-29T22:02:20.672099Z",
+      "reported_at": "2026-06-29T17:24:01Z",
+      "severity": "P2",
+      "delay_min": 278.3
+     },
+     {
+      "inc": "INC-11349",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-29T22:15:53.624739Z",
+      "reported_at": "2026-06-29T22:04:56Z",
+      "severity": "P3",
+      "delay_min": 11.0
+     },
+     {
+      "inc": "INC-11420",
+      "channel": "ftcrm-meridianbet",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-30T13:03:12.067579Z",
+      "reported_at": "2026-06-30T11:18:45Z",
+      "severity": "P2",
+      "delay_min": 104.5
+     },
+     {
+      "inc": "INC-11441",
+      "channel": "ftcrm-betpipo",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-06-30T13:20:47.705179Z",
+      "reported_at": "2026-06-30T12:30:31Z",
+      "severity": "P2",
+      "delay_min": 50.3
+     },
+     {
+      "inc": "INC-11469",
+      "channel": "ftcrm-multiverse",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-30T15:36:34.106699Z",
+      "reported_at": "2026-06-30T14:39:04Z",
+      "severity": "P2",
+      "delay_min": 57.5
+     },
+     {
+      "inc": "INC-11524",
+      "channel": "ftcrm-hitbet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-30T17:49:55.449529Z",
+      "reported_at": "2026-06-30T16:13:05Z",
+      "severity": "P2",
+      "delay_min": 96.8,
+      "note": "SUSPECT: text cites INC-11524 (jojobet email-distributor) but content describes Hitbet email issue - likely wrong ticket number"
+     },
+     {
+      "inc": "INC-11601",
+      "channel": "ftcrm-vsi",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-30T20:58:40.603509Z",
+      "reported_at": "2026-06-30T19:47:29Z",
+      "severity": "P2",
+      "delay_min": 71.2
+     },
+     {
+      "inc": "INC-11600",
+      "channel": "ftcrm-hitbet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-06-30T21:05:41.280709Z",
+      "reported_at": "2026-06-30T19:43:02Z",
+      "severity": "P2",
+      "delay_min": 82.7,
+      "note": "merged into INC-11075"
+     },
+     {
+      "inc": "INC-11585",
+      "channel": "ftcrm-igtech-treadstone",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-06-30T23:36:35.361219Z",
+      "reported_at": "2026-06-30T18:54:21Z",
+      "severity": "P2",
+      "delay_min": 282.2
+     },
+     {
+      "inc": "INC-11632",
+      "channel": "ftcrm-padisahbet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-01T04:24:00.090409Z",
+      "reported_at": "2026-06-30T23:36:38Z",
+      "severity": "P2",
+      "delay_min": 287.4,
+      "note": "merged into INC-11075"
+     },
+     {
+      "inc": "INC-11799",
+      "channel": "ftcrm-betoffice",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-01T23:00:43.234829Z",
+      "reported_at": "2026-07-01T22:52:14Z",
+      "severity": "P2",
+      "delay_min": 8.5
+     },
+     {
+      "inc": "INC-11814",
+      "channel": "ftcrm-zunado-coretaker",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-02T01:42:59.609509Z",
+      "reported_at": "2026-07-02T01:30:10Z",
+      "severity": "P2",
+      "delay_min": 12.8
+     },
+     {
+      "inc": "INC-12013",
+      "channel": "ftcrm-aventomt",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-07-02T13:23:14.698769Z",
+      "reported_at": "2026-07-02T13:01:41Z",
+      "severity": "P2",
+      "delay_min": 21.6
+     },
+     {
+      "inc": "INC-12107",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-02T22:42:40.086939Z",
+      "reported_at": "2026-07-02T22:16:02Z",
+      "severity": "P3",
+      "delay_min": 26.6
+     },
+     {
+      "inc": "INC-12256",
+      "channel": "ftcrm-upgaming",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-04T00:38:30.591259Z",
+      "reported_at": "2026-07-04T00:19:14Z",
+      "severity": "P3",
+      "delay_min": 19.3,
+      "note": "multi-brand Upgaming platform outage"
+     },
+     {
+      "inc": "INC-12332",
+      "channel": "ftcrm-galabet",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-05T05:59:16.480409Z",
+      "reported_at": "2026-07-05T00:52:57Z",
+      "severity": "P2",
+      "delay_min": 306.3
+     },
+     {
+      "inc": "INC-12337",
+      "channel": "ftcrm-winspirit-dev",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-05T06:33:54.223429Z",
+      "reported_at": "2026-07-05T02:35:18Z",
+      "severity": "P2",
+      "delay_min": 238.6,
+      "note": "declined - resolved in HTTP"
+     },
+     {
+      "inc": "INC-12351",
+      "channel": "ftcrm-rhino",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-05T07:20:49.091919Z",
+      "reported_at": "2026-07-05T07:10:41Z",
+      "severity": "P2",
+      "delay_min": 10.1
+     },
+     {
+      "inc": "INC-12352",
+      "channel": "ftcrm-flappycasino",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-05T07:22:02.870799Z",
+      "reported_at": "2026-07-05T07:15:30Z",
+      "severity": "P2",
+      "delay_min": 6.5
+     },
+     {
+      "inc": "INC-12350",
+      "channel": "ftcrm-mtm",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-05T07:24:43.864229Z",
+      "reported_at": "2026-07-05T07:07:41Z",
+      "severity": "P2",
+      "delay_min": 17.0
+     },
+     {
+      "inc": "INC-12366",
+      "channel": "ftcrm-mb8",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-05T17:14:37.046939Z",
+      "reported_at": "2026-07-05T16:58:05Z",
+      "severity": "P3",
+      "delay_min": 16.5
+     },
+     {
+      "inc": "INC-12364",
+      "channel": "ftcrm-igtech-momentum",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-05T18:21:05.690999Z",
+      "reported_at": "2026-07-05T16:49:17Z",
+      "severity": "P2",
+      "delay_min": 91.8
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 12,
+     "open": 1,
+     "median_h": 15.93,
+     "p90_h": 81.4
+    },
+    "other": {
+     "closed": 21,
+     "open": 0,
+     "median_office_min": 1118.6,
+     "p90_office_min": 3166.9
+    },
+    "items": [
+     {
+      "id": "215561046412156",
+      "p1": true,
+      "created_at": 1782998978,
+      "start": 1782998978,
+      "start_basis": "first_assignment_at",
+      "last_close_at": null,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "open"
+     },
+     {
+      "id": "215561044802323",
+      "p1": false,
+      "created_at": 1782914380,
+      "start": 1782914381,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783683736,
+      "raw_h": 213.71,
+      "office_min": 3222.58,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047627727",
+      "p1": true,
+      "created_at": 1783071790,
+      "start": 1783071790,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783426523,
+      "raw_h": 98.537,
+      "office_min": 1112.22,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046220841",
+      "p1": false,
+      "created_at": 1782986417,
+      "start": 1782986417,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783578182,
+      "raw_h": 164.379,
+      "office_min": 2339.72,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046574934",
+      "p1": false,
+      "created_at": 1783003123,
+      "start": 1783003124,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783521202,
+      "raw_h": 143.911,
+      "office_min": 1914.63,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042455348",
+      "p1": false,
+      "created_at": 1782806895,
+      "start": 1782806895,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783519835,
+      "raw_h": 198.039,
+      "office_min": 3190.58,
+      "reopens": 2,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561040792132",
+      "p1": false,
+      "created_at": 1782719378,
+      "start": 1782719378,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783432013,
+      "raw_h": 197.954,
+      "office_min": 3166.88,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046360038",
+      "p1": false,
+      "created_at": 1782995503,
+      "start": 1782995503,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783406546,
+      "raw_h": 114.179,
+      "office_min": 1228.28,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047509338",
+      "p1": false,
+      "created_at": 1783065220,
+      "start": 1783065220,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783414557,
+      "raw_h": 97.038,
+      "office_min": 960.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561048274264",
+      "p1": true,
+      "created_at": 1783108503,
+      "start": 1783108503,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783327023,
+      "raw_h": 60.7,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047611998",
+      "p1": false,
+      "created_at": 1783070619,
+      "start": 1783070620,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783340742,
+      "raw_h": 75.034,
+      "office_min": 662.03,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561049343182",
+      "p1": true,
+      "created_at": 1783164089,
+      "start": 1783164090,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783186486,
+      "raw_h": 6.221,
+      "office_min": 0.0,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044506651",
+      "p1": false,
+      "created_at": 1782900874,
+      "start": 1782900874,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783173884,
+      "raw_h": 75.836,
+      "office_min": 1365.43,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047595167",
+      "p1": false,
+      "created_at": 1783069560,
+      "start": 1783069560,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783093488,
+      "raw_h": 6.647,
+      "office_min": 398.8,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047605497",
+      "p1": false,
+      "created_at": 1783070127,
+      "start": 1783070128,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783089187,
+      "raw_h": 5.294,
+      "office_min": 317.65,
+      "reopens": 3,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046425596",
+      "p1": false,
+      "created_at": 1782999855,
+      "start": 1782999856,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783084046,
+      "raw_h": 23.386,
+      "office_min": 443.17,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044342147",
+      "p1": false,
+      "created_at": 1782894041,
+      "start": 1782894042,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783081203,
+      "raw_h": 51.989,
+      "office_min": 1160.05,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047596443",
+      "p1": true,
+      "created_at": 1783069636,
+      "start": 1783069636,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783079341,
+      "raw_h": 2.696,
+      "office_min": 161.75,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046228307",
+      "p1": true,
+      "created_at": 1782986764,
+      "start": 1782986764,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783079037,
+      "raw_h": 25.631,
+      "office_min": 577.88,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042923093",
+      "p1": false,
+      "created_at": 1782829285,
+      "start": 1782829285,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783026297,
+      "raw_h": 54.726,
+      "office_min": 1118.58,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561040923875",
+      "p1": true,
+      "created_at": 1782724892,
+      "start": 1782724892,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783026223,
+      "raw_h": 83.703,
+      "office_min": 1898.47,
+      "reopens": 2,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044393217",
+      "p1": false,
+      "created_at": 1782895747,
+      "start": 1782895747,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783025718,
+      "raw_h": 36.103,
+      "office_min": 960.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042714654",
+      "p1": true,
+      "created_at": 1782818057,
+      "start": 1782818057,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783024327,
+      "raw_h": 57.297,
+      "office_min": 1305.72,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561043799819",
+      "p1": true,
+      "created_at": 1782863842,
+      "start": 1782863842,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783005291,
+      "raw_h": 39.291,
+      "office_min": 854.85,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044800776",
+      "p1": false,
+      "created_at": 1782914300,
+      "start": 1782914300,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782999795,
+      "raw_h": 23.749,
+      "office_min": 464.92,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561041226471",
+      "p1": false,
+      "created_at": 1782734621,
+      "start": 1782734621,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782999536,
+      "raw_h": 73.588,
+      "office_min": 1535.25,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561041203775",
+      "p1": false,
+      "created_at": 1782733213,
+      "start": 1782733213,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782928047,
+      "raw_h": 54.121,
+      "office_min": 1279.78,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042468705",
+      "p1": false,
+      "created_at": 1782807710,
+      "start": 1782807710,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782888908,
+      "raw_h": 22.555,
+      "office_min": 480.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561043415858",
+      "p1": true,
+      "created_at": 1782848770,
+      "start": 1782848770,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782851592,
+      "raw_h": 0.784,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561043073880",
+      "p1": true,
+      "created_at": 1782835582,
+      "start": 1782835582,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782843407,
+      "raw_h": 2.174,
+      "office_min": 53.63,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561043138962",
+      "p1": true,
+      "created_at": 1782840457,
+      "start": 1782840457,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782842870,
+      "raw_h": 0.67,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042583189",
+      "p1": true,
+      "created_at": 1782812100,
+      "start": 1782812100,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782817800,
+      "raw_h": 1.583,
+      "office_min": 95.0,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561040899279",
+      "p1": false,
+      "created_at": 1782724601,
+      "start": 1782724602,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782812375,
+      "raw_h": 24.381,
+      "office_min": 502.88,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561041371047",
+      "p1": false,
+      "created_at": 1782741421,
+      "start": 1782741421,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782811295,
+      "raw_h": 19.409,
+      "office_min": 204.57,
+      "reopens": 1,
+      "week": "2026-06-29",
+      "state": "closed"
+     }
+    ]
+   }
+  },
+  "2026-07-06": {
    "p1": [
     {
      "ref": "INC-12432",
@@ -1143,7 +3533,911 @@
      "first_msg_min": 27.9
     }
    ],
-   "partial": true
+   "partial": true,
+   "cause": {
+    "total": 202,
+    "causes": {
+     "None": {
+      "count": 93,
+      "refs": [
+       "INC-13581",
+       "INC-13579",
+       "INC-13577",
+       "INC-13573",
+       "INC-13570",
+       "INC-13567",
+       "INC-13537",
+       "INC-13528",
+       "INC-13526",
+       "INC-13511",
+       "INC-13505",
+       "INC-13498",
+       "INC-13497",
+       "INC-13488",
+       "INC-13477",
+       "INC-13475",
+       "INC-13460",
+       "INC-13419",
+       "INC-13415",
+       "INC-13410",
+       "INC-13390",
+       "INC-13386",
+       "INC-13380",
+       "INC-13338",
+       "INC-13322",
+       "INC-13312",
+       "INC-13294",
+       "INC-13231",
+       "INC-13225",
+       "INC-13220",
+       "INC-13210",
+       "INC-13178",
+       "INC-13176",
+       "INC-13172",
+       "INC-13161",
+       "INC-13156",
+       "INC-13153",
+       "INC-13152",
+       "INC-13142",
+       "INC-13141",
+       "INC-13133",
+       "INC-13111",
+       "INC-13106",
+       "INC-13101",
+       "INC-13081",
+       "INC-13071",
+       "INC-13053",
+       "INC-13048",
+       "INC-13030",
+       "INC-13026",
+       "INC-12998",
+       "INC-12997",
+       "INC-12975",
+       "INC-12968",
+       "INC-12965",
+       "INC-12954",
+       "INC-12939",
+       "INC-12918",
+       "INC-12909",
+       "INC-12904",
+       "INC-12896",
+       "INC-12888",
+       "INC-12862",
+       "INC-12856",
+       "INC-12834",
+       "INC-12797",
+       "INC-12778",
+       "INC-12754",
+       "INC-12753",
+       "INC-12741",
+       "INC-12713",
+       "INC-12705",
+       "INC-12698",
+       "INC-12691",
+       "INC-12684",
+       "INC-12682",
+       "INC-12680",
+       "INC-12671",
+       "INC-12632",
+       "INC-12625",
+       "INC-12617",
+       "INC-12616",
+       "INC-12610",
+       "INC-12607",
+       "INC-12599",
+       "INC-12594",
+       "INC-12585",
+       "INC-12574",
+       "INC-12560",
+       "INC-12537",
+       "INC-12494",
+       "INC-12454",
+       "INC-12436"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 21,
+      "refs": [
+       "INC-13502",
+       "INC-13486",
+       "INC-13485",
+       "INC-13467",
+       "INC-13464",
+       "INC-13462",
+       "INC-13455",
+       "INC-13201",
+       "INC-13182",
+       "INC-13134",
+       "INC-13131",
+       "INC-13130",
+       "INC-13128",
+       "INC-13122",
+       "INC-13097",
+       "INC-12963",
+       "INC-12952",
+       "INC-12906",
+       "INC-12712",
+       "INC-12696",
+       "INC-12447"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 16,
+      "refs": [
+       "INC-12959",
+       "INC-12950",
+       "INC-12913",
+       "INC-12768",
+       "INC-12761",
+       "INC-12711",
+       "INC-12689",
+       "INC-12644",
+       "INC-12635",
+       "INC-12627",
+       "INC-12618",
+       "INC-12598",
+       "INC-12556",
+       "INC-12545",
+       "INC-12455",
+       "INC-12430"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 14,
+      "refs": [
+       "INC-13571",
+       "INC-13559",
+       "INC-13266",
+       "INC-12906",
+       "INC-12891",
+       "INC-12848",
+       "INC-12824",
+       "INC-12818",
+       "INC-12718",
+       "INC-12629",
+       "INC-12626",
+       "INC-12504",
+       "INC-12493",
+       "INC-12487"
+      ]
+     },
+     "Partner - Partner System Issues": {
+      "count": 11,
+      "refs": [
+       "INC-13348",
+       "INC-13273",
+       "INC-13222",
+       "INC-13148",
+       "INC-12762",
+       "INC-12687",
+       "INC-12557",
+       "INC-12555",
+       "INC-12508",
+       "INC-12458",
+       "INC-12445"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 10,
+      "refs": [
+       "INC-13187",
+       "INC-13137",
+       "INC-13042",
+       "INC-12766",
+       "INC-12765",
+       "INC-12714",
+       "INC-12643",
+       "INC-12642",
+       "INC-12595",
+       "INC-12514"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 9,
+      "refs": [
+       "INC-13459",
+       "INC-13181",
+       "INC-13171",
+       "INC-13151",
+       "INC-13082",
+       "INC-12943",
+       "INC-12923",
+       "INC-12530",
+       "INC-12500"
+      ]
+     },
+     "FT - Unknown": {
+      "count": 8,
+      "refs": [
+       "INC-13471",
+       "INC-13235",
+       "INC-12902",
+       "INC-12692",
+       "INC-12637",
+       "INC-12622",
+       "INC-12602",
+       "INC-12466"
+      ]
+     },
+     "FT - Frontend Code Defect": {
+      "count": 5,
+      "refs": [
+       "INC-12737",
+       "INC-12497",
+       "INC-12486",
+       "INC-12441",
+       "INC-12437"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 4,
+      "refs": [
+       "INC-13143",
+       "INC-12919",
+       "INC-12703",
+       "INC-12432"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 3,
+      "refs": [
+       "INC-12787",
+       "INC-12440",
+       "INC-12427"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 3,
+      "refs": [
+       "INC-12838",
+       "INC-12755",
+       "INC-12414"
+      ]
+     },
+     "FT - General Release": {
+      "count": 2,
+      "refs": [
+       "INC-12496",
+       "INC-12456"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 2,
+      "refs": [
+       "INC-12761",
+       "INC-12739"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 2,
+      "refs": [
+       "INC-12751",
+       "INC-12592"
+      ]
+     },
+     "FT - Security Incident": {
+      "count": 1,
+      "refs": [
+       "INC-13017"
+      ]
+     }
+    }
+   },
+   "inform": {
+    "informed": 26,
+    "median_min": 32.0,
+    "p90_min": 86.1,
+    "entries": [
+     {
+      "inc": "INC-12445",
+      "channel": "ftcrm-qbet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-06T14:32:07.040829Z",
+      "reported_at": "2026-07-06T08:49:19Z",
+      "severity": "P2",
+      "delay_min": 342.8
+     },
+     {
+      "inc": "INC-12500",
+      "channel": "ftcrm-ibet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-06T15:20:56.056959Z",
+      "reported_at": "2026-07-06T15:10:35Z",
+      "severity": "P3",
+      "delay_min": 10.4
+     },
+     {
+      "inc": "INC-12508",
+      "channel": "ftcrm-supabets-isolutions",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-06T19:01:28.974829Z",
+      "reported_at": "2026-07-06T18:34:16Z",
+      "severity": "P3",
+      "delay_min": 27.2
+     },
+     {
+      "inc": "INC-12555",
+      "channel": "ftcrm-evo-io",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-06T22:58:06.194859Z",
+      "reported_at": "2026-07-06T22:50:50Z",
+      "severity": "P2",
+      "delay_min": 7.3
+     },
+     {
+      "inc": "INC-12556",
+      "channel": "ftcrm-g2",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-06T23:02:50.518429Z",
+      "reported_at": "2026-07-06T22:59:15Z",
+      "severity": "P2",
+      "delay_min": 3.6
+     },
+     {
+      "inc": "INC-12595",
+      "channel": "ftcrm-maxbet-serbia",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-07-07T09:45:38.424899Z",
+      "reported_at": "2026-07-07T08:44:15Z",
+      "severity": "P3",
+      "delay_min": 61.4
+     },
+     {
+      "inc": "INC-12618",
+      "channel": "ftcrm-meridianbet",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-07T15:07:11.202229Z",
+      "reported_at": "2026-07-07T13:53:57Z",
+      "severity": "P3",
+      "delay_min": 73.2
+     },
+     {
+      "inc": "INC-12642",
+      "channel": "ftcrm-supabets-isolutions",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-07T19:00:38.125039Z",
+      "reported_at": "2026-07-07T18:29:15Z",
+      "severity": "P3",
+      "delay_min": 31.4
+     },
+     {
+      "inc": "INC-12643",
+      "channel": "ftcrm-seffiaray",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-07T20:03:09.898119Z",
+      "reported_at": "2026-07-07T18:48:56Z",
+      "severity": "P2",
+      "delay_min": 74.2
+     },
+     {
+      "inc": "INC-12687",
+      "channel": "ftcrm-mtm",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-08T05:02:16.064279Z",
+      "reported_at": "2026-07-08T04:55:13Z",
+      "severity": "P3",
+      "delay_min": 7.1
+     },
+     {
+      "inc": "INC-12696",
+      "channel": "ftcrm-rzd",
+      "author": "Simon Brown",
+      "msg_ts": "2026-07-08T08:10:13.634789Z",
+      "reported_at": "2026-07-08T06:49:12Z",
+      "severity": "P2",
+      "delay_min": 81.0,
+      "note": "wording variant: 'FT Internal reference' not 'FT Incident for internal reference'"
+     },
+     {
+      "inc": "INC-12718",
+      "channel": "ftcrm-coinbar-betconstruct-orisbet-norabahis",
+      "author": "Simon Brown",
+      "msg_ts": "2026-07-08T10:54:44.518239Z",
+      "reported_at": "2026-07-08T10:22:02Z",
+      "severity": "P2",
+      "delay_min": 32.7,
+      "note": "wording variant: 'FT Internal reference'"
+     },
+     {
+      "inc": "INC-12761",
+      "channel": "ftcrm-betlive",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-07-08T15:34:54.019779Z",
+      "reported_at": "2026-07-08T14:23:17Z",
+      "severity": "P3",
+      "delay_min": 71.6,
+      "note": "multi-brand GCP KMS config incident"
+     },
+     {
+      "inc": "INC-12787",
+      "channel": "ftcrm-supabets-isolutions",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-07-08T19:18:28.164979Z",
+      "reported_at": "2026-07-08T18:38:04Z",
+      "severity": "P3",
+      "delay_min": 40.4
+     },
+     {
+      "inc": "INC-12932",
+      "channel": "ftcrm-yelostar-mryoker",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-09T09:58:22.443209Z",
+      "reported_at": "2026-07-09T09:32:16Z",
+      "severity": "P2",
+      "delay_min": 26.1,
+      "note": "merged into INC-12856"
+     },
+     {
+      "inc": "INC-12943",
+      "channel": "ftcrm-ginjabet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-09T10:27:44.499119Z",
+      "reported_at": "2026-07-09T10:12:38Z",
+      "severity": "P2",
+      "delay_min": 15.1
+     },
+     {
+      "inc": "INC-12856",
+      "channel": "ftcrm-galabet",
+      "author": "Matteo Rapisarda",
+      "msg_ts": "2026-07-09T12:19:59.665849Z",
+      "reported_at": "2026-07-09T03:55:26Z",
+      "severity": "P1",
+      "delay_min": 504.6,
+      "note": "MemoryDB threshold incident, ~21 brands"
+     },
+     {
+      "inc": "INC-13082",
+      "channel": "ftcrm-papawins-nuxgame-churned",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-10T00:51:33.139569Z",
+      "reported_at": "2026-07-10T00:12:36Z",
+      "severity": "P2",
+      "delay_min": 39.0,
+      "note": "partner churned mid-incident"
+     },
+     {
+      "inc": "INC-13151",
+      "channel": "ftcrm-meridianbet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-10T08:37:25.005729Z",
+      "reported_at": "2026-07-10T08:22:07Z",
+      "severity": "P2",
+      "delay_min": 15.3
+     },
+     {
+      "inc": "INC-13148",
+      "channel": "ftcrm-crocobet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-10T09:03:51.424029Z",
+      "reported_at": "2026-07-10T08:11:55Z",
+      "severity": "P3",
+      "delay_min": 51.9
+     },
+     {
+      "inc": "INC-13181",
+      "channel": "ftcrm-padisahbet",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-10T11:52:49.859549Z",
+      "reported_at": "2026-07-10T11:42:56Z",
+      "severity": "P2",
+      "delay_min": 9.9
+     },
+     {
+      "inc": "INC-13187",
+      "channel": "ftcrm-betpipo",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-10T12:09:56.942399Z",
+      "reported_at": "2026-07-10T12:02:41Z",
+      "severity": "P3",
+      "delay_min": 7.3
+     },
+     {
+      "inc": "INC-13273",
+      "channel": "ftcrm-h2bet",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-10T21:41:02.078149Z",
+      "reported_at": "2026-07-10T21:13:34Z",
+      "severity": "P2",
+      "delay_min": 27.5
+     },
+     {
+      "inc": "INC-13338",
+      "channel": "ftcrm-seffiaray",
+      "author": "Nazareno Scibilia",
+      "msg_ts": "2026-07-11T05:13:42.430159Z",
+      "reported_at": "2026-07-11T03:42:37Z",
+      "severity": "P2",
+      "delay_min": 91.1,
+      "note": "task's example incident"
+     },
+     {
+      "inc": "INC-13416",
+      "channel": "ftcrm-leonbets",
+      "author": "G\u00e9rard E. Pelayo",
+      "msg_ts": "2026-07-11T14:08:50.533709Z",
+      "reported_at": "2026-07-11T13:32:37Z",
+      "severity": "P3",
+      "delay_min": 36.2
+     },
+     {
+      "inc": "INC-13459",
+      "channel": "ftcrm-betoffice",
+      "author": "James Hodgson",
+      "msg_ts": "2026-07-11T21:27:12.170759Z",
+      "reported_at": "2026-07-11T21:17:35Z",
+      "severity": "P2",
+      "delay_min": 9.6
+     }
+    ]
+   },
+   "mttr": {
+    "p1": {
+     "closed": 4,
+     "open": 0,
+     "median_h": 9.69,
+     "p90_h": 18.25
+    },
+    "other": {
+     "closed": 20,
+     "open": 3,
+     "median_office_min": 196.5,
+     "p90_office_min": 524.1
+    },
+    "items": [
+     {
+      "id": "215561055694766",
+      "p1": false,
+      "created_at": 1783515957,
+      "start": 1783515957,
+      "start_basis": "first_assignment_at",
+      "last_close_at": null,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "open"
+     },
+     {
+      "id": "215561057534299",
+      "p1": true,
+      "created_at": 1783624817,
+      "start": 1783624817,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783626508,
+      "raw_h": 0.47,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561057985446",
+      "p1": false,
+      "created_at": 1783669602,
+      "start": 1783669603,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783695799,
+      "raw_h": 7.277,
+      "office_min": 363.32,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561056541403",
+      "p1": false,
+      "created_at": 1783590016,
+      "start": 1783590016,
+      "start_basis": "first_assignment_at",
+      "last_close_at": null,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "open"
+     },
+     {
+      "id": "215561057967765",
+      "p1": false,
+      "created_at": 1783668499,
+      "start": 1783669509,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1783684584,
+      "raw_h": 4.188,
+      "office_min": 176.4,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561056444210",
+      "p1": false,
+      "created_at": 1783585214,
+      "start": 1783585215,
+      "start_basis": "first_assignment_at",
+      "last_close_at": null,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "open"
+     },
+     {
+      "id": "215561056371396",
+      "p1": false,
+      "created_at": 1783581826,
+      "start": 1783581826,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783671768,
+      "raw_h": 24.984,
+      "office_min": 480.0,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561046342079",
+      "p1": false,
+      "created_at": 1782994257,
+      "start": 1783503566,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1783669616,
+      "raw_h": 46.125,
+      "office_min": 920.57,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055828772",
+      "p1": true,
+      "created_at": 1783521450,
+      "start": 1783521450,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783588766,
+      "raw_h": 18.699,
+      "office_min": 161.93,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055843262",
+      "p1": true,
+      "created_at": 1783522564,
+      "start": 1783522564,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783584497,
+      "raw_h": 17.204,
+      "office_min": 123.93,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055298317",
+      "p1": false,
+      "created_at": 1783495726,
+      "start": 1783495727,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783583685,
+      "raw_h": 24.433,
+      "office_min": 480.0,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052871860",
+      "p1": false,
+      "created_at": 1783335552,
+      "start": 1783335553,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783578163,
+      "raw_h": 67.392,
+      "office_min": 1320.78,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055751916",
+      "p1": false,
+      "created_at": 1783518845,
+      "start": 1783518845,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783528719,
+      "raw_h": 2.743,
+      "office_min": 164.57,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055769530",
+      "p1": false,
+      "created_at": 1783520147,
+      "start": 1783520147,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783523259,
+      "raw_h": 0.864,
+      "office_min": 51.87,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561053962820",
+      "p1": false,
+      "created_at": 1783411769,
+      "start": 1783411769,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783426914,
+      "raw_h": 4.207,
+      "office_min": 201.9,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561054076397",
+      "p1": false,
+      "created_at": 1783415352,
+      "start": 1783415352,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783416857,
+      "raw_h": 0.418,
+      "office_min": 25.08,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561053103569",
+      "p1": false,
+      "created_at": 1783351752,
+      "start": 1783351752,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783416779,
+      "raw_h": 18.063,
+      "office_min": 123.78,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052614658",
+      "p1": false,
+      "created_at": 1783323952,
+      "start": 1783323952,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783414584,
+      "raw_h": 25.176,
+      "office_min": 480.0,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052151666",
+      "p1": false,
+      "created_at": 1783308620,
+      "start": 1783308620,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783404453,
+      "raw_h": 26.62,
+      "office_min": 480.0,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561053023530",
+      "p1": false,
+      "created_at": 1783345548,
+      "start": 1783345548,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783351289,
+      "raw_h": 1.595,
+      "office_min": 95.68,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052843032",
+      "p1": false,
+      "created_at": 1783333825,
+      "start": 1783333825,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783349577,
+      "raw_h": 4.376,
+      "office_min": 262.53,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052506723",
+      "p1": false,
+      "created_at": 1783321346,
+      "start": 1783321346,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783348809,
+      "raw_h": 7.629,
+      "office_min": 340.15,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052821100",
+      "p1": true,
+      "created_at": 1783332962,
+      "start": 1783332962,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783340795,
+      "raw_h": 2.176,
+      "office_min": 130.55,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052687700",
+      "p1": false,
+      "created_at": 1783326301,
+      "start": 1783326302,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783339863,
+      "raw_h": 3.767,
+      "office_min": 191.05,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052812568",
+      "p1": false,
+      "created_at": 1783332557,
+      "start": 1783332558,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783336209,
+      "raw_h": 1.014,
+      "office_min": 60.85,
+      "reopens": 1,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052678294",
+      "p1": false,
+      "created_at": 1783325736,
+      "start": 1783325736,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783328646,
+      "raw_h": 0.808,
+      "office_min": 4.1,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052520068",
+      "p1": false,
+      "created_at": 1783321617,
+      "start": 1783321905,
+      "start_basis": "recovered_first_team_assignment",
+      "last_close_at": 1783323887,
+      "raw_h": 0.551,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     }
+    ]
+   }
   }
  }
 }
