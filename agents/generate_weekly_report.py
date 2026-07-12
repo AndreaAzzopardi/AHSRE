@@ -2026,8 +2026,6 @@ if rq_weeks_all:
     _fmt_hm  = lambda m: "—" if m is None else (f"{int(round(m))}m" if m < 90 else f"{m/60:.1f}h")
     _fmt_pct = lambda v: f"{round(v)}%" if v is not None else "—"
 
-    _det_d_cls, _det_d = _rq_delta(_rqc["mon_pct"], _rqp and _rqp["mon_pct"], "%", True)
-    _par_d_cls, _par_d = _rq_delta(_rqc["partner_pct"], _rqp and _rqp["partner_pct"], "%", False)
     _res_d_cls, _res_d = _rq_dur_delta(_rqc["med_resolve"], _rqp and _rqp["med_resolve"])
     _msg_d_cls, _msg_d = _rq_dur_delta(_rqc["med_msg"], _rqp and _rqp["med_msg"])
 
@@ -2037,19 +2035,7 @@ if rq_weeks_all:
 <!-- ═══ SLIDE — RESPONSE QUALITY ═══════════════════════════════ -->
 <div class="slide" id="sRq"><div class="page">
   <div class="group-label">Response Quality <span style="font-weight:400;text-transform:none;letter-spacing:normal;font-size:11px">&middot; charts: {len(rq_weeks_all)} weeks &middot; {_rq_range} &middot; cards: week of {_rq_cw_date}</span></div>
-  <div class="stat-grid-4">
-    <div class="stat-card" style="border-left:3px solid #22c55e">
-      <div class="card-label">Self-Detection Rate ({_rq_cw_date})</div>
-      <div class="card-value c-muted">{_fmt_pct(_rqc["mon_pct"])}</div>
-      <div class="card-delta {_det_d_cls}">{_det_d}</div>
-      <div class="card-subnote">{_rqc["mon"]} of {_rqc["total"]} incidents raised by our monitoring &middot; manual {_rqc["manual"]}</div>
-    </div>
-    <div class="stat-card" style="border-left:3px solid #ef4444">
-      <div class="card-label">Partner-Reported ({_rq_cw_date})</div>
-      <div class="card-value c-muted">{_fmt_pct(_rqc["partner_pct"])}</div>
-      <div class="card-delta {_par_d_cls}">{_par_d}</div>
-      <div class="card-subnote">{_rqc["partner"]} incidents first surfaced by a partner via Intercom &middot; each is a detection gap</div>
-    </div>
+  <div class="stat-grid-2">
     <div class="stat-card" style="border-left:3px solid #a78bfa">
       <div class="card-label">P1 Median Time to Resolve ({_rq_cw_date})</div>
       <div class="card-value c-muted">{_fmt_hm(_rqc["med_resolve"])}</div>
@@ -2066,18 +2052,13 @@ if rq_weeks_all:
   <div class="charts-area">
     <div class="chart-row">
       <div class="chart-section">
-        <div class="chart-title">Detection Source &middot; by Week</div>
-        <div class="chart-note">Alert source per incident &middot; Monitoring = any alerting pipeline &middot; Partner = Intercom conversation &middot; Manual = no alert attached</div>
-        <div class="chart-container"><canvas id="cRqDet" style="width:100%;height:100%"></canvas></div>
-      </div>
-      <div class="chart-section">
         <div class="chart-title">P1 Response &middot; Weekly Medians</div>
         <div class="chart-note">Bars: median time to resolve (hours, left) &middot; Line: median time to first written update (minutes, right)</div>
         <div class="chart-container"><canvas id="cRqP1" style="width:100%;height:100%"></canvas></div>
       </div>
     </div>
   </div>
-  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; Detection counts come from incident.io alert-source stats and may sit 1&ndash;2 above other slides (private incidents cannot be excluded from stats). First-comms measures incident.io status updates &mdash; a comms-discipline proxy, not the partner-facing Intercom reply. P1 &ldquo;Accepted at&rdquo; is unavailable since ~5 Jun (MTTA regression), so the chain starts at Identified. IC-Ticket incidents stamp Identified/Resolved together at closure.</div>
+  <div style="margin-top:8px;padding:7px 12px;background:rgba(56,189,248,0.08);border-left:3px solid #38bdf8;border-radius:4px;font-size:11px;color:#93c5fd;line-height:1.5;">&#9432;&nbsp; First-comms measures incident.io status updates &mdash; a comms-discipline proxy, not the partner-facing reply (a Slack-based time-to-inform-partners metric is in validation). P1 &ldquo;Accepted at&rdquo; is unavailable since ~5 Jun (MTTA regression), so the chain starts at Identified. IC-Ticket incidents stamp Identified/Resolved together at closure.</div>
 </div></div>
 '''
 
@@ -2088,11 +2069,6 @@ if rq_weeks_all:
                         else round(_rq_wk_stats(wk)["med_resolve"] / 60, 1)
                         for wk in rq_weeks_all])
     rq_charts_js = (
-        "new Chart(document.getElementById('cRqDet'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
-        "{label:'Monitoring',data:" + _rq_series("mon") + ",backgroundColor:'#22c55e',stack:'d'},"
-        "{label:'Partner-reported',data:" + _rq_series("partner") + ",backgroundColor:'#ef4444',stack:'d'},"
-        "{label:'Manual',data:" + _rq_series("manual") + ",backgroundColor:'#64748b',stack:'d'}"
-        "]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:LG,tooltip:TT},scales:{x:XA,y:YL(true)}}});\n"
         "new Chart(document.getElementById('cRqP1'),{type:'bar',data:{labels:" + js_str_arr(_rq_lbls) + ",datasets:["
         "{type:'line',label:'First written update (min)',data:" + _rq_series("med_msg") + ",yAxisID:'y2',spanGaps:true,"
         "borderColor:'#38bdf8',tension:0.3,fill:false,pointRadius:4,pointBackgroundColor:'#38bdf8',pointBorderColor:'#0d1629',pointBorderWidth:2},"
