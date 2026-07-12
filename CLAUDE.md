@@ -3,12 +3,14 @@
 ## Start of every session
 
 **Run `git pull --rebase` before reading caches or making any changes.** This
-repo receives two automated pushes to `main` every day:
+repo receives three automated pushes to `main` every day:
 
 - **19:15 UTC** — GitHub Action "Refresh PIR cache" commits
   `cache/pir_action_cache.json` + `cache/pir_history_cache.json`
 - **20:03 UTC** — the nightly weekly-report cloud routine commits
   `cache/weekly_report_cache.json` and other cache refreshes
+- **22:03 UTC** — the servicing cloud routine (Step 2I, split out 12 Jul
+  after token-limit failures) commits `cache/service_split_cache.json`
 
 A local clone is therefore stale by default; working without pulling means
 building reports on yesterday's data and getting the push rejected later.
