@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-11",
+  "generated": "2026-07-12",
   "method": {
     "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
     "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
@@ -277,13 +277,13 @@
         "Nazareno": 28,
         "Matteo Rapisarda": 21,
         "Gérard E. Pelayo": 12,
-        "Simon Grenefalk": 7,
         "Simon Brown": 7,
+        "Simon Grenefalk": 7,
         "Jason": 4,
         "Jeremy": 3,
         "stephen.riolo": 3,
-        "Giancarlo Laferla": 2,
         "Andrea Azzopardi": 2,
+        "Giancarlo Laferla": 2,
         "Daniel Lindengren": 1,
         "NO LEAD": 0
       },
@@ -344,23 +344,23 @@
       }
     },
     "2026-07-06": {
-      "total": 184,
+      "total": 198,
       "partial": true,
       "leads": {
         "Matteo Rapisarda": 32,
-        "James Hodgson": 21,
+        "James Hodgson": 30,
         "Joachim Farrugia": 14,
         "Giancarlo Laferla": 13,
-        "Gérard E. Pelayo": 11,
         "Simon Brown": 10,
+        "Simon Grenefalk": 10,
         "Nazareno": 9,
-        "Simon Grenefalk": 7,
+        "Gérard E. Pelayo": 7,
         "Jeremy": 5,
-        "Daniel Lindengren": 2,
-        "Jason": 1,
         "Andrea Azzopardi": 1,
+        "Daniel Lindengren": 1,
+        "Jason": 1,
         "stephen.riolo": 1,
-        "NO LEAD": 57
+        "NO LEAD": 64
       },
       "handoffs": {
         "sre": {
@@ -377,7 +377,7 @@
       "escalations": {
         "explicit_sre_path": 4,
         "ladder_climbs": 38,
-        "sre_l1_cover": 191,
+        "sre_l1_cover": 229,
         "classified": {
           "01KWVK7RPDYKNR12KK938BN2J0": "climb",
           "01KWVK7RXMC0HA17W9H173QR36": "climb",
@@ -607,19 +607,46 @@
           "01KX8CBAAWMMA5G5VP0Q1K02BM": "cover",
           "01KX8CBAZBPYVHQD9CMWW0FTFS": "cover",
           "01KX8DW43MF8MQHW72KB23R193": "cover",
-          "01KX8ENRNS7RMFYTP6JF4YVM5R": "cover"
-        },
-        "unclassified": [
-          "01KX8FSAQPX5HG2XA8E2NPZBJ9",
-          "01KX8FSBYGJGXFQ8VH8TG35VZF",
-          "01KX8GXR0ARX1RX70XA5SWJ4T8",
-          "01KX8HGQ53N9PKQPBQM4SQ60R1",
-          "01KX8HW8KQ641B2MEYVAYV7T5Y",
-          "01KX8MBMB5B7ZR888K14HHJ5QR",
-          "01KX8MD10FWA0K84TXPX50Q1ZZ",
-          "01KX8P2J4Y3D4RXTS13HZCGK98",
-          "01KX94T4EJY6EV3VB9ZYJVNJCB"
-        ]
+          "01KX8ENRNS7RMFYTP6JF4YVM5R": "cover",
+          "01KXB3AH79CEAJ509CDDQNXZ44": "cover",
+          "01KXB1WRH7ZVRZDJM4WJWPF9XR": "cover",
+          "01KXB1KJW8MSCN8MMNT5S0SSRZ": "cover",
+          "01KXB0R54CFSSRZFAX1DN80T9A": "cover",
+          "01KXB0EXGZKGGBPB3ZZ810KD29": "cover",
+          "01KXB0EXAY88YZXA058BAG62V8": "cover",
+          "01KXAZ15FFKFMS21R6WPE4JEN6": "cover",
+          "01KXAXKAJMAVBNWMY5EHRKQTZB": "cover",
+          "01KXAX44EPAZ4SJST5H0Z22XAQ": "cover",
+          "01KXAX120CHK0V90SZWX6ZCX64": "cover",
+          "01KXAVDZ0K03QZG7RDKAQAPJ2P": "cover",
+          "01KXAQK51QW2JFERRV38V8NBY9": "cover",
+          "01KXAPQQ2SA6GKAEW2VT9MGTGX": "cover",
+          "01KXAP5974D3FZ5VDYG318W3E3": "cover",
+          "01KXAKK0S653CGG8DQSP1Y8BPZ": "cover",
+          "01KXAH9QZZWZY27WDP33JKP3AS": "cover",
+          "01KXAH9QG1ZZP6T89GZYDT4S6P": "cover",
+          "01KXAEH0SE2M3DG3SYEYBZ2Z52": "cover",
+          "01KXAEE5QB6TS77RR2EA0ZF4T5": "cover",
+          "01KXADCDM95CXEY7K5Z7SRMATY": "cover",
+          "01KXAD1ZFFS41QRFJ3S8MEXSAR": "cover",
+          "01KXAD1YYHC5175FPB7TJ3PA47": "cover",
+          "01KXAD0BYS3BHX76Y7QND4ZRKS": "cover",
+          "01KXAC4WZE1DAHPRVZFAKX9E54": "cover",
+          "01KXABVV0G6N4HSNQ7R8183VGD": "cover",
+          "01KXABVSCY14HT363GTVASKZ4E": "cover",
+          "01KXABJJNC3XY6222YTMCH3P6R": "cover",
+          "01KXAB9GX8ZJDHJRACTAJE5BBM": "cover",
+          "01KXAB9G7JQKAC69HZT9EMAH9H": "cover",
+          "01KX8FSAQPX5HG2XA8E2NPZBJ9": "cover",
+          "01KX8FSBYGJGXFQ8VH8TG35VZF": "cover",
+          "01KX8GXR0ARX1RX70XA5SWJ4T8": "cover",
+          "01KX8HGQ53N9PKQPBQM4SQ60R1": "cover",
+          "01KX8HW8KQ641B2MEYVAYV7T5Y": "cover",
+          "01KX8MBMB5B7ZR888K14HHJ5QR": "cover",
+          "01KX8MD10FWA0K84TXPX50Q1ZZ": "cover",
+          "01KX8P2J4Y3D4RXTS13HZCGK98": "cover",
+          "01KX94T4EJY6EV3VB9ZYJVNJCB": "cover"
+        }
       }
     }
   }
