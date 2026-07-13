@@ -1,12 +1,12 @@
 {
-  "generated": "2026-07-12",
+  "generated": "2026-07-13",
   "total": 136,
-  "open": 68,
-  "completed": 68,
-  "completion_rate": 50.0,
+  "open": 66,
+  "completed": 70,
+  "completion_rate": 51.47,
   "stale_count": 1,
   "stale_pct": 1.5,
-  "no_due_date_count": 67,
+  "no_due_date_count": 65,
   "no_due_date_pct": 98.5,
   "teams": [
     {
@@ -36,8 +36,8 @@
     },
     {
       "name": "Cloud",
-      "open": 8,
-      "completed": 1
+      "open": 6,
+      "completed": 3
     },
     {
       "name": "Integration Managers",
@@ -81,8 +81,8 @@
       "closed": 11
     },
     "Engineering Improvement": {
-      "open": 14,
-      "closed": 13
+      "open": 12,
+      "closed": 15
     },
     "System Monitoring": {
       "open": 12,
@@ -127,17 +127,17 @@
   },
   "open_by_priority": {
     "Urgent": 4,
-    "High": 20,
+    "High": 18,
     "Normal": 25,
     "Low": 7,
     "No priority": 12
   },
   "classes": {
     "critical": {
-      "open": 49,
-      "completed": 57,
+      "open": 47,
+      "completed": 59,
       "total": 106,
-      "completion_rate": 53.77
+      "completion_rate": 55.66
     },
     "sre_incident": {
       "open": 19,
