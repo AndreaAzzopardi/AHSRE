@@ -354,5 +354,43 @@
     "total_declined": 353,
     "total_accepted": 1517,
     "overall_waste_pct": 18.9
+  },
+  "2026-07-13": {
+    "days_in_week": 0,
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      }
+    },
+    "total": 0,
+    "total_declined": 0,
+    "total_accepted": 0,
+    "overall_waste_pct": 0.0,
+    "incident_blocks": {
+      "day": 0,
+      "evening": 0,
+      "night": 0,
+      "total": 0
+    },
+    "partial": true,
+    "note": "Partial week — no fully-elapsed UTC calendar day yet (week just started)"
   }
 }
