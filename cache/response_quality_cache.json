@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-12T22:30:00Z",
+ "generated": "2026-07-13T22:30:00Z",
  "method": {
   "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select — counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
   "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident — multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation ±1s). Author logged per entry (informer log).",
@@ -6039,41 +6039,27 @@
    ],
    "partial": true,
    "cause": {
-    "total": 206,
+    "total": 194,
     "causes": {
      "None": {
-      "count": 96,
+      "count": 80,
       "refs": [
-       "INC-13586",
-       "INC-13585",
-       "INC-13583",
-       "INC-13582",
-       "INC-13579",
-       "INC-13577",
-       "INC-13573",
-       "INC-13570",
-       "INC-13567",
+       "INC-13591",
        "INC-13537",
        "INC-13528",
        "INC-13526",
        "INC-13511",
        "INC-13505",
-       "INC-13498",
-       "INC-13497",
        "INC-13488",
        "INC-13477",
        "INC-13475",
        "INC-13460",
        "INC-13419",
-       "INC-13415",
        "INC-13410",
        "INC-13390",
        "INC-13386",
        "INC-13380",
-       "INC-13338",
-       "INC-13322",
        "INC-13312",
-       "INC-13294",
        "INC-13231",
        "INC-13225",
        "INC-13220",
@@ -6085,7 +6071,6 @@
        "INC-13156",
        "INC-13153",
        "INC-13152",
-       "INC-13142",
        "INC-13141",
        "INC-13133",
        "INC-13111",
@@ -6137,7 +6122,6 @@
        "INC-12574",
        "INC-12560",
        "INC-12537",
-       "INC-12494",
        "INC-12454",
        "INC-12436"
       ]
@@ -6169,8 +6153,9 @@
       ]
      },
      "FT - Backend Code Defect": {
-      "count": 16,
+      "count": 17,
       "refs": [
+       "INC-13142",
        "INC-12959",
        "INC-12950",
        "INC-12913",
@@ -6224,6 +6209,22 @@
        "INC-12445"
       ]
      },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 11,
+      "refs": [
+       "INC-13338",
+       "INC-13187",
+       "INC-13137",
+       "INC-13042",
+       "INC-12766",
+       "INC-12765",
+       "INC-12714",
+       "INC-12643",
+       "INC-12642",
+       "INC-12595",
+       "INC-12514"
+      ]
+     },
      "Partner - Incorrect Setup": {
       "count": 10,
       "refs": [
@@ -6239,23 +6240,8 @@
        "INC-12500"
       ]
      },
-     "Partner - 3rd Party Platform Issue": {
-      "count": 10,
-      "refs": [
-       "INC-13187",
-       "INC-13137",
-       "INC-13042",
-       "INC-12766",
-       "INC-12765",
-       "INC-12714",
-       "INC-12643",
-       "INC-12642",
-       "INC-12595",
-       "INC-12514"
-      ]
-     },
      "FT - Unknown": {
-      "count": 8,
+      "count": 9,
       "refs": [
        "INC-13471",
        "INC-13235",
@@ -6264,6 +6250,7 @@
        "INC-12637",
        "INC-12622",
        "INC-12602",
+       "INC-12494",
        "INC-12466"
       ]
      },
@@ -6278,8 +6265,9 @@
       ]
      },
      "FT - False Positive": {
-      "count": 4,
+      "count": 5,
       "refs": [
+       "INC-13582",
        "INC-13143",
        "INC-12919",
        "INC-12703",
@@ -6946,6 +6934,119 @@
      }
     ]
    }
+  },
+  "2026-07-13": {
+   "partial": true,
+   "cause": {
+    "total": 33,
+    "causes": {
+     "None": {
+      "count": 17,
+      "refs": [
+       "INC-13795",
+       "INC-13784",
+       "INC-13757",
+       "INC-13745",
+       "INC-13738",
+       "INC-13736",
+       "INC-13708",
+       "INC-13683",
+       "INC-13679",
+       "INC-13664",
+       "INC-13651",
+       "INC-13644",
+       "INC-13636",
+       "INC-13625",
+       "INC-13610",
+       "INC-13605",
+       "INC-13600"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 5,
+      "refs": [
+       "INC-13760",
+       "INC-13756",
+       "INC-13755",
+       "INC-13748",
+       "INC-13595"
+      ]
+     },
+     "Partner - 3rd Party Platform Issue": {
+      "count": 2,
+      "refs": [
+       "INC-13747",
+       "INC-13599"
+      ]
+     },
+     "Partner - Large Sendout": {
+      "count": 2,
+      "refs": [
+       "INC-13720",
+       "INC-13645"
+      ]
+     },
+     "FT - Anomaly Query": {
+      "count": 1,
+      "refs": [
+       "INC-13643"
+      ]
+     },
+     "FT - Backend Code Defect": {
+      "count": 1,
+      "refs": [
+       "INC-13638"
+      ]
+     },
+     "FT - False Positive": {
+      "count": 1,
+      "refs": [
+       "INC-13669"
+      ]
+     },
+     "FT - General Release": {
+      "count": 1,
+      "refs": [
+       "INC-13639"
+      ]
+     },
+     "FT - Integration Managers": {
+      "count": 1,
+      "refs": [
+       "INC-13638"
+      ]
+     },
+     "FT - Monitoring Failure": {
+      "count": 1,
+      "refs": [
+       "INC-13648"
+      ]
+     },
+     "FT - Slow Processing": {
+      "count": 1,
+      "refs": [
+       "INC-13608"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 1,
+      "refs": [
+       "INC-13615"
+      ]
+     }
+    }
+   },
+   "p1": [
+    {
+     "ref": "INC-13669",
+     "name": "[P1] Intercom Incident : MrBit Staging",
+     "type": "IC Ticket",
+     "status": "Closed",
+     "reported_at": "2026-07-13T10:43:16Z",
+     "identify_min": 14.48,
+     "resolve_min": 14.48
+    }
+   ]
   }
  }
 }
