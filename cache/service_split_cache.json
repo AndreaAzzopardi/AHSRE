@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-13",
+  "generated": "2026-07-14",
   "method": {
     "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
     "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
@@ -656,22 +656,22 @@
       }
     },
     "2026-07-13": {
-      "total": 33,
+      "total": 62,
       "partial": true,
       "leads": {
-        "NO LEAD": 10,
-        "Matteo Rapisarda": 9,
-        "Nazareno": 7,
-        "Gérard E. Pelayo": 3,
-        "Andrea Azzopardi": 1,
+        "NO LEAD": 16,
+        "Nazareno": 13,
+        "James Hodgson": 10,
+        "Matteo Rapisarda": 10,
+        "Gérard E. Pelayo": 7,
+        "Giancarlo Laferla": 4,
         "Daniel Lindengren": 1,
-        "Giancarlo Laferla": 1,
-        "James Hodgson": 1
+        "Andrea Azzopardi": 1
       },
       "handoffs": {
         "sre": {
-          "night": 0,
-          "day": 0,
+          "night": 1,
+          "day": 1,
           "evening": 0
         },
         "other": {
@@ -681,10 +681,17 @@
         }
       },
       "escalations": {
-        "explicit_sre_path": 0,
+        "explicit_sre_path": 2,
         "ladder_climbs": 0,
-        "sre_l1_cover": 0,
-        "classified": {}
+        "sre_l1_cover": 6,
+        "classified": {
+          "01KXG5K137YX77M9TTY1P3DEKD": "cover",
+          "01KXG5HWW9MY90JCY8Z5PS55HD": "cover",
+          "01KXG530YSB1QBPX60NGJN0VE8": "cover",
+          "01KXG4SY97PNNGGCNXEECERJB4": "cover",
+          "01KXG4FR6CJDR2VW1R45QNR4TJ": "cover",
+          "01KXFVRCYYM7WSACBBV73V2WZD": "cover"
+        }
       }
     }
   }
