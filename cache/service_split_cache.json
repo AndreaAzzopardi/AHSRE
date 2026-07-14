@@ -344,21 +344,20 @@
       }
     },
     "2026-07-06": {
-      "total": 227,
+      "total": 194,
       "leads": {
-        "NO LEAD": 71,
-        "Matteo Rapisarda": 43,
-        "James Hodgson": 31,
-        "Nazareno": 19,
+        "NO LEAD": 61,
+        "Matteo Rapisarda": 34,
+        "James Hodgson": 30,
         "Joachim Farrugia": 14,
-        "Giancarlo Laferla": 14,
+        "Giancarlo Laferla": 13,
+        "Nazareno": 12,
         "Simon Brown": 10,
-        "Gérard E. Pelayo": 7,
         "Jeremy": 7,
         "Simon Grenefalk": 6,
-        "Andrea Azzopardi": 2,
+        "Gérard E. Pelayo": 4,
         "Jason": 1,
-        "Daniel Lindengren": 1,
+        "Andrea Azzopardi": 1,
         "stephen.riolo": 1
       },
       "handoffs": {
