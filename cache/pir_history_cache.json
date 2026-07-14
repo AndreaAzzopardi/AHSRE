@@ -98,5 +98,13 @@
     "rate": 51.5,
     "crit_rate": 55.66,
     "sre_rate": 36.67
+  },
+  "2026-07-14": {
+    "open": 65,
+    "completed": 71,
+    "total": 136,
+    "rate": 52.2,
+    "crit_rate": 56.6,
+    "sre_rate": 36.67
   }
 }

@@ -1,12 +1,12 @@
 {
-  "generated": "2026-07-13",
+  "generated": "2026-07-14",
   "total": 136,
-  "open": 66,
-  "completed": 70,
-  "completion_rate": 51.47,
+  "open": 65,
+  "completed": 71,
+  "completion_rate": 52.21,
   "stale_count": 1,
   "stale_pct": 1.5,
-  "no_due_date_count": 65,
+  "no_due_date_count": 64,
   "no_due_date_pct": 98.5,
   "teams": [
     {
@@ -46,8 +46,8 @@
     },
     {
       "name": "Fast Track AI",
-      "open": 2,
-      "completed": 0
+      "open": 1,
+      "completed": 1
     },
     {
       "name": "QA",
@@ -85,8 +85,8 @@
       "closed": 15
     },
     "System Monitoring": {
-      "open": 12,
-      "closed": 14
+      "open": 11,
+      "closed": 15
     },
     "Product Improvement": {
       "open": 8,
@@ -128,16 +128,16 @@
   "open_by_priority": {
     "Urgent": 4,
     "High": 18,
-    "Normal": 25,
+    "Normal": 24,
     "Low": 7,
     "No priority": 12
   },
   "classes": {
     "critical": {
-      "open": 47,
-      "completed": 59,
+      "open": 46,
+      "completed": 60,
       "total": 106,
-      "completion_rate": 55.66
+      "completion_rate": 56.6
     },
     "sre_incident": {
       "open": 19,
