@@ -324,73 +324,77 @@
     }
   },
   "2026-07-06": {
-    "days_in_week": 6,
-    "partial": true,
-    "note": "Partial week — only 2026-07-06 to 2026-07-11 data available (Mon–Sat)",
+    "days_in_week": 7,
     "blocks": {
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 939,
-        "declined": 182,
-        "accepted": 757,
-        "waste_pct": 19.4
+        "total": 975,
+        "declined": 192,
+        "accepted": 783,
+        "waste_pct": 19.7
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 384,
-        "declined": 42,
-        "accepted": 342,
-        "waste_pct": 10.9
+        "total": 433,
+        "declined": 45,
+        "accepted": 388,
+        "waste_pct": 10.4
       },
       "night": {
         "label": "00:00-08:00 UTC",
-        "total": 547,
-        "declined": 129,
-        "accepted": 418,
-        "waste_pct": 23.6
+        "total": 626,
+        "declined": 145,
+        "accepted": 481,
+        "waste_pct": 23.2
       }
     },
-    "total": 1870,
-    "total_declined": 353,
-    "total_accepted": 1517,
-    "overall_waste_pct": 18.9
+    "total": 2034,
+    "total_declined": 382,
+    "total_accepted": 1652,
+    "overall_waste_pct": 18.8,
+    "incident_blocks": {
+      "day": 94,
+      "evening": 40,
+      "night": 60,
+      "total": 194
+    }
   },
   "2026-07-13": {
-    "days_in_week": 0,
+    "days_in_week": 1,
+    "partial": true,
+    "note": "Partial week — only 13 Jul to 13 Jul data available (Monday to Monday)",
     "blocks": {
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 0,
-        "declined": 0,
-        "accepted": 0,
-        "waste_pct": 0.0
+        "total": 130,
+        "declined": 23,
+        "accepted": 107,
+        "waste_pct": 17.7
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 0,
-        "declined": 0,
-        "accepted": 0,
-        "waste_pct": 0.0
+        "total": 86,
+        "declined": 7,
+        "accepted": 79,
+        "waste_pct": 8.1
       },
       "night": {
         "label": "00:00-08:00 UTC",
-        "total": 0,
-        "declined": 0,
-        "accepted": 0,
-        "waste_pct": 0.0
+        "total": 62,
+        "declined": 9,
+        "accepted": 53,
+        "waste_pct": 14.5
       }
     },
-    "total": 0,
-    "total_declined": 0,
-    "total_accepted": 0,
-    "overall_waste_pct": 0.0,
+    "total": 278,
+    "total_declined": 39,
+    "total_accepted": 239,
+    "overall_waste_pct": 14.0,
     "incident_blocks": {
-      "day": 0,
-      "evening": 0,
-      "night": 0,
-      "total": 0
-    },
-    "partial": true,
-    "note": "Partial week — no fully-elapsed UTC calendar day yet (week just started)"
+      "day": 14,
+      "evening": 6,
+      "night": 12,
+      "total": 32
+    }
   }
 }
