@@ -24,7 +24,13 @@
     "mgmt": [
       "Andrea Azzopardi",
       "Patrik Potocki"
-    ]
+    ],
+    "other_teams": {
+      "Jeremy": "AI Team",
+      "Daniel Lindengren": "Rewards Team",
+      "Jason": "CRM XP",
+      "Andrea Envall": "Rewards Team"
+    }
   },
   "weeks": {
     "2026-05-04": {
