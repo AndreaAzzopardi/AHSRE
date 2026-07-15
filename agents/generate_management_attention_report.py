@@ -111,19 +111,24 @@ def main():
     gen = dg.get("generated_at") or meta.get("last_run_at") or now.isoformat()
 
     tiles = ""
-    sections = ""
+    pages = ""
+    navs = ['<button class="nav-btn active" data-page="overview">Overview</button>']
     for icon, label, cls in TIERS:
         refs = sorted((r for r, e in incidents.items() if e.get("classification") == icon),
                       key=lambda r: (SEV_ORDER.get(incidents[r].get("severity"), 9),
                                      str(incidents[r].get("first_seen", ""))))
-        tiles += (f'<div class="tile {cls}"><div class="tile-n">{len(refs)}</div>'
+        tiles += (f'<div class="tile {cls}" data-page="{cls}" role="button" tabindex="0">'
+                  f'<div class="tile-n">{len(refs)}</div>'
                   f'<div class="tile-l">{icon} {esc(label)}</div></div>')
+        navs.append(f'<button class="nav-btn {cls}" data-page="{cls}">{icon} {esc(label)} '
+                    f'<span class="count">{len(refs)}</span></button>')
         cards = "".join(card(r, incidents[r], now, collapsed=(icon in "🟡🟢")) for r in refs)
         extra = ""
         if icon == "🟢" and dg.get("green_note"):
             extra = f'<p class="note">{esc(dg["green_note"])}</p>'
-        sections += (f'<section class="{cls}"><h2>{icon} {esc(label)} '
-                     f'<span class="count">{len(refs)}</span></h2>{extra}{cards or "<p class=note>none</p>"}</section>')
+        pages += (f'<section class="page {cls}" id="page-{cls}" hidden>'
+                  f'<h2>{icon} {esc(label)} <span class="count">{len(refs)}</span></h2>'
+                  f'{extra}{cards or "<p class=note>none</p>"}</section>')
 
     lists = ""
     for key, title in (("new", "🆕 New since last digest"),
@@ -164,9 +169,16 @@ h1 {{ font-size:1.25rem; margin-bottom:2px }}
 .gen {{ color:var(--muted); font-size:.8rem; margin-bottom:14px }}
 .kv {{ display:flex; gap:10px; padding:3px 0; font-size:.95rem }}
 .kv span:first-child {{ color:var(--ink2); min-width:210px; flex-shrink:0 }}
+.nav {{ position:sticky; top:0; z-index:5; display:flex; gap:6px; flex-wrap:wrap;
+  background:var(--page); padding:8px 0 10px; border-bottom:1px solid var(--line); margin-bottom:12px }}
+.nav-btn {{ font:inherit; font-size:.85rem; color:var(--ink2); background:var(--surface);
+  border:1px solid var(--line); border-radius:16px; padding:4px 12px; cursor:pointer }}
+.nav-btn.active {{ color:var(--ink); font-weight:600; border-color:var(--muted) }}
+.nav-btn.critical.active {{ border-color:var(--critical) }} .nav-btn.serious.active {{ border-color:var(--serious) }}
+.nav-btn.warning.active {{ border-color:var(--warning) }} .nav-btn.good.active {{ border-color:var(--good) }}
 .tiles {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin:16px 0 }}
 .tile {{ background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--muted);
-  border-radius:6px; padding:10px 12px }}
+  border-radius:6px; padding:10px 12px; cursor:pointer }}
 .tile-n {{ font-size:1.6rem; font-weight:700 }}
 .tile-l {{ font-size:.78rem; color:var(--ink2) }}
 .tile.critical {{ border-left-color:var(--critical) }} .tile.serious {{ border-left-color:var(--serious) }}
@@ -175,7 +187,7 @@ h1 {{ font-size:1.25rem; margin-bottom:2px }}
   padding:10px 14px; margin:8px 0 }}
 .mini h3 {{ font-size:.9rem; margin-bottom:4px }}
 .mini ul {{ padding-left:18px; font-size:.88rem; color:var(--ink2) }}
-section {{ margin-top:22px }}
+section.page {{ margin-top:10px }}
 h2 {{ font-size:1.05rem; padding-bottom:5px; border-bottom:2px solid var(--line) }}
 .count {{ color:var(--muted); font-weight:400 }}
 .card {{ background:var(--surface); border:1px solid var(--line); border-radius:6px;
@@ -204,10 +216,34 @@ details summary {{ cursor:pointer; font-size:.88rem; color:var(--ink2) }}
 </style></head><body>
 <h1>🎯 Management Attention</h1>
 <div class="gen">generated {esc(str(gen).replace("T", " ")[:16])} UTC · guidelines: docs/incident-handling-guidelines.md</div>
+<nav class="nav">{"".join(navs)}</nav>
+<section class="page" id="page-overview">
 {header}
 <div class="tiles">{tiles}</div>
 {lists}
-{sections}
+</section>
+{pages}
+<script>
+(function () {{
+  var pages = document.querySelectorAll('.page');
+  var btns = document.querySelectorAll('.nav-btn');
+  function show(name) {{
+    pages.forEach ? null : 0;
+    Array.prototype.forEach.call(pages, function (p) {{ p.hidden = (p.id !== 'page-' + name); }});
+    Array.prototype.forEach.call(btns, function (b) {{
+      b.classList.toggle('active', b.dataset.page === name); }});
+    if (history.replaceState) history.replaceState(null, '', '#' + name);
+    window.scrollTo(0, 0);
+  }}
+  Array.prototype.forEach.call(document.querySelectorAll('[data-page]'), function (el) {{
+    el.addEventListener('click', function () {{ show(el.dataset.page); }});
+    el.addEventListener('keydown', function (e) {{
+      if (e.key === 'Enter' || e.key === ' ') {{ e.preventDefault(); show(el.dataset.page); }} }});
+  }});
+  var h = location.hash.replace('#', '');
+  show(document.getElementById('page-' + h) ? h : 'overview');
+}})();
+</script>
 </body></html>"""
     OUT.write_text(page)
     n = len(incidents)
