@@ -1,29 +1,34 @@
 {
  "meta": {
-  "last_run_at": "2026-07-15T08:45:00Z",
+  "last_run_at": "2026-07-15T10:39:00Z",
   "total_open": 36,
   "last_digest": {
-   "generated_at": "2026-07-15T08:45:00Z",
-   "under_control": "Mostly — 5 items need immediate escalation (🚨), 10 more need management attention (🔴)",
-   "urgent_vs_smaller": "5 urgent, 10 need a nudge, 16 to watch, 5 handled well",
-   "total_open_delta": "+3 vs last digest (33→36)",
+   "generated_at": "2026-07-15T10:47:00Z",
+   "under_control": "No - 5 items need immediate escalation (🚨), 11 more need management attention (🔴)",
+   "urgent_vs_smaller": "5 urgent, 11 need a nudge, 17 to watch, 3 handled well",
+   "total_open_delta": "unchanged (36→36); 2 new, 2 resolved",
    "new": [
     {
-     "ref": "INC-14101",
-     "note": "P2, opened 08:24 — ElastiCache CPU spike, lead triaged instantly, resolved clean in 16min, no partner impact"
+     "ref": "INC-14112",
+     "note": "P2, 2nd ElastiCache CPU flare today (after INC-14101's clean resolve) - reignited to 8x load, Joachim actively investigating, suspects Campeon"
     },
     {
-     "ref": "INC-14098",
-     "note": "P2, opened 08:16 — Shuffle blocked by CF on VPN, CTO engaged in 9min, root cause+fix proposed in 24min, only gap is a missing incident summary"
-    },
-    {
-     "ref": "INC-14095",
-     "note": "P3, opened 08:05 — RabbitMQ backlog betathome, lead assigned+accepted in 2.5min, routine"
+     "ref": "INC-14108",
+     "note": "P2, Campeon queue backlog - scaled pods 5→15, resolved clean in 19min"
     }
    ],
-   "resolved": [],
+   "resolved": [
+    {
+     "ref": "INC-14101",
+     "note": "clean resolve - ElastiCache CPU spike, 16min lifecycle, no breaches"
+    },
+    {
+     "ref": "INC-13152",
+     "note": "⚠ closed with the root-cause debate never resolved before answering the partner (D13), sat idle 5+ days (C10)"
+    }
+   ],
    "not_assessed": [],
-   "green_note": "5× handled cleanly (2 new P2s resolved/well-managed, 3 routine no-flag incidents)"
+   "green_note": "3× handled cleanly: 2 P2 incidents resolved fast and well (14082, 14108), 1 routine no-flag incident (14069)"
   }
  },
  "incidents": {
@@ -190,62 +195,42 @@
    "name": "[P1] Intercom Incident : H2Bet Production",
    "channel_readable": true
   },
-  "INC-14101": {
-   "incident_id": "01KXJE0STF7HSCA7CYJPK6Z5HK",
-   "severity": "P2",
-   "slack_channel_id": "C0BJ9U6BWP2",
-   "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784104778.111299",
-   "last_intercom_part_at": null,
-   "classification": "🟢",
-   "synthesis": {
-    "summary": "Grafana alert fired for a CPU spike on ElastiCache (production-290-gen); Joachim Farrugia was auto-assigned as Incident Lead within seconds, accepted at 08:28:44Z, watched the metric fall (down to 80% by 08:32:50Z), moved to Monitoring at 08:30:40Z, and closed the incident once the alert cleared at 08:39:38Z. Total lifecycle was under 16 minutes with no partner impact indicated.",
-    "key_events": [
-     "08:24:16Z - Alert fires, incident created, Joachim Farrugia auto-assigned Lead via workflow",
-     "08:24:30Z - Escalation acknowledged",
-     "08:28:44Z - Accepted, status -> Investigating",
-     "08:30:11-08:30:40Z - CPU observed dropping, status -> Monitoring",
-     "08:32:47-08:32:54Z - Confirmed trending down",
-     "08:39:16Z - Underlying alert auto-resolved",
-     "08:39:38Z - Incident closed"
-    ],
-    "partner": null,
-    "proposals": [
-     "None needed - transient CPU spike self-resolved with routine monitoring per runbook - resolved/closed"
-    ],
-    "open_breaches": []
-   },
-   "name": "[FIRING:1] ElastiCache Engine CPU load Alerting production-290-gen",
-   "channel_readable": true,
-   "first_seen": "2026-07-15T08:24:16Z"
-  },
   "INC-14098": {
    "incident_id": "01KXJDJN78BX33X963YAHZZ76W",
    "severity": "P2",
    "slack_channel_id": "C0BHK8JNTU4",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784104833.376759",
+   "last_slack_ts_read": "1784110662.212629",
    "last_intercom_part_at": null,
-   "classification": "🟡",
+   "classification": "🔴",
    "synthesis": {
-    "summary": "Internal user reported repeatedly blocked by Cloudflare while on VPN accessing Shuffle's Data Studio dashboards; Joachim Farrugia (Lead/Reporter) pulled in Gustav Tjader and CTO Patrik Potocki within 9 minutes when it emerged the same block hit multiple partner-brand dashboards. Patrik root-caused it within 24 minutes to Cloudflare's OWASP Core Ruleset (rule 949110) scoring Data Studio's JSON-in-querystring params as injection-like, and proposed a targeted WAF exemption for read-only GET requests.",
+    "summary": "Shuffle/Data-Studio CF-WAF false-positive blocking dashboards for internal + partner users (also hit Supabets). Patrik Potocki personally wrote the fix (WAF rule PR #15, merged ~10:58 CEST) and drafted the partner-facing explanation himself at 11:11 CEST. As of 12:17 CEST (66 min later) it still hadn't gone out - Patrik had to chase Joachim directly ('did you communicate?'), CC'ing Andrea Azzopardi, and told him not to just copy-paste the draft verbatim. Joachim acknowledged being 'a bit busy' and said he'd send it.",
     "key_events": [
-     "08:16:32Z - Incident created directly in Investigating, Joachim Farrugia Lead+Reporter",
-     "08:17:45Z - Joachim forwards user complaint",
-     "08:18:12Z - Confirmed intermittent, VPN-linked",
-     "08:23:32Z - incident.io bot prompts for a summary - none set as of last read",
-     "08:25:19-08:25:39Z - Gustav Tjader and CTO Patrik Potocki added; also hitting Supabets, recurring",
-     "08:27:21Z - Patrik begins investigating trigger cause",
-     "08:40:33Z - Patrik posts full root cause (OWASP CRS rule 949110) plus a concrete WAF rule-change proposal"
+     "08:16:32Z incident created, Joachim Lead+Reporter",
+     "08:25Z Gustav Tjäder + CTO Patrik Potocki pulled in, also hitting Supabets",
+     "08:40Z Patrik posts root cause (OWASP CRS rule 949110) + fix proposal",
+     "10:42-10:58 CEST Patrik builds and merges WAF rule PR #15 across all ft-crm.com",
+     "11:11 CEST Patrik drafts full partner-facing explanation, tags Gustav/Joachim to send it",
+     "12:16-12:17 CEST Patrik chases Joachim directly ('did you communicate or Joachim?'), CCs Andrea Azzopardi, warns against just copy-pasting; Joachim: 'got a bit busy... will inform them'"
     ],
-    "partner": null,
+    "partner": {
+     "first_reported": null,
+     "last_partner_msg_at": null,
+     "answered": false,
+     "promises": [
+      "Patrik's partner-facing draft, written 11:11 CEST - still not confirmed sent as of 12:17 CEST"
+     ]
+    },
     "proposals": [
-     "Extend existing OWASP-execute-rule carve-out to also skip inspection for GET requests to /v2/data-studio/dashboards/ (read-only) - proposed, not yet implemented as of last read"
+     "WAF rule exemption for dashboard GET requests - implemented, PR #15 merged",
+     "Partner comms draft by Patrik - written, tune-and-send still pending as of last read"
     ],
     "open_breaches": [
-     "D15: no incident summary set despite bot prompting at 08:23:32Z (~17+ min unaddressed by last read); record not yet self-contained/phone-readable"
+     "C9/C11: Patrik's partner comms draft (11:11 CEST) still unsent 66+ min later; Patrik had to personally chase the lead and warn against just copy-pasting it verbatim",
+     "D15: no incident summary set despite an earlier bot prompt"
     ],
-    "why": "Bot asked for a summary at 08:23:32Z and none had been added by 08:40:33Z, so the record isn't yet self-contained per D15, even though Slack-side handling (lead instant, CTO engaged in 9min, root cause+fix proposal in 24min) has been fast and strong."
+    "why": "C9/C11: the CTO personally wrote the partner-facing explanation at 11:11 CEST and it still hadn't gone out 66+ minutes later as of 12:17 CEST - Patrik had to chase the lead directly, CC'ing Andrea Azzopardi, over both the delay and an instruction not to just copy-paste the draft.",
+    "suggested_action": "Confirm the tuned (not copy-pasted) partner comms for Shuffle/Supabets have now gone out; if not yet sent, this needs an immediate nudge given the CTO is already chasing it directly."
    },
    "name": "Shuffle - Intermittently getting blocked by CF whilst on VPN",
    "channel_readable": true,
@@ -256,11 +241,11 @@
    "severity": "P2",
    "slack_channel_id": "C0BHBPP1TRT",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784104025.100509",
+   "last_slack_ts_read": "1784111590.345439",
    "last_intercom_part_at": null,
    "classification": "🟢",
    "synthesis": {
-    "summary": "Multiple EUC-hosted brands (Betamina, AviroGroup, Hyperwin, Vegas-Glory) crashed due to 'Too Many Connections' after an RDS instance-class downgrade to T4G. Joachim Farrugia confirmed root cause, informed all affected partners (~50min after creation), merged in two more related incidents, and is now actively reverting all affected brands back to r6g instance class with Agustín Castaño's agreement. Alerts progressively resolving as reverts complete.",
+    "summary": "Multiple EUC-hosted brands crashed from 'Too Many Connections' after an RDS T4G downgrade. Joachim worked through the affected brand list one by one (Hyper Win, Betamina, AviroGroup, VegasGlory, Wiwi-Casino), reverted all to r6g, and persisted the RDS instance size at Agustín's prompt to avoid a rollback. All 11 alerts resolved by 10:54 CEST; a routine bot check-in nudge came in at 12:33 CEST.",
     "key_events": [
      "07:09:45Z incident created, lead Joachim Farrugia auto-assigned",
      "07:32:04Z status -> Investigating",
@@ -268,7 +253,10 @@
      "07:59:20Z Joachim confirms 'All partner informed'",
      "10:06 CEST two more related incidents merged in",
      "10:18-10:23 CEST Agustín/Andrew agree to mitigate first (revert to r6g), review connection pooling later",
-     "10:27:05 CEST Joachim: all affected brands reverting to r6g, alerts progressively resolving"
+     "10:27:05 CEST Joachim: all affected brands reverting to r6g, alerts progressively resolving",
+     "10:54 CEST all 11 attached alerts resolved",
+     "12:03-12:27 CEST Agustín confirms RDS instance size persisted to avoid rollback, Joachim confirms done",
+     "12:33 CEST routine bot check-in nudge"
     ],
     "partner": {
      "first_reported": null,
@@ -314,29 +302,29 @@
    "severity": "P2",
    "slack_channel_id": "C0BHH3C14UC",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784098183.401119",
+   "last_slack_ts_read": "1784108849.093659",
    "last_intercom_part_at": null,
    "classification": "🟡",
    "synthesis": {
-    "summary": "Maxima's ClickHouse writer queue backed up twice due to insufficient disk space. Gérard's fix recommendation was ignored ~5h47m after a premature auto-decline; Joachim reopened and applied the real fix (PVC 1380Gi->1600Gi). Both alerts now resolved, but incident.io status still 'Fixing' ~2h after the fix landed; PVC persistence in IaC unconfirmed.",
+    "summary": "Maxima ClickHouse-writer PVC bump (1380Gi->1600Gi) didn't actually hold - the resize request never reached AWS, likely because two rapid back-to-back PVC edits left the EBS-CSI resizer's retry state wedged. Lead handed from Gérard E. Pelayo to Joachim Farrugia, who dove into root cause and merged in a related incident (INC-14080). Genuine, active technical investigation now underway; incident.io still 'Fixing'.",
     "key_events": [
      "01:29:42Z created, auto-declined 15min later, recommendation unactioned",
      "05:31:44Z Joachim joins, monitoring",
      "06:26-06:27Z reopened",
      "06:32-06:33Z PVC upgraded 1380Gi->1600Gi",
      "06:49:43Z remaining alert resolved",
-     "08:40 CEST 15 Jul: incident.io status still 'Fixing', not closed ~2h since resolution"
+     "08:40 CEST 15 Jul: incident.io status still 'Fixing', not closed ~2h since resolution",
+     "11:46 CEST Joachim Farrugia takes over as Lead from Gérard E. Pelayo; INC-14080 merged in",
+     "11:47 CEST Joachim identifies the PVC resize never issued ControllerExpandVolume to AWS - resizer likely wedged after the rapid double edit"
     ],
     "partner": null,
     "proposals": [
      "Increase/persist ClickHouse PVC size - applied live; persistence in IaC/config not yet confirmed"
     ],
     "open_breaches": [
-     "D13/A4: known fix recommendation went unactioned ~5h47m after a premature auto-decline",
-     "C10: incident.io still shows 'Fixing' ~2h after both alerts resolved"
+     "C10/D15: incident.io still 'Fixing'; the earlier PVC bump didn't actually take effect and a new lead is now actively re-diagnosing root cause"
     ],
-    "why": "D13/C10: a known fix sat unactioned for ~5h47m post auto-decline, and though both alerts have since resolved, the incident record still isn't closed ~2h later with no confirmation the PVC bump was persisted in IaC.",
-    "suggested_action": "Close out the incident now that both alerts are resolved, and confirm the PVC increase is persisted in IaC/config rather than a live-only scale-up."
+    "why": "C10: the previously-applied PVC fix didn't actually take (resize request never reached AWS, EBS-CSI resizer likely wedged); new lead Joachim is actively diagnosing root cause now, incident.io still shows 'Fixing'."
    },
    "name": "Maxima: no consumers on queue maxima.singularity.clickhousewriter"
   },
@@ -769,7 +757,7 @@
    "severity": "P2",
    "slack_channel_id": "C0BGUEJH6UB",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784098632.180099",
+   "last_slack_ts_read": "1784107769.799679",
    "last_intercom_part_at": null,
    "classification": "🔴",
    "synthesis": {
@@ -779,14 +767,16 @@
      "14 Jul: crm-api resolver bug confirmed, PRs #2509/#2510 opened, unmerged",
      "15 Jul 08:21-08:38 CEST: Daniel hands off to Sam Lundborg via Slack, opens REW-188",
      "15 Jul 08:21-08:44 CEST: Linus tests REW-188 PR live, confirms it does not solve the issue",
-     "15 Jul 08:40 UTC check: incident.io Lead/status/summary all unchanged since creation"
+     "15 Jul 08:40 UTC check: incident.io Lead/status/summary all unchanged since creation",
+     "15 Jul 10:57-11:29 CEST: Samuela gets Campeon Nexto to latest stable, shares the crm-api diff, and begins dry-running the reconciliation endpoint; bot checks in mid-run"
     ],
     "partner": null,
     "proposals": [
      "merge PR #2509 (deterministic resolver) - still open",
      "merge PR #2510 (reconcile endpoint) - still open",
      "REW-188 backoffice PR - confirmed NOT to fix the issue, no replacement fix proposed yet",
-     "manual retro-credit for stuck player - flagged, still not actioned"
+     "manual retro-credit for stuck player - flagged, still not actioned",
+     "dry run of the recon endpoint - in progress by Samuela, result not yet known"
     ],
     "open_breaches": [
      "D15: incident.io not refreshed since creation despite scope escalating to brand-wide/multi-brand",
@@ -795,7 +785,7 @@
      "unresolved time-sensitive customer impact: stuck player's challenge nearing expiry with no confirmed retro-credit",
      "fix path now unclear after REW-188 candidate confirmed broken, no replacement identified"
     ],
-    "why": "D15/B8 persist: incident.io still shows Daniel Lindengren as Lead and 'Investigating' status despite a vacation handoff to Sam Lundborg and a brand-wide scope, and the just-tested REW-188 fix is now confirmed broken with no replacement plan.",
+    "why": "D15/B8 persist: incident.io still shows Daniel Lindengren as Lead and 'Investigating' status despite the vacation handoff to Sam Lundborg, though Samuela is now actively dry-running a fix candidate for the crm-api resolver bug (result pending).",
     "suggested_action": "Formally reassign Incident Lead to Sam Lundborg in incident.io, post a status update reflecting brand-wide scope and the failed REW-188 fix, and confirm the stuck player's retro-credit before challenge expiry."
    },
    "name": "Campeon: Incorrect games mappings",
@@ -806,7 +796,7 @@
    "severity": "P2",
    "slack_channel_id": "C0BGVS66R9B",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784102514.838819",
+   "last_slack_ts_read": "1784109146.690839",
    "last_intercom_part_at": null,
    "classification": "🚨",
    "synthesis": {
@@ -816,7 +806,8 @@
      "13 Jul: incident created, fix merged (PR #91)",
      "14 Jul: status -> Monitoring; zero-unsub-event monitor proposed, mid-design",
      "15 Jul 09:45 CEST: Giancarlo reports Betiro/Rivalo 'considered closed', Leonbets pending - no mention of 3 additional flagged brands or legal escalation",
-     "15 Jul 10:00 CEST: Andrea Azzopardi pushes Giancarlo/Simon Brown directly to get monitoring live; Simon: 'working on it' - still not live"
+     "15 Jul 10:00 CEST: Andrea Azzopardi pushes Giancarlo/Simon Brown directly to get monitoring live; Simon: 'working on it' - still not live",
+     "15 Jul 11:45-11:52 CEST: Giancarlo and Curt Healey discuss a proper long-term alerting fix (better exposer-api status-code handling instead of silently returning 200 OK) - discussion only, no ticket opened yet; bot checked in on the incident's duration"
     ],
     "partner": null,
     "proposals": [
@@ -829,7 +820,7 @@
      "C10: no confirmed retroactive remediation of missed unsubscribes",
      "partner threads for 2/3 known brands being wound down while 3 newly-flagged brands remain unaddressed"
     ],
-    "why": "D12/A4 unresolved: a ~3-month undetected opt-out failure across gambling brands still has no legal/compliance escalation, and partner threads are being closed for Betiro/Rivalo while 3 newly-flagged brands go unremediated. Andrea is now personally pushing for the zero-unsub monitor but per Simon's 'working on it' it is still not live.",
+    "why": "D12/A4 unresolved: a ~3-month undetected opt-out failure across gambling brands still has no legal/compliance escalation, and partner threads are being closed for Betiro/Rivalo while 3 newly-flagged brands go unremediated. Andrea's direct push got a 'working on it' from Simon; today the team is discussing a proper long-term alerting fix (better exposer-api error handling) but no ticket has been opened yet.",
     "suggested_action": "Escalate to legal/compliance for the multi-month opt-out failure before treating partner threads as closed; open remediation for Rocketship, Fairspin, and Frank Casino; land the zero-unsub-event monitor without further delay."
    },
    "name": "Betiro - No unsubs since April 2026",
@@ -910,42 +901,6 @@
     "why": "D15/B5 unchanged: incident.io remains stale despite the Intercom side closing out 14 Jul, and the original escalation to Jeremy lapsed unacknowledged before being picked up via workflow."
    },
    "name": "[P3] Intercom Incident : Slott Production [deleted]",
-   "channel_readable": true
-  },
-  "INC-13152": {
-   "incident_id": "01KX5JA8EA4YJK2PTZTYJ8CSYE",
-   "severity": "P3",
-   "slack_channel_id": "C0BG0FAJ27R",
-   "intercom_conversation_id": "215561056541403",
-   "last_slack_ts_read": "1783937877.182409",
-   "last_intercom_part_at": "2026-07-10T14:43:54Z",
-   "classification": "🟡",
-   "synthesis": {
-    "summary": "UW33 Malaysia partner's on-site notification CTA stopped working. Internal debate over JS-in-CTA-links restriction was never resolved, yet Matteo told the partner no service-side change was found. No activity for days until a bot nudge reassigned lead to Matteo; still nothing since.",
-    "key_events": [
-     "09 Jul 09:40 UTC partner reports",
-     "10 Jul 08:29 UTC incident created P3",
-     "10 Jul: engineers debate root cause, inconclusive; Matteo tells partner no FT-side change found",
-     "13 Jul: bot flags no activity, lead reassigned to Matteo, no activity since",
-     "15 Jul check: incident.io untouched since 13 Jul 10:17 UTC"
-    ],
-    "partner": {
-     "first_reported": "2026-07-09T09:40:18Z",
-     "last_partner_msg_at": "2026-07-10T03:05:16Z",
-     "answered": true,
-     "promises": []
-    },
-    "proposals": [
-     "confirm whether JS-in-CTA-links is blocked platform-side - never conclusively confirmed",
-     "suggest partner check front-end JS handling - given without internal confirmation"
-    ],
-    "open_breaches": [
-     "D13: internal root-cause debate never resolved before answering the partner",
-     "C10: idle 5+ days post-answer, lead reassigned via bot nudge rather than proactive follow-up"
-    ],
-    "why": "D13/C10 unchanged: the partner was told 'no service-side change found' before engineers ever resolved their own root-cause debate, and the incident has sat idle 5+ days since, with the only movement an automated lead-reassignment nudge."
-   },
-   "name": "[P3] Intercom Incident : UW33 Malaysia Production",
    "channel_readable": true
   },
   "INC-12909": {
@@ -1086,7 +1041,7 @@
    "severity": "P3",
    "slack_channel_id": "C0BD82D0KU4",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784098194.908749",
+   "last_slack_ts_read": "1784107644.195709",
    "last_intercom_part_at": null,
    "classification": "🟡",
    "synthesis": {
@@ -1096,7 +1051,8 @@
      "30 Jun-9 Jul: PR #322, #1914, #2471 merged; DB instances upgraded",
      "10 Jul: Lead handed to Daniel Lindengren",
      "15 Jul 08:49 CEST: Daniel hands off to Sam Lundborg with a specific, actioned brief",
-     "15 Jul: incident.io record confirmed still unchanged - Lead field still Daniel Lindengren (now on leave), status still 'Fixing'"
+     "15 Jul: incident.io record confirmed still unchanged - Lead field still Daniel Lindengren (now on leave), status still 'Fixing'",
+     "15 Jul 11:18-11:27 CEST: Linus loops in Agustín/Andrew/Samuela to schedule the RDS/cluster upgrade maintenance window with the partner (next Wednesday, ~1am FT time); scope covers the whole Momentum cluster (onetwoplay, onetwoplaysg, onetwoplayth) plus staging, timed around the 22 Jul cutoff"
     ],
     "partner": {
      "first_reported": "2026-06-24T16:00:00+02:00",
@@ -1117,7 +1073,7 @@
     "open_breaches": [
      "D15: incident.io status stuck 'Fixing' since 10 Jul and Incident Lead field still shows Daniel Lindengren (now on leave) - the real handover happened in Slack but hasn't been reflected in the record"
     ],
-    "why": "D15: incident.io still lists Daniel Lindengren (on leave until 10 Aug) as Incident Lead with status stuck 'Fixing' since 10 Jul; the 15 Jul Slack handover to Sam Lundborg for the RabbitMQ cutover is real and well-specified but has not been reflected in the incident record's lead/status fields."
+    "why": "D15 persists (incident.io Lead/status stale), but active partner-facing maintenance coordination is now underway and well-organized - a positive development worth tracking to completion."
    },
    "name": "12play brands fire late",
    "channel_readable": true
@@ -1127,7 +1083,7 @@
    "severity": "P3",
    "slack_channel_id": "C0B0RF4GKQD",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784103890.106189",
+   "last_slack_ts_read": "1784111084.117629",
    "last_intercom_part_at": null,
    "classification": "🚨",
    "synthesis": {
@@ -1137,7 +1093,8 @@
      "25-29 May: Andrea Azzopardi repeatedly asks for an explanation, no answer for 4 days",
      "29 May: lead explains 'not much to do from SOC', pulls in Gustav Tjäder - never answered",
      "14 Jul: Lead reassigned again to James Hodgson, no substantive update since 29 May",
-     "15 Jul 10:24 CEST: another Hizlicasino alert (1376 messages, no consumers) auto-merged in - confirms zero human progress"
+     "15 Jul 10:24 CEST: another Hizlicasino alert (1376 messages, no consumers) auto-merged in - confirms zero human progress",
+     "15 Jul 10:24-11:24 CEST: another Hizlicasino alert (1654 msgs, no consumers) merged in; 50+ alerts auto-resolved twice more - still zero human commentary since 29 May"
     ],
     "partner": null,
     "proposals": [
@@ -1197,41 +1154,55 @@
    "incident_id": "01KXJCY04Q5FGAHAQ8S6KJER23",
    "severity": "P3",
    "first_seen": "2026-07-15T08:05:15Z",
-   "slack_channel_id": null,
+   "slack_channel_id": "C0BHC5R0JRK",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": null,
+   "last_slack_ts_read": "1784103015.561539",
    "last_intercom_part_at": null,
-   "classification": "🟢",
+   "classification": "🟡",
    "synthesis": {
-    "summary": "RabbitMQ integration queue backlog (100k+ messages) for betathome; lead Joachim Farrugia assigned and accepted within 2.5 minutes of creation. Metadata-only assessment (no criteria matched) — normal for a freshly-opened P3.",
+    "summary": "RabbitMQ integration backlog for betathome (100k+ msgs, P3); Joachim accepted and the backlog cleared within ~3 minutes ('Backlog processed immediately'). The alert auto-resolved at 08:10 UTC but incident.io status has remained 'Investigating' with no closure for ~2.5h since.",
     "key_events": [
      "08:05:15Z incident created",
-     "08:07:39Z accepted, lead assigned"
+     "08:07:39Z accepted, Investigating",
+     "08:10:15Z alert resolved, backlog cleared",
+     "10:39 UTC (this check): still 'Investigating', unclosed"
     ],
     "partner": null,
     "proposals": [],
-    "open_breaches": []
+    "open_breaches": [
+     "D15/C10: resolved ~2.5h ago, incident record never closed - minor, low-severity, no partner impact evident"
+    ],
+    "why": "D15: a quick, clean resolve (~3 min) but the record has sat unclosed for ~2.5 hours since - a minor hygiene gap."
    },
    "name": "[FIRING:1] RabbitMQ Integration Queue Backlog (100k) betathome Alerting (true p3 betathome.integration.api integration)",
-   "channel_readable": null
+   "channel_readable": true
   },
   "INC-14077": {
    "incident_id": "01KXJ7A9RB8BV11ERXZAKQJNGK",
    "severity": "P3",
    "first_seen": "2026-07-15T06:27:07Z",
-   "slack_channel_id": null,
+   "slack_channel_id": "C0BGZDU59N3",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": null,
+   "last_slack_ts_read": "1784098627.971239",
    "last_intercom_part_at": null,
-   "classification": "🟢",
+   "classification": "🟡",
    "name": "[FIRING:1] Ping Pong: Singularity → Fire latency high (60s/15m) sisutech SRE Dashboards (true p3 ping-pong)",
    "synthesis": {
-    "summary": "Known P3 ping-pong noise pattern on sisutech; lead assigned (Joachim Farrugia), fresh (~1h old), no other criteria matched. Classified from metadata only, not deep-read.",
-    "key_events": [],
+    "summary": "Ping-pong latency alert for sisutech (P3); Joachim accepted within 9 minutes and both attached alerts auto-resolved at 06:57 UTC. incident.io status has stayed at 'Investigating' with no further activity for ~3h45m since - a minor closure-hygiene gap on an already-resolved, low-severity issue.",
+    "key_events": [
+     "06:27:07Z alert fires, incident created",
+     "06:36:11Z accepted, Investigating",
+     "06:57:07Z both attached alerts auto-resolved",
+     "10:39 UTC (this check): no further activity, status still 'Investigating'"
+    ],
     "partner": null,
     "proposals": [],
-    "open_breaches": []
-   }
+    "open_breaches": [
+     "D15/C10: auto-resolved ~3h45m ago but the record was never closed out - minor, low-severity, no partner impact"
+    ],
+    "why": "D15: a low-severity P3 auto-resolved almost 4 hours ago but the incident record was never closed - a minor hygiene gap, no partner impact."
+   },
+   "channel_readable": true
   },
   "INC-13916": {
    "incident_id": "01KXG5HW79GHP2A7YJM0KVZWN6",
@@ -1270,6 +1241,60 @@
    },
    "name": "Security incident: Malicious dashboard creation attempt",
    "private": true
+  },
+  "INC-14112": {
+   "incident_id": "01KXJHEN5XBW9AXN4SMJABKA6M",
+   "severity": "P2",
+   "slack_channel_id": "C0BJABPJ0RW",
+   "intercom_conversation_id": null,
+   "last_slack_ts_read": "1784110883.391899",
+   "last_intercom_part_at": null,
+   "classification": "🟡",
+   "synthesis": {
+    "summary": "Second ElastiCache CPU spike of the day (after INC-14101's clean 16-min resolve this morning). Auto-declined at 09:34 UTC as resolved in Grafana, but CPU climbed back to 99% by 09:44 UTC and kept rising - reopened to Triage, accepted by Joachim Farrugia at 10:14:58 UTC. As of 10:21 UTC load is at '8x' baseline with Campeon suspected as the driver; team actively investigating, considering an instance upgrade.",
+    "key_events": [
+     "09:24:16Z alert fires, incident created",
+     "09:34:15Z auto-declined as resolved in Grafana",
+     "09:44:03Z CPU hits 99%, reopened to Triage",
+     "10:14:58Z accepted, Investigating; Joachim suspects Campeon load, load now ~8x baseline, evaluating an instance upgrade"
+    ],
+    "partner": null,
+    "proposals": [
+     "Upgrade ElastiCache instance class - being considered, not yet actioned"
+    ],
+    "open_breaches": [
+     "A4: 2nd ElastiCache CPU flare today after INC-14101 auto-resolved this morning - emerging recurrence pattern worth watching"
+    ],
+    "why": "A4 (watch): 2nd ElastiCache CPU incident today - this one auto-declined as resolved then reignited to 8x load within 10 minutes. Response mechanics are fine so far (fast lead pickup, live diagnosis, root-cause theory in progress); flagging as an emerging pattern worth a look next run."
+   },
+   "name": "[FIRING:1] ElastiCache Engine CPU load Alerting production-290-gen (true p2 aws-elasticache)",
+   "channel_readable": true,
+   "first_seen": "2026-07-15T09:24:16Z"
+  },
+  "INC-14108": {
+   "incident_id": "01KXJGN9V1RXV7E6PSM1KQKHV9",
+   "severity": "P2",
+   "slack_channel_id": "C0BHFUN13KL",
+   "intercom_conversation_id": null,
+   "last_slack_ts_read": "1784107751.731559",
+   "last_intercom_part_at": null,
+   "classification": "🟢",
+   "synthesis": {
+    "summary": "Campeon conversion-service queue backlog (441k lag) triggered a P2; Joachim Farrugia accepted within 5 minutes, scaled pods 5->15, and moved to Monitoring within 19 minutes of creation. Clean, fast handling, no partner impact noted.",
+    "key_events": [
+     "09:10:25Z incident created",
+     "09:28:38Z accepted, Investigating",
+     "09:29:02Z pods scaled to 15",
+     "09:29:11Z moved to Monitoring"
+    ],
+    "partner": null,
+    "proposals": [
+     "Scale conversion-service pods - done (5->15)"
+    ],
+    "open_breaches": []
+   },
+   "name": "campeon: no consumers on queue campeon.action.external.main (lag: 441737) group: campeon.conversion-service",
+   "first_seen": "2026-07-15T09:10:25Z"
   }
  }
 }
