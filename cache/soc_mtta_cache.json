@@ -13501,11 +13501,11 @@
     },
     "2026-W29": {
       "Joachim Farrugia": {
-        "pages_targeted": 0,
-        "resolved": 0,
+        "pages_targeted": 91,
+        "resolved": 84,
         "expired": 0,
-        "cancelled": 0,
-        "miss_rate": null,
+        "cancelled": 7,
+        "miss_rate": 0.0,
         "mtta": {
           "acked_count": 0,
           "sample_size": 0,
@@ -13516,14 +13516,14 @@
         }
       },
       "Matteo Rapisarda": {
-        "pages_targeted": 48,
-        "resolved": 41,
+        "pages_targeted": 49,
+        "resolved": 42,
         "expired": 0,
         "cancelled": 7,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 34,
-          "sample_size": 41,
+          "sample_size": 42,
           "sampled": false,
           "median_mtta_min": 0.41,
           "mean_mtta_min": 0.85,
@@ -13770,10 +13770,10 @@
         }
       },
       "Gérard E. Pelayo": {
-        "pages_targeted": 58,
-        "resolved": 56,
+        "pages_targeted": 143,
+        "resolved": 138,
         "expired": 0,
-        "cancelled": 2,
+        "cancelled": 5,
         "miss_rate": 0.0,
         "mtta": {
           "acked_count": 45,
@@ -14101,8 +14101,8 @@
         }
       },
       "Nazareno Scibilia": {
-        "pages_targeted": 124,
-        "resolved": 99,
+        "pages_targeted": 142,
+        "resolved": 117,
         "expired": 0,
         "cancelled": 25,
         "miss_rate": 0.0,

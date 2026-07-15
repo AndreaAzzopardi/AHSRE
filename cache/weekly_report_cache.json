@@ -4637,7 +4637,7 @@
         "status": "Monitoring",
         "reported_at": "2026-07-02T13:40:45Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12022",
-        "summary": "Problem: Shortlinks and unsubscribe links used across multiple partner brands began redirecting end users to a \"Forbidden\" error page instead of the intended destination, breaking core marketing and communication link flows.\n\nImpact: End users of at least six brands, confirmed as Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-Romania, and Estelarbet, were unable to open shortlinks or unsubscribe links and were shown a forbidden error instead. The issue was open from initial report on July 2 through the fix being merged and verified around July 6-10, meaning affected users experienced broken links for an extended period.\n\nCause: A requirement that shortlink and unsubscribe requests pass through a Cloudflare-origin check began incorrectly rejecting valid brand link traffic with a forbidden response. This was compounded by a separate, unrelated file-serving change that blocked access to deleted images, which also had to be identified and reverted as part of the fix.\n\nActions Taken: The team removed the Cloudflare-origin check for the affected brand paths and merged the fix, reverted the deleted-image file-access change, and cut a new stable platform version, confirming that links were working again for Estelarbet and the other reported templates. The incident remains in Monitoring status pending confirmation that the fix holds across all affected brands with no recurrence of link-serving failures before it can be marked resolved."
+        "summary": "Problem: Shortlinks and unsubscribe links for multiple brands were redirecting users to a Forbidden page instead of resolving normally.\n\nImpact: Users of Supabets, Softgenius, Betathome, Merkurxtip, Stanleybet-romania, and Estelarbet could not open shortlinks or unsubscribe links, seeing a forbidden error instead.\n\nCause: A Cloudflare-origin check introduced for shortlink and unsubscribe requests was incorrectly rejecting valid brand traffic; a separate file-serving change that blocked deleted images had also been left in place and contributed to the issue.\n\nActions Taken: The team removed the Cloudflare-origin check for the affected brand paths and merged the fix, reverted the file-serving change for deleted images, cut a new stable platform version, and confirmed links were working again for Estelarbet and the reported templates. The incident remains in Monitoring while the team watches for recurrence across the other affected brands."
       }
     ],
     "alert_volume": {
@@ -5111,7 +5111,7 @@
         "status": "Documenting",
         "reported_at": "2026-07-09T03:55:26Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12856",
-        "summary": "Problem: MemoryDB instance 274, a production cache cluster underpinning the scheduled-actions processing pipeline, reached 90% memory utilization and became stuck mid-upgrade while attempting to scale to a larger instance size. The stall prevented scheduled-actions queues from being drained normally, which was significant because it simultaneously backed up automated processing across a large number of partner brands.\n\nImpact: The stall affected 21 brands whose scheduled actions could not be processed while the cluster was stuck, including Multiverse, Segurobet, Play, Seu Bet, Galabet, Betpipo, Maxima, Supremabet, Moovbet, Maltech, BetOffice, Vbet Latam, Padisahbet, and ClaroBet. Several of these brands' queues built up large backlogs (in some cases hundreds of thousands of pending messages) before processing resumed, with the disruption running from initial detection through to completed scaling roughly 16 hours later.\n\nCause: AWS indicated that the scaling stall was most likely caused by an AWS-side MemoryDB service issue, in which shards or newly provisioned hosts became stuck during host creation rather than any configuration error on Fast Track's side. A support ticket was raised with AWS and escalated to their MemoryDB team; AWS has still not delivered an official root-cause analysis.\n\nActions Taken: The team completed scaling MemoryDB 274 up to a db.r6gd.4xlarge instance, re-enabled scheduled actions, and validated key-count consistency (approximately 5.43 million keys) after cutover; the cluster has remained stable since. The incident has now moved from Monitoring into Documenting as the post-incident writeup is prepared, with the AWS support ticket and official RCA still outstanding before the case can be fully closed with AWS."
+        "summary": "Problem: MemoryDB 274 reached 90% memory utilization and became stuck mid-upgrade, stalling scheduled-actions processing across the platform.\n\nImpact: Scheduled actions were delayed for 21 brands while the instance could not process queued work, affecting shard/host scaling and time-based campaign lifecycles for those brands.\n\nCause: AWS determined the scaling stall was caused by a service-level issue in which shards and new hosts became stuck during host creation; root cause sits with AWS's MemoryDB provisioning path rather than Fast Track configuration.\n\nActions Taken: The team completed the scale-up of MemoryDB 274 to db.r6gd.4xlarge, validated key-count consistency post-cutover (~5.43M keys), and re-enabled scheduled actions. A support ticket was raised with AWS and escalated to their MemoryDB team; the incident remains in the Documenting (post-incident) stage pending AWS's official RCA and preventive guidance."
       }
     ],
     "engineer_workload": {
@@ -5382,23 +5382,23 @@
       "unclassified": 1
     },
     "incident_volume": {
-      "total": 59,
-      "P1": 3,
-      "P2": 26,
-      "P3": 28,
+      "total": 95,
+      "P1": 2,
+      "P2": 43,
+      "P3": 48,
       "P4": 2,
-      "ic_ticket_count": 10
+      "ic_ticket_count": 13
     },
     "alert_volume": {
-      "total": 548,
+      "total": 854,
       "by_source": {
         "Cloudflare AI Loop": 1,
-        "Cloudflare Security Scanner": 1,
-        "Dead Man's Snitch": 28,
-        "Grafana SOC alerts": 78,
-        "Grafana alerts": 154,
-        "HTTP alerts": 274,
-        "Intercom": 10,
+        "Cloudflare Security Scanner": 2,
+        "Dead Man's Snitch": 50,
+        "Grafana SOC alerts": 129,
+        "Grafana alerts": 199,
+        "HTTP alerts": 457,
+        "Intercom": 14,
         "Unknown": 2
       }
     },
@@ -5411,19 +5411,19 @@
       "median_frt_min": 3.9,
       "mean_frt_min": 4.5,
       "frt_seconds": [
-        233,
         83,
+        233,
         498
       ]
     },
     "p1_brands": {
-      "Rhino Entertainment": 1,
-      "Brazil Bet": 1
+      "Brazil Bet": 1,
+      "Rhino Entertainment": 1
     },
     "p1_frt_breaches": [],
     "mtta": {
       "P1": {
-        "n": 3,
+        "n": 2,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -5431,50 +5431,75 @@
         "mean_mtta_min": null
       },
       "P2": {
-        "n": 26,
-        "n_acked": 21,
-        "ack_rate": 0.81,
+        "n": 43,
+        "n_acked": 33,
+        "ack_rate": 0.77,
         "mtta_minutes": [
           4.15,
-          4.2667,
-          5.3167,
-          6.1333,
+          4.27,
+          4.47,
+          5.32,
+          6.13,
           6.55,
-          12.4167,
-          15.7833,
-          15.8667,
-          26.5667,
-          27.6333,
+          7.72,
+          10.55,
+          12.42,
+          12.63,
+          15.78,
+          15.87,
+          22.32,
+          26.57,
+          27.63,
+          31.07,
           32.5,
-          40.5667,
-          47.3333,
+          40.57,
+          44.08,
+          47.33,
+          50.7,
           58.0,
-          71.2333,
+          70.28,
+          71.23,
           79.0,
-          88.4333,
-          153.2333,
+          88.43,
+          103.13,
+          153.23,
           224.5,
-          237.9667,
-          286.85
+          237.97,
+          286.85,
+          297.55,
+          377.87
         ],
         "median_mtta_min": 32.5,
-        "mean_mtta_min": 68.8
+        "mean_mtta_min": 75.1
       },
       "P3": {
-        "n": 28,
-        "n_acked": 7,
-        "ack_rate": 0.25,
+        "n": 48,
+        "n_acked": 20,
+        "ack_rate": 0.42,
         "mtta_minutes": [
-          1.0333,
-          3.6833,
-          4.6333,
-          6.5333,
+          1.03,
+          2.4,
+          3.25,
+          3.68,
+          4.37,
+          4.63,
+          6.37,
+          6.53,
+          9.05,
+          13.45,
+          18.98,
           20.25,
           33.1,
-          76.4
+          59.18,
+          60.35,
+          76.4,
+          136.47,
+          154.87,
+          185.23,
+          334.27
         ],
-        "median_mtta_min": 6.5,
-        "mean_mtta_min": 20.8
+        "median_mtta_min": 16.21,
+        "mean_mtta_min": 56.7
       },
       "P4": {
         "n": 2,
@@ -5486,14 +5511,14 @@
       }
     },
     "csat": {
-      "total": 5,
-      "rated": 0,
-      "avg_score": null,
-      "pct_positive": null,
-      "pct_perfect": null,
-      "response_rate": 0.0,
+      "total": 8,
+      "rated": 2,
+      "avg_score": 5.0,
+      "pct_positive": 100.0,
+      "pct_perfect": 100.0,
+      "response_rate": 25.0,
       "score_dist": {
-        "5": 0,
+        "5": 2,
         "4": 0,
         "3": 0,
         "2": 0,
@@ -5503,39 +5528,77 @@
     "csat_low_scores": [],
     "partner_tickets": {
       "p1_responded": 2,
-      "p2_responded": 0,
-      "p3_responded": 2,
+      "p2_responded": 2,
+      "p3_responded": 3,
       "p1_open": 0,
-      "p2_open": 0,
+      "p2_open": 1,
       "p3_open": 0,
-      "total_count": 4,
-      "avg_response_min": 31.9,
-      "median_response_min": 5.7,
+      "total_count": 8,
+      "avg_response_min": 28.0,
+      "median_response_min": 12.0,
       "response_times_s": [
+        83,
         233,
-        6886,
+        2531,
+        720,
+        848,
         448,
-        83
+        6886
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 2,
+      "hit": 5,
       "missed": 0,
-      "total": 2,
+      "total": 5,
       "hit_rate": 100.0,
-      "mean_response_min": 61.1,
-      "median_response_min": 61.1,
+      "mean_response_min": 38.1,
+      "median_response_min": 14.1,
       "response_times_s": [
-        6886,
-        448
+        2531,
+        848,
+        448,
+        720,
+        6886
       ]
     },
     "p2p3_frt_breaches": [],
     "engineer_workload": {
       "tickets": [
         {
+          "reference": "INC-14168",
+          "lead": "James Hodgson",
+          "severity": "P2",
+          "reported_at": "2026-07-15T15:25:05Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-14152",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-15T13:26:47Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-14151",
+          "lead": "James Hodgson",
+          "severity": "P2",
+          "reported_at": "2026-07-15T13:25:42Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-14113",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-07-15T09:24:47Z",
+          "resolved_at": "2026-07-15T10:14:04Z",
+          "closed": true
+        },
+        {
           "reference": "INC-13931",
-          "lead": "Nazareno",
+          "lead": "Matteo Rapisarda",
           "severity": "P3",
           "reported_at": "2026-07-14T14:37:15Z",
           "resolved_at": null,
@@ -5543,17 +5606,9 @@
         },
         {
           "reference": "INC-13917",
-          "lead": "Giancarlo Laferla",
+          "lead": "Sam Lundborg",
           "severity": "P2",
           "reported_at": "2026-07-14T11:18:27Z",
-          "resolved_at": null,
-          "closed": false
-        },
-        {
-          "reference": "INC-13916",
-          "lead": "Giancarlo Laferla",
-          "severity": "P1",
-          "reported_at": "2026-07-14T11:17:49Z",
           "resolved_at": null,
           "closed": false
         },
@@ -5586,8 +5641,8 @@
           "lead": "Giancarlo Laferla",
           "severity": "P1",
           "reported_at": "2026-07-14T05:46:31Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-15T13:22:15Z",
+          "closed": true
         },
         {
           "reference": "INC-13736",
