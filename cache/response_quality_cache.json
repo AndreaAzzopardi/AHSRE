@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-14T22:40:00Z",
+ "generated": "2026-07-15T22:30:00Z",
  "method": {
   "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select — counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
   "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident — multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation ±1s). Author logged per entry (informer log).",
@@ -4328,7 +4328,7 @@
     "other": {
      "closed": 18,
      "open": 0,
-     "median_office_min": 489.37,
+     "median_office_min": 459.36,
      "p90_office_min": 2591.92
     },
     "items": [
@@ -4341,9 +4341,35 @@
       "last_close_at": 1782914841,
       "raw_h": null,
       "office_min": null,
-      "reopens": 3,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "open"
+     },
+     {
+      "id": "215561034855180",
+      "p1": false,
+      "created_at": 1782389181,
+      "start": 1782389181,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783930702,
+      "raw_h": null,
+      "office_min": 5573.65,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561036683020",
+      "p1": false,
+      "created_at": 1782483853,
+      "start": 1782483854,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783330569,
+      "raw_h": null,
+      "office_min": 2591.92,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
      },
      {
       "id": "215561033111349",
@@ -4367,7 +4393,20 @@
       "last_close_at": 1782816491,
       "raw_h": 171.6,
       "office_min": null,
-      "reopens": 1,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034751757",
+      "p1": false,
+      "created_at": 1782382741,
+      "start": 1782382742,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782806413,
+      "raw_h": null,
+      "office_min": 1360.97,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4419,7 +4458,7 @@
       "last_close_at": 1782483855,
       "raw_h": 3.87,
       "office_min": null,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4489,123 +4528,6 @@
       "state": "closed"
      },
      {
-      "id": "215561034620156",
-      "p1": true,
-      "created_at": 1782375401,
-      "start": 1782375402,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782376739,
-      "raw_h": 0.37,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561034525182",
-      "p1": true,
-      "created_at": 1782371417,
-      "start": 1782371417,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782374543,
-      "raw_h": 0.87,
-      "office_min": null,
-      "reopens": 1,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561033637047",
-      "p1": true,
-      "created_at": 1782326087,
-      "start": 1782326087,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782327789,
-      "raw_h": 0.47,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561032727853",
-      "p1": true,
-      "created_at": 1782284935,
-      "start": 1782284935,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782297482,
-      "raw_h": 3.49,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561032530212",
-      "p1": true,
-      "created_at": 1782263827,
-      "start": 1782263828,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782274547,
-      "raw_h": 2.98,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561031491552",
-      "p1": true,
-      "created_at": 1782203425,
-      "start": 1782203425,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782273966,
-      "raw_h": 19.59,
-      "office_min": null,
-      "reopens": 1,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561034855180",
-      "p1": false,
-      "created_at": 1782389181,
-      "start": 1782389181,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783930702,
-      "raw_h": null,
-      "office_min": 5573.65,
-      "reopens": 1,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561036683020",
-      "p1": false,
-      "created_at": 1782483853,
-      "start": 1782483854,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783330569,
-      "raw_h": null,
-      "office_min": 2591.92,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
-      "id": "215561034751757",
-      "p1": false,
-      "created_at": 1782382741,
-      "start": 1782382742,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782806413,
-      "raw_h": null,
-      "office_min": 1360.97,
-      "reopens": 0,
-      "week": "2026-06-22",
-      "state": "closed"
-     },
-     {
       "id": "215561036266985",
       "p1": false,
       "created_at": 1782464574,
@@ -4640,7 +4562,7 @@
       "last_close_at": 1782459279,
       "raw_h": null,
       "office_min": 1502.37,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4666,7 +4588,7 @@
       "last_close_at": 1782382864,
       "raw_h": null,
       "office_min": 388.17,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4679,7 +4601,7 @@
       "last_close_at": 1782369878,
       "raw_h": null,
       "office_min": 960.0,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4692,7 +4614,20 @@
       "last_close_at": 1782378423,
       "raw_h": null,
       "office_min": 429.32,
-      "reopens": 1,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034620156",
+      "p1": true,
+      "created_at": 1782375401,
+      "start": 1782375402,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782376739,
+      "raw_h": 0.37,
+      "office_min": null,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -4700,10 +4635,36 @@
       "id": "215561034621338",
       "p1": false,
       "created_at": 1782375484,
-      "start": 1782375484,
-      "start_basis": "created_at",
-      "last_close_at": null,
+      "start": 1782375485,
+      "start_basis": "recovered_assignment_part",
+      "last_close_at": 1782375970,
       "raw_h": null,
+      "office_min": 0.0,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561034525182",
+      "p1": true,
+      "created_at": 1782371417,
+      "start": 1782371417,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782374543,
+      "raw_h": 0.87,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561033637047",
+      "p1": true,
+      "created_at": 1782326087,
+      "start": 1782326087,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782327789,
+      "raw_h": 0.47,
       "office_min": null,
       "reopens": 0,
       "week": "2026-06-22",
@@ -4736,14 +4697,27 @@
       "state": "closed"
      },
      {
+      "id": "215561032727853",
+      "p1": true,
+      "created_at": 1782284935,
+      "start": 1782284935,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782297482,
+      "raw_h": 3.49,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
       "id": "215561032810543",
       "p1": false,
       "created_at": 1782287375,
       "start": 1782287375,
-      "start_basis": "created_at",
-      "last_close_at": null,
+      "start_basis": "recovered_assignment_part",
+      "last_close_at": 1782290249,
       "raw_h": null,
-      "office_min": null,
+      "office_min": 0.0,
       "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
@@ -4757,7 +4731,33 @@
       "last_close_at": 1782285111,
       "raw_h": null,
       "office_min": 960.0,
-      "reopens": 1,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561032530212",
+      "p1": true,
+      "created_at": 1782263827,
+      "start": 1782263828,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782274547,
+      "raw_h": 2.98,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-22",
+      "state": "closed"
+     },
+     {
+      "id": "215561031491552",
+      "p1": true,
+      "created_at": 1782203425,
+      "start": 1782203425,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782273966,
+      "raw_h": 19.59,
+      "office_min": null,
+      "reopens": 0,
       "week": "2026-06-22",
       "state": "closed"
      },
@@ -5501,10 +5501,36 @@
     "other": {
      "closed": 22,
      "open": 0,
-     "median_office_min": 1118.58,
-     "p90_office_min": 3166.88
+     "median_office_min": 1139.32,
+     "p90_office_min": 3190.58
     },
     "items": [
+     {
+      "id": "215561047627727",
+      "p1": true,
+      "created_at": 1783071790,
+      "start": 1783071790,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784041738,
+      "raw_h": 269.43,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046574934",
+      "p1": false,
+      "created_at": 1783003123,
+      "start": 1783003124,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784120819,
+      "raw_h": null,
+      "office_min": 4228.25,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
      {
       "id": "215561046412156",
       "p1": true,
@@ -5519,15 +5545,93 @@
       "state": "open"
      },
      {
-      "id": "215561047627727",
-      "p1": true,
-      "created_at": 1783071790,
-      "start": 1783071790,
+      "id": "215561044802323",
+      "p1": false,
+      "created_at": 1782914380,
+      "start": 1782914381,
       "start_basis": "first_assignment_at",
-      "last_close_at": 1784041738,
-      "raw_h": 269.43,
-      "office_min": null,
-      "reopens": 4,
+      "last_close_at": 1783683736,
+      "raw_h": null,
+      "office_min": 3222.58,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046342079",
+      "p1": false,
+      "created_at": 1782994257,
+      "start": 1782994258,
+      "start_basis": "recovered_assignment_part",
+      "last_close_at": 1783669616,
+      "raw_h": null,
+      "office_min": 2689.03,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046220841",
+      "p1": false,
+      "created_at": 1782986417,
+      "start": 1782986417,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783578182,
+      "raw_h": null,
+      "office_min": 2339.72,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042455348",
+      "p1": false,
+      "created_at": 1782806895,
+      "start": 1782806895,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783519835,
+      "raw_h": null,
+      "office_min": 3190.58,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561040792132",
+      "p1": false,
+      "created_at": 1782719378,
+      "start": 1782719378,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783432013,
+      "raw_h": null,
+      "office_min": 3166.88,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046360038",
+      "p1": false,
+      "created_at": 1782995503,
+      "start": 1782995503,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783406546,
+      "raw_h": null,
+      "office_min": 1228.28,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047509338",
+      "p1": false,
+      "created_at": 1783065220,
+      "start": 1783065220,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783414557,
+      "raw_h": null,
+      "office_min": 960.0,
+      "reopens": 0,
       "week": "2026-06-29",
       "state": "closed"
      },
@@ -5545,6 +5649,19 @@
       "state": "closed"
      },
      {
+      "id": "215561047611998",
+      "p1": false,
+      "created_at": 1783070619,
+      "start": 1783070620,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783340742,
+      "raw_h": null,
+      "office_min": 662.03,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
       "id": "215561049343182",
       "p1": true,
       "created_at": 1783164089,
@@ -5553,7 +5670,72 @@
       "last_close_at": 1783186486,
       "raw_h": 6.22,
       "office_min": null,
-      "reopens": 1,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044506651",
+      "p1": false,
+      "created_at": 1782900874,
+      "start": 1782900874,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783173884,
+      "raw_h": null,
+      "office_min": 1365.43,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047595167",
+      "p1": false,
+      "created_at": 1783069560,
+      "start": 1783069560,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783093488,
+      "raw_h": null,
+      "office_min": 398.8,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561047605497",
+      "p1": false,
+      "created_at": 1783070127,
+      "start": 1783070128,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783089187,
+      "raw_h": null,
+      "office_min": 317.65,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561046425596",
+      "p1": false,
+      "created_at": 1782999855,
+      "start": 1782999856,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783084046,
+      "raw_h": null,
+      "office_min": 443.17,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044342147",
+      "p1": false,
+      "created_at": 1782894041,
+      "start": 1782894042,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783081203,
+      "raw_h": null,
+      "office_min": 1160.05,
+      "reopens": 0,
       "week": "2026-06-29",
       "state": "closed"
      },
@@ -5584,6 +5766,19 @@
       "state": "closed"
      },
      {
+      "id": "215561042923093",
+      "p1": false,
+      "created_at": 1782829285,
+      "start": 1782829285,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783026297,
+      "raw_h": null,
+      "office_min": 1118.58,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
       "id": "215561040923875",
       "p1": true,
       "created_at": 1782724892,
@@ -5592,7 +5787,20 @@
       "last_close_at": 1783026223,
       "raw_h": 83.7,
       "office_min": null,
-      "reopens": 2,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044393217",
+      "p1": false,
+      "created_at": 1782895747,
+      "start": 1782895747,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783025718,
+      "raw_h": null,
+      "office_min": 960.0,
+      "reopens": 0,
       "week": "2026-06-29",
       "state": "closed"
      },
@@ -5618,6 +5826,58 @@
       "last_close_at": 1783005291,
       "raw_h": 39.29,
       "office_min": null,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561044800776",
+      "p1": false,
+      "created_at": 1782914300,
+      "start": 1782914300,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782999795,
+      "raw_h": null,
+      "office_min": 464.92,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561041226471",
+      "p1": false,
+      "created_at": 1782734621,
+      "start": 1782734621,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782999536,
+      "raw_h": null,
+      "office_min": 1535.25,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561041203775",
+      "p1": false,
+      "created_at": 1782733213,
+      "start": 1782733213,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782928047,
+      "raw_h": null,
+      "office_min": 1279.78,
+      "reopens": 0,
+      "week": "2026-06-29",
+      "state": "closed"
+     },
+     {
+      "id": "215561042468705",
+      "p1": false,
+      "created_at": 1782807710,
+      "start": 1782807710,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1782888908,
+      "raw_h": null,
+      "office_min": 480.0,
       "reopens": 0,
       "week": "2026-06-29",
       "state": "closed"
@@ -5675,266 +5935,6 @@
       "state": "closed"
      },
      {
-      "id": "215561044802323",
-      "p1": false,
-      "created_at": 1782914380,
-      "start": 1782914381,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783683736,
-      "raw_h": null,
-      "office_min": 3222.58,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561046342079",
-      "p1": false,
-      "created_at": 1782994257,
-      "start": 1782994257,
-      "start_basis": "created_at",
-      "last_close_at": null,
-      "raw_h": null,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561046220841",
-      "p1": false,
-      "created_at": 1782986417,
-      "start": 1782986417,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783578182,
-      "raw_h": null,
-      "office_min": 2339.72,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561046574934",
-      "p1": false,
-      "created_at": 1783003123,
-      "start": 1783003124,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783521202,
-      "raw_h": null,
-      "office_min": 1914.63,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561042455348",
-      "p1": false,
-      "created_at": 1782806895,
-      "start": 1782806895,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783519835,
-      "raw_h": null,
-      "office_min": 3190.58,
-      "reopens": 2,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561040792132",
-      "p1": false,
-      "created_at": 1782719378,
-      "start": 1782719378,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783432013,
-      "raw_h": null,
-      "office_min": 3166.88,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561046360038",
-      "p1": false,
-      "created_at": 1782995503,
-      "start": 1782995503,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783406546,
-      "raw_h": null,
-      "office_min": 1228.28,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561047509338",
-      "p1": false,
-      "created_at": 1783065220,
-      "start": 1783065220,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783414557,
-      "raw_h": null,
-      "office_min": 960.0,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561047611998",
-      "p1": false,
-      "created_at": 1783070619,
-      "start": 1783070620,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783340742,
-      "raw_h": null,
-      "office_min": 662.03,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561044506651",
-      "p1": false,
-      "created_at": 1782900874,
-      "start": 1782900874,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783173884,
-      "raw_h": null,
-      "office_min": 1365.43,
-      "reopens": 1,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561047595167",
-      "p1": false,
-      "created_at": 1783069560,
-      "start": 1783069560,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783093488,
-      "raw_h": null,
-      "office_min": 398.8,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561047605497",
-      "p1": false,
-      "created_at": 1783070127,
-      "start": 1783070128,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783089187,
-      "raw_h": null,
-      "office_min": 317.65,
-      "reopens": 3,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561046425596",
-      "p1": false,
-      "created_at": 1782999855,
-      "start": 1782999856,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783084046,
-      "raw_h": null,
-      "office_min": 443.17,
-      "reopens": 1,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561044342147",
-      "p1": false,
-      "created_at": 1782894041,
-      "start": 1782894042,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783081203,
-      "raw_h": null,
-      "office_min": 1160.05,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561042923093",
-      "p1": false,
-      "created_at": 1782829285,
-      "start": 1782829285,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783026297,
-      "raw_h": null,
-      "office_min": 1118.58,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561044393217",
-      "p1": false,
-      "created_at": 1782895747,
-      "start": 1782895747,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783025718,
-      "raw_h": null,
-      "office_min": 960.0,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561044800776",
-      "p1": false,
-      "created_at": 1782914300,
-      "start": 1782914300,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782999795,
-      "raw_h": null,
-      "office_min": 464.92,
-      "reopens": 1,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561041226471",
-      "p1": false,
-      "created_at": 1782734621,
-      "start": 1782734621,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782999536,
-      "raw_h": null,
-      "office_min": 1535.25,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561041203775",
-      "p1": false,
-      "created_at": 1782733213,
-      "start": 1782733213,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782928047,
-      "raw_h": null,
-      "office_min": 1279.78,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
-      "id": "215561042468705",
-      "p1": false,
-      "created_at": 1782807710,
-      "start": 1782807710,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1782888908,
-      "raw_h": null,
-      "office_min": 480.0,
-      "reopens": 0,
-      "week": "2026-06-29",
-      "state": "closed"
-     },
-     {
       "id": "215561040899279",
       "p1": false,
       "created_at": 1782724601,
@@ -5956,7 +5956,7 @@
       "last_close_at": 1782811295,
       "raw_h": null,
       "office_min": 204.57,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-06-29",
       "state": "closed"
      }
@@ -6041,7 +6041,7 @@
     "total": 194,
     "causes": {
      "None": {
-      "count": 77,
+      "count": 75,
       "refs": [
        "INC-13591",
        "INC-13537",
@@ -6069,7 +6069,6 @@
        "INC-13161",
        "INC-13156",
        "INC-13153",
-       "INC-13152",
        "INC-13141",
        "INC-13133",
        "INC-13111",
@@ -6089,7 +6088,6 @@
        "INC-12954",
        "INC-12939",
        "INC-12918",
-       "INC-12909",
        "INC-12904",
        "INC-12896",
        "INC-12888",
@@ -6207,6 +6205,22 @@
        "INC-12445"
       ]
      },
+     "Partner - Incorrect Setup": {
+      "count": 11,
+      "refs": [
+       "INC-13581",
+       "INC-13459",
+       "INC-13181",
+       "INC-13171",
+       "INC-13151",
+       "INC-13082",
+       "INC-12943",
+       "INC-12923",
+       "INC-12909",
+       "INC-12530",
+       "INC-12500"
+      ]
+     },
      "Partner - 3rd Party Platform Issue": {
       "count": 11,
       "refs": [
@@ -6221,21 +6235,6 @@
        "INC-12642",
        "INC-12595",
        "INC-12514"
-      ]
-     },
-     "Partner - Incorrect Setup": {
-      "count": 10,
-      "refs": [
-       "INC-13581",
-       "INC-13459",
-       "INC-13181",
-       "INC-13171",
-       "INC-13151",
-       "INC-13082",
-       "INC-12943",
-       "INC-12923",
-       "INC-12530",
-       "INC-12500"
       ]
      },
      "FT - Unknown": {
@@ -6272,20 +6271,21 @@
        "INC-12432"
       ]
      },
+     "FT - General Release": {
+      "count": 4,
+      "refs": [
+       "INC-13152",
+       "INC-12496",
+       "INC-12456",
+       "INC-12454"
+      ]
+     },
      "FT - Integration Managers": {
       "count": 3,
       "refs": [
        "INC-12787",
        "INC-12440",
        "INC-12427"
-      ]
-     },
-     "FT - General Release": {
-      "count": 3,
-      "refs": [
-       "INC-12496",
-       "INC-12456",
-       "INC-12454"
       ]
      },
      "Partner - Large Sendout": {
@@ -6574,76 +6574,37 @@
      "p90_h": 18.7
     },
     "other": {
-     "closed": 20,
-     "open": 4,
-     "median_office_min": 201.9,
-     "p90_office_min": 1082.22
+     "closed": 22,
+     "open": 2,
+     "median_office_min": 232.21,
+     "p90_office_min": 1320.78
     },
     "items": [
-     {
-      "id": "215561057534299",
-      "p1": true,
-      "created_at": 1783624817,
-      "start": 1783624817,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783626508,
-      "raw_h": 0.47,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-07-06",
-      "state": "closed"
-     },
-     {
-      "id": "215561055828772",
-      "p1": true,
-      "created_at": 1783521450,
-      "start": 1783521450,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783588766,
-      "raw_h": 18.7,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-07-06",
-      "state": "closed"
-     },
-     {
-      "id": "215561055843262",
-      "p1": true,
-      "created_at": 1783522564,
-      "start": 1783522564,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783584497,
-      "raw_h": 17.2,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-07-06",
-      "state": "closed"
-     },
-     {
-      "id": "215561052821100",
-      "p1": true,
-      "created_at": 1783332962,
-      "start": 1783332962,
-      "start_basis": "first_assignment_at",
-      "last_close_at": 1783340795,
-      "raw_h": 2.18,
-      "office_min": null,
-      "reopens": 1,
-      "week": "2026-07-06",
-      "state": "closed"
-     },
      {
       "id": "215561055694766",
       "p1": false,
       "created_at": 1783515957,
       "start": 1783515957,
       "start_basis": "first_assignment_at",
-      "last_close_at": null,
+      "last_close_at": 1784115234,
       "raw_h": null,
-      "office_min": null,
+      "office_min": 2307.95,
       "reopens": 0,
       "week": "2026-07-06",
-      "state": "open"
+      "state": "closed"
+     },
+     {
+      "id": "215561056541403",
+      "p1": false,
+      "created_at": 1783590016,
+      "start": 1783590016,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784109099,
+      "raw_h": null,
+      "office_min": 1931.38,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
      },
      {
       "id": "215561061366734",
@@ -6685,6 +6646,19 @@
       "state": "closed"
      },
      {
+      "id": "215561057534299",
+      "p1": true,
+      "created_at": 1783624817,
+      "start": 1783624817,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783626508,
+      "raw_h": 0.47,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
       "id": "215561057985446",
       "p1": false,
       "created_at": 1783669602,
@@ -6698,27 +6672,14 @@
       "state": "closed"
      },
      {
-      "id": "215561056541403",
-      "p1": false,
-      "created_at": 1783590016,
-      "start": 1783590016,
-      "start_basis": "first_assignment_at",
-      "last_close_at": null,
-      "raw_h": null,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-07-06",
-      "state": "open"
-     },
-     {
       "id": "215561057967765",
       "p1": false,
       "created_at": 1783668499,
       "start": 1783668499,
-      "start_basis": "created_at",
-      "last_close_at": null,
+      "start_basis": "recovered_assignment_part",
+      "last_close_at": 1783684584,
       "raw_h": null,
-      "office_min": null,
+      "office_min": 176.4,
       "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
@@ -6737,6 +6698,32 @@
       "state": "closed"
      },
      {
+      "id": "215561055828772",
+      "p1": true,
+      "created_at": 1783521450,
+      "start": 1783521450,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783588766,
+      "raw_h": 18.7,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561055843262",
+      "p1": true,
+      "created_at": 1783522564,
+      "start": 1783522564,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783584497,
+      "raw_h": 17.2,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
       "id": "215561055298317",
       "p1": false,
       "created_at": 1783495726,
@@ -6745,7 +6732,7 @@
       "last_close_at": 1783583685,
       "raw_h": null,
       "office_min": 480.0,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
      },
@@ -6849,7 +6836,7 @@
       "last_close_at": 1783404453,
       "raw_h": null,
       "office_min": 480.0,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
      },
@@ -6875,7 +6862,7 @@
       "last_close_at": 1783349577,
       "raw_h": null,
       "office_min": 262.53,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
      },
@@ -6888,7 +6875,20 @@
       "last_close_at": 1783348809,
       "raw_h": null,
       "office_min": 340.15,
-      "reopens": 1,
+      "reopens": 0,
+      "week": "2026-07-06",
+      "state": "closed"
+     },
+     {
+      "id": "215561052821100",
+      "p1": true,
+      "created_at": 1783332962,
+      "start": 1783332962,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1783340795,
+      "raw_h": 2.18,
+      "office_min": null,
+      "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
      },
@@ -6914,7 +6914,7 @@
       "last_close_at": 1783336209,
       "raw_h": null,
       "office_min": 60.85,
-      "reopens": 1,
+      "reopens": 0,
       "week": "2026-07-06",
       "state": "closed"
      },
@@ -6936,7 +6936,7 @@
       "p1": false,
       "created_at": 1783321617,
       "start": 1783321617,
-      "start_basis": "created_at",
+      "start_basis": "created_at_fallback",
       "last_close_at": 1783323887,
       "raw_h": null,
       "office_min": 0.0,
@@ -6950,18 +6950,33 @@
   "2026-07-13": {
    "partial": true,
    "cause": {
-    "total": 64,
+    "total": 100,
     "causes": {
      "None": {
-      "count": 31,
+      "count": 45,
       "refs": [
-       "INC-13999",
-       "INC-13998",
-       "INC-13996",
+       "INC-14217",
+       "INC-14216",
+       "INC-14215",
+       "INC-14208",
+       "INC-14177",
+       "INC-14168",
+       "INC-14165",
+       "INC-14164",
+       "INC-14163",
+       "INC-14152",
+       "INC-14151",
+       "INC-14131",
+       "INC-14105",
+       "INC-14099",
+       "INC-14098",
+       "INC-14079",
+       "INC-14078",
+       "INC-14050",
+       "INC-14040",
+       "INC-14039",
+       "INC-14028",
        "INC-13993",
-       "INC-13987",
-       "INC-13982",
-       "INC-13981",
        "INC-13931",
        "INC-13926",
        "INC-13917",
@@ -6971,7 +6986,6 @@
        "INC-13893",
        "INC-13892",
        "INC-13889",
-       "INC-13853",
        "INC-13831",
        "INC-13757",
        "INC-13745",
@@ -6989,8 +7003,15 @@
       ]
      },
      "FT - Cloud Infra": {
-      "count": 9,
+      "count": 16,
       "refs": [
+       "INC-14158",
+       "INC-14112",
+       "INC-14101",
+       "INC-14082",
+       "INC-14075",
+       "INC-14030",
+       "INC-14012",
        "INC-13975",
        "INC-13974",
        "INC-13939",
@@ -7003,8 +7024,13 @@
       ]
      },
      "FT - Slow Processing": {
-      "count": 7,
+      "count": 12,
       "refs": [
+       "INC-14159",
+       "INC-14153",
+       "INC-14143",
+       "INC-14095",
+       "INC-13998",
        "INC-13925",
        "INC-13915",
        "INC-13910",
@@ -7014,12 +7040,33 @@
        "INC-13608"
       ]
      },
-     "Partner - Incorrect Setup": {
-      "count": 3,
+     "Partner - Large Sendout": {
+      "count": 5,
       "refs": [
+       "INC-14148",
+       "INC-14122",
+       "INC-14030",
+       "INC-13720",
+       "INC-13645"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 5,
+      "refs": [
+       "INC-14176",
+       "INC-14113",
        "INC-13878",
        "INC-13736",
        "INC-13615"
+      ]
+     },
+     "Partner - Partner System Issues": {
+      "count": 4,
+      "refs": [
+       "INC-14146",
+       "INC-14104",
+       "INC-13890",
+       "INC-13853"
       ]
      },
      "Partner - 3rd Party Platform Issue": {
@@ -7037,6 +7084,13 @@
        "INC-13669"
       ]
      },
+     "FT - Monitoring Failure": {
+      "count": 2,
+      "refs": [
+       "INC-14077",
+       "INC-13648"
+      ]
+     },
      "FT - Integration Managers": {
       "count": 2,
       "refs": [
@@ -7044,23 +7098,23 @@
        "INC-13638"
       ]
      },
-     "Partner - Large Sendout": {
+     "FT - Backend Code Defect": {
       "count": 2,
       "refs": [
-       "INC-13720",
-       "INC-13645"
-      ]
-     },
-     "FT - Monitoring Failure": {
-      "count": 1,
-      "refs": [
-       "INC-13648"
+       "INC-14173",
+       "INC-13638"
       ]
      },
      "FT - General Release": {
       "count": 1,
       "refs": [
        "INC-13639"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 1,
+      "refs": [
+       "INC-14069"
       ]
      },
      "FT - Frontend Code Defect": {
@@ -7074,38 +7128,29 @@
       "refs": [
        "INC-13643"
       ]
-     },
-     "FT - Backend Code Defect": {
-      "count": 1,
-      "refs": [
-       "INC-13638"
-      ]
-     },
-     "Partner - Partner System Issues": {
-      "count": 1,
-      "refs": [
-       "INC-13890"
-      ]
      }
     }
    },
    "p1": [
     {
-     "ref": "INC-13669",
-     "name": "[P1] Intercom Incident : MrBit Staging",
-     "type": "IC Ticket",
-     "status": "Closed",
-     "reported_at": "2026-07-13T10:43:16Z",
-     "identify_min": 14.48,
-     "resolve_min": 14.48
+     "reference": "INC-13853",
+     "name": "[P1] Intercom Incident : Rhino Production",
+     "reported_at": "2026-07-14T05:46:31Z",
+     "visibility": "public",
+     "identify_min": 17.52,
+     "fixed_min": 1895.72,
+     "fixed_basis": "duration_fallback_no_fixed_at_timestamp",
+     "resolve_min": 1895.73
     },
     {
-     "ref": "INC-13853",
-     "name": "[P1] Intercom Incident : Rhino Production",
-     "type": "IC Ticket",
-     "status": "Waiting on Partner",
-     "reported_at": "2026-07-14T05:46:31Z",
-     "identify_min": 17.52
+     "reference": "INC-13669",
+     "name": "[P1] Intercom Incident : MrBit Staging",
+     "reported_at": "2026-07-13T10:43:16Z",
+     "visibility": "public",
+     "identify_min": 14.48,
+     "fixed_min": 14.47,
+     "fixed_basis": "duration_fallback_no_fixed_at_timestamp",
+     "resolve_min": 14.48
     }
    ],
    "inform": {
@@ -7190,31 +7235,93 @@
       "reported_at": "2026-07-13T02:22:40Z",
       "severity": "P2",
       "delay_min": 168.3
+     },
+     {
+      "inc": "INC-14082",
+      "channel": "ftcrm-hyperwin",
+      "author": "Joachim Farrugia",
+      "msg_ts": "1784102195.079199",
+      "reported_at": "2026-07-15T07:09:45Z",
+      "severity": "P2",
+      "delay_min": 46.83
+     },
+     {
+      "inc": "INC-14162",
+      "channel": "ftcrm-gamius",
+      "author": "James Hodgson",
+      "msg_ts": "1784126914.289329",
+      "reported_at": "2026-07-15T14:39:42Z",
+      "severity": "P3",
+      "delay_min": 8.87
+     },
+     {
+      "inc": "INC-14176",
+      "channel": "ftcrm-girobet",
+      "author": "James Hodgson",
+      "msg_ts": "1784137785.954789",
+      "reported_at": "2026-07-15T16:39:44Z",
+      "severity": "P2",
+      "delay_min": 70.03
+     },
+     {
+      "inc": "INC-14173",
+      "channel": "ftcrm-meridianbet",
+      "author": "James Hodgson",
+      "msg_ts": "1784138950.487089",
+      "reported_at": "2026-07-15T16:19:14Z",
+      "severity": "P3",
+      "delay_min": 109.94
      }
     ],
-    "informed": 9,
-    "median_min": 92.0,
-    "p90_min": 686.7
+    "informed": 13,
+    "median_min": 70.03,
+    "p90_min": 248.9
    },
    "mttr": {
     "p1": {
-     "closed": 0,
-     "open": 2,
-     "median_h": null,
-     "p90_h": null
+     "closed": 1,
+     "open": 1,
+     "median_h": 24.46,
+     "p90_h": 24.46
     },
     "other": {
-     "closed": 1,
-     "open": 2,
-     "median_office_min": 511.38,
+     "closed": 2,
+     "open": 4,
+     "median_office_min": 290.88,
      "p90_office_min": 511.38
     },
     "items": [
      {
-      "id": "215561065268870",
-      "p1": true,
-      "created_at": 1784007808,
-      "start": 1784007808,
+      "id": "215561067080127",
+      "p1": false,
+      "created_at": 1784116588,
+      "start": 1784116588,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784117368,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-13",
+      "state": "open"
+     },
+     {
+      "id": "215561067225684",
+      "p1": false,
+      "created_at": 1784124306,
+      "start": 1784124306,
+      "start_basis": "first_assignment_at",
+      "last_close_at": null,
+      "raw_h": null,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-13",
+      "state": "open"
+     },
+     {
+      "id": "215561067137564",
+      "p1": false,
+      "created_at": 1784118568,
+      "start": 1784118568,
       "start_basis": "first_assignment_at",
       "last_close_at": null,
       "raw_h": null,
@@ -7237,10 +7344,10 @@
       "state": "open"
      },
      {
-      "id": "215561065549109",
+      "id": "215561063825667",
       "p1": false,
-      "created_at": 1784027894,
-      "start": 1784032422,
+      "created_at": 1783935968,
+      "start": 1783935968,
       "start_basis": "first_assignment_at",
       "last_close_at": null,
       "raw_h": null,
@@ -7248,6 +7355,32 @@
       "reopens": 0,
       "week": "2026-07-13",
       "state": "open"
+     },
+     {
+      "id": "215561066719704",
+      "p1": false,
+      "created_at": 1784096669,
+      "start": 1784096669,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784110222,
+      "raw_h": null,
+      "office_min": 70.37,
+      "reopens": 0,
+      "week": "2026-07-13",
+      "state": "closed"
+     },
+     {
+      "id": "215561065268870",
+      "p1": true,
+      "created_at": 1784007808,
+      "start": 1784007808,
+      "start_basis": "first_assignment_at",
+      "last_close_at": 1784095863,
+      "raw_h": 24.46,
+      "office_min": null,
+      "reopens": 0,
+      "week": "2026-07-13",
+      "state": "closed"
      },
      {
       "id": "215561064288775",
@@ -7261,19 +7394,6 @@
       "reopens": 0,
       "week": "2026-07-13",
       "state": "closed"
-     },
-     {
-      "id": "215561063825667",
-      "p1": false,
-      "created_at": 1783935968,
-      "start": 1783935968,
-      "start_basis": "first_assignment_at",
-      "last_close_at": null,
-      "raw_h": null,
-      "office_min": null,
-      "reopens": 0,
-      "week": "2026-07-13",
-      "state": "open"
      }
     ]
    }
