@@ -86,7 +86,7 @@ For each shortlisted incident:
 
 1. `incident_show` with `include: ["updates"]`. Note update timestamps and text, and extract the Slack channel ID from `slack_channel_url` (the `channel=` query parameter, e.g. `...&channel=C0BHDD7FRFE` → `C0BHDD7FRFE`).
 2. Read the Slack channel:
-   - **Cached incident (incremental):** `slack_read_channel` with `oldest` = the cached `last_slack_ts_read` — you get only what's new since the last run. Merge the new evidence into the cached `synthesis` (update summary, key_events, partner state, proposals, open_breaches; close breaches that were remedied, add ones that emerged). The cached synthesis is your knowledge of everything before `oldest` — trust it, but if new messages contradict it or reference earlier context you can't place, re-read further back rather than guessing.
+   - **Cached incident (incremental):** `slack_read_channel` with `oldest` = the cached `last_slack_ts_read` — you get only what's new since the last run (typically 0–10 messages; 0 new messages is the common case and needs no further calls). **NEVER re-read history older than `last_slack_ts_read` for a cached incident** — the cached synthesis IS that history. Merge the new evidence into the cached `synthesis` (update summary, key_events, partner state, proposals, open_breaches; close breaches that were remedied, add ones that emerged). Only exception: if new messages directly contradict the synthesis or reference earlier context you cannot place, re-read further back for that one incident rather than guessing.
    - **First-time incident:** **read the ENTIRE channel history**, paginating with the cursor until exhausted, so you understand the whole handling arc: how it started, what was checked, what solutions were proposed, what was decided or left hanging. For very long channels (300+ messages), read the most recent ~200 plus the earliest page (incident origin, first checks, first comms) and note in the digest that the middle was skimmed. Then build the `synthesis` object for the cache.
    - Either way, read threads (`slack_read_thread`) when a thread visibly carries the substance (e.g. a proposed fix being discussed in replies), and record the newest message timestamp you actually saw as the new `last_slack_ts_read`.
 
@@ -205,7 +205,9 @@ Link syntax: `<https://app.incident.io/fasttrack-solutions/incidents/{external_i
 
 ## Step 6 — Persist the state cache
 
-After posting, write the updated cache to `cache/management_attention_cache.json`:
+**Crash tolerance — do not hold work in your head:** update `cache/management_attention_cache.json` on disk incrementally as each incident's synthesis is finished in Step 3, not in one pass at the end. And run this step's commit-and-push BEFORE composing the digest (Step 5) — a run that dies mid-digest must not lose its reads; the next run then resumes incrementally instead of repeating them. (The 08:00 run on 15 Jul died silently mid-run and lost ~90 minutes of reading — this ordering exists because of that.)
+
+Write the updated cache to `cache/management_attention_cache.json`:
 - `meta.last_run_at` = this run's start time (UTC, RFC 3339); `meta.total_open` = this run's active count.
 - One entry per active incident that has ever been deep-read: updated `last_slack_ts_read`, `last_intercom_part_at`, `classification`, and the merged `synthesis`. Keep each synthesis compact (a few hundred words max) — it is a working memory, not a transcript.
 - Remove entries for incidents no longer in the active list (already reported as "resolved since last digest").
