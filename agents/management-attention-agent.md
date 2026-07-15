@@ -76,9 +76,7 @@ Deep-read (Step 3) an incident if **any** of:
 - Open more than 24 hours (A2/A4 risk — long-runners drift toward silent closure)
 - Patrik Potocki appears among participants (already has CTO attention)
 
-**Read ALL matching incidents.** The cache makes this affordable: incidents already in the cache get an incremental read (only content newer than `last_slack_ts_read` — usually a handful of messages), so the only expensive reads are first-time ones (not yet in the cache).
-
-**Safety valve on first-time reads only:** at most 15 full-history first reads per run, prioritised by severity → security signal → staleness. Anything deferred is disclosed in the digest ("N first-time reads deferred to next run") and will be picked up next run — never a silent cap. Incremental reads are never capped. On a seeding run (no cache), expect all reads to be first-time; if more than 15 match, seed the highest-priority 15 and say so.
+**Read ALL matching incidents — no cap.** The cache makes this affordable: incidents already in the cache get an incremental read (only content newer than `last_slack_ts_read` — usually a handful of messages), so the only expensive reads are first-time ones (not yet in the cache). Order first-time reads by severity → security signal → staleness, and reduce each channel to its synthesis before starting the next (token discipline). If a run genuinely cannot finish every matching read, whatever was skipped MUST be listed in the digest by reference — never a silent gap.
 
 Incidents that match no criterion are classified from metadata only and go to 🟢 (or 🟡 if metadata alone shows a breach, e.g. no lead).
 
