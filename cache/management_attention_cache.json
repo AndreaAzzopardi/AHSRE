@@ -1,7 +1,52 @@
 {
   "meta": {
     "last_run_at": "2026-07-15T07:43:00Z",
-    "total_open": 33
+    "total_open": 33,
+    "last_digest": {
+      "generated_at": "2026-07-15T07:43:00Z",
+      "under_control": "Mostly — 5 items need immediate escalation (🚨), 10 more need attention (🔴)",
+      "urgent_vs_smaller": "5 urgent, 10 need a nudge, 15 to watch, 3 handled well",
+      "total_open_delta": "+4 vs last digest (29→33)",
+      "new": [
+        {
+          "ref": "INC-14082",
+          "note": "P2, opened 07:09 — lead triaged fast, root cause (RDS T4G downgrade) found in 34min, partner comms just announced"
+        },
+        {
+          "ref": "INC-14069",
+          "note": "P2, opened 05:45 — root cause found, partner system being decommissioned this week, no comms needed"
+        },
+        {
+          "ref": "INC-14077",
+          "note": "P3, opened 06:27 — known ping-pong noise pattern, lead assigned, no flags"
+        }
+      ],
+      "resolved": [],
+      "handover": [
+        {
+          "item": "INC-13895 Fusion API Spinbet Terragon — flagged unresolved across 4 consecutive shifts",
+          "status": "tracked INC-13895, assigned to Nazareno ✅ (but chronic no-progress, see 🔴)"
+        },
+        {
+          "item": "INC-13853 Rhino 'false P1' waiting on partner feedback",
+          "status": "tracked INC-13853, assigned to Giancarlo ✅ (now resolved, see 🟡)"
+        },
+        {
+          "item": "INC-14039 Maxima disk-space fix ('SRE please expand disk volume and persist the change')",
+          "status": "tracked INC-14039, but the specific ask has no named assignee ❌ (B8) — fix has since been applied by Joachim, persistence unconfirmed"
+        },
+        {
+          "item": "INC-14030 Hizlicasino RDS upgrade review / grant SOC scaling access",
+          "status": "incident itself closed & assigned (Gérard) ✅, but the follow-up ask (RDS upgrade review / SOC scaling access) has no named owner ❌ (B8)"
+        },
+        {
+          "item": "Shuffle backoffice access issue, 06:12 CET 15 Jul, no reply received",
+          "status": "no matching incident.io ticket found ⚠"
+        }
+      ],
+      "not_assessed": [],
+      "green_note": "2× P2 handled competently same-morning (INC-14082: RDS T4G downgrade traced & partner comms initiated within ~35min; INC-14069: root cause found, partner confirmed decommissioning, alerts to be silenced) — plus 1× P3 ping-pong noise incident (INC-14077) classified from metadata only, no breach."
+    }
   },
   "incidents": {
     "INC-14082": {
@@ -35,7 +80,8 @@
           "Root cause pinned to RDS T4G downgrade; no rollback/remediation action documented yet"
         ],
         "open_breaches": []
-      }
+      },
+      "name": "Some EUC Brands crashing due to 'Too Many Connections'"
     },
     "INC-14069": {
       "incident_id": "01KXJ4XFEREGSXJSQ8M45BHN95",
@@ -61,7 +107,8 @@
           "Silence/suppress Campeon-Omega reconciliation alerts once decommissioning completes this week"
         ],
         "open_breaches": []
-      }
+      },
+      "name": "DMS: ftcrm-campeon-omega-production-reconciliation-user_consents-consent_email is missing"
     },
     "INC-14039": {
       "incident_id": "01KXHP9PQVQ4VY9KK9BEWC301R",
@@ -90,8 +137,11 @@
         "open_breaches": [
           "D13: known root cause and fix recommendation went unactioned for ~5h47m after auto-decline closed the incident prematurely",
           "A4: queue backed up twice (93k then 27k msgs) suggesting a capacity fix from a prior occurrence was not persisted"
-        ]
-      }
+        ],
+        "why": "D13/A4: known fix (increase & persist ClickHouse disk space) went unactioned ~5h47m after an auto-decline closed the incident before Gérard's recommendation was applied.",
+        "suggested_action": "Confirm the PVC increase is persisted in IaC/config (not just a live scale-up), and review why auto-decline fired before Gérard's recommended action was executed."
+      },
+      "name": "Maxima: no consumers on queue maxima.singularity.clickhousewriter"
     },
     "INC-13916": {
       "incident_id": "01KXG5HW79GHP2A7YJM0KVZWN6",
@@ -127,7 +177,8 @@
           "D13: WAF IP-block action item still unconfirmed",
           "D15: channel idle ~18h, no closing update or partner follow-up posted"
         ]
-      }
+      },
+      "name": "[P1] Intercom Incident : BrazilBet Production"
     },
     "INC-13853": {
       "incident_id": "01KXFJK803V3PW46EWTYZT3Z5P",
@@ -160,7 +211,8 @@
         "open_breaches": [
           "D15: incident.io status still shows 'Waiting on Partner', not updated to Closed/Resolved despite the Intercom ticket being closed"
         ]
-      }
+      },
+      "name": "[P1] Intercom Incident : Rhino Production"
     },
     "INC-12022": {
       "incident_id": "01KWHGYYKFFPXSSB7ADQZ9ABB6",
@@ -197,8 +249,11 @@
           "C10: partner RCA report 12+ days overdue, 2 broken promises",
           "D15: incident.io status timestamps misrepresent when fix landed",
           "A4: same CF/unsub-blocking pattern recurring across 3 incidents (also see INC-13738)"
-        ]
-      }
+        ],
+        "why": "C10: partner (Estelarbet/PLIN) waiting 12+ days for a promised RCA report with 2 broken 'update tomorrow' promises; today's (15 Jul) promised date has arrived with nothing sent yet.",
+        "suggested_action": "Send the overdue RCA report to Estelarbet/PLIN today as promised, or proactively communicate a concrete new date — a third broken promise would be a serious trust issue."
+      },
+      "name": "Shortlinks Redirecting to \"Forbidden\" page"
     },
     "INC-11707": {
       "incident_id": "01KWEQA0T7BYYBFX55DWC0T01C",
@@ -234,8 +289,11 @@
           "C10: partner's 10 Jul question still has no visible customer-facing reply, now 5 days unanswered",
           "A2/A3: 'stabilized' framing repeatedly contradicted by recurrence",
           "D15: status stuck 'Investigating' since 06 Jul despite piecemeal PR work"
-        ]
-      }
+        ],
+        "why": "C10/D15: partner's 10 Jul question still has no visible customer-facing reply (only an internal note), now 5 days unanswered; status stuck 'Investigating' since 06 Jul despite piecemeal PR work.",
+        "suggested_action": "Post an actual customer-facing reply to the partner's 10 Jul question (not just an internal note), and get a firm date for merging/deploying the remaining IsAdminToken-scoping PRs."
+      },
+      "name": "[P1] Intercom Incident : Betpipo Production"
     },
     "INC-8064": {
       "incident_id": "01KSJFGV3K4P6F8234JTK3MZW4",
@@ -276,8 +334,11 @@
           "A3: minimizing language contradicts confirmed weekly leakage",
           "B5: BetConstruct escalation zero traction",
           "C10/D15: Intercom closed twice implying resolution while incident.io still open P1"
-        ]
-      }
+        ],
+        "why": "B5/A4: 50 days unresolved with confirmed ~300/week duplicate bonus leakage; BetConstruct escalation has zero traction and the Rewards team's own Urgent ticket is parked until mid-Aug.",
+        "suggested_action": "Escalate BetConstruct outreach to a named leadership owner today, and push Rewards to scope a stop-gap sooner than mid-Aug given confirmed ongoing weekly financial leakage."
+      },
+      "name": "[P1] Intercom Incident : H2Bet Production"
     },
     "INC-13931": {
       "incident_id": "01KXGGZ1XHW3FCT2R23X56SRGT",
@@ -311,7 +372,8 @@
           "C10: partner told 'escalating to tech team', no follow-up on inconclusive finding since",
           "A4: 2nd occurrence of same NGR/bonus-calc pattern within ~4 days (see INC-13171), no permanent-fix ticket"
         ]
-      }
+      },
+      "name": "[P3] Intercom Incident : G2 Production"
     },
     "INC-13917": {
       "incident_id": "01KXG5K0NQ62DVW05F3GJD95R5",
@@ -347,8 +409,11 @@
         "open_breaches": [
           "D15/C10: zero incident.io updates posted despite confirmed root cause and applied mitigation; partner not told about either",
           "A4/severity: Partner Manager's P1 request internally assessed 'Not a P1' via custom field, neither reflected in the record, still shown as plain P2"
-        ]
-      }
+        ],
+        "why": "D15/C10: zero incident.io updates posted despite a confirmed root cause and an applied mitigation overnight; partner not told about either; Partner Manager's P1 request still unreflected in the record.",
+        "suggested_action": "Post an incident.io update covering the mitigation and lead change, get Sam Lundborg to settle the VC-credit vs auto-claim decision, and inform the partner before the next silent-close nudge."
+      },
+      "name": "Campeon: Slow processing on credit service (from lifecycles)"
     },
     "INC-13895": {
       "incident_id": "01KXFVM4WKRTJMY8S8C9CM3EY7",
@@ -385,8 +450,11 @@
           "C9: partner notified ~4h9m after alert, well past ~40min target",
           "B5: silent-close bot nudge still unanswered, no re-chase",
           "A4: 2nd Fusion API 401 incident in a week (see INC-12617), not escalated to owning team"
-        ]
-      }
+        ],
+        "why": "C9/B5: partner comms were already >4h late and the bot's silent-close nudge remains unanswered with no re-chase; 2nd Fusion API 401 incident in a week.",
+        "suggested_action": "Re-chase the partner for the API-exchange info, now well over 24h since the ask, and respond to the unanswered bot nudge instead of letting it silently close."
+      },
+      "name": "[FIRING:1] Fusion API errors Alerting (spinbet-terragon: 401)"
     },
     "INC-13893": {
       "incident_id": "01KXFVDTDE13QPCS5SEG25YNFT",
@@ -425,8 +493,11 @@
           "B5: 11h+ silent while 'Investigating', zero incident.io updates, still nothing new a day later",
           "A4: likely recurrence of INC-12436's bug class, not reflected in the incident record",
           "C10/C11: partner given an explanation later found incorrect, never corrected; 3 newly-reported players unaccounted for"
-        ]
-      }
+        ],
+        "why": "C10/C11: partner was given a fix explanation engineers privately concluded doesn't work, and the correction has still not been sent a day later.",
+        "suggested_action": "Correct the record with the partner now that the scaling fix is known not to work, and confirm/credit the 3 newly-reported player IDs."
+      },
+      "name": "[P2] Intercom Incident : Tuohi Production"
     },
     "INC-13889": {
       "incident_id": "01KXFSTX40319J825ERKA5SM3R",
@@ -462,7 +533,8 @@
         "open_breaches": [
           "D15: incident.io still has no summary set and no formally claimed Incident Lead despite a detailed Slack handover"
         ]
-      }
+      },
+      "name": "Calendars: Orphan (but live) door variations in the database(!)"
     },
     "INC-13757": {
       "incident_id": "01KXE6QERBX404WK998702NCYN",
@@ -494,8 +566,11 @@
           "B8: outgoing Lead (Daniel, now on vacation) handed off to Sam Lundborg only via Slack - incident.io still lists Daniel as Lead",
           "unresolved time-sensitive customer impact: stuck player's challenge nearing expiry with no confirmed retro-credit",
           "REW-188 candidate fix tested and confirmed broken, fix path now unclear"
-        ]
-      }
+        ],
+        "why": "D15/B8: incident.io hasn't been updated since creation despite brand-wide scope, and the vacationing outgoing Lead's handover to Sam Lundborg was only announced in Slack, never reassigned in the record.",
+        "suggested_action": "Formally reassign Incident Lead to Sam Lundborg in incident.io, post a status update reflecting brand-wide scope and the failed REW-188 fix, and confirm the stuck player's retro-credit before challenge expiry."
+      },
+      "name": "Campeon: Incorrect games mappings"
     },
     "INC-13738": {
       "incident_id": "01KXDWRVV3E70F9A2G9SMMZ40T",
@@ -525,8 +600,11 @@
           "C10: no confirmed retroactive remediation of missed unsubscribes",
           "A2/A3: minimizing language, suspicious consent-event drop dismissed",
           "new: team closing partner threads without addressing 3 additional flagged brands or legal escalation"
-        ]
-      }
+        ],
+        "why": "D12/A4: a ~3-month undetected opt-out failure across gambling brands still has no legal/compliance escalation, and the team is now closing partner threads without remediating 3 newly-flagged brands.",
+        "suggested_action": "Escalate to legal/compliance for the multi-month opt-out failure before declaring partner threads closed, and open remediation for the 3 newly-flagged brands instead of quietly winding down Betiro/Rivalo."
+      },
+      "name": "Betiro - No unsubs since April 2026"
     },
     "INC-13664": {
       "incident_id": "01KXDF7VW1NY4ZPT4708WEGTCQ",
@@ -563,7 +641,8 @@
           "C11: partner told migration would be scheduled when already silently applied",
           "A4: same delay pattern recurred 11->13 Jul before permanent fix landed"
         ]
-      }
+      },
+      "name": "[P3] Intercom Incident : SBTSolutions Production"
     },
     "INC-13220": {
       "incident_id": "01KX671KDVDH6V08HGM6ATRVP1",
@@ -599,7 +678,8 @@
           "D15: incident.io untouched since 13 Jul handoff, still 'Investigating' despite Intercom closed 14 Jul",
           "B5: escalation to Jeremy expired unacknowledged 10 Jul, picked up 3 days later via workflow"
         ]
-      }
+      },
+      "name": "[P3] Intercom Incident : Slott Production [deleted]"
     },
     "INC-13176": {
       "incident_id": "01KX5VANTC4GCKFJ7X3JXY91P6",
@@ -632,8 +712,11 @@
         "open_breaches": [
           "C10: incident.io stuck 'Investigating' despite confirmed resolution ~1 day ago",
           "D15: second bug and its manual workaround entirely absent from incident.io record"
-        ]
-      }
+        ],
+        "why": "C10/D15: fix is deployed and partner-confirmed with the Intercom ticket closed, yet incident.io still shows 'Investigating', and a second untracked bug (get_segments overflow) has no follow-up.",
+        "suggested_action": "Update incident.io to Resolved/Closed to match the confirmed fix, and open a separate follow-up ticket for the get_segments overflow bug so it isn't lost."
+      },
+      "name": "[P2] Intercom Incident : Campeon Nexto Production"
     },
     "INC-13152": {
       "incident_id": "01KX5JA8EA4YJK2PTZTYJ8CSYE",
@@ -666,7 +749,8 @@
           "D13: internal root-cause debate never resolved before answering the partner",
           "C10: idle 3+ days post-answer, lead reassigned via bot nudge rather than proactive follow-up"
         ]
-      }
+      },
+      "name": "[P3] Intercom Incident : UW33 Malaysia Production"
     },
     "INC-12998": {
       "incident_id": "01KX3S76YF0NG8237E24XF61ZM",
@@ -693,8 +777,11 @@
           "B7: no visible prioritized action on a critical-path crash-loop now over 5.7 days",
           "B5: ~20h escalation-to-accept gap, undocumented lead handoff",
           "D13: zero runbook/basic-check evidence anywhere"
-        ]
-      }
+        ],
+        "why": "B7/D15/D13: a critical-path crash-loop has been open 5.7+ days with a blank incident.io summary, zero diagnostic content anywhere, and the current lead has left the channel while it remains unresolved.",
+        "suggested_action": "Escalate immediately to an engineering lead who will actively work the incident in-channel; require a documented root-cause check and a populated incident.io summary without further delay."
+      },
+      "name": "frank-casino: deployment ping-pong is stuck on CrashLoopBackOff"
     },
     "INC-12909": {
       "incident_id": "01KX304A7VBMFVH36GSARMX5NM",
@@ -729,7 +816,8 @@
         "open_breaches": [
           "D15: incident.io record stale - only 1 update logged since creation despite substantive Intercom work"
         ]
-      }
+      },
+      "name": "[P3] Intercom Incident : Galabet Production"
     },
     "INC-12754": {
       "incident_id": "01KX0V13XA43NZNBV3MH6AR25A",
@@ -758,7 +846,8 @@
         "open_breaches": [
           "D15/C10: incident.io stuck in 'Fixing' P3 status 7 days after the fix was confirmed working same day; bot nudge unanswered"
         ]
-      }
+      },
+      "name": "Campeon Nexto unable to login"
     },
     "INC-12617": {
       "incident_id": "01KWYA0A93NSSGZ08KTP3WGPET",
@@ -793,8 +882,11 @@
           "C10: alert cleared 5 days ago, never formally closed",
           "B5: silent-close warnings and manual escalation ignored",
           "A4: recurring Fusion API 401 pattern (see INC-13895), not escalated to owning team"
-        ]
-      }
+        ],
+        "why": "C9/C10/B5/A4: partner informed once 07 Jul and never re-chased in 8+ days; alert auto-resolved 5 days ago with no formal closure; same pattern has since recurred as INC-13895.",
+        "suggested_action": "Have the lead re-chase the partner directly, formally close the incident since the underlying alert cleared 5 days ago, and escalate the recurring Fusion API 401 pattern to the owning team."
+      },
+      "name": "[FIRING:3] Fusion API errors Alerting"
     },
     "INC-12436": {
       "incident_id": "01KWV586CMXWNAJEAKFE5M1N2Y",
@@ -835,8 +927,11 @@
           "A4: defect recurring 8 days in, after only deployed fix",
           "C9/C10: 14 Jul recurrence report unanswered",
           "D15: incident.io materially rosier than Slack/Intercom reality"
-        ]
-      }
+        ],
+        "why": "B5/A4/C9/D15: partner signaled proceeding with termination over this issue with no trace in incident.io; the real fix is only 'prepared', not confirmed deployed; a 14 Jul recurrence remains unanswered.",
+        "suggested_action": "Escalate to leadership given the explicit partner termination risk; confirm whether the synchronous deposit-listener fix is actually deployed; respond to the 14 Jul recurrence immediately."
+      },
+      "name": "[P3] Intercom Incident : Tuohi Production"
     },
     "INC-12179": {
       "incident_id": "01KWKV8HK546HTS3WQKRC70ZNJ",
@@ -866,7 +961,8 @@
           "A4: 3rd occurrence of this recurring failure class - all 4 follow-ups confirmed still outstanding 11 days after RCA",
           "D14/D15: status stuck 'Investigating' since 4 Jul, bot resolve-nudge unanswered 8 days"
         ]
-      }
+      },
+      "name": "failed to resolve container IP after 3 attempts"
     },
     "INC-11079": {
       "incident_id": "01KW42DTN3K3KH9HH3QZCQDA31",
@@ -904,8 +1000,11 @@
           "B5: no formal escalation to account/partner management despite 18-day duration",
           "C10: underlying alert auto-resolved with no human verification",
           "A4: 3rd partner-reliability incident in 5 weeks, zero follow-ups tracked"
-        ]
-      }
+        ],
+        "why": "C9/B5: partner admitted being 'at a loss' 6 days ago with zero FT-side chase since; no escalation to account/partner management despite 18-day duration and this being the 3rd BetConstruct reliability incident in 5 weeks.",
+        "suggested_action": "Escalate to account/partner management for a binding ETA from BetConstruct's Operator API team, and have a human confirm actual recovery rather than relying on the auto-resolved alert."
+      },
+      "name": "segurobet: no consumers on queue segurobet.consentsmanager"
     },
     "INC-10938": {
       "incident_id": "01KW1MQFHDT00EEV4Q6QB0Y1EA",
@@ -922,7 +1021,8 @@
         "partner": null,
         "proposals": [],
         "open_breaches": []
-      }
+      },
+      "name": "Security incident: Malicious dashboard creation attempt"
     },
     "INC-10902": {
       "incident_id": "01KW0QWYKGCGFW8JYTW5C4EQ0V",
@@ -953,7 +1053,8 @@
           "A4: root-cause payload type-mismatch bug identified 26 Jun, still unfixed 19 days later; 2 more instances merged in as late as 12 Jul",
           "D15: incident.io stale - no update since 9 Jul, promised 13 Jul checkpoint passed by 2 days unaddressed"
         ]
-      }
+      },
+      "name": "H2Bet incidents - night - DO NOT CLOSE"
     },
     "INC-10810": {
       "incident_id": "01KVZ90AP8X1Z14SYQJHNSBHVZ",
@@ -991,7 +1092,8 @@
         "open_breaches": [
           "D15: incident.io status stuck 'Fixing' since 10 Jul and Incident Lead field still shows Daniel Lindengren (now on leave) - the real handover happened in Slack but hasn't been reflected in the record"
         ]
-      }
+      },
+      "name": "12play brands fire late"
     },
     "INC-10045": {
       "incident_id": "01KVDQB3414GPWCYDHAJW6F2X6",
@@ -1029,8 +1131,11 @@
           "C10: update_epoch fix recommended twice, zero incident.io follow-ups (confirmed)",
           "D15: summary/fields not updated to reflect reopen, recurrence, or 14 Jul status flip",
           "C11: closed against explicit partner request 6 Jul causing an avoidable reopen"
-        ]
-      }
+        ],
+        "why": "C10/D15: the update_epoch permanent fix has been recommended twice but is confirmed via follow_up_list to have zero incident.io tracking; record not updated to reflect the reopen/recurrence history.",
+        "suggested_action": "Create a tracked incident.io follow-up for the update_epoch fix with an owner and due date before this cycles through another close/reopen."
+      },
+      "name": "[P2] Intercom Incident : Power Play Production"
     },
     "INC-9820": {
       "incident_id": "01KV7R7ABKEC5KT36GQH893GHZ",
@@ -1059,7 +1164,8 @@
         "open_breaches": [
           "A4: one follow-up (activity-manager-go resilience) remains outstanding and unassigned as closure nears"
         ]
-      }
+      },
+      "name": "RDS OOM all brands - gradually increasing overtime"
     },
     "INC-5630": {
       "incident_id": "01KQEWSSQ7MZPX03NXHASXGMY6",
@@ -1087,7 +1193,28 @@
         "open_breaches": [
           "A4: chronic multi-month issue never escalated to a decisive fix or vendor-management track - now 47 days of pure automated churn",
           "D12/D15: the one substantive question raised (29 May) never answered or tracked - Lead rotated to at least a 6th person, new alerts keep merging in unattended"
-        ]
+        ],
+        "why": "A4/D12: 2.5+ months of pure automated alert churn with zero human decision-making since 29 May; the incident keeps absorbing new alerts (2 more on 15 Jul alone) with no owner actually progressing it.",
+        "suggested_action": "Force a decision: escalate to account/vendor management for a binding SMS-provider ETA or a migration decision, and assign a named owner who must respond rather than letting the lead rotate unattended."
+      },
+      "name": "Coinbar SMS Issues with Credit"
+    },
+    "INC-14077": {
+      "incident_id": "01KXJ7A9RB8BV11ERXZAKQJNGK",
+      "severity": "P3",
+      "first_seen": "2026-07-15T06:27:07Z",
+      "slack_channel_id": null,
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": null,
+      "last_intercom_part_at": null,
+      "classification": "🟢",
+      "name": "[FIRING:1] Ping Pong: Singularity → Fire latency high (60s/15m) sisutech (true p3 ping-pong)",
+      "synthesis": {
+        "summary": "Known P3 ping-pong noise pattern on sisutech; lead assigned (Joachim Farrugia), fresh (~1h old), no other criteria matched. Classified from metadata only, not deep-read.",
+        "key_events": [],
+        "partner": null,
+        "proposals": [],
+        "open_breaches": []
       }
     }
   }
