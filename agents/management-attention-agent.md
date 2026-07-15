@@ -120,7 +120,7 @@ Report leads precisely: "no lead assigned" (roles empty) is different from "lead
 
 ## Step 3.5 — Morning run only: SOC handover check
 
-**Applies only to the ~08:00 CEST run** (skip whenever the current time is outside 07:00–09:30 CEST).
+**Applies only to the morning run** (skip whenever the current time is outside 07:00–10:15 CEST — the 04:00 and intraday runs never fall in this window).
 
 Read `#soc-handover` (channel ID `C091E41AF62`) with `slack_read_channel`, covering the last ~24 hours (everything since the previous morning run — the evening and night handovers).
 
