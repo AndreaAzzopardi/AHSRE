@@ -205,9 +205,9 @@
    "severity": "P2",
    "slack_channel_id": "C0BHHM8V0GJ",
    "intercom_conversation_id": "215561067080127",
-   "last_slack_ts_read": "1784160180.710509",
+   "last_slack_ts_read": "1784184735.165039",
    "last_intercom_part_at": "2026-07-15T15:49:39Z",
-   "classification": "🚨",
+   "classification": "🟡",
    "synthesis": {
     "summary": "MeridianBet couldn't add sports bonuses in a Peru onboarding flow. Matteo matched it to a prior incident and got an existing FE fix deployed, asking the partner to retest - but the partner reported the fix still failed, and a second user reported a related failure on a different action. Hours later, Hikmet found a genuinely different root cause (a hidden required AuthType field with no default) and fixed it directly, but nobody told the partner this second fix landed, nobody verified it resolves what the partner reported, and the second bug report was never tracked. The bot is now nudging to auto-resolve.",
     "key_events": [
@@ -215,7 +215,9 @@
      "14:51 UTC partner reports hard refresh still fails; separately a second user reports failure on a related action",
      "15:49 UTC Matteo tells partner FE still investigating, will escalate tomorrow AM if not fixed by EOD",
      "19:34 UTC Hikmet finds the real root cause (AuthType field required+hidden, no default) and removes the required flag, confirms he can save - never logged to incident.io or told to partner",
-     "21:45 CEST and 02:03 CEST 16 Jul bot auto-close nudges fire, both unanswered, latest asking directly if it can be marked resolved"
+     "21:45 CEST and 02:03 CEST 16 Jul bot auto-close nudges fire, both unanswered, latest asking directly if it can be marked resolved",
+     "16 Jul 08:36-08:38 CEST: Joachim asks about deployment; Hikmet: no deployment needed (setup fix), 'we can ask the partner directly and close this'; Joachim taking it to the partner",
+     "16 Jul 08:52 CEST: Matteo acknowledges root cause; suggests more verbose field-validation errors (follow-up candidate)"
     ],
     "partner": {
      "first_reported": "2026-07-15T11:58:25Z",
@@ -231,12 +233,11 @@
      "Actual fix (Hikmet): remove 'required' flag from AuthType field - applied, unverified with partner"
     ],
     "open_breaches": [
-     "D15: incident.io's only logged update claims the fix was live and asks the partner to retest - but the partner disproved it, and neither that failure, the pivot, nor the real fix have been logged",
-     "A2: bot is actively prompting to close an incident whose only real fix has never been confirmed working by the partner, with a second reported failure still open",
-     "C10: partner has heard nothing in ~12h despite an internal fix having since been applied and their second bug report going unacknowledged"
+     "D15: incident.io's logged update still describes the superseded FE fix; real root cause (hidden required AuthType, setup-side) not yet posted",
+     "C10: partner confirmation pending — Joachim contacting them today; second user's report needs explicit confirmation it's covered by the same cause"
     ],
-    "why": "What looked like a clean fix-and-close last run has unraveled: the deployed fix didn't work, a second partner bug surfaced, and engineering quietly found and applied the real fix hours later without telling incident.io or the partner - now at risk of a silent, unverified auto-close.",
-    "suggested_action": "Before this auto-closes: confirm with MeridianBet that Hikmet's AuthType fix actually resolves both the original failure and the second user's issue, post an incident.io update capturing the real root cause, and only close once the partner confirms."
+    "why": "Downgraded 🚨→🟡 after the 16 Jul morning exchange: team explicitly agreed to get partner verification before closing (no deployment needed — setup fix), so the unverified-auto-close risk is resolved. Remaining: partner confirmation of both reported failures (C10) and an incident.io update with the real root cause — the logged update still describes the superseded FE fix (D15).",
+    "suggested_action": "Verify Joachim's partner message went out and both reported failures are confirmed fixed; post the real root cause to incident.io before closing; ticket Matteo's verbose-validation-errors suggestion as a follow-up (A2)."
    },
    "name": "[P2] Intercom Incident : MeridianBet Production",
    "channel_readable": true
