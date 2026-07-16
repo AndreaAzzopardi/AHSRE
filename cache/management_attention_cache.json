@@ -673,13 +673,14 @@
    "intercom_conversation_id": null,
    "last_slack_ts_read": "1784112386.441929",
    "last_intercom_part_at": null,
-   "classification": "🚨",
+   "classification": "🟡",
    "synthesis": {
     "summary": "Segurobet Consent Manager queue stalled since 27 Jun due to partner's (BetConstruct/Betco) Operator API 500s. Partner admitted 9 Jul they're 'at a loss', no ETA ever given. New this cycle: the underlying alert fired again live on 15 Jul (10:45 UTC, backlog of 3 messages), auto-creating a new incident that Matteo silently merged into this one at 12:46 CEST with zero commentary, no re-chase to the partner, no escalation - concrete, current proof the partner still hasn't fixed anything. Effectively the 4th segurobet/BetConstruct reliability incident in ~5 weeks.",
     "key_events": [
      "15 Jul 10:45 UTC alert fires again live (backlog of 3 messages)",
      "15 Jul 12:46 CEST auto-created incident merged into this one by Matteo, no narrative attached",
-     "No partner re-chase, no account-management escalation, no incident.io update posted alongside the merge"
+     "No partner re-chase, no account-management escalation, no incident.io update posted alongside the merge",
+     "16 Jul: reclassified per management note - BetConstruct-side root cause, partner engaged, correspondence in partner channel thread"
     ],
     "partner": {
      "first_reported": "2026-06-27T08:36:15+02:00",
@@ -695,16 +696,19 @@
      "zero incident.io follow-ups exist"
     ],
     "open_breaches": [
-     "C9: 6+ day silence after partner admitted uncertainty, now compounded by a fresh live recurrence with still no re-chase",
-     "B5: no formal escalation to account/partner management despite 18+ days duration and a brand-new active recurrence today",
-     "C10: underlying alert auto-resolved/auto-merged with no human verification",
-     "A4: 4th partner-reliability incident in ~5 weeks, zero follow-ups tracked, silently absorbed via auto-merge"
+     "External blocker: BetConstruct 'at a loss' — no ETA; keep the chase cadence in the partner thread"
     ],
-    "why": "This crossed from aging silence into an active, currently-firing recurrence: the exact same alert fired again today with a real backlog, got auto-merged with zero human commentary, and nobody re-chased the partner or escalated despite them admitting a week ago they have no fix and no ETA - concrete, present-tense evidence of continued customer harm handled entirely by automation.",
-    "suggested_action": "Escalate now to account/partner management - the partner has been stuck 18+ days with an admitted lack of a fix, and the problem just recurred live today. Get a human to comment on the merge, re-chase the partner directly, and consider a formal reliability/account escalation."
+    "why": "Downgraded 🔴→🟡 per management note 16 Jul: root cause is BetConstruct's Operator API (500s on consent updates); the partner is aware, has raised it with BetConstruct, and an active correspondence track exists in the partner channel (FT provided examples 3 Jul, chased repeatedly incl. Andrea). Blocked on the vendor, not on FT inaction. Watch: consent opt-outs still failing while it drags — players can receive unwanted comms.",
+    "suggested_action": "Consider an FT-side mitigation while BetConstruct investigates: locally suppress Email/SMS sends for players whose opt-out failed to sync (D12) — removes the compliance exposure without waiting on the vendor."
    },
    "name": "segurobet: no consumers on queue segurobet.consentsmanager",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: this is in reality a BetConstruct platform issue (their Operator API returns 500 on consent updates). The partner is aware and has raised it with BetConstruct themselves; active partner correspondence (examples provided, regular chasing incl. by Andrea) lives in the partner channel thread: https://fasttrack-solutions.slack.com/archives/C08VB1RBJLF/p1782549375502499 — future runs should treat that thread as the live track, not the quiet incident channel."
+    }
+   ]
   },
   "INC-10938": {
    "incident_id": "01KW1MQFHDT00EEV4Q6QB0Y1EA",
