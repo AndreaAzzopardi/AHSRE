@@ -141,6 +141,8 @@ Morning digests get an extra section after 🆕 NEW:
 
 ## Step 4 — Classify
 
+**Service criticality (Andrea's rulings — extend as he adds more):** the deployment **ping-pong** service is NOT critical; its failures never qualify for B7 critical-path treatment. Do not assume "crashing pod = system down" for services on this list.
+
 Guideline reference (full text in `docs/incident-handling-guidelines.md`):
 A1 owner+visibility · A2 no "just closed" · A3 no "it's just 10/30 min" · A4 recurring→escalate · B5 escalate early · B6 security=P1 · B7 critical-path first · B8 handover not lost · C9 fast partner comms · C10 close the loop · C11 clear accurate comms · D12 informed decisions · D13 runbooks/basic checks · D14 don't close with partner work open · D15 self-contained record.
 

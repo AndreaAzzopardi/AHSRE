@@ -461,7 +461,7 @@
    "intercom_conversation_id": null,
    "last_slack_ts_read": "1784026610.626549",
    "last_intercom_part_at": null,
-   "classification": "🚨",
+   "classification": "🟡",
    "synthesis": {
     "summary": "frank-casino deployment stuck in CrashLoopBackOff, unchanged again since last check: 0 new Slack messages, incident.io still 'Investigating', summary still blank. Lead (Giancarlo Laferla) still assigned, still not posting; incident now 6.4+ days old with zero visible progress.",
     "key_events": [
@@ -474,16 +474,20 @@
     "partner": null,
     "proposals": [],
     "open_breaches": [
-     "D15: blank incident.io summary, now 6.4+ days in",
-     "B7: no visible prioritized action on a critical-path crash-loop now over 6.4 days",
-     "B5: ~20h escalation-to-accept gap, undocumented lead handoff, still unaddressed",
-     "D13: zero runbook/basic-check evidence anywhere"
+     "D15: incident.io summary field is blank; no diagnostic ever posted",
+     "A1: no one actively owns it — both leads have left the channel"
     ],
-    "why": "P2 crash-loop unresolved for 6.4+ days, blank incident.io summary, no lead engagement across two consecutive checks, zero runbook/basic-check evidence, and no escalation path visible - the system is not recovering and there is no escalation in sight.",
-    "suggested_action": "Escalate immediately above Giancarlo Laferla to SRE leadership to force an owner decision (fix, rollback, or reassign) within hours; fill in the incident.io summary; confirm whether frank-casino is customer-impacting and needs a severity bump."
+    "why": "Downgraded 🚨→🟡 per management note 16 Jul: ping-pong is a non-critical service, so the crash-loop is not a B7 critical-path failure. Still worth watching: the incident has no active owner in the channel, a blank incident.io summary (D15), and ~6 days without a diagnostic — it should be fixed at normal priority or closed deliberately, not left drifting.",
+    "suggested_action": "Assign at normal priority: fix the crash-loop or make a deliberate decision (e.g. suppress the alert / decommission) and close with a one-line rationale."
    },
    "name": "frank-casino: deployment ping-pong is stuck on CrashLoopBackOff",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: the deployment ping-pong service is not critical — a crash-loop here is not a critical-path failure (B7 does not apply). Watch-level, not escalate."
+    }
+   ]
   },
   "INC-12754": {
    "incident_id": "01KX0V13XA43NZNBV3MH6AR25A",
