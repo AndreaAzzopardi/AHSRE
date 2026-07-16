@@ -1040,9 +1040,10 @@
     ],
     "partner": null,
     "proposals": [
-     "H2Bet-side workaround (treat 503 as success) - rejected by partner",
-     "BetConstruct-side idempotency fix - no external traction since 5 Jun",
-     "REW-176 (rewards team Urgent ticket) - blocked by capacity until mid-Aug"
+     "503-as-success workaround (May) - rejected by partner 28 May",
+     "PR #122 idempotency fix - closed unmerged",
+     "PR #123 observability only - merged, no fix",
+     "REW-176 interim workaround - ACCEPTED by H2Bet (per management note 16 Jul), opened Urgent 9 Jul, blocked by Rewards capacity until mid-Aug"
     ],
     "open_breaches": [
      "A2/A4: no decisive fix after 50+ days, Urgent ticket parked a month+",
@@ -1050,11 +1051,17 @@
      "B5: BetConstruct escalation zero traction",
      "C10/D15: Intercom closed (since 06 Jul) implying resolution while incident.io still open P1"
     ],
-    "why": "50+ days since root cause confirmed, ~300 duplicate grants/week still occurring, BetConstruct escalation has zero traction since 5 Jun, and the Rewards team's own fix is parked until mid-August with no counter-escalation - the system is not recovering and there is no escalation in sight, despite the Head of SRE being the named incident lead.",
-    "suggested_action": "Escalate BetConstruct engagement above the account-manager gap to a commercial/executive channel; reprioritize REW-176 out of the mid-Aug backlog given ongoing confirmed financial leakage; stop treating the closed Intercom thread as resolution while incident.io remains open P1."
+    "why": "~300 duplicate bonus grants/week continuing after 50+ days; the accepted interim workaround (REW-176, per management note 16 Jul) is parked until mid-Aug by Rewards capacity, and the BetConstruct root-cause path has zero traction (A2/A4/B5). The open decision is scheduling/risk, not partner sign-off.",
+    "suggested_action": "Decide this week: pull REW-176 forward in Rewards' queue, or formally document risk-acceptance of the leakage until mid-Aug; separately escalate the BetConstruct account-manager gap to leadership."
    },
    "name": "[P1] Intercom Incident : H2Bet Production",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: correction — H2Bet ACCEPTED the interim workaround (discussed in the meeting with them and our Partner Manager, early Jul); that acceptance is why REW-176 was opened on 9 Jul. The 28 May rejection was the earlier 503-as-success proposal only. No sign-off is pending from H2Bet."
+    }
+   ]
   },
   "INC-5630": {
    "incident_id": "01KQEWSSQ7MZPX03NXHASXGMY6",
