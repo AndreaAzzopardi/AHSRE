@@ -683,7 +683,7 @@
    "intercom_conversation_id": "215561046744349",
    "last_slack_ts_read": "1784026403.289889",
    "last_intercom_part_at": "2026-07-15T10:09:39Z",
-   "classification": "🚨",
+   "classification": "🟢",
    "synthesis": {
     "summary": "223+ Tuohi/Noppa players missed welcome offers due to a lifecycle-entry race condition. Partner told FT internally they were 'proceeding with their termination' over this - never reflected in incident.io. Fix (Kafka switch) was explicitly 'step 1' only. The 14 Jul partner recurrence report was never substantively answered; instead the Intercom conversation was snoozed by CRM_Team on 15 Jul 10:09 UTC with the SLA paused. As of this run the partner's recurrence question is ~40.5 hours unanswered.",
     "key_events": [
@@ -693,7 +693,8 @@
      "13 Jul Kafka switch deployed, 'step 1' only",
      "14 Jul 09:29 UTC new missing/delayed offers reported by partner, unanswered",
      "15 Jul 10:09 UTC Tuohi Intercom conversation snoozed by CRM_Team, SLA paused - still no substantive reply",
-     "16 Jul re-check: 0 new Slack messages, 0 new Intercom parts, incident.io unchanged ('Fixing'); partner recurrence question now ~40.5h unanswered"
+     "16 Jul re-check: 0 new Slack messages, 0 new Intercom parts, incident.io unchanged ('Fixing'); partner recurrence question now ~40.5h unanswered",
+     "16 Jul 08:13 CEST: incident closed — handled via Tuohi ICU task force (management note)"
     ],
     "partner": {
      "first_reported": "2026-07-02T18:12:18Z",
@@ -716,11 +717,17 @@
      "C9/C10: 14 Jul recurrence report still unanswered at ~40.5 hours; conversation snoozed rather than answered",
      "D15: incident.io materially rosier than Slack/Intercom reality - no mention of termination risk or recurrence"
     ],
-    "why": "A partner already signaling termination has had a direct recurrence report go unanswered for over 40 hours, and rather than responding, the conversation was snoozed to pause the SLA clock - an unanswered, worsening partner situation with incident.io actively obscuring the real state and no escalation visible.",
-    "suggested_action": "Immediately unsnooze and substantively respond to the Tuohi/Noppa partner on the 14 Jul recurrence report; escalate the termination signal explicitly to account management/leadership today; correct incident.io to reflect the unresolved recurrence and partner risk."
+    "why": "Closed 16 Jul 08:13 per management note: Tuohi is under ICU observation and all its incidents are handled by a dedicated task force — the closure is deliberate process routing, not a silent drop. Prior concerns (recurrence, termination risk) are owned by the task force.",
+    "suggested_action": ""
    },
    "name": "[P3] Intercom Incident : Tuohi Production",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: Tuohi is under ICU observation and all Tuohi incidents are moved to a dedicated task force. This incident has been closed deliberately — it is being handled through the ICU process, not dropped."
+    }
+   ]
   },
   "INC-12179": {
    "incident_id": "01KWKV8HK546HTS3WQKRC70ZNJ",

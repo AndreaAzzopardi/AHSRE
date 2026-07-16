@@ -60,7 +60,7 @@ For each incident record: `reference`, `external_id`, `name`, `severity.name`, `
 
 **Tag every incident NEW or ONGOING.** Boundary = `meta.last_run_at` from the cache: `created_at` after it → 🆕 NEW; otherwise ONGOING (always shown with age). If there is no cache (seeding run), use "opened in the last 4 hours" and say so.
 
-**Note incidents that left the active set:** cache entries whose reference is no longer in the active list have been resolved/closed/paused since the last run — report them as a one-line "resolved since last digest" list (with a ⚠ if the cached synthesis had open breaches, e.g. recovery comms never sent — that's a D14/C10 closure-quality flag), then drop them from the cache.
+**Note incidents that left the active set:** cache entries whose reference is no longer in the active list have been resolved/closed/paused since the last run — report them as a one-line "resolved since last digest" list (with a ⚠ if the cached synthesis had open breaches, e.g. recovery comms never sent — that's a D14/C10 closure-quality flag), then drop them from the cache. **Exception:** if the entry carries a `management_notes` item that explains the closure (e.g. moved to an ICU/task-force process), quote the note in the resolved line instead of the ⚠ flag — a closure Andrea has explained is not a closure-quality breach.
 
 Note the **total open count** (active, triage excluded) — the digest reports it with a delta vs the cached previous total.
 
