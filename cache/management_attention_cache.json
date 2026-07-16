@@ -1,26 +1,60 @@
 {
  "meta": {
-  "last_run_at": "2026-07-16T02:02:00Z",
-  "total_open": 34,
+  "last_run_at": "2026-07-16T06:08:46Z",
+  "total_open": 31,
   "last_digest": {
-   "generated_at": "2026-07-16T02:02:00Z",
-   "under_control": "No - 9 items need immediate escalation (🚨), 9 more need management attention (🔴)",
-   "urgent_vs_smaller": "9 urgent, 9 need a nudge, 12 to watch, 4 handled well",
-   "total_open_delta": "+0 vs last digest (34→34); 4 new, 4 resolved",
+   "generated_at": "2026-07-16T06:08:46Z",
+   "under_control": "No — 9 items need immediate escalation (🚨), 8 more need management attention (🔴)",
+   "urgent_vs_smaller": "9 urgent, 8 need a nudge, 10 to watch, 4 handled well",
+   "total_open_delta": "-3 vs last digest (34→31); 1 new, 4 resolved",
    "new": [
-    {"ref": "INC-14177", "note": "P2 campeon queue stall, partner told via Teams by a colleague (not lead) - undocumented, ~1h43m quiet gap before investigating"},
-    {"ref": "INC-14168", "note": "P2 Rhino save-button bug, partner's urgency question unanswered, silent 10.5h+"},
-    {"ref": "INC-14165", "note": "P3 maxbet-dualsoft push-queue stall, 9 alerts merged in one evening (A4 pattern), bypass-flag revert unconfirmed"},
-    {"ref": "INC-14163", "note": "P2 g2 queue stall, root cause found + partner informed within ~15min, confirmed fixed"}
+    {
+     "ref": "INC-14284",
+     "note": "P3 Data Science daily message spikes, lead assigned (Joachim), ~40min old - too fresh to flag"
+    }
    ],
    "resolved": [
-    {"ref": "INC-14039", "note": "⚠ closed - Maxima ClickHouse PVC resize; record sat in Fixing/Investigating churn even after root cause was found (C10/D15)"},
-    {"ref": "INC-14159", "note": "clean - ElastiCache memory alert, ack'd in 10s, Monitoring within 8 min"},
-    {"ref": "INC-14158", "note": "clean - QBetCRM slow processing, lead assigned, resolved routinely"},
-    {"ref": "INC-14153", "note": "clean - leonbets slow processing, moved to Monitoring within the hour"}
+    {
+     "ref": "INC-14165",
+     "note": "⚠ closed - maxbet-dualsoft bypass flag was explicitly assigned in the SOC handover for a morning revert + partner conversation; closed without confirming either happened (B8/D13)"
+    },
+    {
+     "ref": "INC-14078",
+     "note": "clean - gamdom Kafka lag, bad-request skip fix held, resolved routinely"
+    },
+    {
+     "ref": "INC-13220",
+     "note": "⚠ closed - Slott Intercom side resolved 14 Jul but incident.io sat stale 'Investigating' 2+ days before auto-closing (D15)"
+    },
+    {
+     "ref": "INC-13176",
+     "note": "⚠ closed - Campeon Nexto Bedrock fix confirmed working, but incident.io stuck 'Investigating' 3 days and a second bug (get_segments overflow) never tracked (C10/D15)"
+    }
+   ],
+   "handover": [
+    {
+     "item": "Shuffle backoffice VPN access failure (06:12 CET, handover noted 'no further response')",
+     "status": "tracked INC-14098 ✅ - but only after Andrea personally re-raised it to Joachim at 10:14 CEST; the handover flag alone hadn't produced an incident"
+    },
+    {
+     "item": "maxbet-dualsoft bypass flag revert - explicitly assigned 'set to False tomorrow morning, speak with partner'",
+     "status": "NOT done ❌ (B8/D13) - INC-14165 closed with the flag still enabled and no partner conversation logged"
+    },
+    {
+     "item": "MeridianBet Kafka lag (INC-14173) - PR 'to be reviewed tomorrow'",
+     "status": "tracked ✅, closed same evening 19:24 CEST - ahead of schedule"
+    },
+    {
+     "item": "Rhino/campeon/g2 (14168/14177/14163) - James Hodgson's incidents at shift end",
+     "status": "tracked ✅ - explicit Incident Lead reassignment to Nazareno logged in-channel 05:53-05:54 CEST, not left implicit"
+    },
+    {
+     "item": "Fusion API Spinbet Terragon (INC-13895)",
+     "status": "tracked ✅, consistent across all 4 handovers, still Waiting on Partner"
+    }
    ],
    "not_assessed": [],
-   "green_note": "4 handled well: G2 Vegas-payout audit (13931) closed its own self-identified follow-up; g2 callback fix (14163) resolved+confirmed with partner in ~15min; two low-risk metadata-only P3s (14152 SBTSolutions clone-lifecycle fix, 14078 gamdom Kafka lag) stable in Monitoring."
+   "green_note": "4 handled well: g2 no-consumers queue (14163) resolved+confirmed with partner in ~15min; G2 WO bonus audit (13931) proactive, stable Waiting on Partner; SBTSolutions clone-lifecycle fix (14152) stable, metadata unchanged; new Data Science message-spike incident (14284) just opened with a lead, nothing to flag yet."
   }
  },
  "incidents": {
@@ -30,7 +64,7 @@
    "first_seen": "2026-07-15T16:44:40Z",
    "slack_channel_id": "C0BHD9W570T",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784140093.000000",
+   "last_slack_ts_read": "1784174061.637109",
    "last_intercom_part_at": null,
    "classification": "🟡",
    "synthesis": {
@@ -39,12 +73,26 @@
      "15 Jul 16:44 UTC alert fires (1 message stuck), James acknowledges within seconds",
      "15 Jul 18:27 UTC (~1h43m later) incident accepted, Triage -> Investigating",
      "15 Jul 18:28 UTC moved to Waiting on Partner; partner message relayed via Teams by a colleague on James's behalf",
-     "No further activity after 18:28 UTC"
+     "No further activity after 18:28 UTC",
+     "16 Jul 05:30 CEST bot fires another unanswered auto-resolve nudge",
+     "16 Jul 05:54 CEST Incident Lead reassigned James Hodgson -> Nazareno Scibilia (explicit handoff, not silent)"
     ],
-    "partner": {"first_reported": null, "last_partner_msg_at": null, "answered": false, "promises": ["Partner message relayed via Teams by Gian on James's behalf - content/timestamp not captured in the incident channel"]},
-    "proposals": ["Escalate to partner via Teams (delegated to Gian) - done, but undocumented in-channel"],
-    "open_breaches": ["D15: record not self-contained - partner comms happened off-platform via a colleague with no content/timestamp captured", "B5: ~1h43m quiet gap between alert and investigation start, no visible activity logged in between"],
-    "why": "One documentation gap (D15) plus an unexplained ~1h43m quiet gap (B5) on a very low-impact (1 message), still-young P2; no evidence of harm."
+    "partner": {
+     "first_reported": null,
+     "last_partner_msg_at": null,
+     "answered": false,
+     "promises": [
+      "Partner message relayed via Teams by Gian on James's behalf - content/timestamp not captured in the incident channel"
+     ]
+    },
+    "proposals": [
+     "Escalate to partner via Teams (delegated to Gian) - done, but undocumented in-channel"
+    ],
+    "open_breaches": [
+     "D15: record not self-contained - partner comms happened off-platform via a colleague with no content/timestamp captured",
+     "B5: ~1h43m quiet gap between alert and investigation start, no visible activity logged in between"
+    ],
+    "why": "One documentation gap (D15) plus the original ~1h43m quiet gap (B5) on a very low-impact (1 message), still-young P2; lead was actively reassigned this morning (not lost) but no new partner-side movement."
    },
    "name": "campeon: no consumers on queue campeon.actions.callbackconsumer (messages: 1, in: 0/s)",
    "channel_readable": true
@@ -55,7 +103,7 @@
    "first_seen": "2026-07-15T15:25:05Z",
    "slack_channel_id": "C0BJD59N8GG",
    "intercom_conversation_id": "215561067225684",
-   "last_slack_ts_read": "1784161651.000000",
+   "last_slack_ts_read": "1784174001.808969",
    "last_intercom_part_at": "2026-07-15T15:25:49Z",
    "classification": "🔴",
    "synthesis": {
@@ -66,42 +114,31 @@
      "15 Jul 15:13 UTC Fábio asks partner urgency, warns of next-business-day delay - never answered",
      "15 Jul 15:25 UTC INC-14168 created (P2), James Hodgson set as lead; internal note: hand off to front-end 'tomorrow morning'",
      "15 Jul 20:30 UTC James sets a Slack handover reminder",
-     "16 Jul 00:27 CEST bot pings asking if incident can be marked resolved - no reply"
+     "16 Jul 00:27 CEST bot pings asking if incident can be marked resolved - no reply",
+     "16 Jul 02:27 CEST bot fires a second unanswered auto-resolve nudge",
+     "16 Jul 05:53 CEST Incident Lead reassigned James Hodgson -> Nazareno Scibilia"
     ],
-    "partner": {"first_reported": "2026-07-15T14:06:57Z", "last_partner_msg_at": "2026-07-15T15:13:38Z", "answered": false, "promises": ["Told tech team likely won't respond until next business day (15:13 UTC)", "Internal-only plan to hand off to front-end 'tomorrow morning' - never relayed to partner"]},
-    "proposals": ["Hand off to front-end team next morning - not yet communicated to partner or actioned"],
-    "open_breaches": ["C10: partner's urgency question and case unanswered for 10.5h+ with zero closing-the-loop message", "B5/A1: incident channel and Intercom both silent since ~15:27 UTC (~10.5h) on a P2, no escalation, no status update", "C11/D15: the internal plan was never translated into a partner-facing update"],
-    "why": "P2 incident silent in Slack and Intercom for 10.5h+ with the partner's own urgency question unanswered - breaches C10 (close the loop) and B5 (escalate early).",
-    "suggested_action": "Have James (or a delegate) send a partner-facing Intercom reply now acknowledging the delay and confirming front-end is picking it up, plus post a fresh incident.io status update."
+    "partner": {
+     "first_reported": "2026-07-15T14:06:57Z",
+     "last_partner_msg_at": "2026-07-15T15:13:38Z",
+     "answered": false,
+     "promises": [
+      "Told tech team likely won't respond until next business day (15:13 UTC)",
+      "Internal-only plan to hand off to front-end 'tomorrow morning' - never relayed to partner"
+     ]
+    },
+    "proposals": [
+     "Hand off to front-end team next morning - not yet communicated to partner or actioned"
+    ],
+    "open_breaches": [
+     "C10: partner's urgency question and case unanswered for 10.5h+ with zero closing-the-loop message",
+     "B5/A1: incident channel and Intercom both silent since ~15:27 UTC (~10.5h) on a P2, no escalation, no status update",
+     "C11/D15: the internal plan was never translated into a partner-facing update"
+    ],
+    "why": "P2 silent in Slack and Intercom for ~14h48m with the partner's own urgency question still unanswered - breaches C10 (close the loop) and B5 (escalate early). Lead was reassigned to Nazareno this morning but no partner-facing action has followed yet.",
+    "suggested_action": "Have Nazareno (new lead) send a partner-facing Intercom reply now acknowledging the delay and confirming front-end ownership, plus post a fresh incident.io status update - now ~15h since the partner asked how urgent this was."
    },
    "name": "[P2] Intercom Incident : Rhino Production",
-   "channel_readable": true
-  },
-  "INC-14165": {
-   "incident_id": "01KXK42MW763DNB3NCDGR03MBP",
-   "severity": "P3",
-   "first_seen": "2026-07-15T14:49:45Z",
-   "slack_channel_id": "C0BHC7GSVNX",
-   "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784153401.000000",
-   "last_intercom_part_at": null,
-   "classification": "🟡",
-   "synthesis": {
-    "summary": "The maxbet-dualsoft Firebase push queue kept stalling on invalid/expired push tokens (HTTP 500s). James worked live with Giancarlo, Simon and Matteo, first skipping bad IDs individually then flipping a global bypass flag. Nine separate alert-triggered incidents merged into this one over ~6 hours; by 23:54 CEST the queue was reported clear, but the temporary flag's revert hasn't been confirmed.",
-    "key_events": [
-     "15 Jul 14:49 UTC alert fires, James accepts within 4 minutes",
-     "15 Jul 17:58-18:24 CEST specific bad user_id/activity_id found, skipped individually",
-     "15 Jul 17:40-21:05 CEST five related alerts auto-merge into this incident",
-     "15 Jul 20:20-20:23 CEST team flips global bad-token bypass flag (ENABLE_FAILED_ACTION_ON_ALL_BAD_TOKENS=true)",
-     "15 Jul 23:09 CEST all 9 attached alerts resolved; 23:54 CEST queue reported clear",
-     "16 Jul 00:10 CEST bot check-in asking for an update - no reply, flag revert not confirmed"
-    ],
-    "partner": null,
-    "proposals": ["Skip individual bad user_id/activity_id - superseded", "Enable global bad-token bypass flag - done, live", "Revert flag once backlog clears - not yet confirmed", "Long-term skip-by-activity_id vs user_id fix - open, no owner"],
-    "open_breaches": ["A4: nine alerts on the same queue merged into one incident within ~6h points to a recurring/systemic token-cleanup issue needing an owning-team fix rather than repeated manual mitigation", "D13: temporary bypass flag enabled but no confirmed revert even though the queue cleared ~4h ago"],
-    "why": "P3, judged leniently: handling was strong, but nine merged alerts in one evening is a recurring pattern (A4) and the bypass flag hasn't been confirmed reverted (D13)."
-   },
-   "name": "maxbet-dualsoft: queue maxbet-dualsoft.actions.firebasedistributor is processing slow (messages: 106, in: 0/s, delivery: 0/s)",
    "channel_readable": true
   },
   "INC-14163": {
@@ -110,7 +147,7 @@
    "first_seen": "2026-07-15T14:39:42Z",
    "slack_channel_id": "C0BHGC50KFY",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784166691.000000",
+   "last_slack_ts_read": "1784174060.936739",
    "last_intercom_part_at": null,
    "classification": "🟢",
    "synthesis": {
@@ -121,10 +158,23 @@
      "15 Jul 15:43 UTC partner reports failures, asks for priority",
      "15 Jul 15:58 UTC (~15min later) Michaela replies with root cause and remediation",
      "15 Jul 16:10-16:13 UTC queue confirmed healthy, partner confirms fix, thanks the team",
-     "16 Jul 01:51 CEST bot pings asking if incident can be resolved - not yet closed, no remaining action expected"
+     "16 Jul 01:51 CEST bot pings asking if incident can be resolved - not yet closed, no remaining action expected",
+     "16 Jul 03:51 CEST bot fires an unanswered auto-resolve nudge",
+     "16 Jul 05:54 CEST Incident Lead reassigned James Hodgson -> Nazareno Scibilia"
     ],
-    "partner": {"first_reported": "2026-07-15T15:43:57Z", "last_partner_msg_at": "2026-07-15T16:20:20Z", "answered": true, "promises": ["Partner told not to use the new G2 actions until an API-key switch (dependent on another team) is ready - holding"]},
-    "proposals": ["Disable new G2 actions - done", "Manually clear the queue - done", "Partner reverts to original actions - done, confirmed"],
+    "partner": {
+     "first_reported": "2026-07-15T15:43:57Z",
+     "last_partner_msg_at": "2026-07-15T16:20:20Z",
+     "answered": true,
+     "promises": [
+      "Partner told not to use the new G2 actions until an API-key switch (dependent on another team) is ready - holding"
+     ]
+    },
+    "proposals": [
+     "Disable new G2 actions - done",
+     "Manually clear the queue - done",
+     "Partner reverts to original actions - done, confirmed"
+    ],
     "open_breaches": [],
     "why": "Handled well: root cause found and communicated to the partner within ~15 minutes of their own escalation, fix confirmed working same hour."
    },
@@ -167,9 +217,24 @@
      "19:34 UTC Hikmet finds the real root cause (AuthType field required+hidden, no default) and removes the required flag, confirms he can save - never logged to incident.io or told to partner",
      "21:45 CEST and 02:03 CEST 16 Jul bot auto-close nudges fire, both unanswered, latest asking directly if it can be marked resolved"
     ],
-    "partner": {"first_reported": "2026-07-15T11:58:25Z", "last_partner_msg_at": "2026-07-15T14:51:00Z", "answered": false, "promises": ["First deployed fix - reported by partner as not working", "Escalation to high priority tomorrow AM if not fixed - superseded by an unannounced second fix"]},
-    "proposals": ["Original (failed) FE fix from prior incident's branch - deployed, partner found it didn't work", "Actual fix (Hikmet): remove 'required' flag from AuthType field - applied, unverified with partner"],
-    "open_breaches": ["D15: incident.io's only logged update claims the fix was live and asks the partner to retest - but the partner disproved it, and neither that failure, the pivot, nor the real fix have been logged", "A2: bot is actively prompting to close an incident whose only real fix has never been confirmed working by the partner, with a second reported failure still open", "C10: partner has heard nothing in ~12h despite an internal fix having since been applied and their second bug report going unacknowledged"],
+    "partner": {
+     "first_reported": "2026-07-15T11:58:25Z",
+     "last_partner_msg_at": "2026-07-15T14:51:00Z",
+     "answered": false,
+     "promises": [
+      "First deployed fix - reported by partner as not working",
+      "Escalation to high priority tomorrow AM if not fixed - superseded by an unannounced second fix"
+     ]
+    },
+    "proposals": [
+     "Original (failed) FE fix from prior incident's branch - deployed, partner found it didn't work",
+     "Actual fix (Hikmet): remove 'required' flag from AuthType field - applied, unverified with partner"
+    ],
+    "open_breaches": [
+     "D15: incident.io's only logged update claims the fix was live and asks the partner to retest - but the partner disproved it, and neither that failure, the pivot, nor the real fix have been logged",
+     "A2: bot is actively prompting to close an incident whose only real fix has never been confirmed working by the partner, with a second reported failure still open",
+     "C10: partner has heard nothing in ~12h despite an internal fix having since been applied and their second bug report going unacknowledged"
+    ],
     "why": "What looked like a clean fix-and-close last run has unraveled: the deployed fix didn't work, a second partner bug surfaced, and engineering quietly found and applied the real fix hours later without telling incident.io or the partner - now at risk of a silent, unverified auto-close.",
     "suggested_action": "Before this auto-closes: confirm with MeridianBet that Hikmet's AuthType fix actually resolves both the original failure and the second user's issue, post an incident.io update capturing the real root cause, and only close once the partner confirms."
    },
@@ -194,47 +259,52 @@
      "15 Jul 15:24 CEST bot check-in asking for status - unanswered",
      "16 Jul 00:24 CEST bot pings again asking if it can be marked resolved - unanswered, no comms confirmation"
     ],
-    "partner": {"first_reported": null, "last_partner_msg_at": null, "answered": false, "promises": ["Patrik's partner-facing draft, written 11:11 CEST - still not confirmed sent 13h45m+ later"]},
-    "proposals": ["WAF rule exemption for dashboard GET requests - implemented, merged", "Partner comms draft by Patrik - written, tune-and-send still unconfirmed"],
-    "open_breaches": ["C9/C11: still zero confirmation the CTO's 11:11 CEST partner-facing draft has gone out, now 13h45m+ since he personally chased it - crossed from a multi-hour gap into a near-half-day gap on a CTO-flagged item"],
+    "partner": {
+     "first_reported": null,
+     "last_partner_msg_at": null,
+     "answered": false,
+     "promises": [
+      "Patrik's partner-facing draft, written 11:11 CEST - still not confirmed sent 13h45m+ later"
+     ]
+    },
+    "proposals": [
+     "WAF rule exemption for dashboard GET requests - implemented, merged",
+     "Partner comms draft by Patrik - written, tune-and-send still unconfirmed"
+    ],
+    "open_breaches": [
+     "C9/C11: still zero confirmation the CTO's 11:11 CEST partner-facing draft has gone out, now 13h45m+ since he personally chased it - crossed from a multi-hour gap into a near-half-day gap on a CTO-flagged item"
+    ],
     "why": "The CTO personally wrote the fix and comms, then chased the delay himself - 13+ hours later there is still no evidence the comms were sent, and the silent-close bot has nudged twice more with zero human response, risking auto-closure without the one deliverable Patrik cared about ever being confirmed.",
     "suggested_action": "Escalate now: get explicit confirmation from James Hodgson that the tuned Shuffle/Supabets partner comms have gone out - this is now 13+ hours overdue on a CTO-authored deliverable."
    },
    "name": "Shuffle - Intermittently getting blocked by CF whilst on VPN",
    "channel_readable": true
   },
-  "INC-14078": {
-   "incident_id": "01KXJ8JSY50QSAZ1304N7M8QAG",
-   "severity": "P3",
-   "first_seen": "2026-07-15T06:49:14Z",
-   "slack_channel_id": null,
-   "intercom_conversation_id": null,
-   "last_slack_ts_read": null,
-   "last_intercom_part_at": null,
-   "classification": "🟢",
-   "synthesis": {
-    "summary": "Kafka lag on gamdom integration consumer. Metadata unchanged since last check (status Monitoring, updated_at 15 Jul 13:53:33Z, lead Giancarlo Laferla) - not selected for full deep-read (P3, has a lead, under 24h old).",
-    "key_events": [],
-    "partner": null,
-    "proposals": [],
-    "open_breaches": []
-   },
-   "name": "[FIRING:1] Kafka Lag Integration Consumer (500k) gamdom Alerting gamdom.integration.crm-integration-consumer-gamdom (true p3 integration)",
-   "why_metadata_only": "P3, lead assigned, judged leniently per guidelines; metadata unchanged since last check"
-  },
   "INC-13931": {
    "incident_id": "01KXGGZ1XHW3FCT2R23X56SRGT",
    "severity": "P3",
    "slack_channel_id": "C0BH6PU6X6J",
    "intercom_conversation_id": "215561063825667",
-   "last_slack_ts_read": "1784167320.000000",
+   "last_slack_ts_read": "1784172093.626259",
    "last_intercom_part_at": "2026-07-15T11:33:14Z",
    "classification": "🟢",
    "synthesis": {
     "summary": "G2 disputed a Welcome-Offer bonus for player 556. Matteo confirmed G2-side event-delivery lag as root cause, then proactively audited all 193 Vegas Casino Welcome Offer payouts since launch (187/193 correct to the cent) and shared results with the partner unprompted. No new activity this cycle; incident.io unchanged, still Waiting on Partner.",
-    "key_events": ["No new Slack or Intercom activity this cycle; incident.io status/updated_at unchanged since 15 Jul 08:24"],
-    "partner": {"first_reported": "2026-07-13T09:49:08Z", "last_partner_msg_at": "2026-07-14T13:19:17Z", "answered": true, "promises": ["Full root cause + remediation discussion sent 15 Jul 08:21 UTC; player-adjustment decision still pending partner alignment"]},
-    "proposals": ["Player adjustment for the $27.20 gap - pending partner alignment", "Full 193-payout audit - completed and shared with partner"],
+    "key_events": [
+     "16 Jul 05:21 CEST bot fires an auto-resolve nudge - no reply needed, Waiting on Partner alignment is the legitimate state here"
+    ],
+    "partner": {
+     "first_reported": "2026-07-13T09:49:08Z",
+     "last_partner_msg_at": "2026-07-14T13:19:17Z",
+     "answered": true,
+     "promises": [
+      "Full root cause + remediation discussion sent 15 Jul 08:21 UTC; player-adjustment decision still pending partner alignment"
+     ]
+    },
+    "proposals": [
+     "Player adjustment for the $27.20 gap - pending partner alignment",
+     "Full 193-payout audit - completed and shared with partner"
+    ],
     "open_breaches": [],
     "why": "Handled well - proactive full-portfolio audit shared unprompted, only ~3 days open, no drift signals; Waiting on Partner is a legitimate state here, not neglect."
    },
@@ -257,9 +327,23 @@
      "Partner sends one more delay example just before the fix lands",
      "03:21 CEST 16 Jul bot fires 'no activity - mark as resolved?' nudge, unanswered"
     ],
-    "partner": {"first_reported": "2026-07-14T11:18:27Z", "last_partner_msg_at": "2026-07-15T14:46:42Z", "answered": true, "promises": ["Rewards team confirmed a performance-bottleneck backlog - partial/generic explanation"]},
-    "proposals": ["Temporary: scale credit-service compute to 8xlarge - completed", "Permanent: credit VC directly vs auto-claim bonus - undecided", "Add audit trail for Rewards bonus-config edits - raised, not tracked"],
-    "open_breaches": ["D15: incident.io still shows zero status updates and 'Investigating' despite completed mitigation, lead handoff, and partner comms from over a day ago - the bot's auto-close nudge is now live against that inaccurate record", "C11: partner told a generic 'performance bottleneck'; internally-confirmed root cause still not disclosed"],
+    "partner": {
+     "first_reported": "2026-07-14T11:18:27Z",
+     "last_partner_msg_at": "2026-07-15T14:46:42Z",
+     "answered": true,
+     "promises": [
+      "Rewards team confirmed a performance-bottleneck backlog - partial/generic explanation"
+     ]
+    },
+    "proposals": [
+     "Temporary: scale credit-service compute to 8xlarge - completed",
+     "Permanent: credit VC directly vs auto-claim bonus - undecided",
+     "Add audit trail for Rewards bonus-config edits - raised, not tracked"
+    ],
+    "open_breaches": [
+     "D15: incident.io still shows zero status updates and 'Investigating' despite completed mitigation, lead handoff, and partner comms from over a day ago - the bot's auto-close nudge is now live against that inaccurate record",
+     "C11: partner told a generic 'performance bottleneck'; internally-confirmed root cause still not disclosed"
+    ],
     "why": "Technically stable (mitigation holding, no new delay reports), but the incident.io record has not moved since creation and is now at risk of being auto-resolved in a state that doesn't reflect the mitigation, lead change, or actual root cause.",
     "suggested_action": "Post the overdue incident.io status update (mitigation applied, Sam Lundborg as lead) before responding to the bot's resolve prompt, and reconcile the partner-facing explanation with the internal RCA."
    },
@@ -300,9 +384,22 @@
      "No partner reply since",
      "20:22 CEST 15 Jul bot fires a second 'mark as resolved?' nudge, also unanswered"
     ],
-    "partner": {"first_reported": null, "last_partner_msg_at": null, "answered": false, "promises": ["will update when more information available - still no follow-up sent"]},
-    "proposals": ["Partner asked to check/confirm the API exchange and 401 cause on their end - no response received"],
-    "open_breaches": ["B5: bot's silent-close nudge from 14 Jul still unanswered, and a second auto-close nudge fired 20:22 CEST 15 Jul with no response either", "A4: 2nd Fusion API 401 incident in a week (see INC-12617), still not escalated to the owning team", "C9: partner completely silent for over a day since the re-chase, no further follow-up sent"],
+    "partner": {
+     "first_reported": null,
+     "last_partner_msg_at": null,
+     "answered": false,
+     "promises": [
+      "will update when more information available - still no follow-up sent"
+     ]
+    },
+    "proposals": [
+     "Partner asked to check/confirm the API exchange and 401 cause on their end - no response received"
+    ],
+    "open_breaches": [
+     "B5: bot's silent-close nudge from 14 Jul still unanswered, and a second auto-close nudge fired 20:22 CEST 15 Jul with no response either",
+     "A4: 2nd Fusion API 401 incident in a week (see INC-12617), still not escalated to the owning team",
+     "C9: partner completely silent for over a day since the re-chase, no further follow-up sent"
+    ],
     "why": "Nothing has moved since the morning re-chase: the partner is silent, the recurrence hasn't triggered escalation, and two bot close-nudges have gone unanswered - stalled in a way that risks a silent auto-close on a still-unconfirmed fix, on the 2nd occurrence of the same fault in a week.",
     "suggested_action": "Escalate the recurring Fusion API 401 pattern to the owning team now (2nd time in a week), send one more direct partner follow-up with a deadline, and respond to the bot's resolve prompts rather than letting it auto-close."
    },
@@ -324,9 +421,25 @@
      "No new Intercom parts since 14 Jul 13:38:49 UTC, conversation still open",
      "incident.io status unchanged: still 'Investigating'"
     ],
-    "partner": {"first_reported": "2026-07-12T10:51:38Z", "last_partner_msg_at": "2026-07-14T13:35:15Z", "answered": false, "promises": ["9-player ID list delivered", "scaling explanation given, later found not to fix the issue, correction never sent"]},
-    "proposals": ["enforce add-before-deposit event ordering - proposed, unimplemented", "scale scheduled-action-manager replicas - implemented, judged ineffective", "PR #103 (Redis engine upgrade) - open, review disputed"],
-    "open_breaches": ["B5: now ~36h silent while status remains 'Investigating', zero incident.io narrative updates", "A4: likely recurrence of INC-12436's bug class, still not reflected in the incident record", "C10/C11: partner given an explanation later found incorrect, never corrected; 3 newly-reported players still unaccounted for"],
+    "partner": {
+     "first_reported": "2026-07-12T10:51:38Z",
+     "last_partner_msg_at": "2026-07-14T13:35:15Z",
+     "answered": false,
+     "promises": [
+      "9-player ID list delivered",
+      "scaling explanation given, later found not to fix the issue, correction never sent"
+     ]
+    },
+    "proposals": [
+     "enforce add-before-deposit event ordering - proposed, unimplemented",
+     "scale scheduled-action-manager replicas - implemented, judged ineffective",
+     "PR #103 (Redis engine upgrade) - open, review disputed"
+    ],
+    "open_breaches": [
+     "B5: now ~36h silent while status remains 'Investigating', zero incident.io narrative updates",
+     "A4: likely recurrence of INC-12436's bug class, still not reflected in the incident record",
+     "C10/C11: partner given an explanation later found incorrect, never corrected; 3 newly-reported players still unaccounted for"
+    ],
     "why": "Same severe breaches as last run, compounding with time - silence has grown to roughly 36h with zero human activity, and the known-wrong scaling explanation still hasn't been corrected. Closely tracks INC-12436 but this channel itself has seen no action this cycle.",
     "suggested_action": "Get a human update into incident.io immediately; correct the earlier wrong scaling explanation with the partner; confirm whether this is the same regression class as INC-12436."
    },
@@ -343,10 +456,25 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "12Play's Chinese comms profile appeared missing from the backoffice - a display bug only, no player-facing impact. Rewards team opened two PRs 14 Jul; Daniel posted a detailed handover to Sam before vacation; no Incident Lead role has ever been formally assigned (only Reporter). New: the bot posted its stale-incident resolve-nudge at 20:03 CEST 15 Jul, still unanswered (~6h). No new Intercom activity.",
-    "key_events": ["15 Jul 20:03 CEST incident.io auto-resolve nudge posted, still unanswered"],
-    "partner": {"first_reported": "2026-07-10T04:15:10Z", "last_partner_msg_at": "2026-07-14T08:11:59Z", "answered": true, "promises": ["fix release tomorrow/Thursday - not yet confirmed done"]},
-    "proposals": ["backoffice PR - opened 14 Jul, pending test", "rewards-backend PR - opened 14 Jul, pending test", "handoff to Sam Lundborg to verify both PRs"],
-    "open_breaches": ["D15/A1: incident.io still has no summary set and no formally assigned Incident Lead despite a detailed Slack handover, and the bot's 15 Jul auto-resolve nudge is now sitting unanswered"],
+    "key_events": [
+     "15 Jul 20:03 CEST incident.io auto-resolve nudge posted, still unanswered"
+    ],
+    "partner": {
+     "first_reported": "2026-07-10T04:15:10Z",
+     "last_partner_msg_at": "2026-07-14T08:11:59Z",
+     "answered": true,
+     "promises": [
+      "fix release tomorrow/Thursday - not yet confirmed done"
+     ]
+    },
+    "proposals": [
+     "backoffice PR - opened 14 Jul, pending test",
+     "rewards-backend PR - opened 14 Jul, pending test",
+     "handoff to Sam Lundborg to verify both PRs"
+    ],
+    "open_breaches": [
+     "D15/A1: incident.io still has no summary set and no formally assigned Incident Lead despite a detailed Slack handover, and the bot's 15 Jul auto-resolve nudge is now sitting unanswered"
+    ],
     "why": "Low real risk (no player impact, PRs in flight) but this is squarely the silent-closure pattern - an unowned record plus an unanswered auto-resolve prompt is exactly how a P4 gets bot-closed without confirming the PRs shipped.",
     "suggested_action": "Sam Lundborg to formally take the Incident Lead role, add a one-line summary, and confirm the two PRs' merge status before letting the bot resolve this."
    },
@@ -358,7 +486,7 @@
    "severity": "P2",
    "slack_channel_id": "C0BGUEJH6UB",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784134920.318829",
+   "last_slack_ts_read": "1784175691.031559",
    "last_intercom_part_at": null,
    "classification": "🟡",
    "synthesis": {
@@ -368,11 +496,17 @@
      "15 Jul 18:18 CEST Sam manually corrects the two challenge-referenced mappings, unblocking player challenge-credit",
      "15 Jul 18:58 CEST Sam posts full root-cause writeup: three resolver failure modes",
      "15 Jul 19:02 CEST incident.io formally updated with the full narrative",
-     "Mode B/C fixes committed, deploying tomorrow AM with a fresh dry-run planned"
+     "Mode B/C fixes committed, deploying tomorrow AM with a fresh dry-run planned",
+     "16 Jul 06:21 CEST bot fires an auto-resolve nudge, unanswered (fixes still pending tomorrow AM deploy, correctly not yet closed)"
     ],
     "partner": null,
-    "proposals": ["Deploy Mode B/C fixes tomorrow AM, re-run dry run", "Decide Mode A approach after a quick call with games/greco owners"],
-    "open_breaches": ["B8/A1: incident.io Incident Lead still shows Daniel Lindengren (on vacation) despite Samuela having driven 100% of the visible engineering work"],
+    "proposals": [
+     "Deploy Mode B/C fixes tomorrow AM, re-run dry run",
+     "Decide Mode A approach after a quick call with games/greco owners"
+    ],
+    "open_breaches": [
+     "B8/A1: incident.io Incident Lead still shows Daniel Lindengren (on vacation) despite Samuela having driven 100% of the visible engineering work"
+    ],
     "why": "Real, substantive engineering progress happened and was properly written up in incident.io - two of three resolver bugs fixed and the immediate customer-impact case manually remediated. The one remaining gap is purely administrative: the Lead field never updated to reflect the de facto handover to Sam.",
     "suggested_action": "Update incident.io Incident Lead to Samuela Lundborg to reflect reality; otherwise on track."
    },
@@ -384,7 +518,7 @@
    "severity": "P2",
    "slack_channel_id": "C0BGVS66R9B",
    "intercom_conversation_id": null,
-   "last_slack_ts_read": "1784125715.117249",
+   "last_slack_ts_read": "1784177131.261579",
    "last_intercom_part_at": null,
    "classification": "🔴",
    "synthesis": {
@@ -393,11 +527,21 @@
      "07 Apr unsubscribe flow silently broken",
      "13 Jul incident opened, fix merged same day",
      "15 Jul 16:28 CEST PR #196 (unsub-events monitor) merged following Andrea's direct push",
-     "16 Jul re-check: 0 new Slack messages, incident.io unchanged - no further movement on legal escalation or the 3 new brands"
+     "16 Jul re-check: 0 new Slack messages, incident.io unchanged - no further movement on legal escalation or the 3 new brands",
+     "16 Jul 06:45 CEST bot fires an auto-resolve nudge, unanswered - legal/compliance escalation and the 3 new brands remain unaddressed"
     ],
     "partner": null,
-    "proposals": ["Monitor landed (PR #196) - addresses detection gap", "Open: retroactive remediation plan", "Open: legal/compliance escalation", "Open: extend investigation to Rocketship, Fairspin, Frank Casino"],
-    "open_breaches": ["D12: still no evidence of legal/compliance escalation for a multi-month opt-out failure across 3 gambling brands", "C10: no confirmed retroactive remediation of missed unsubscribes", "Partner threads for 2/3 known brands winding down while 3 newly-flagged brands remain unaddressed"],
+    "proposals": [
+     "Monitor landed (PR #196) - addresses detection gap",
+     "Open: retroactive remediation plan",
+     "Open: legal/compliance escalation",
+     "Open: extend investigation to Rocketship, Fairspin, Frank Casino"
+    ],
+    "open_breaches": [
+     "D12: still no evidence of legal/compliance escalation for a multi-month opt-out failure across 3 gambling brands",
+     "C10: no confirmed retroactive remediation of missed unsubscribes",
+     "Partner threads for 2/3 known brands winding down while 3 newly-flagged brands remain unaddressed"
+    ],
     "why": "Real forward progress this cycle (fix + the specifically-requested monitor both landed), so no longer a silent-drift situation - but two-plus real breaches remain: a 3-month player opt-out failure across gambling brands still has no legal/compliance escalation, and 3 newly-flagged brands are unaddressed.",
     "suggested_action": "Escalate the opt-out failure to legal/compliance given regulatory exposure; confirm/execute retroactive remediation; open tracking for the 3 newly-flagged brands before treating this as closed."
    },
@@ -414,54 +558,29 @@
    "classification": "🔴",
    "synthesis": {
     "summary": "SBTSolutions reported delayed bonus/activity-trigger processing; Matteo migrated the messaging system to Kafka without partner sign-off, then told the partner it would be scheduled - misrepresenting work already done. Matteo said in Slack 'this can be pretty much closed', but incident.io is still Waiting on Partner and no resolution message has gone to the partner. New: the bot posted a stale-incident resolve-nudge at 01:15 CEST 16 Jul, unanswered.",
-    "key_events": ["16 Jul 01:15 CEST incident.io auto-resolve nudge posted, no response yet"],
-    "partner": {"first_reported": "2026-07-11T18:40:52Z", "last_partner_msg_at": "2026-07-14T10:11:22Z", "answered": true, "promises": ["Kafka migration during low-traffic window, no partner action needed - told after already applied; fix considered holding, not yet confirmed to partner"]},
-    "proposals": ["Migrate to Kafka (root fix) - implemented, considered effective, still not formally confirmed with partner or in incident.io"],
-    "open_breaches": ["D15: stuck 'Waiting on Partner' since 13 Jul, now compounded by an unanswered auto-resolve nudge", "C11: partner told the migration would be scheduled when it had already been silently applied", "C10: no resolution/closing message sent to the partner despite the fix being considered done internally"],
+    "key_events": [
+     "16 Jul 01:15 CEST incident.io auto-resolve nudge posted, no response yet"
+    ],
+    "partner": {
+     "first_reported": "2026-07-11T18:40:52Z",
+     "last_partner_msg_at": "2026-07-14T10:11:22Z",
+     "answered": true,
+     "promises": [
+      "Kafka migration during low-traffic window, no partner action needed - told after already applied; fix considered holding, not yet confirmed to partner"
+     ]
+    },
+    "proposals": [
+     "Migrate to Kafka (root fix) - implemented, considered effective, still not formally confirmed with partner or in incident.io"
+    ],
+    "open_breaches": [
+     "D15: stuck 'Waiting on Partner' since 13 Jul, now compounded by an unanswered auto-resolve nudge",
+     "C11: partner told the migration would be scheduled when it had already been silently applied",
+     "C10: no resolution/closing message sent to the partner despite the fix being considered done internally"
+    ],
     "why": "This is a genuine comms-integrity problem, not just paperwork lag - the partner currently has an inaccurate account of what happened, and the incident is one auto-nudge away from being silently closed with that inaccurate account never corrected.",
     "suggested_action": "Before closing, Matteo (or a manager) must send the partner an accurate resolution message (migration completed, not 'scheduled') and only then move incident.io to Closed."
    },
    "name": "[P3] Intercom Incident : SBTSolutions Production",
-   "channel_readable": true
-  },
-  "INC-13220": {
-   "incident_id": "01KX671KDVDH6V08HGM6ATRVP1",
-   "severity": "P3",
-   "slack_channel_id": "C0BHCKG4LQ0",
-   "intercom_conversation_id": "215561057078309",
-   "last_slack_ts_read": "1784167320.000000",
-   "last_intercom_part_at": "2026-07-15T07:39:24Z",
-   "classification": "🟡",
-   "synthesis": {
-    "summary": "Slott partner asked FT AI chat for a downloadable dataset; a widget bug truncated it. Fábio manually delivered the data via Intercom; AI Team confirmed root cause and closed the Intercom ticket 14 Jul 20:10 CEST. incident.io still reads 'Investigating', untouched since 13 Jul. New: only a routine post-close CSAT rating event landed on the Intercom conversation (15 Jul 07:39); no substantive activity.",
-    "key_events": ["Intercom conversation confirmed closed 14 Jul 20:10 CEST", "Routine CSAT rating event followed 15 Jul 07:39 - not a new development"],
-    "partner": {"first_reported": "2026-07-09T15:09:32Z", "last_partner_msg_at": "2026-07-10T13:51:20Z", "answered": true, "promises": ["code-block truncation fix - no ETA, confirmed 14 Jul, still not reflected in incident.io"]},
-    "proposals": ["manual dataset delivery via LangSmith pull - done", "AI Team fix for large-output truncation - in progress, no ETA"],
-    "open_breaches": ["D15: incident.io untouched since 13 Jul handoff, still 'Investigating' despite the Intercom side closed 14 Jul", "B5: escalation to Jeremy expired unacknowledged 10 Jul, picked up 3 days later via workflow"],
-    "why": "Bookkeeping drift rather than live risk - the customer issue is resolved and closed on Intercom - but the incident.io record has now been silently wrong for 2+ days and will keep aging until manually synced.",
-    "suggested_action": "Jeremy to update incident.io status to Fixed/Closed and add a one-line note referencing the 14 Jul Intercom closure."
-   },
-   "name": "[P3] Intercom Incident : Slott Production [deleted]",
-   "channel_readable": true
-  },
-  "INC-13176": {
-   "incident_id": "01KX5VANTC4GCKFJ7X3JXY91P6",
-   "severity": "P2",
-   "slack_channel_id": "C0BGGS6AT9Q",
-   "intercom_conversation_id": "215561058081443",
-   "last_slack_ts_read": "1784016758.103439",
-   "last_intercom_part_at": "2026-07-14T19:16:42Z",
-   "classification": "🔴",
-   "synthesis": {
-    "summary": "AI-agent Bedrock tool-name validation error bricked a Campeon Nexto partner's conversation thread. Fix merged/deployed by 14 Jul, partner confirmed working, Intercom ticket closed (confirmed still closed) - but incident.io still shows 'Investigating', now unchanged for a 3rd day with no new Slack activity at all. A second bug (get_segments context overflow) surfaced, worked around manually, still no follow-up tracked.",
-    "key_events": ["No new Slack messages this cycle", "Intercom conversation confirmed still closed, no new parts", "incident.io unchanged: status 'Investigating' since 14 Jul 09:41:40Z"],
-    "partner": {"first_reported": "2026-07-10T09:26:22Z", "last_partner_msg_at": "2026-07-14T14:46:48Z", "answered": true, "promises": ["fix deployed 14 Jul - confirmed working"]},
-    "proposals": ["sanitize Bedrock tool-call names - implemented, PR #459", "fix get_segments context overflow - manual workaround only, no follow-up ticket"],
-    "open_breaches": ["C10: incident.io stuck 'Investigating' despite confirmed resolution, now going on 3 days with zero movement", "D15: second bug and its manual workaround still entirely absent from the incident.io record"],
-    "why": "Nothing has changed since last run - a resolved, partner-confirmed fix still sits as an open incident.io record three days on; a record-hygiene gap rather than an active operational risk, but stale enough to look abandoned.",
-    "suggested_action": "Have Jeremy close/resolve the incident.io record and file the get_segments context-overflow bug plus its workaround as a tracked follow-up."
-   },
-   "name": "[P2] Intercom Incident : Campeon Nexto Production",
    "channel_readable": true
   },
   "INC-12998": {
@@ -483,7 +602,12 @@
     ],
     "partner": null,
     "proposals": [],
-    "open_breaches": ["D15: blank incident.io summary, now 6.4+ days in", "B7: no visible prioritized action on a critical-path crash-loop now over 6.4 days", "B5: ~20h escalation-to-accept gap, undocumented lead handoff, still unaddressed", "D13: zero runbook/basic-check evidence anywhere"],
+    "open_breaches": [
+     "D15: blank incident.io summary, now 6.4+ days in",
+     "B7: no visible prioritized action on a critical-path crash-loop now over 6.4 days",
+     "B5: ~20h escalation-to-accept gap, undocumented lead handoff, still unaddressed",
+     "D13: zero runbook/basic-check evidence anywhere"
+    ],
     "why": "P2 crash-loop unresolved for 6.4+ days, blank incident.io summary, no lead engagement across two consecutive checks, zero runbook/basic-check evidence, and no escalation path visible - the system is not recovering and there is no escalation in sight.",
     "suggested_action": "Escalate immediately above Giancarlo Laferla to SRE leadership to force an owner decision (fix, rollback, or reassign) within hours; fill in the incident.io summary; confirm whether frank-casino is customer-impacting and needs a severity bump."
    },
@@ -500,10 +624,15 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "Campeon Nexto users couldn't log in due to a v2/v3 URL-version mismatch. Root cause found and workaround delivered within ~15 minutes; Patrik personally cleared Cloudflare cache and restarted crm-api same day (08 Jul), fix held. incident.io has now sat in 'Fixing' P3 status for 8 days with no substantive activity. The only new Slack event was a participant leaving the channel; incident.io's updated_at ticked forward but with no new status-update text behind it - looks administrative, not real progress.",
-    "key_events": ["15 Jul 15:34 CEST a participant left the incident Slack channel (non-substantive)", "incident.io updated_at ticked to 15 Jul 13:35 with no accompanying new status-update entry"],
+    "key_events": [
+     "15 Jul 15:34 CEST a participant left the incident Slack channel (non-substantive)",
+     "incident.io updated_at ticked to 15 Jul 13:35 with no accompanying new status-update entry"
+    ],
     "partner": null,
     "proposals": [],
-    "open_breaches": ["D15/C10: incident.io still stuck in 'Fixing' P3 status 8 days after the fix was confirmed working same day; the updated_at bump has no accompanying status update or closing note"],
+    "open_breaches": [
+     "D15/C10: incident.io still stuck in 'Fixing' P3 status 8 days after the fix was confirmed working same day; the updated_at bump has no accompanying status update or closing note"
+    ],
     "why": "Fix is solid and no recurrence has been reported, but the incident has drifted a full extra work-week without anyone formally closing or re-confirming it - the silent-drift pattern this age-check targets. Low urgency but easy to fix.",
     "suggested_action": "Have Giancarlo Laferla post a short confirmation update and move status to Fixed/Closed now that a week-plus has passed with no recurrence."
    },
@@ -520,10 +649,26 @@
    "classification": "🔴",
    "synthesis": {
     "summary": "Fusion API 401 errors; root cause ruled out as FT-side, partner informed via Teams DM 07 Jul and never re-chased since. No new Slack activity and no incident.io change at all this cycle - now roughly 9 days of total silence. The exact 401 pattern has recurred only once more, as INC-13895 (checked separately) - no 3rd occurrence yet.",
-    "key_events": ["No new Slack messages this cycle", "incident.io unchanged: status 'Waiting on Partner', updated_at still 10 Jul 12:05:12Z"],
-    "partner": {"first_reported": "2026-07-07T14:19:38Z", "last_partner_msg_at": null, "answered": false, "promises": []},
-    "proposals": ["log investigation, rule out FT-side config - done", "inform partner - done once, never re-chased"],
-    "open_breaches": ["C9: no partner re-chase in 9 days", "C10: alert cleared nearly a week ago, never formally closed", "B5: silent-close warnings and manual escalation both ignored", "A4: recurring Fusion API 401 pattern (2nd occurrence INC-13895) still not escalated to the owning team"],
+    "key_events": [
+     "No new Slack messages this cycle",
+     "incident.io unchanged: status 'Waiting on Partner', updated_at still 10 Jul 12:05:12Z"
+    ],
+    "partner": {
+     "first_reported": "2026-07-07T14:19:38Z",
+     "last_partner_msg_at": null,
+     "answered": false,
+     "promises": []
+    },
+    "proposals": [
+     "log investigation, rule out FT-side config - done",
+     "inform partner - done once, never re-chased"
+    ],
+    "open_breaches": [
+     "C9: no partner re-chase in 9 days",
+     "C10: alert cleared nearly a week ago, never formally closed",
+     "B5: silent-close warnings and manual escalation both ignored",
+     "A4: recurring Fusion API 401 pattern (2nd occurrence INC-13895) still not escalated to the owning team"
+    ],
     "why": "Unchanged in substance, but notable for what did NOT happen: an already multi-breach incident with a known recurrence pattern had zero activity of any kind this cycle - not even a bot nudge - drifting further out of view.",
     "suggested_action": "Escalate to the owning API team about the recurring 401 pattern (2 confirmed occurrences); re-chase the partner directly since the original Teams DM has had zero response in 9 days; formally close or get a resolution confirmation."
    },
@@ -541,14 +686,35 @@
    "synthesis": {
     "summary": "223+ Tuohi/Noppa players missed welcome offers due to a lifecycle-entry race condition. Partner told FT internally they were 'proceeding with their termination' over this - never reflected in incident.io. Fix (Kafka switch) was explicitly 'step 1' only. The 14 Jul partner recurrence report was never substantively answered; instead the Intercom conversation was snoozed by CRM_Team on 15 Jul 10:09 UTC with the SLA paused. As of this run the partner's recurrence question is ~40.5 hours unanswered.",
     "key_events": [
-     "06 Jul INC-12436 created P3", "07 Jul true scope found, 223 users", "08 Jul partner signals termination internally, severity raised P3->P2 two days later",
-     "13 Jul Kafka switch deployed, 'step 1' only", "14 Jul 09:29 UTC new missing/delayed offers reported by partner, unanswered",
+     "06 Jul INC-12436 created P3",
+     "07 Jul true scope found, 223 users",
+     "08 Jul partner signals termination internally, severity raised P3->P2 two days later",
+     "13 Jul Kafka switch deployed, 'step 1' only",
+     "14 Jul 09:29 UTC new missing/delayed offers reported by partner, unanswered",
      "15 Jul 10:09 UTC Tuohi Intercom conversation snoozed by CRM_Team, SLA paused - still no substantive reply",
      "16 Jul re-check: 0 new Slack messages, 0 new Intercom parts, incident.io unchanged ('Fixing'); partner recurrence question now ~40.5h unanswered"
     ],
-    "partner": {"first_reported": "2026-07-02T18:12:18Z", "last_partner_msg_at": "2026-07-14T09:29:18Z", "answered": false, "promises": ["alternative LC trigger offered", "verbal commitment to cover in 14 Jul call - not confirmed happened"], "note": "Conversation snoozed by CRM_Team 15 Jul 10:09 UTC (SLA paused) instead of being answered"},
-    "proposals": ["synchronous deposit-listener arming (real fix) - prepared per incident.io summary", "fix to stop lifecycle-service startup crash-loop - prepared", "minor partner-side integration upgrade planned, ~5-15min downtime - not confirmed executed"],
-    "open_breaches": ["B5: 2-day lag between termination signal and severity escalation, never remediated since", "A4: defect recurring 10 days in, after only a partial ('step 1') deployed fix", "C9/C10: 14 Jul recurrence report still unanswered at ~40.5 hours; conversation snoozed rather than answered", "D15: incident.io materially rosier than Slack/Intercom reality - no mention of termination risk or recurrence"],
+    "partner": {
+     "first_reported": "2026-07-02T18:12:18Z",
+     "last_partner_msg_at": "2026-07-14T09:29:18Z",
+     "answered": false,
+     "promises": [
+      "alternative LC trigger offered",
+      "verbal commitment to cover in 14 Jul call - not confirmed happened"
+     ],
+     "note": "Conversation snoozed by CRM_Team 15 Jul 10:09 UTC (SLA paused) instead of being answered"
+    },
+    "proposals": [
+     "synchronous deposit-listener arming (real fix) - prepared per incident.io summary",
+     "fix to stop lifecycle-service startup crash-loop - prepared",
+     "minor partner-side integration upgrade planned, ~5-15min downtime - not confirmed executed"
+    ],
+    "open_breaches": [
+     "B5: 2-day lag between termination signal and severity escalation, never remediated since",
+     "A4: defect recurring 10 days in, after only a partial ('step 1') deployed fix",
+     "C9/C10: 14 Jul recurrence report still unanswered at ~40.5 hours; conversation snoozed rather than answered",
+     "D15: incident.io materially rosier than Slack/Intercom reality - no mention of termination risk or recurrence"
+    ],
     "why": "A partner already signaling termination has had a direct recurrence report go unanswered for over 40 hours, and rather than responding, the conversation was snoozed to pause the SLA clock - an unanswered, worsening partner situation with incident.io actively obscuring the real state and no escalation visible.",
     "suggested_action": "Immediately unsnooze and substantively respond to the Tuohi/Noppa partner on the 14 Jul recurrence report; escalate the termination signal explicitly to account management/leadership today; correct incident.io to reflect the unresolved recurrence and partner risk."
    },
@@ -565,10 +731,22 @@
    "classification": "🔴",
    "synthesis": {
     "summary": "llm-agent tool execution failing on Daytona sandbox cold-resume. Root cause confirmed 04 Jul; 4 ranked follow-ups filed same day. Directly re-verified via follow_up_list: all 4 fixes remain 'outstanding' 12 days later, including the ranked real fix and the zero-code immediate mitigation. No Slack activity this cycle; incident.io untouched since 04 Jul.",
-    "key_events": ["follow_up_list re-checked 16 Jul: all 4 follow-ups still status=outstanding with no movement", "Zero new Slack messages", "incident.io status/updated_at unchanged since 04 Jul"],
+    "key_events": [
+     "follow_up_list re-checked 16 Jul: all 4 follow-ups still status=outstanding with no movement",
+     "Zero new Slack messages",
+     "incident.io status/updated_at unchanged since 04 Jul"
+    ],
     "partner": null,
-    "proposals": ["probe toolbox data-plane (real fix) - outstanding", "raise DAYTONA_EXEC_MAX_ATTEMPTS (band-aid) - outstanding", "user-facing transient-error copy - outstanding", "reduce cold-resume churn - outstanding"],
-    "open_breaches": ["A4: 3rd occurrence of this recurring failure class - all 4 ranked follow-ups confirmed still outstanding 12 days after RCA, zero assignee movement", "D14/D15: incident.io stuck 'Investigating' since 04 Jul (12 days), bot resolve-nudge unanswered, zero new activity of any kind"],
+    "proposals": [
+     "probe toolbox data-plane (real fix) - outstanding",
+     "raise DAYTONA_EXEC_MAX_ATTEMPTS (band-aid) - outstanding",
+     "user-facing transient-error copy - outstanding",
+     "reduce cold-resume churn - outstanding"
+    ],
+    "open_breaches": [
+     "A4: 3rd occurrence of this recurring failure class - all 4 ranked follow-ups confirmed still outstanding 12 days after RCA, zero assignee movement",
+     "D14/D15: incident.io stuck 'Investigating' since 04 Jul (12 days), bot resolve-nudge unanswered, zero new activity of any kind"
+    ],
     "why": "This is the textbook long-runner-with-no-action-plan case the age-based re-check exists for - a confirmed root cause and a ranked, cheap fix list have sat completely untouched for 12 days on a recurring failure class (3rd occurrence).",
     "suggested_action": "Escalate to Jeremy/AI Team lead directly (a bot nudge alone hasn't worked) to get at minimum the immediate env-only mitigation actioned this week, and assign an owner+date for the real fix before this recurs a 4th time."
    },
@@ -586,14 +764,31 @@
    "synthesis": {
     "summary": "Cloudflare-origin security check blocked legitimate shortlink/unsubscribe traffic on 2 Jul; mitigated within ~2h, root-cause fix merged same evening. Partner (Estelarbet/PLIN) has been waiting 13+ days for a promised RCA report, through what is now a confirmed 3rd broken promise: the 15 Jul promised date fully passed with only a clarifying question sent (13:17 UTC) and zero further activity since - the report itself still has not been delivered.",
     "key_events": [
-     "02 Jul fixes merged same day", "06 Jul status moved Investigating->Fixing 4 days late", "10 Jul status -> Monitoring (unchanged since)",
+     "02 Jul fixes merged same day",
+     "06 Jul status moved Investigating->Fixing 4 days late",
+     "10 Jul status -> Monitoring (unchanged since)",
      "13-14 Jul two broken 'update tomorrow' promises, next promised 15 Jul",
      "15 Jul 13:17 UTC Giancarlo sends partner a clarifying question (re-running impact analysis), not the promised report",
      "16 Jul re-check: 0 new Slack messages, 0 new Intercom parts - the 15 Jul promised RCA date has now fully lapsed with nothing delivered, a confirmed 3rd broken promise"
     ],
-    "partner": {"first_reported": "2026-07-02T13:29:38Z", "last_partner_msg_at": "2026-07-14T17:21:50Z", "answered": false, "promises": ["RCA/report promised repeatedly (13, 14, 15 Jul), still not delivered - 15 Jul's promised date has now fully passed unmet"]},
-    "proposals": ["CF-origin carve-out - merged 02 Jul", "file-serving revert - merged 02 Jul", "deliver full partner report - still pending"],
-    "open_breaches": ["C10: partner RCA report 13+ days overdue, now a confirmed 3rd broken promise - 15 Jul's promised date passed with only a clarifying question sent", "D15: incident.io status timestamps misrepresent when fix landed", "A4: same CF/unsub-blocking pattern recurring across 3 incidents (also see INC-13738)"],
+    "partner": {
+     "first_reported": "2026-07-02T13:29:38Z",
+     "last_partner_msg_at": "2026-07-14T17:21:50Z",
+     "answered": false,
+     "promises": [
+      "RCA/report promised repeatedly (13, 14, 15 Jul), still not delivered - 15 Jul's promised date has now fully passed unmet"
+     ]
+    },
+    "proposals": [
+     "CF-origin carve-out - merged 02 Jul",
+     "file-serving revert - merged 02 Jul",
+     "deliver full partner report - still pending"
+    ],
+    "open_breaches": [
+     "C10: partner RCA report 13+ days overdue, now a confirmed 3rd broken promise - 15 Jul's promised date passed with only a clarifying question sent",
+     "D15: incident.io status timestamps misrepresent when fix landed",
+     "A4: same CF/unsub-blocking pattern recurring across 3 incidents (also see INC-13738)"
+    ],
     "why": "The 15 Jul promised RCA report date has now fully lapsed with nothing delivered - a confirmed 3rd broken promise to a partner already waiting 13+ days, a serious trust issue as previously flagged.",
     "suggested_action": "Escalate to leadership today: send the overdue RCA report to Estelarbet/PLIN immediately or have a manager personally set and honor one final date - a 3rd broken promise is now confirmed, not hypothetical."
    },
@@ -610,10 +805,25 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "Betpipo partner reported repeated logouts from 26 Jun; root cause confirmed as a shared UserTokens table collision. All 4 fix PRs merged and a custom release deployed to Betpipo/Betoffice at 14:51 CEST 15 Jul. Matteo informed the partner via Intercom at 14:33 UTC with root cause and fix explanation. Since then: no new Slack or Intercom activity - over 12 hours of quiet with no further logout reports, consistent with the planned ~2-day observation window before closing.",
-    "key_events": ["14:51 CEST 15 Jul custom release deployed to Betpipo/Betoffice", "14:33 UTC 15 Jul Matteo explains root cause/fix to partner via Intercom", "No new activity since"],
-    "partner": {"first_reported": "2026-06-26T09:08:16Z", "last_partner_msg_at": "2026-07-10T12:52:34Z", "answered": true, "promises": ["multiple 'stabilized' claims (01,03,06 Jul) all contradicted by recurrence"]},
-    "proposals": ["scope token invalidation to IsAdminToken (4 PRs) - all merged and deployed"],
-    "open_breaches": ["D15: incident.io status is 'Waiting on Partner' since the fix went out - reasonable, ~12h into the planned 2-day silence window, a good sign but not yet confirmed stable"],
+    "key_events": [
+     "14:51 CEST 15 Jul custom release deployed to Betpipo/Betoffice",
+     "14:33 UTC 15 Jul Matteo explains root cause/fix to partner via Intercom",
+     "No new activity since"
+    ],
+    "partner": {
+     "first_reported": "2026-06-26T09:08:16Z",
+     "last_partner_msg_at": "2026-07-10T12:52:34Z",
+     "answered": true,
+     "promises": [
+      "multiple 'stabilized' claims (01,03,06 Jul) all contradicted by recurrence"
+     ]
+    },
+    "proposals": [
+     "scope token invalidation to IsAdminToken (4 PRs) - all merged and deployed"
+    ],
+    "open_breaches": [
+     "D15: incident.io status is 'Waiting on Partner' since the fix went out - reasonable, ~12h into the planned 2-day silence window, a good sign but not yet confirmed stable"
+    ],
     "why": "No news is good news - quiet since the fix and partner-facing explanation, but only about half a day into the ~2-day window, so not confirmed stable yet.",
     "suggested_action": "No action needed beyond continuing to watch for partner reports over the remaining ~1.5 days before closing; the previously-flagged 'reply to partner' action is already done."
    },
@@ -635,9 +845,25 @@
      "15 Jul 12:46 CEST auto-created incident merged into this one by Matteo, no narrative attached",
      "No partner re-chase, no account-management escalation, no incident.io update posted alongside the merge"
     ],
-    "partner": {"first_reported": "2026-06-27T08:36:15+02:00", "last_partner_msg_at": "2026-07-09T20:18:48Z", "answered": true, "promises": ["'we'll check' (01 Jul) - no ETA ever given"]},
-    "proposals": ["notify partner + supply failing examples - done", "no FT-side workaround proposed", "zero incident.io follow-ups exist"],
-    "open_breaches": ["C9: 6+ day silence after partner admitted uncertainty, now compounded by a fresh live recurrence with still no re-chase", "B5: no formal escalation to account/partner management despite 18+ days duration and a brand-new active recurrence today", "C10: underlying alert auto-resolved/auto-merged with no human verification", "A4: 4th partner-reliability incident in ~5 weeks, zero follow-ups tracked, silently absorbed via auto-merge"],
+    "partner": {
+     "first_reported": "2026-06-27T08:36:15+02:00",
+     "last_partner_msg_at": "2026-07-09T20:18:48Z",
+     "answered": true,
+     "promises": [
+      "'we'll check' (01 Jul) - no ETA ever given"
+     ]
+    },
+    "proposals": [
+     "notify partner + supply failing examples - done",
+     "no FT-side workaround proposed",
+     "zero incident.io follow-ups exist"
+    ],
+    "open_breaches": [
+     "C9: 6+ day silence after partner admitted uncertainty, now compounded by a fresh live recurrence with still no re-chase",
+     "B5: no formal escalation to account/partner management despite 18+ days duration and a brand-new active recurrence today",
+     "C10: underlying alert auto-resolved/auto-merged with no human verification",
+     "A4: 4th partner-reliability incident in ~5 weeks, zero follow-ups tracked, silently absorbed via auto-merge"
+    ],
     "why": "This crossed from aging silence into an active, currently-firing recurrence: the exact same alert fired again today with a real backlog, got auto-merged with zero human commentary, and nobody re-chased the partner or escalated despite them admitting a week ago they have no fix and no ETA - concrete, present-tense evidence of continued customer harm handled entirely by automation.",
     "suggested_action": "Escalate now to account/partner management - the partner has been stuck 18+ days with an admitted lack of a fix, and the problem just recurred live today. Get a human to comment on the merge, re-chase the partner directly, and consider a formal reliability/account escalation."
    },
@@ -673,10 +899,18 @@
    "classification": "🔴",
    "synthesis": {
     "summary": "Recurring H2Bet nightly ClickHouse-writer queue pileup, consolidated into this 'DO NOT CLOSE' bucket since 26 Jun. A separate log-volume config bug was fixed, but the producer/consumer payload type-mismatch itself is still unfixed. The promised 'close Monday 13 Jul if stable' checkpoint has now passed by 3 days with no update logged, and there was no new Slack activity this cycle.",
-    "key_events": ["No new Slack messages", "incident.io updated_at ticked to 14 Jul 13:29 but visible status-update text unchanged, still dated 09 Jul"],
+    "key_events": [
+     "No new Slack messages",
+     "incident.io updated_at ticked to 14 Jul 13:29 but visible status-update text unchanged, still dated 09 Jul"
+    ],
     "partner": null,
-    "proposals": ["Schema/type-mismatch fix - still not implemented, only the reload-loop/log-volume side-fix has landed"],
-    "open_breaches": ["A4: root-cause payload type-mismatch bug identified 26 Jun, still unfixed ~20 days later, with 2 more recurrences merged in as late as 12 Jul - a recurring issue with no resolution plan", "D15: incident.io stale - no substantive update since 09 Jul, the promised 13 Jul close-if-stable checkpoint has now passed by 3 days unaddressed"],
+    "proposals": [
+     "Schema/type-mismatch fix - still not implemented, only the reload-loop/log-volume side-fix has landed"
+    ],
+    "open_breaches": [
+     "A4: root-cause payload type-mismatch bug identified 26 Jun, still unfixed ~20 days later, with 2 more recurrences merged in as late as 12 Jul - a recurring issue with no resolution plan",
+     "D15: incident.io stale - no substantive update since 09 Jul, the promised 13 Jul close-if-stable checkpoint has now passed by 3 days unaddressed"
+    ],
     "why": "This matches the 'recurring issue heading for silent close' pattern the guidelines call out directly - a P4 bucket incident can persist indefinitely under 'DO NOT CLOSE', and the actual schema fix still has no owner or date attached.",
     "suggested_action": "Simon Brown to either commit to a concrete date for the producer/consumer schema fix (not just further monitoring) or formally acknowledge the missed 13 Jul checkpoint with a revised one."
    },
@@ -693,10 +927,24 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "12play/we88 (Momentum) players received rewards 45-50min late due to RDS overload, a known daily 4pm choke pattern that finally got a real fix (4 PRs, 2 DB upgrades over 3 weeks). Daniel Lindengren's 15 Jul handover to Sam Lundborg (RabbitMQ-upgrade coordination/cutover) was properly executed in Slack, but incident.io still lists Daniel (on leave until 10 Aug) as Incident Lead and status is unchanged at 'Fixing' since 10 Jul. No new activity this cycle beyond what was already captured.",
-    "key_events": ["No new messages this cycle; incident.io roles/status unchanged"],
-    "partner": {"first_reported": "2026-06-24T16:00:00+02:00", "last_partner_msg_at": null, "answered": null, "promises": ["update 12play via Intercom on fix progress - discussed internally, completion not confirmed"]},
-    "proposals": ["RDS/cluster upgrade maintenance window scheduled for next Wednesday (~1am FT time) with the partner", "RabbitMQ 4.x cutover coordination now owned by Sam Lundborg"],
-    "open_breaches": ["D15: incident.io status stuck 'Fixing' since 10 Jul and Incident Lead field still shows Daniel Lindengren (on leave until 10 Aug) - the real handover happened in Slack but hasn't been reflected in the record"],
+    "key_events": [
+     "No new messages this cycle; incident.io roles/status unchanged"
+    ],
+    "partner": {
+     "first_reported": "2026-06-24T16:00:00+02:00",
+     "last_partner_msg_at": null,
+     "answered": null,
+     "promises": [
+      "update 12play via Intercom on fix progress - discussed internally, completion not confirmed"
+     ]
+    },
+    "proposals": [
+     "RDS/cluster upgrade maintenance window scheduled for next Wednesday (~1am FT time) with the partner",
+     "RabbitMQ 4.x cutover coordination now owned by Sam Lundborg"
+    ],
+    "open_breaches": [
+     "D15: incident.io status stuck 'Fixing' since 10 Jul and Incident Lead field still shows Daniel Lindengren (on leave until 10 Aug) - the real handover happened in Slack but hasn't been reflected in the record"
+    ],
     "why": "The substance is well in hand (fix landed, upgrade window scheduled with the partner) - purely a record-hygiene gap, but leaving someone on a month's leave listed as Incident Lead on an active P3 is a real handover risk.",
     "suggested_action": "Sam Lundborg to formally reassign Incident Lead to himself, referencing the 15 Jul Slack handover, ahead of the scheduled maintenance window next Wednesday."
    },
@@ -713,10 +961,26 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "GiG (Power Play's upstream KYC) event-ordering bug leaves stale block tags, blocking new-player journeys. Partner (Anna Koller) agreed to a weekly manual re-sync as interim mitigation, confirmed GiG never shipped a fix on their end. No new activity since last check. follow_up_list confirms zero follow-ups exist, so the update_epoch fix remains untracked despite the partner actively waiting on it.",
-    "key_events": ["follow_up_list(INC-10045) returns 0 follow-ups - confirms nothing has been created for update_epoch"],
-    "partner": {"first_reported": "2026-06-16T12:16:45Z", "last_partner_msg_at": "2026-07-15T14:38:10Z", "answered": true, "promises": ["notify once re-syncs complete - kept", "evaluate update_epoch reordering fix - in progress, no ticket yet"]},
-    "proposals": ["historical re-sync - done multiple rounds", "GiG source-side tag fix - partial, ONT/119 still pending", "update_epoch as ordering key - proposed twice, zero incident.io follow-ups tracking it"],
-    "open_breaches": ["C10: update_epoch fix recommended twice, still zero tracked incident.io follow-up despite partner actively engaged and waiting on it - confirmed via follow_up_list"],
+    "key_events": [
+     "follow_up_list(INC-10045) returns 0 follow-ups - confirms nothing has been created for update_epoch"
+    ],
+    "partner": {
+     "first_reported": "2026-06-16T12:16:45Z",
+     "last_partner_msg_at": "2026-07-15T14:38:10Z",
+     "answered": true,
+     "promises": [
+      "notify once re-syncs complete - kept",
+      "evaluate update_epoch reordering fix - in progress, no ticket yet"
+     ]
+    },
+    "proposals": [
+     "historical re-sync - done multiple rounds",
+     "GiG source-side tag fix - partial, ONT/119 still pending",
+     "update_epoch as ordering key - proposed twice, zero incident.io follow-ups tracking it"
+    ],
+    "open_breaches": [
+     "C10: update_epoch fix recommended twice, still zero tracked incident.io follow-up despite partner actively engaged and waiting on it - confirmed via follow_up_list"
+    ],
     "why": "Partner engagement remains good and stable, but the concrete long-term fix commitment still has no tracked owner or due date - same gap as last run, now directly confirmed via follow_up_list.",
     "suggested_action": "Create a tracked incident.io follow-up for the update_epoch ordering-key fix with an owner and due date - still outstanding."
    },
@@ -733,10 +997,18 @@
    "classification": "🟡",
    "synthesis": {
     "summary": "Fleet-wide RDS Performance Schema memory leak, fixed via PR #416, rolled out fleet-wide by 9 Jul. On 14 Jul the lead closed remaining gaps: the capping follow-up is completed, and a new RAM/swap-alarm follow-up was created and assigned. follow_up_list confirms only the activity-manager-go resilience follow-up remains outstanding and still unassigned.",
-    "key_events": ["follow_up_list(INC-9820) confirms: capping follow-up completed; RAM/swap alarm follow-up outstanding, assigned to Simon Brown/SRE; activity-manager-go resilience follow-up outstanding, unassigned"],
+    "key_events": [
+     "follow_up_list(INC-9820) confirms: capping follow-up completed; RAM/swap alarm follow-up outstanding, assigned to Simon Brown/SRE; activity-manager-go resilience follow-up outstanding, unassigned"
+    ],
     "partner": null,
-    "proposals": ["Completed: cap performance_schema memory (PR #416)", "In progress: RDS/Aurora memory & swap alarm thresholds (assigned)", "Outstanding, unassigned: bounded retry/backoff for activity-manager-go on transient MySQL OOM errors"],
-    "open_breaches": ["A4: one follow-up (activity-manager-go resilience) remains outstanding and unassigned as closure nears"],
+    "proposals": [
+     "Completed: cap performance_schema memory (PR #416)",
+     "In progress: RDS/Aurora memory & swap alarm thresholds (assigned)",
+     "Outstanding, unassigned: bounded retry/backoff for activity-manager-go on transient MySQL OOM errors"
+    ],
+    "open_breaches": [
+     "A4: one follow-up (activity-manager-go resilience) remains outstanding and unassigned as closure nears"
+    ],
     "why": "Steady, no regressions; only the resilience-hardening follow-up still lacks an owner as the incident heads toward closure.",
     "suggested_action": "Assign an owner to the activity-manager-go resilience follow-up before this incident is closed out."
    },
@@ -754,13 +1026,24 @@
    "synthesis": {
     "summary": "H2Bet duplicate bonus grants confirmed root cause quickly, but 50+ days later still ~300 duplicate grants/week with no fix deployed. BetConstruct account-manager gap means zero external traction since 5 Jun. Rewards team's own Urgent ticket (REW-176) remains blocked by capacity until mid-Aug. Re-checked: 0 new Slack messages, 0 new Intercom parts (conversation still closed since 06 Jul), incident.io metadata completely unchanged - situation fully static, financial leakage continuing unabated.",
     "key_events": [
-     "26 May incident opened, root cause confirmed same day", "29 May H2Bet rejects proposed 503-as-success workaround", "18 Jun root-cause refresh confirms no technical mitigation deployed, PR #122 closed unmerged",
+     "26 May incident opened, root cause confirmed same day",
+     "29 May H2Bet rejects proposed 503-as-success workaround",
+     "18 Jun root-cause refresh confirms no technical mitigation deployed, PR #122 closed unmerged",
      "since 18 Jun no further incident.io updates",
      "15/16 Jul re-checks: 0 new Slack messages, 0 new Intercom parts, Intercom conversation still shows closed while incident.io stays open P1 - no movement whatsoever"
     ],
     "partner": null,
-    "proposals": ["H2Bet-side workaround (treat 503 as success) - rejected by partner", "BetConstruct-side idempotency fix - no external traction since 5 Jun", "REW-176 (rewards team Urgent ticket) - blocked by capacity until mid-Aug"],
-    "open_breaches": ["A2/A4: no decisive fix after 50+ days, Urgent ticket parked a month+", "A3: minimizing language contradicts confirmed weekly leakage", "B5: BetConstruct escalation zero traction", "C10/D15: Intercom closed (since 06 Jul) implying resolution while incident.io still open P1"],
+    "proposals": [
+     "H2Bet-side workaround (treat 503 as success) - rejected by partner",
+     "BetConstruct-side idempotency fix - no external traction since 5 Jun",
+     "REW-176 (rewards team Urgent ticket) - blocked by capacity until mid-Aug"
+    ],
+    "open_breaches": [
+     "A2/A4: no decisive fix after 50+ days, Urgent ticket parked a month+",
+     "A3: minimizing language contradicts confirmed weekly leakage",
+     "B5: BetConstruct escalation zero traction",
+     "C10/D15: Intercom closed (since 06 Jul) implying resolution while incident.io still open P1"
+    ],
     "why": "50+ days since root cause confirmed, ~300 duplicate grants/week still occurring, BetConstruct escalation has zero traction since 5 Jun, and the Rewards team's own fix is parked until mid-August with no counter-escalation - the system is not recovering and there is no escalation in sight, despite the Head of SRE being the named incident lead.",
     "suggested_action": "Escalate BetConstruct engagement above the account-manager gap to a commercial/executive channel; reprioritize REW-176 out of the mid-Aug backlog given ongoing confirmed financial leakage; stop treating the closed Intercom thread as resolution while incident.io remains open P1."
    },
@@ -786,12 +1069,34 @@
     ],
     "partner": null,
     "proposals": [],
-    "open_breaches": ["A4: chronic multi-month issue never escalated to a decisive fix or vendor-management track - now 48+ days of pure automated churn since the last substantive question", "D12/D15: the one substantive question raised (29 May) never answered or tracked - lead rotated to at least a 6th person, new alerts keep merging in unattended"],
+    "open_breaches": [
+     "A4: chronic multi-month issue never escalated to a decisive fix or vendor-management track - now 48+ days of pure automated churn since the last substantive question",
+     "D12/D15: the one substantive question raised (29 May) never answered or tracked - lead rotated to at least a 6th person, new alerts keep merging in unattended"
+    ],
     "why": "77+ days since report, zero forward progress since 29 May's one substantive question went unanswered, lead has rotated through at least 6 people, and new alerts keep auto-merging into an effectively unattended incident - a chronic multi-month failure with no vendor-management escalation track and no escalation in sight, regardless of its P3 label.",
     "suggested_action": "Escalate to vendor/commercial management for the external SMS provider outage rather than continuing to passively wait; assign one single accountable owner instead of rotating leads; answer the outstanding 29 May question and decide whether to purge/reroute the 1M+ message backlog."
    },
    "name": "Coinbar SMS Issues with Credit",
    "channel_readable": true
+  },
+  "INC-14284": {
+   "incident_id": "01KXMP3D1FWRGAHZ20ZXY75TCF",
+   "severity": "P3",
+   "first_seen": "2026-07-16T05:23:58Z",
+   "slack_channel_id": null,
+   "intercom_conversation_id": null,
+   "last_slack_ts_read": null,
+   "last_intercom_part_at": null,
+   "classification": "🟢",
+   "synthesis": {
+    "summary": "Daily message spikes causing slow Data Science processing during 7-8:30AM and 7-8:45PM windows, triggering recurring alerts. Very fresh (~40min old at check time), lead already assigned, still Investigating.",
+    "key_events": [],
+    "partner": null,
+    "proposals": [],
+    "open_breaches": []
+   },
+   "name": "Daily Data Science Message Spikes",
+   "why_metadata_only": "P3, lead assigned (Joachim Farrugia), reported <1h ago — too fresh to flag; note the summary itself describes a recurring pattern (A4) worth checking again if it persists across runs"
   }
  }
 }
