@@ -904,7 +904,7 @@
    "intercom_conversation_id": null,
    "last_slack_ts_read": "1784112395.061969",
    "last_intercom_part_at": null,
-   "classification": "🚨",
+   "classification": "🟡",
    "synthesis": {
     "summary": "SMS distributor service has not processed queued messages for all Coinbar brands since before 30 Apr - over 1M messages backlogged. Root cause identified almost immediately, but 2.5+ months later there is zero forward progress. Re-checked: 0 new Slack messages, incident.io metadata fully unchanged - confirmed nothing has moved since 29 May besides automated alert noise.",
     "key_events": [
@@ -917,14 +917,19 @@
     "partner": null,
     "proposals": [],
     "open_breaches": [
-     "A4: chronic multi-month issue never escalated to a decisive fix or vendor-management track - now 48+ days of pure automated churn since the last substantive question",
-     "D12/D15: the one substantive question raised (29 May) never answered or tracked - lead rotated to at least a 6th person, new alerts keep merging in unattended"
+     "Awaiting partner feedback (credit issue) — keep a periodic chase cadence so the wait stays deliberate"
     ],
-    "why": "77+ days since report, zero forward progress since 29 May's one substantive question went unanswered, lead has rotated through at least 6 people, and new alerts keep auto-merging into an effectively unattended incident - a chronic multi-month failure with no vendor-management escalation track and no escalation in sight, regardless of its P3 label.",
-    "suggested_action": "Escalate to vendor/commercial management for the external SMS provider outage rather than continuing to passively wait; assign one single accountable owner instead of rotating leads; answer the outstanding 29 May question and decide whether to purge/reroute the 1M+ message backlog."
+    "why": "Downgraded to 🟡 per management note 16 Jul: the SMS delivery failure is a known credit-related issue with the partner; they are aware and FT is awaiting their feedback — blocked on the partner, not on FT inaction. Watch: the block is long-running (~2.5 months), so periodic chasing keeps it from drifting into a permanent dead letter.",
+    "suggested_action": "Set a chase rhythm with the partner (e.g. weekly) and record each nudge in the incident; if their credit situation won't resolve, decide deliberately whether to purge/park the backlog and close."
    },
    "name": "Coinbar SMS Issues with Credit",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: known issue with the partner relating to credit — the partner is aware and we are awaiting their further feedback. Watch-level, not escalate."
+    }
+   ]
   },
   "INC-14284": {
    "incident_id": "01KXMP3D1FWRGAHZ20ZXY75TCF",
