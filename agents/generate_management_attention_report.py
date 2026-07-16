@@ -93,9 +93,15 @@ def li_list(items):
 def card(ref, entry, now, collapsed):
     syn = entry.get("synthesis") or {}
     name = entry.get("name") or (syn.get("summary") or "")[:90] or ref
+    cut = ""
+    ts = entry.get("last_slack_ts_read")
+    if ts:
+        cut_dt = datetime.fromtimestamp(float(str(ts).split(".")[0]), tz=timezone.utc)
+        cut = (f'<span class="age" title="Slack evidence read up to this time (UTC); '
+               f'later messages are not reflected yet">· evidence to {cut_dt.strftime("%d %b %H:%M")} UTC</span>')
     head = (f'<div class="card-head">{inc_links(ref, entry)}'
             f'<span class="sev">{esc(entry.get("severity", "?"))}</span>'
-            f'<span class="age">open {esc(age(entry.get("first_seen"), now))}</span></div>'
+            f'<span class="age">open {esc(age(entry.get("first_seen"), now))}</span>{cut}</div>'
             f'<div class="card-name">{esc(name)}</div>')
     body = ""
     for n in entry.get("management_notes") or []:
