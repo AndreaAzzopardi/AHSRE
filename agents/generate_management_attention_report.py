@@ -7,6 +7,7 @@ phone-friendly. Run from anywhere: paths resolve relative to the repo root.
 """
 import html
 import json
+import re
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -24,6 +25,35 @@ TIERS = [
     ("🟢", "Under control", "good"),
 ]
 SEV_ORDER = {"P1": 0, "P2": 1, "P3": 2, "P4": 3}
+
+# docs/incident-handling-guidelines.md — code → short meaning (tooltips + legend)
+GUIDELINES = {
+    "A1": "Every incident has an owner and Head-of-SRE-level visibility",
+    "A2": "No incident is “just closed” — every problem gets an action",
+    "A3": "“It's just 10/30 minutes” is never an acceptable rationale",
+    "A4": "Recurring problems are escalated to the owning team for a long-term fix",
+    "B5": "Escalate early — not after hours without recovery",
+    "B6": "Security incidents are P1 until de-escalated",
+    "B7": "Critical-path failures are top priority",
+    "B8": "Night and handover incidents must not be lost — assign, don't just mention",
+    "C9": "Inform partners fast, even before root cause is known",
+    "C10": "Close the loop — recovery comms sent, partner questions answered",
+    "C11": "Comms accurate and crystal clear on impact",
+    "D12": "Informed decisions over passive waiting",
+    "D13": "Runbooks followed, basic checks done",
+    "D14": "Don't close while partner-side work remains open",
+    "D15": "The incident record is self-contained and phone-readable",
+    "E16": "Digest answers: under control? urgent vs smaller? new bugs? how many open?",
+}
+_CODE_RE = re.compile(r"\b([A-E]1?\d)\b")
+
+
+def esc_codes(s):
+    """Escape text, then wrap guideline codes in <abbr> tooltips."""
+    return _CODE_RE.sub(
+        lambda m: (f'<abbr title="{html.escape(GUIDELINES[m.group(1)])}">{m.group(1)}</abbr>'
+                   if m.group(1) in GUIDELINES else m.group(0)),
+        html.escape(str(s)))
 
 
 def esc(s):
@@ -72,11 +102,12 @@ def card(ref, entry, now, collapsed):
         body += (f'<div class="mnote">📝 <strong>Management note ({esc(n.get("at", ""))})</strong> '
                  f'{esc(n.get("note", ""))}</div>')
     if syn.get("why"):
-        body += f'<p class="why">{esc(syn["why"])}</p>'
+        body += f'<p class="why">{esc_codes(syn["why"])}</p>'
     if syn.get("summary") and syn.get("summary") != name:
         body += f'<p class="sum">{esc(syn["summary"])}</p>'
     if syn.get("open_breaches"):
-        body += f'<div class="lbl">Open breaches</div><ul>{li_list(syn["open_breaches"])}</ul>'
+        body += ('<div class="lbl">Open breaches</div><ul>'
+                 + "".join(f"<li>{esc_codes(i)}</li>" for i in syn["open_breaches"]) + "</ul>")
     if syn.get("proposals"):
         body += f'<div class="lbl">Proposed / pending</div><ul>{li_list(syn["proposals"])}</ul>'
     p = syn.get("partner") or {}
@@ -93,7 +124,7 @@ def card(ref, entry, now, collapsed):
         body += (f'<details><summary>Timeline ({len(syn["key_events"])})</summary>'
                  f'<ul>{li_list(syn["key_events"])}</ul></details>')
     if syn.get("suggested_action"):
-        body += f'<p class="action">→ {esc(syn["suggested_action"])}</p>'
+        body += f'<p class="action">→ {esc_codes(syn["suggested_action"])}</p>'
     if collapsed:
         return (f'<details class="card"><summary>{head}</summary>'
                 f'<div class="card-body">{body}</div></details>')
@@ -218,6 +249,7 @@ details.card > summary {{ cursor:pointer; list-style:none }}
 details.card > summary::-webkit-details-marker {{ display:none }}
 details summary {{ cursor:pointer; font-size:.88rem; color:var(--ink2) }}
 .note {{ color:var(--muted); font-size:.88rem; margin-top:6px }}
+abbr {{ text-decoration:underline dotted var(--muted); cursor:help }}
 </style></head><body>
 <h1>🎯 Management Attention</h1>
 <div class="gen">generated {esc(str(gen).replace("T", " ")[:16])} UTC · guidelines: docs/incident-handling-guidelines.md</div>
@@ -226,6 +258,8 @@ details summary {{ cursor:pointer; font-size:.88rem; color:var(--ink2) }}
 {header}
 <div class="tiles">{tiles}</div>
 {lists}
+<details class="mini"><summary><strong>Guideline codes legend</strong> (docs/incident-handling-guidelines.md)</summary>
+<ul>{"".join(f"<li><strong>{k}</strong> — {esc(v)}</li>" for k, v in GUIDELINES.items())}</ul></details>
 </section>
 {pages}
 <script>
