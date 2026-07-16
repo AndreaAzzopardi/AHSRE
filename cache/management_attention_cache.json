@@ -760,7 +760,7 @@
    "intercom_conversation_id": "215561046412156",
    "last_slack_ts_read": "1784032923.809089",
    "last_intercom_part_at": "2026-07-15T13:17:36Z",
-   "classification": "🚨",
+   "classification": "🟡",
    "synthesis": {
     "summary": "Cloudflare-origin security check blocked legitimate shortlink/unsubscribe traffic on 2 Jul; mitigated within ~2h, root-cause fix merged same evening. Partner (Estelarbet/PLIN) has been waiting 13+ days for a promised RCA report, through what is now a confirmed 3rd broken promise: the 15 Jul promised date fully passed with only a clarifying question sent (13:17 UTC) and zero further activity since - the report itself still has not been delivered.",
     "key_events": [
@@ -785,15 +785,21 @@
      "deliver full partner report - still pending"
     ],
     "open_breaches": [
-     "C10: partner RCA report 13+ days overdue, now a confirmed 3rd broken promise - 15 Jul's promised date passed with only a clarifying question sent",
+     "C10: impact cross-check + final report pending — awaiting partner's complainant list (requested 15 Jul)",
      "D15: incident.io status timestamps misrepresent when fix landed",
      "A4: same CF/unsub-blocking pattern recurring across 3 incidents (also see INC-13738)"
     ],
-    "why": "The 15 Jul promised RCA report date has now fully lapsed with nothing delivered - a confirmed 3rd broken promise to a partner already waiting 13+ days, a serious trust issue as previously flagged.",
-    "suggested_action": "Escalate to leadership today: send the overdue RCA report to Estelarbet/PLIN immediately or have a manager personally set and honor one final date - a 3rd broken promise is now confirmed, not hypothetical."
+    "why": "Management note 16 Jul: solved as an incident; remaining work is the impacted-player cross-check with Estelarbet — FT re-ran the impact analysis and asked the partner for complainant IDs on 15 Jul (confirmed in Intercom). Downgraded 🚨→🟡 per note; watch for the partner's reply and final report delivery (C10 loop closure).",
+    "suggested_action": "Chase Estelarbet (Gloria) for the complainant user IDs if no reply by 17 Jul; deliver the cross-checked impact report to close the loop."
    },
    "name": "Shortlinks Redirecting to \"Forbidden\" page",
-   "channel_readable": true
+   "channel_readable": true,
+   "management_notes": [
+    {
+     "at": "2026-07-16",
+     "note": "Andrea: Solved as an incident. Only pending item is with Estelarbet, who need to identify which players were impacted — this is being checked and shared from our side; we need their input on which players complained so we can cross-check. Confirmed via the partner Intercom ticket."
+    }
+   ]
   },
   "INC-11707": {
    "incident_id": "01KWEQA0T7BYYBFX55DWC0T01C",

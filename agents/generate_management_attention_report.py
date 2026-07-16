@@ -68,6 +68,9 @@ def card(ref, entry, now, collapsed):
             f'<span class="age">open {esc(age(entry.get("first_seen"), now))}</span></div>'
             f'<div class="card-name">{esc(name)}</div>')
     body = ""
+    for n in entry.get("management_notes") or []:
+        body += (f'<div class="mnote">📝 <strong>Management note ({esc(n.get("at", ""))})</strong> '
+                 f'{esc(n.get("note", ""))}</div>')
     if syn.get("why"):
         body += f'<p class="why">{esc(syn["why"])}</p>'
     if syn.get("summary") and syn.get("summary") != name:
@@ -205,6 +208,8 @@ section.good .card {{ border-left:4px solid var(--good) }}
 .card-name {{ color:var(--ink2); font-size:.92rem; margin:2px 0 6px }}
 .card-body p, .card-body ul {{ margin:6px 0; font-size:.9rem }}
 .card-body ul {{ padding-left:18px; color:var(--ink2) }}
+.mnote {{ background:color-mix(in srgb, var(--warning) 12%, var(--surface)); border:1px solid var(--warning);
+  border-radius:6px; padding:8px 10px; margin:8px 0; font-size:.9rem }}
 .why {{ font-weight:500 }}
 .sum {{ color:var(--ink2) }}
 .lbl {{ font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-top:8px }}

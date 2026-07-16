@@ -30,6 +30,7 @@ Schema:
       "last_slack_ts_read": "1784059000.000000",
       "last_intercom_part_at": "2026-07-14T13:38:49Z or null",
       "classification": "🟡",
+      "management_notes": [ {"at": "2026-07-16", "note": "Andrea: solved as incident; pending only partner cross-check."} ],
       "synthesis": {
         "summary": "2-4 sentences: what happened and the handling arc so far",
         "key_events": ["14 Jul 16:14 alarm fired", "14 Jul 17:33 lead assigned (Nazareno)"],
@@ -148,6 +149,13 @@ A1 owner+visibility · A2 no "just closed" · A3 no "it's just 10/30 min" · A4 
 - 🟡 **WATCH** — exactly one minor breach, or an emerging pattern worth a look next run.
 - 🟢 **UNDER CONTROL** — no breaches (deep-read incidents), plus all metadata-only incidents without flags. Report as a count; do not list them individually unless P1/P2.
 
+### Management notes — Andrea's layer (inviolable)
+
+`management_notes` on a cache entry are written by Andrea (Head of SRE), not by you. Rules:
+- **NEVER modify, remove, reorder, or rewrite a management note.** Carry the array through every cache merge verbatim. An incident leaving the active list is the only thing that removes its notes (the whole entry goes).
+- **Weigh notes as authoritative context** when classifying: a note explaining the true state (e.g. "solved, pending partner input") overrides what raw channel-staleness suggests. State in `why` that the classification reflects the management note.
+- **If new evidence genuinely contradicts a note** (something that happened AFTER the note's date — e.g. the issue recurs, the partner escalates), do NOT silently re-escalate past it: keep the note, state the discrepancy explicitly in `why` ("management note of {date} says X, but on {date} Y happened"), and classify on the combined picture. Evidence predating the note never overrides it — Andrea wrote it knowing that state.
+
 ### Judgment rules (apply throughout Steps 3–5)
 
 - Every 🚨/🔴 classification needs concrete evidence with times ("no partner comms 1h40m after alarm"), the guideline code, and a suggested action. No flag without a "why".
@@ -165,6 +173,7 @@ Per-incident entries (schema in Step 0), plus these fields:
 - `synthesis.suggested_action`: for 🚨/🔴 — one concrete management step.
 - `meta.last_run_at` = this run's start time (UTC, RFC 3339); `meta.total_open` = this run's active count.
 - Keep each synthesis compact (a few hundred words max) — working memory, not a transcript.
+- `management_notes` pass through UNTOUCHED (see the management-notes rules above).
 - Remove entries for incidents no longer in the active list (they go in `resolved` below).
 
 Additionally write `meta.last_digest` — the run-level data the HTML report renders:
