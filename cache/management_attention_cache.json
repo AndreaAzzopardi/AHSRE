@@ -1,62 +1,26 @@
 {
   "meta": {
-    "last_run_at": "2026-07-17T08:40:00Z",
+    "last_run_at": "2026-07-17T10:39:00Z",
     "total_open": 33,
     "last_digest": {
-      "generated_at": "2026-07-17T08:40:00Z",
-      "under_control": "No -- 1x 🚨 (INC-8064, H2Bet duplicate bonuses, unchanged 50+ days) and 9x 🔴 need attention (incl. INC-12246, a P1 security incident newly surfaced in this run's tracking, stale 11 days); 7 resolved since last digest (6 clean, 1 with a closure-quality flag), 4 new (all handled promptly so far, one still active-and-fresh)",
-      "urgent_vs_smaller": "1 urgent (🚨), 9 need a nudge (🔴), 18 watch-level (🟡), 5 well-handled (🟢)",
-      "total_open_delta": "-2 vs last digest (33 vs 35) -- 4 new, 7 resolved, plus 1 long-standing P1 security incident (INC-12246) newly added to tracking",
+      "generated_at": "2026-07-17T10:39:00Z",
+      "under_control": "No \u2014 2x \ud83d\udea8 (INC-8064 H2Bet duplicate bonuses, unchanged 50+ days, REW-176 parked until mid-Aug; INC-12246 Lottomart security incident, newly escalated \u2014 P1 silent 9 days with full-brand rollout never confirmed) and 8x \ud83d\udd34 need attention; 1 resolved clean (Betpipo), 1 new (fresh RDS CPU alert on royal-reels, too early to assess)",
+      "urgent_vs_smaller": "2 urgent (\ud83d\udea8), 8 need a nudge (\ud83d\udd34), 18 watch-level (\ud83d\udfe1), 5 well-handled (\ud83d\udfe2)",
+      "total_open_delta": "+0 vs last digest (33 vs 33) -- 1 new, 1 resolved",
       "new": [
         {
-          "ref": "INC-14476",
-          "note": "P1 Mystake -- blocked players still open/receiving comms in FT; ~8 min old, instant ack + lead, too fresh to judge"
-        },
-        {
-          "ref": "INC-14474",
-          "note": "P2 OneCasino queue no-consumers; fast ack, escalated cleanly to Giancarlo after an access blocker"
-        },
-        {
-          "ref": "INC-14471",
-          "note": "P2 Rhino email-preview bug; fast SRE pickup, actively troubleshooting with partner"
-        },
-        {
-          "ref": "INC-14475",
-          "note": "P4 failed-actions-api crashing multiple brands; 1 min old, lead already assigned"
+          "ref": "INC-14486",
+          "note": "P2 AWS RDS CPU royal-reels; instant ack+lead, handler flags it as a daily recurrence (A4) to watch"
         }
       ],
       "resolved": [
         {
-          "ref": "INC-14328",
-          "note": "ibetcrm queue -- closed clean; NULL-value fix applied, recurrence root-caused (analytics-config alias bug, PR #329), and the risky temporary PR was reverted (confirmed) before close"
-        },
-        {
-          "ref": "INC-14303",
-          "note": "All-brands WorkOS login outage -- closed clean, comms handled well throughout"
-        },
-        {
-          "ref": "INC-13757",
-          "note": "⚠ Campeon game mappings -- closed, but Incident Lead field still shows Daniel Lindengren (on vacation) despite Samuela having done all the visible work (A1/B8 never fixed before close)"
-        },
-        {
-          "ref": "INC-14418",
-          "note": "QBetCRM bonus-distributor -- closed clean; partner's retry/batching questions were acknowledged ('informed and closing') before close"
-        },
-        {
-          "ref": "INC-14437",
-          "note": "Spinbet Terragon lag -- closed clean, confirmed drained"
-        },
-        {
-          "ref": "INC-14443",
-          "note": "MeridianBet kafka-shovel/RabbitMQ buildup -- closed clean, migration+sendout root cause confirmed, fully drained"
-        },
-        {
-          "ref": "INC-14168",
-          "note": "Rhino unsub-page WAF 403 -- closed clean during this very run; partner (Dario) confirmed the fix works and rated the ticket"
+          "ref": "INC-11707",
+          "note": "Betpipo repeated-logout \u2014 closed clean; root cause (UserTokens collision) fixed 15 Jul, ~24h quiet observation window passed with no recurrence"
         }
       ],
       "not_assessed": [],
-      "green_note": "5x well-handled: INC-14346 (CF Threat Watch, correct security escalation despite paging misfires), INC-14351 (Stanleybet Romania, textbook end-to-end RCA of a reporting false-positive, fix in review, partner confirmed no real impact), INC-14474/INC-14475/INC-14476 (all brand new this run, fast acks and clean mechanics so far)"
+      "green_note": "5x well-handled: INC-13916 (BrazilBet, Andrea+Patrik made an explicit informed close decision after no partner response), INC-14346 (CF Threat Watch, correct security escalation, false positive), INC-14351 (Stanleybet Romania, textbook RCA), INC-14475 (failed-actions-api, brand new, clean mechanics), INC-14476 (Mystake, fast rigorous root-cause + clear partner comms, P1 in ~4h)"
     }
   },
   "incidents": {
@@ -68,13 +32,13 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784238155.208159",
       "last_intercom_part_at": null,
-      "classification": "🟢",
+      "classification": "\ud83d\udfe2",
       "synthesis": {
-        "summary": "CF Threat Watch flagged a brute-force-suspect pattern (401×37 then 40×2xx SUCCESS logins) from a single IP on ft-crm.com. Joachim acknowledged instantly; escalation to the security on-call (Max, Agustín) had paging misses (Max unavailable, Agustín's escalation expired) but both joined the channel manually within ~4 minutes anyway via Stephen Riolo, who took over as lead. Team is jointly investigating via Cloudflare security analytics; current read is a shared-network false positive, not an attack — CF itself classifies it as 'not an exploit'.",
+        "summary": "CF Threat Watch flagged a brute-force-suspect pattern (401\u00d737 then 40\u00d72xx SUCCESS logins) from a single IP on ft-crm.com. Joachim acknowledged instantly; escalation to the security on-call (Max, Agust\u00edn) had paging misses (Max unavailable, Agust\u00edn's escalation expired) but both joined the channel manually within ~4 minutes anyway via Stephen Riolo, who took over as lead. Team is jointly investigating via Cloudflare security analytics; current read is a shared-network false positive, not an attack \u2014 CF itself classifies it as 'not an exploit'.",
         "key_events": [
           "16 Jul 12:10:44 UTC alert fires, Joachim acknowledges within seconds",
-          "12:11:36-12:14:59 UTC escalation to security on-call: Max paged but unavailable, Agustín's escalation expired, Stephen Riolo acknowledges and becomes lead; Max and Agustín both join the channel regardless",
-          "12:21-12:39 UTC joint investigation via Cloudflare dashboard; Agustín: 'doesn't look like an attack and CF is classifying it as not an exploit'; Stephen: 'don't think this is an attack... more some shared network'",
+          "12:11:36-12:14:59 UTC escalation to security on-call: Max paged but unavailable, Agust\u00edn's escalation expired, Stephen Riolo acknowledges and becomes lead; Max and Agust\u00edn both join the channel regardless",
+          "12:21-12:39 UTC joint investigation via Cloudflare dashboard; Agust\u00edn: 'doesn't look like an attack and CF is classifying it as not an exploit'; Stephen: 'don't think this is an attack... more some shared network'",
           "Still actively investigating at check time (~29min old)",
           "16 Jul 23:42 CEST bot nudge asking to mark resolved -- no human response yet (overnight, expected)"
         ],
@@ -83,35 +47,36 @@
           "Verify via Cloudflare security analytics + bot session double-check - in progress"
         ],
         "open_breaches": [],
-        "why": "Fast ack and correct B6 security escalation flow (SOC→SRE→security team), even though the paging itself misfired (Max unavailable, Agustín's escalation expired) — both engaged within ~4 minutes regardless. Too fresh and too well-handled to flag; current evidence points to a false positive."
+        "why": "Fast ack and correct B6 security escalation flow (SOC\u2192SRE\u2192security team), even though the paging itself misfired (Max unavailable, Agust\u00edn's escalation expired) \u2014 both engaged within ~4 minutes regardless. Too fresh and too well-handled to flag; current evidence points to a false positive."
       },
       "name": "CF Threat Watch: brute-force-suspect,login-success-after-fails on ft-crm.com (41.76.35.208)",
       "channel_readable": true
     },
     "INC-14331": {
       "incident_id": "01KXN8M04T4DPZZ6K2FYY4T3HY",
-      "severity": "P2",
+      "severity": "P3",
       "first_seen": "2026-07-16T10:47:36Z",
       "slack_channel_id": "C0BHQ3RHMRU",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784275450.152819",
+      "last_slack_ts_read": "1784284400.261979",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Leonbets activity-manager and activity-manager-lifecycles consumer groups were spamming slow-processing alerts (SOC noise), traced by Matteo to a shared Aurora writer being saturated by full-brand config reloads (leonbets has 598k actions, ~7.9M rows read per pod per reload). Matteo deployed a temporary kubectl-level fix (scoped action loading + longer reload interval), cutting RDS CPU from 94-99% to 40-50% and lag from ~94k/77k to <2k on each group within ~90 minutes of investigation starting. Set to Monitoring at 12:16:59 CEST. As of 17 Jul morning, Matteo confirms PR #490 is performing well (RDS CPU healthy, lag under 5-6k peak over the past 12h) and will move it out of draft for review; Malcolm (given the logic overhaul) is asked to review next week.",
         "key_events": [
           "16 Jul 10:47 UTC alert fires (pair of alerts, 2 related incidents auto-merged)",
           "12:47-13:20 CEST Matteo root-causes: DB saturation from unscoped config reload, not a Kafka/consumer issue; two prior scale-up attempts (partitions, pod count) made it worse",
           "13:20-14:09 CEST Matteo drafts and deploys PR #490 (scoped action loading) as a kubectl-level change, plus bumped lifecycles reload interval to 300s",
-          "14:16:59 CEST incident updated with full root-cause writeup and measured impact; status → Monitoring",
+          "14:16:59 CEST incident updated with full root-cause writeup and measured impact; status \u2192 Monitoring",
           "Explicit note in the update: today's kubectl-level changes revert on the next OneClick deploy unless PR #490 is merged and the env vars persisted",
           "No new human activity this cycle (bot nudge only) -- PR #490 merge / EV persistence still not confirmed done",
-          "17 Jul 10:03-10:04 CEST Matteo: PR #490 performing well over past 12h (no alerts, lag <5-6k), moving out of draft; will ask Malcolm to review 'next week' given it's a logic overhaul"
+          "17 Jul 10:03-10:04 CEST Matteo: PR #490 performing well over past 12h (no alerts, lag <5-6k), moving out of draft; will ask Malcolm to review 'next week' given it's a logic overhaul",
+          "17 Jul 12:33 CEST: Matteo downgrades severity P2\u2192P3 as the situation stays stable; status remains Monitoring"
         ],
         "partner": null,
         "proposals": [
           "Scoped action loading (PR #490) - applied via kubectl today, durable merge+EV persistence still pending",
-          "Lifecycles reload interval 120s→300s - applied, durable EV persistence still pending"
+          "Lifecycles reload interval 120s\u2192300s - applied, durable EV persistence still pending"
         ],
         "open_breaches": [
           "A2: durable fix (PR #490 merge + EV persistence) still not merged -- review now scheduled for 'next week', so today's kubectl-level changes remain exposed to reverting on the next OneClick deploy until then"
@@ -130,13 +95,13 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784270022.123729",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
-        "summary": "Star Casino NL bonus-distributor queue backlog (25,904 messages). Giancarlo accepted and sent partner comms within ~20 minutes, noting the partner's own website was down. Both attached alerts have since resolved (queue drained) as of 11:49 CEST, but incident.io status has not moved off 'Investigating' since 08:29:46 CEST — over 4 hours with no closing update despite the underlying issue clearing.",
+        "summary": "Star Casino NL bonus-distributor queue backlog (25,904 messages). Giancarlo accepted and sent partner comms within ~20 minutes, noting the partner's own website was down. Both attached alerts have since resolved (queue drained) as of 11:49 CEST, but incident.io status has not moved off 'Investigating' since 08:29:46 CEST \u2014 over 4 hours with no closing update despite the underlying issue clearing.",
         "key_events": [
           "16 Jul 08:09 UTC alert fires (25,904-message backlog)",
           "08:29 CEST Giancarlo accepts, notes partner's website is down, sends comms",
-          "09:24 CEST first attached alert resolves; 11:49 CEST second attached alert resolves — queue fully drained",
+          "09:24 CEST first attached alert resolves; 11:49 CEST second attached alert resolves \u2014 queue fully drained",
           "No status update since 08:33:57 CEST despite both alerts clearing",
           "As of this check (02:09 UTC 17 Jul) still 'Investigating' with zero closing update ~18h after both alerts cleared (11:49 CEST 16 Jul) -- only a bot nudge (19:30 CEST) since, unanswered",
           "17 Jul 08:33 CEST Giancarlo Laferla leaves the incident channel -- no closing update posted; incident.io still shows 'Investigating', now ~26.5h since both alerts cleared (11:49 CEST 16 Jul)"
@@ -167,9 +132,9 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784225732.734719",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
-        "summary": "Daily 7-8:30AM/19:00-20:45 Data Science message spikes across multiple brands (SlotV, Crocobet, Fairspin, Corestar, Roobet — 50 alerts in 5 days). Clayton (Data Science) confirmed to Joachim and Andrea (both directly engaged) that this is expected heavy Singularity/Argo batch computation with no partner-facing impact, and that adding pods won't help since the jobs themselves are heavy. No ETA exists for lightening the queries; it's in the backlog.",
+        "summary": "Daily 7-8:30AM/19:00-20:45 Data Science message spikes across multiple brands (SlotV, Crocobet, Fairspin, Corestar, Roobet \u2014 50 alerts in 5 days). Clayton (Data Science) confirmed to Joachim and Andrea (both directly engaged) that this is expected heavy Singularity/Argo batch computation with no partner-facing impact, and that adding pods won't help since the jobs themselves are heavy. No ETA exists for lightening the queries; it's in the backlog.",
         "key_events": [
           "16 Jul 05:23 UTC alert fires (recurring pattern, auto-merged from 2 related incidents)",
           "09:38-09:44 CEST Joachim shares 5-day trend data with Clayton/Jeremy, asks about partner impact and mitigation options",
@@ -184,7 +149,7 @@
         "open_breaches": [
           "A4: confirmed daily recurring pattern (this is at least the 2nd digest cycle it's persisted across) with no committed fix date, just 'in the backlog'"
         ],
-        "why": "Well-diagnosed and confirmed no partner impact, which resolves the immediate concern — but this is a known recurring daily pattern with no ETA on the actual fix, exactly the kind of thing guideline A4 wants escalated to a committed backlog item rather than re-alerting indefinitely.",
+        "why": "Well-diagnosed and confirmed no partner impact, which resolves the immediate concern \u2014 but this is a known recurring daily pattern with no ETA on the actual fix, exactly the kind of thing guideline A4 wants escalated to a committed backlog item rather than re-alerting indefinitely.",
         "suggested_action": "Get a backlog priority/ETA from Data Science for the query-lightening work, or formally accept the daily alert noise and tune the alert thresholds instead."
       },
       "name": "Daily Data Science Message Spikes",
@@ -198,16 +163,16 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784229969.340619",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
-        "summary": "A single stuck message on the campeon callback-consumer queue triggered a P2 alert; James acknowledged instantly but the incident sat in Triage ~1h43m before moving to Investigating, then jumped straight to Waiting on Partner via a colleague's off-platform Teams relay. Lead reassigned twice overnight, now Joachim, who said this morning (08:24 CEST) he'd 'send a push this morning' to the partner — no new channel activity since, so as of this check (14:39 CEST) that push has not visibly happened.",
+        "summary": "A single stuck message on the campeon callback-consumer queue triggered a P2 alert; James acknowledged instantly but the incident sat in Triage ~1h43m before moving to Investigating, then jumped straight to Waiting on Partner via a colleague's off-platform Teams relay. Lead reassigned twice overnight, now Joachim, who said this morning (08:24 CEST) he'd 'send a push this morning' to the partner \u2014 no new channel activity since, so as of this check (14:39 CEST) that push has not visibly happened.",
         "key_events": [
           "15 Jul 16:44 UTC alert fires (1 message stuck), James acknowledges within seconds",
           "15 Jul 18:27 UTC (~1h43m later) incident accepted, Triage -> Investigating",
           "15 Jul 18:28 UTC moved to Waiting on Partner; partner message relayed via Teams by a colleague on James's behalf",
           "16 Jul 05:54-08:10 CEST Incident Lead reassigned James -> Nazareno -> Joachim Farrugia",
-          "16 Jul 08:24 CEST Joachim: 'Waiting on them' (partner); 'Will send a push this morning' — no further channel activity since",
-          "16 Jul 14:57 CEST James Hodgson asks to be added to the channel; 15:00 CEST bot check-in nudge — still no sign the promised partner push happened",
+          "16 Jul 08:24 CEST Joachim: 'Waiting on them' (partner); 'Will send a push this morning' \u2014 no further channel activity since",
+          "16 Jul 14:57 CEST James Hodgson asks to be added to the channel; 15:00 CEST bot check-in nudge \u2014 still no sign the promised partner push happened",
           "16 Jul 19:37 CEST another related incident (INC-14377) auto-merged in, 6 more alerts attached",
           "16 Jul 21:26 CEST yet another related incident (INC-14405) auto-merged in -- same queue stalling repeatedly through the day (A4 recurrence signal)",
           "No human message addressing the still-unconfirmed morning partner push (promised 08:24 CEST 16 Jul, ~18h ago) or capturing the off-platform Teams comms"
@@ -229,7 +194,7 @@
           "B5: original ~1h43m quiet gap between alert and investigation start",
           "C9: the morning partner push Joachim committed to at 08:24 CEST has not appeared in-channel roughly 6 hours later"
         ],
-        "why": "Multiple guideline gaps now compounding: the partner push Joachim promised ~18h ago is still unconfirmed in-channel (C9), the original off-platform partner comms were never captured (D15), and the same queue has now recurred at least twice more through the day with no root-cause fix in sight (A4) -- escalated from 🟡 to 🔴.",
+        "why": "Multiple guideline gaps now compounding: the partner push Joachim promised ~18h ago is still unconfirmed in-channel (C9), the original off-platform partner comms were never captured (D15), and the same queue has now recurred at least twice more through the day with no root-cause fix in sight (A4) -- escalated from \ud83d\udfe1 to \ud83d\udd34.",
         "suggested_action": "Joachim/James to confirm in-channel whether the promised partner push actually went out, and to look at why this queue keeps stalling (2 more merges today) rather than treating each recurrence as a one-off."
       },
       "name": "campeon: no consumers on queue campeon.actions.callbackconsumer (messages: 1, in: 0/s)",
@@ -243,13 +208,13 @@
       "intercom_conversation_id": "215561067080127",
       "last_slack_ts_read": "1784246588.113009",
       "last_intercom_part_at": "2026-07-16T06:39:13Z",
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
-        "summary": "MeridianBet couldn't add sports bonuses; Hikmet found the real root cause (hidden required AuthType field) and fixed it directly. Joachim asked the partner via Intercom at 08:39 UTC to re-check if it's resolved. No reply from the partner and no new Slack/Intercom activity since — the re-check request has now been outstanding for ~6 hours.",
+        "summary": "MeridianBet couldn't add sports bonuses; Hikmet found the real root cause (hidden required AuthType field) and fixed it directly. Joachim asked the partner via Intercom at 08:39 UTC to re-check if it's resolved. No reply from the partner and no new Slack/Intercom activity since \u2014 the re-check request has now been outstanding for ~6 hours.",
         "key_events": [
           "15 Jul 19:34 UTC Hikmet finds and fixes the real root cause (AuthType field required+hidden, no default)",
           "16 Jul 08:36-08:39 CEST Joachim confirms no deployment needed, asks partner (Jamie) via Intercom to re-check",
-          "No reply or further activity since (checked again 16:39 CEST — ~8h outstanding)",
+          "No reply or further activity since (checked again 16:39 CEST \u2014 ~8h outstanding)",
           "As of this check (02:09 UTC 17 Jul) the partner re-check request (asked 08:39 CEST 16 Jul) remains unanswered ~19.5 hours on -- no follow-up nudge was sent despite last digest's suggested action, and incident.io still describes the superseded first fix"
         ],
         "partner": {
@@ -267,7 +232,7 @@
           "D15: incident.io's logged update still describes the superseded first FE fix, not the real root cause",
           "C10: partner re-check request now ~19.5 hours unanswered, and the suggested follow-up nudge from last digest was not sent"
         ],
-        "why": "The verification request has now gone unanswered for nearly a full day and the previously-suggested nudge never went out -- escalated from 🟡 to 🔴.",
+        "why": "The verification request has now gone unanswered for nearly a full day and the previously-suggested nudge never went out -- escalated from \ud83d\udfe1 to \ud83d\udd34.",
         "suggested_action": "Send the partner follow-up nudge now (overdue since yesterday); update incident.io with the real root cause (AuthType field) regardless of partner reply timing."
       },
       "name": "[P2] Intercom Incident : MeridianBet Production",
@@ -281,12 +246,12 @@
       "intercom_conversation_id": "215561065549109",
       "last_slack_ts_read": "1784251292.152799",
       "last_intercom_part_at": "2026-07-16T09:16:41Z",
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
-        "summary": "Campeon lifecycle coin-crediting delayed up to 2h on 11 Jul, root cause auto-claim + serialized credit path. An 8xlarge instance upgrade completed as short-term mitigation (~13:35 CEST 15 Jul); partner was told and confirmed via Intercom, ticket formally closed 16 Jul (rated by partner). No new Slack activity this cycle. incident.io itself has never been updated at all — still shows 'Investigating' with zero status updates despite the mitigation, partner comms, and even the Intercom-side closure having all already happened.",
+        "summary": "Campeon lifecycle coin-crediting delayed up to 2h on 11 Jul, root cause auto-claim + serialized credit path. An 8xlarge instance upgrade completed as short-term mitigation (~13:35 CEST 15 Jul); partner was told and confirmed via Intercom, ticket formally closed 16 Jul (rated by partner). No new Slack activity this cycle. incident.io itself has never been updated at all \u2014 still shows 'Investigating' with zero status updates despite the mitigation, partner comms, and even the Intercom-side closure having all already happened.",
         "key_events": [
           "~13:35 CEST 15 Jul 8xlarge instance upgrade completed",
-          "Intercom ticket closed and CSAT-rated 16 Jul (~09:16 UTC) — partner side is fully wrapped up",
+          "Intercom ticket closed and CSAT-rated 16 Jul (~09:16 UTC) \u2014 partner side is fully wrapped up",
           "incident.io still shows zero status updates and status 'Investigating'",
           "No new activity this cycle -- incident.io still shows zero status updates and 'Investigating' despite the partner side being fully closed and CSAT-rated since 16 Jul"
         ],
@@ -305,11 +270,11 @@
           "Add audit trail for Rewards bonus-config edits - raised, not tracked"
         ],
         "open_breaches": [
-          "D15: incident.io still shows zero status updates and 'Investigating' even though the partner-facing Intercom ticket is already closed and CSAT-rated — the internal record is now behind the partner-facing one",
+          "D15: incident.io still shows zero status updates and 'Investigating' even though the partner-facing Intercom ticket is already closed and CSAT-rated \u2014 the internal record is now behind the partner-facing one",
           "C11: partner told a generic 'performance bottleneck'; internally-confirmed root cause still not disclosed",
           "D14: permanent fix (credit VC directly vs auto-claim) still undecided while the record trends toward looking closed"
         ],
-        "why": "The partner side is now fully resolved and closed, which makes the still-blank incident.io record more conspicuous, not less — there's a real risk this gets forgotten precisely because the visible (Intercom) side already looks done.",
+        "why": "The partner side is now fully resolved and closed, which makes the still-blank incident.io record more conspicuous, not less \u2014 there's a real risk this gets forgotten precisely because the visible (Intercom) side already looks done.",
         "suggested_action": "Post the overdue incident.io status update now that the partner ticket has closed, and make an explicit decision on the permanent fix (direct VC credit vs auto-claim) rather than leaving it open indefinitely."
       },
       "name": "Campeon: Slow processing on credit service (from lifecycles)",
@@ -321,15 +286,19 @@
       "first_seen": "2026-07-14T11:17:49Z",
       "slack_channel_id": "C0BHAUKTG7N",
       "intercom_conversation_id": "215561065527126",
-      "last_slack_ts_read": "1784164261.940089",
+      "last_slack_ts_read": "1784272624.292079",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe2",
       "synthesis": {
-        "summary": "private — review directly",
-        "key_events": [],
+        "summary": "private \u2014 review directly",
+        "key_events": [
+          "17 Jul 07:15-07:17 UTC: Patrik asks Andrea directly whether there's been any partner update; Andrea confirms no concrete update despite asking again, explains no breach on our side already shared with partner, and both agree to close now and reopen if the partner comes back"
+        ],
         "partner": null,
         "proposals": [],
-        "open_breaches": []
+        "open_breaches": [],
+        "why": "Well-handled: Head of SRE and CTO made an explicit, informed close-now/reopen-if-needed decision (D12) after confirming no breach on our side and no partner response \u2014 textbook handling, not a breach. Still shows active in incident.io pending the close action being executed.",
+        "suggested_action": null
       },
       "name": "[P1] Intercom Incident : BrazilBet Production",
       "private": true
@@ -342,7 +311,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784277152.938549",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Fusion API 401 errors blocking on-site notifications/Rich Inbox for Spinbet Terragon -- 2nd occurrence of this alert family in a week (see INC-12617). Following Andrea's direction yesterday, Matteo fully root-caused it this morning: the partner's frontends send brand slug 'spinbetterragon' (no hyphen) which matches neither of FT's accepted values ('spinbet-terragon' or the 'vegastars' alias), so 100% of Pusher auth requests 401 -- traffic jumped ~20x on 8 Jul, likely an operator frontend release. Matteo then sent a fully corrected, technically accurate partner message to #ftcrm-mtm at 10:29 CEST explaining the mismatch and asking the partner to confirm the definitive brand slug before FT changes its config.",
         "key_events": [
@@ -370,7 +339,7 @@
         "open_breaches": [
           "A4: 2nd Fusion API 401 incident in a week (also INC-12617), still not formally escalated as a pattern to the owning team"
         ],
-        "why": "Andrea's direction from yesterday (investigate further, correct partner comms) has now been fully actioned: root cause identified precisely (brand slug mismatch) and accurate corrected comms sent to the partner this morning -- downgraded 🔴→🟡. Only the cross-incident pattern escalation (A4, also affecting INC-12617) remains open.",
+        "why": "Andrea's direction from yesterday (investigate further, correct partner comms) has now been fully actioned: root cause identified precisely (brand slug mismatch) and accurate corrected comms sent to the partner this morning -- downgraded \ud83d\udd34\u2192\ud83d\udfe1. Only the cross-incident pattern escalation (A4, also affecting INC-12617) remains open.",
         "suggested_action": "Once the partner confirms the definitive brand slug, apply the config fix (persist via OneClick EV, not just a manual edit); separately escalate the recurring Fusion API 401 pattern (2nd time in a week) to the owning team, and close INC-12617 as part of the same pattern."
       },
       "name": "[FIRING:1] Fusion API errors Alerting (spinbet-terragon: 401 @ /external/pusher/:brand true)",
@@ -384,9 +353,9 @@
       "intercom_conversation_id": "215561057839845",
       "last_slack_ts_read": "1784225016.569359",
       "last_intercom_part_at": "2026-07-16T14:29:04Z",
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
-        "summary": "12Play's Chinese comms profile appeared missing from the backoffice — a display bug only, no player-facing impact. Rewards team has now tested the fix and told the partner it will deploy first thing Monday morning. No Incident Lead role has ever been formally assigned in incident.io.",
+        "summary": "12Play's Chinese comms profile appeared missing from the backoffice \u2014 a display bug only, no player-facing impact. Rewards team has now tested the fix and told the partner it will deploy first thing Monday morning. No Incident Lead role has ever been formally assigned in incident.io.",
         "key_events": [
           "16 Jul 13:03 UTC REW-197 moved to In Progress by Linus",
           "16 Jul 14:29 UTC Rewards Dev tells partner: bug fix now tested, deploying first thing Monday morning",
@@ -408,7 +377,7 @@
         "open_breaches": [
           "A1/D15: incident.io still has no formally assigned Incident Lead despite active handling and a partner-facing commitment"
         ],
-        "why": "Concrete progress and a clear partner-facing deploy date now exist, but the incident.io record still has no formally assigned Incident Lead — the A1/D15 ownership gap remains even though the technical work is on track.",
+        "why": "Concrete progress and a clear partner-facing deploy date now exist, but the incident.io record still has no formally assigned Incident Lead \u2014 the A1/D15 ownership gap remains even though the technical work is on track.",
         "suggested_action": "Sam Lundborg to formally take the Incident Lead role, add a one-line summary, and confirm the two PRs' merge status before letting the bot resolve this."
       },
       "name": "Calendars: Orphan (but live) door variations in the database(!)",
@@ -422,7 +391,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784177131.261579",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
         "summary": "IP-whitelisting change silently blocked unsubscribe requests for Betiro, Rivalo, Leonbets since 7 Apr - undetected ~3 months. Fix and the specifically-requested unsub-events monitor (PR #196) both landed 13-15 Jul. No new activity this cycle. Still open: no legal/compliance escalation for the ~3-month opt-out failure, no confirmed retroactive remediation, and 3 newly-flagged brands (Rocketship, Fairspin, Frank Casino) remain unaddressed.",
         "key_events": [
@@ -440,7 +409,7 @@
           "C10: no confirmed retroactive remediation of missed unsubscribes",
           "3 newly-flagged brands remain unaddressed"
         ],
-        "why": "Unchanged since last check — the technical fix and monitor are in, but the compliance-exposure items (legal escalation, retroactive remediation, 3 new brands) still have no owner or movement.",
+        "why": "Unchanged since last check \u2014 the technical fix and monitor are in, but the compliance-exposure items (legal escalation, retroactive remediation, 3 new brands) still have no owner or movement.",
         "suggested_action": "Escalate the opt-out failure to legal/compliance given regulatory exposure; confirm/execute retroactive remediation; open tracking for the 3 newly-flagged brands before treating this as closed."
       },
       "name": "Betiro - No unsubs since April 2026",
@@ -454,7 +423,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784198824.461229",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "frank-casino ping-pong deployment stuck in CrashLoopBackOff. Andrea Azzopardi personally joined the channel today (12:42 CEST) and posted diagnostic logs showing a concrete new lead: the pod is fataling on 'code [403] received from integration API on ping request'. Andrea asked Giancarlo for a summary when he has time, explicitly noting he's aware this isn't a critical service.",
         "key_events": [
@@ -465,7 +434,7 @@
         "open_breaches": [
           "D15: incident.io summary field still blank; the 403 finding is in Slack only, not yet in incident.io"
         ],
-        "why": "Watch-level per management note (ping-pong is non-critical, B7 doesn't apply) — and now has real forward motion: Andrea's own diagnostic work found a concrete error signature (403 on ping) after ~6 days of no diagnostic at all.",
+        "why": "Watch-level per management note (ping-pong is non-critical, B7 doesn't apply) \u2014 and now has real forward motion: Andrea's own diagnostic work found a concrete error signature (403 on ping) after ~6 days of no diagnostic at all.",
         "suggested_action": "Giancarlo to follow up on Andrea's 403-integration-API finding and post a summary to incident.io."
       },
       "name": "frank-casino: deployment ping-pong is stuck on CrashLoopBackOff",
@@ -473,7 +442,7 @@
       "management_notes": [
         {
           "at": "2026-07-16",
-          "note": "Andrea: the deployment ping-pong service is not critical — a crash-loop here is not a critical-path failure (B7 does not apply). Watch-level, not escalate."
+          "note": "Andrea: the deployment ping-pong service is not critical \u2014 a crash-loop here is not a critical-path failure (B7 does not apply). Watch-level, not escalate."
         }
       ]
     },
@@ -485,7 +454,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784122498.692729",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Campeon Nexto users couldn't log in due to a v2/v3 URL-version mismatch. Fix held since 08 Jul; incident.io has sat in 'Fixing' P3 status for 8+ days with no substantive activity this cycle either.",
         "key_events": [
@@ -510,9 +479,9 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784167320",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
-        "summary": "Fusion API 401 errors; root cause ruled out as FT-side, partner informed via Teams DM 07 Jul and never re-chased since. No new Slack activity and no incident.io change at all this cycle — now roughly 9.5 days of total silence. The exact 401 pattern has recurred as INC-13895, which today got direct management attention from Andrea (see that incident) — this original occurrence has not.",
+        "summary": "Fusion API 401 errors; root cause ruled out as FT-side, partner informed via Teams DM 07 Jul and never re-chased since. No new Slack activity and no incident.io change at all this cycle \u2014 now roughly 9.5 days of total silence. The exact 401 pattern has recurred as INC-13895, which today got direct management attention from Andrea (see that incident) \u2014 this original occurrence has not.",
         "key_events": [
           "No new Slack messages this cycle"
         ],
@@ -531,7 +500,7 @@
           "C10: alert cleared nearly two weeks ago, never formally closed",
           "A4: recurring Fusion API 401 pattern (2nd occurrence INC-13895, now getting attention) still not escalated as a pattern from this side"
         ],
-        "why": "Andrea's intervention today landed on the recurrence (INC-13895) rather than this original incident — worth making sure the pattern-level escalation Andrea asked for covers both.",
+        "why": "Andrea's intervention today landed on the recurrence (INC-13895) rather than this original incident \u2014 worth making sure the pattern-level escalation Andrea asked for covers both.",
         "suggested_action": "When escalating the Fusion API 401 pattern (per Andrea's direction on INC-13895), close this incident out explicitly as part of the same pattern rather than leaving it separately unresolved."
       },
       "name": "[FIRING:3] Fusion API errors Alerting (true)",
@@ -545,7 +514,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784167320.000000",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
         "summary": "llm-agent tool execution failing on Daytona sandbox cold-resume. Root cause confirmed 04 Jul; 4 ranked follow-ups filed same day, all still 'outstanding' as of last check. No new Slack activity this cycle; incident.io untouched since 04 Jul.",
         "key_events": [
@@ -562,7 +531,7 @@
           "A4: 3rd occurrence of this recurring failure class - all 4 ranked follow-ups still outstanding 12+ days after RCA",
           "D14/D15: incident.io stuck 'Investigating' since 04 Jul, bot resolve-nudge unanswered"
         ],
-        "why": "Unchanged — the textbook long-runner-with-no-action-plan case: a confirmed root cause and cheap fix list sitting untouched on a recurring failure class.",
+        "why": "Unchanged \u2014 the textbook long-runner-with-no-action-plan case: a confirmed root cause and cheap fix list sitting untouched on a recurring failure class.",
         "suggested_action": "Escalate to Jeremy/AI Team lead directly to get at minimum the immediate env-only mitigation actioned this week."
       },
       "name": "failed to resolve container IP after 3 attempts",
@@ -576,7 +545,7 @@
       "intercom_conversation_id": "215561046412156",
       "last_slack_ts_read": "1784032923.809089",
       "last_intercom_part_at": "2026-07-17T08:07:08Z",
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Cloudflare-origin security check blocked legitimate shortlink/unsubscribe traffic on 2 Jul; mitigated within ~2h, root-cause fix merged same evening. Partner (Estelarbet/PLIN) has been waiting on a promised RCA report through several broken promises; Giancarlo re-chased the partner again today (13:32 CEST) for the complainant details needed to close the loop.",
         "key_events": [
@@ -598,7 +567,7 @@
           "deliver full partner report - still pending"
         ],
         "open_breaches": [
-          "C10: impact cross-check + final report pending — awaiting partner's complainant list (requested 15 Jul)",
+          "C10: impact cross-check + final report pending \u2014 awaiting partner's complainant list (requested 15 Jul)",
           "D15: incident.io status timestamps misrepresent when fix landed",
           "A4: same CF/unsub-blocking pattern recurring across 3 incidents (also see INC-13738)"
         ],
@@ -610,44 +579,9 @@
       "management_notes": [
         {
           "at": "2026-07-16",
-          "note": "Andrea: Solved as an incident. Only pending item is with Estelarbet, who need to identify which players were impacted — this is being checked and shared from our side; we need their input on which players complained so we can cross-check. Confirmed via the partner Intercom ticket."
+          "note": "Andrea: Solved as an incident. Only pending item is with Estelarbet, who need to identify which players were impacted \u2014 this is being checked and shared from our side; we need their input on which players complained so we can cross-check. Confirmed via the partner Intercom ticket."
         }
       ]
-    },
-    "INC-11707": {
-      "incident_id": "01KWEQA0T7BYYBFX55DWC0T01C",
-      "severity": "P1",
-      "first_seen": "2026-07-01T11:33:55Z",
-      "slack_channel_id": "C0BF9H3RV32",
-      "intercom_conversation_id": "215561036272049",
-      "last_slack_ts_read": "1784120050.565379",
-      "last_intercom_part_at": "2026-07-15T14:33:21Z",
-      "classification": "🟡",
-      "synthesis": {
-        "summary": "Betpipo partner reported repeated logouts from 26 Jun; root cause confirmed as a shared UserTokens table collision, all 4 fix PRs merged and deployed 15 Jul, partner informed of root cause/fix via Intercom. No new activity this cycle — now roughly 24 hours of quiet with no further logout reports, well into the planned ~2-day observation window before closing.",
-        "key_events": [
-          "No new Slack or Intercom activity this cycle",
-          "No new activity this cycle -- now well into (likely past) the planned ~2-day observation window with continued silence, a good sign"
-        ],
-        "partner": {
-          "first_reported": "2026-06-26T09:08:16Z",
-          "last_partner_msg_at": "2026-07-10T12:52:34Z",
-          "answered": true,
-          "promises": [
-            "multiple 'stabilized' claims (01,03,06 Jul) all contradicted by recurrence - superseded by the 15 Jul fix"
-          ]
-        },
-        "proposals": [
-          "scope token invalidation to IsAdminToken (4 PRs) - all merged and deployed"
-        ],
-        "open_breaches": [
-          "D15: incident.io status is 'Waiting on Partner' since the fix went out — reasonable, now ~24h into the planned 2-day silence window"
-        ],
-        "why": "No news is good news — quiet since the fix and partner-facing explanation, now roughly halfway through the observation window.",
-        "suggested_action": "Continue watching through the remaining ~1 day before closing; no action needed yet."
-      },
-      "name": "[P1] Intercom Incident : Betpipo Production",
-      "channel_readable": true
     },
     "INC-11079": {
       "incident_id": "01KW42DTN3K3KH9HH3QZCQDA31",
@@ -657,11 +591,11 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784112386.441929",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
-        "summary": "Segurobet Consent Manager queue stalled since 27 Jun due to partner's (BetConstruct/Betco) Operator API 500s. Per Andrea's management note, the live track is the partner channel thread (#ftcrm-segurobet), not the quiet incident channel. Andrea personally re-chased BetConstruct again today (12:54 CEST) in that thread, continuing the active chase cadence — no reply yet.",
+        "summary": "Segurobet Consent Manager queue stalled since 27 Jun due to partner's (BetConstruct/Betco) Operator API 500s. Per Andrea's management note, the live track is the partner channel thread (#ftcrm-segurobet), not the quiet incident channel. Andrea personally re-chased BetConstruct again today (12:54 CEST) in that thread, continuing the active chase cadence \u2014 no reply yet.",
         "key_events": [
-          "16 Jul 12:54 CEST Andrea Azzopardi re-chases BetConstruct (Eduardo Nunes) directly in the partner thread: 'Are there any updates from Betconstruct about this issue please?' — no reply yet",
+          "16 Jul 12:54 CEST Andrea Azzopardi re-chases BetConstruct (Eduardo Nunes) directly in the partner thread: 'Are there any updates from Betconstruct about this issue please?' \u2014 no reply yet",
           "No new activity in the main incident Slack channel this cycle",
           "Checked the live partner thread (#ftcrm-segurobet) directly: no reply since Andrea's 12:54 CEST re-chase of BetConstruct"
         ],
@@ -679,17 +613,17 @@
           "zero incident.io follow-ups exist"
         ],
         "open_breaches": [
-          "External blocker: BetConstruct 'at a loss' — no ETA; Andrea is actively maintaining the chase cadence"
+          "External blocker: BetConstruct 'at a loss' \u2014 no ETA; Andrea is actively maintaining the chase cadence"
         ],
         "why": "Per management note: BetConstruct-side root cause, active partner correspondence, blocked on the vendor not FT inaction. Andrea's fresh re-chase today confirms the cadence is being kept up as intended.",
-        "suggested_action": "Consider an FT-side mitigation while BetConstruct investigates: locally suppress Email/SMS sends for players whose opt-out failed to sync (D12) — removes the compliance exposure without waiting on the vendor."
+        "suggested_action": "Consider an FT-side mitigation while BetConstruct investigates: locally suppress Email/SMS sends for players whose opt-out failed to sync (D12) \u2014 removes the compliance exposure without waiting on the vendor."
       },
       "name": "segurobet: no consumers on queue segurobet.consentsmanager (messages: 1, in: 0/s)",
       "channel_readable": true,
       "management_notes": [
         {
           "at": "2026-07-16",
-          "note": "Andrea: this is in reality a BetConstruct platform issue (their Operator API returns 500 on consent updates). The partner is aware and has raised it with BetConstruct themselves; active partner correspondence (examples provided, regular chasing incl. by Andrea) lives in the partner channel thread: https://fasttrack-solutions.slack.com/archives/C08VB1RBJLF/p1782549375502499 — future runs should treat that thread as the live track, not the quiet incident channel."
+          "note": "Andrea: this is in reality a BetConstruct platform issue (their Operator API returns 500 on consent updates). The partner is aware and has raised it with BetConstruct themselves; active partner correspondence (examples provided, regular chasing incl. by Andrea) lives in the partner channel thread: https://fasttrack-solutions.slack.com/archives/C08VB1RBJLF/p1782549375502499 \u2014 future runs should treat that thread as the live track, not the quiet incident channel."
         }
       ]
     },
@@ -701,9 +635,9 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1783439860.127329",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
-        "summary": "private — review directly",
+        "summary": "private \u2014 review directly",
         "key_events": [],
         "partner": null,
         "proposals": [],
@@ -720,7 +654,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784167320.000000",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udd34",
       "synthesis": {
         "summary": "Recurring H2Bet nightly ClickHouse-writer queue pileup, consolidated into this 'DO NOT CLOSE' bucket since 26 Jun. The producer/consumer payload type-mismatch remains unfixed; the promised 'close Monday 13 Jul if stable' checkpoint has now passed by 3+ days with no update. No new Slack activity this cycle.",
         "key_events": [
@@ -735,7 +669,7 @@
           "A4: root-cause payload type-mismatch bug identified 26 Jun, still unfixed 20+ days later",
           "D15: incident.io stale, promised 13 Jul checkpoint passed unaddressed"
         ],
-        "why": "Unchanged — matches the 'recurring issue heading for silent close' pattern; the actual schema fix still has no owner or date.",
+        "why": "Unchanged \u2014 matches the 'recurring issue heading for silent close' pattern; the actual schema fix still has no owner or date.",
         "suggested_action": "Simon Brown to commit to a concrete date for the producer/consumer schema fix or formally acknowledge the missed checkpoint with a revised one."
       },
       "name": "H2Bet incidents - night - DO NOT CLOSE",
@@ -749,7 +683,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784167320.000000",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "12play/we88 (Momentum) players received rewards 45-50min late due to RDS overload; a real fix landed (4 PRs, 2 DB upgrades). Handover from Daniel (on leave) to Sam Lundborg happened in Slack but incident.io still lists Daniel as Incident Lead and status unchanged at 'Fixing' since 10 Jul. No new activity this cycle.",
         "key_events": [
@@ -771,7 +705,7 @@
         "open_breaches": [
           "D15: incident.io status stuck 'Fixing' and Incident Lead field still shows Daniel Lindengren (on leave)"
         ],
-        "why": "Substance well in hand — purely a record-hygiene gap, but a real handover risk while someone on a month's leave is listed as owner.",
+        "why": "Substance well in hand \u2014 purely a record-hygiene gap, but a real handover risk while someone on a month's leave is listed as owner.",
         "suggested_action": "Sam Lundborg to formally reassign Incident Lead to himself ahead of the scheduled maintenance window."
       },
       "name": "12play brands fire late",
@@ -783,16 +717,17 @@
       "first_seen": "2026-06-18T15:59:34Z",
       "slack_channel_id": "C0BBKLGKSP4",
       "intercom_conversation_id": "215561022351755",
-      "last_slack_ts_read": "1784276556.757139",
+      "last_slack_ts_read": "1784282113.536319",
       "last_intercom_part_at": "2026-07-16T15:13:45Z",
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "GiG (Power Play's upstream KYC) event-ordering bug leaves stale block tags. Andrea sent Matteo's drafted handover to Integration/PM (Robert Friberg, Lis, Gui Furst) this morning, framing it as needing a permanent dev fix. Robert pushed back that GiG should fix their own event ordering rather than FT building custom logic, but asked SRE/Integration to scope how big a change the timestamp-based (update_epoch) fix would be as a fallback.",
         "key_events": [
-          "16 Jul 10:03 CEST Matteo posts a fully-drafted partner message and an internal SRE→Integration/PM handover memo (root cause, options, open decisions), asks Andrea for sign-off",
+          "16 Jul 10:03 CEST Matteo posts a fully-drafted partner message and an internal SRE\u2192Integration/PM handover memo (root cause, options, open decisions), asks Andrea for sign-off",
           "16 Jul 14:58-15:13 CEST Matteo tells partner (Anna) a correction pass for accounts affected since 30 Jun is coming, and that he'll regroup internally with Lis/Integration on the long-term fix -- partner satisfied for now ('sounds great, thanks')",
           "17 Jul 07:58 CEST Andrea sends the full SRE->Integration/PM handover to Robert Friberg, Lis, and Gui Furst -- root cause, options, and the ask, as drafted by Matteo yesterday",
-          "17 Jul 10:22 CEST Robert Friberg: prefers pushing GiG to fix event ordering on their end rather than FT building custom logic, but asks Stephen/Curt to scope the size of the update_epoch-based fallback fix and whether FT has done this before elsewhere"
+          "17 Jul 10:22 CEST Robert Friberg: prefers pushing GiG to fix event ordering on their end rather than FT building custom logic, but asks Stephen/Curt to scope the size of the update_epoch-based fallback fix and whether FT has done this before elsewhere",
+          "17 Jul 10:57-11:55 CEST: Stephen and Matteo continue rigorous joint analysis of GiG update_epoch reliability for reordering assign/unassign events; conclusion reached that update_epoch (not entry_timestamp) is reliable for ordering since opposite-polarity events for the same tag are never within the same second, despite ~30% of events losing sub-second precision"
         ],
         "partner": {
           "first_reported": "2026-06-16T12:16:45Z",
@@ -808,7 +743,7 @@
           "update_epoch as ordering key - drafted handover identifies this as a candidate fix for Integration/dev to assess, with an honest feasibility writeup"
         ],
         "open_breaches": [],
-        "why": "The previously-pending handover has now been sent and Integration/PM leadership is actively engaging with it -- real ownership transfer in motion, no longer an SRE-only carried task, though the GiG-vs-FT-fix decision itself is still open.",
+        "why": "Continued thorough, collaborative technical investigation (Matteo/Stephen) into event-ordering reliability \u2014 no breach, still resolving a genuine data-modeling question before deciding on a fix.",
         "suggested_action": "Await Stephen/Curt's scoping answer to Robert, then get a final decision on GiG escalation vs. FT-side timestamp fix."
       },
       "name": "[P2] Intercom Incident : Power Play Production",
@@ -822,7 +757,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784044917.745789",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Fleet-wide RDS Performance Schema memory leak, fixed and rolled out fleet-wide by 9 Jul. Follow-ups mostly closed out; only the activity-manager-go resilience follow-up remains outstanding and unassigned. No new activity this cycle.",
         "key_events": [
@@ -852,9 +787,9 @@
       "intercom_conversation_id": "215560995034900",
       "last_slack_ts_read": "1783587868.087489",
       "last_intercom_part_at": "2026-07-06T08:11:48Z",
-      "classification": "🚨",
+      "classification": "\ud83d\udea8",
       "synthesis": {
-        "summary": "H2Bet duplicate bonus grants confirmed root cause quickly, but 50+ days later still ~300 duplicate grants/week with no fix deployed. Per management note, H2Bet accepted the interim workaround (REW-176), opened 9 Jul, but it remains blocked by Rewards capacity until mid-Aug. No change this cycle — 0 new Slack messages, 0 new Intercom parts, situation fully static, financial leakage continuing unabated.",
+        "summary": "H2Bet duplicate bonus grants confirmed root cause quickly, but 50+ days later still ~300 duplicate grants/week with no fix deployed. Per management note, H2Bet accepted the interim workaround (REW-176), opened 9 Jul, but it remains blocked by Rewards capacity until mid-Aug. No change this cycle \u2014 0 new Slack messages, 0 new Intercom parts, situation fully static, financial leakage continuing unabated.",
         "key_events": [
           "No new Slack or Intercom activity this cycle",
           "No new activity this cycle -- ~300 duplicate grants/week continuing, REW-176 still parked until mid-Aug"
@@ -876,7 +811,7 @@
       "management_notes": [
         {
           "at": "2026-07-16",
-          "note": "Andrea: correction — H2Bet ACCEPTED the interim workaround (discussed in the meeting with them and our Partner Manager, early Jul); that acceptance is why REW-176 was opened on 9 Jul. The 28 May rejection was the earlier 503-as-success proposal only. No sign-off is pending from H2Bet."
+          "note": "Andrea: correction \u2014 H2Bet ACCEPTED the interim workaround (discussed in the meeting with them and our Partner Manager, early Jul); that acceptance is why REW-176 was opened on 9 Jul. The 28 May rejection was the earlier 503-as-success proposal only. No sign-off is pending from H2Bet."
         }
       ]
     },
@@ -888,17 +823,17 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784200073.976159",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "SMS distributor service has not processed queued messages for all Coinbar brands since before 30 Apr - over 1M messages backlogged. Per management note, this is a known credit-related issue with the partner, who is aware; FT is awaiting their feedback. No new activity this cycle.",
         "key_events": [
-          "16 Jul 13:04-13:07 CEST Andrea asks Gustav Tjäder for direction on whether to disable the service given it's 'just extra noise'; Gustav has sent the question to the partner and will report back",
+          "16 Jul 13:04-13:07 CEST Andrea asks Gustav Tj\u00e4der for direction on whether to disable the service given it's 'just extra noise'; Gustav has sent the question to the partner and will report back",
           "No new activity this cycle -- still awaiting Gustav/partner feedback on disable-vs-wait"
         ],
         "partner": null,
         "proposals": [],
         "open_breaches": [
-          "Awaiting partner feedback (credit issue) — keep a periodic chase cadence so the wait stays deliberate"
+          "Awaiting partner feedback (credit issue) \u2014 keep a periodic chase cadence so the wait stays deliberate"
         ],
         "why": "Per management note: known partner credit issue, FT awaiting their feedback. Andrea is now actively pushing toward a decision point (disable vs. keep waiting) rather than letting it sit indefinitely.",
         "suggested_action": "Await Gustav's partner response; if no credit resolution appears, decide explicitly whether to disable/purge and close."
@@ -908,7 +843,7 @@
       "management_notes": [
         {
           "at": "2026-07-16",
-          "note": "Andrea: known issue with the partner relating to credit — the partner is aware and we are awaiting their further feedback. Watch-level, not escalate."
+          "note": "Andrea: known issue with the partner relating to credit \u2014 the partner is aware and we are awaiting their further feedback. Watch-level, not escalate."
         }
       ]
     },
@@ -920,7 +855,7 @@
       "intercom_conversation_id": "215561067169862",
       "last_slack_ts_read": "1784270220.642389",
       "last_intercom_part_at": "2026-07-16T15:02:40Z",
-      "classification": "🟢",
+      "classification": "\ud83d\udfe2",
       "synthesis": {
         "summary": "Stanleybet Romania (partner) reported users showing as 'unsubscribed' in activity reporting despite being subscribed. Giancarlo confirmed within the hour it's a false alarm: automated email-security scanners/link-prefetchers auto-POST the RFC 8058 one-click-unsubscribe link while scanning inbound mail (no human click), which Stanleybet's self-hosted unsubscribe page treats as a real opt-out and forwards to prisma-api, which in turn feeds the reporting pipeline (falsely flagging 74,234 brand-206 users) while leaving real consent untouched (confirmed against the operator, Comtrade, which still shows opted-in). Fix PR #106 (gate the legacy handler so the enriched/authoritative consent path wins) is in review. Partner has independently confirmed on their side that they see no real unsubscribe problem, only the reporting glitch.",
         "key_events": [
@@ -928,8 +863,8 @@
           "16 Jul 12:41 UTC Tara (support) escalates to SRE after internal checks",
           "16 Jul 12:51-13:47 CEST Giancarlo investigates, finds it's a reporting false-positive (consent-direction check bug), still pending final partner confirmation",
           "16 Jul 14:47 CEST Andrea flags a possible pattern link to INC-13738 (Betiro no-unsubs) and a separate informal Slack discussion",
-          "16 Jul 16:33 CEST Incident Lead handed over Joachim → James Hodgson",
-          "16 Jul 15:02 CEST partner (Marius) confirms: 'seeing how we are managing the unsubscribe function ourselves, I don't think it's an issue. The only issue we're seeing is the faulty reporting' — partner side fully satisfied",
+          "16 Jul 16:33 CEST Incident Lead handed over Joachim \u2192 James Hodgson",
+          "16 Jul 15:02 CEST partner (Marius) confirms: 'seeing how we are managing the unsubscribe function ourselves, I don't think it's an issue. The only issue we're seeing is the faulty reporting' \u2014 partner side fully satisfied",
           "16 Jul 23:25 CEST Incident Lead handed over James Hodgson -> Gerard E. Pelayo (no substantive activity since)",
           "17 Jul 08:12-08:16 CEST Giancarlo confirms false alarm; posts a full end-to-end technical write-up (scanner/prefetch auto-POST -> prisma-api hardcodes opt-out -> conversion-service misreads it as email_unsubscribed) with PR #106 already in review, plus data-backfill and upstream-hardening follow-ups noted",
           "17 Jul 08:15 CEST Incident Lead handed to Joachim; 08:37 CEST formal incident.io update posted with the full root-cause summary"
@@ -943,10 +878,10 @@
           ]
         },
         "proposals": [
-          "Fix the consent-event opt-in/opt-out check so it stops miscounting as unsubscribe — root cause identified, fix not yet applied"
+          "Fix the consent-event opt-in/opt-out check so it stops miscounting as unsubscribe \u2014 root cause identified, fix not yet applied"
         ],
         "open_breaches": [],
-        "why": "Textbook handling -- root cause traced precisely end-to-end with quantified impact, a fix already in review, real consent confirmed untouched, and the partner independently agrees there's no real issue. Upgraded 🟡→🟢."
+        "why": "Textbook handling -- root cause traced precisely end-to-end with quantified impact, a fix already in review, real consent confirmed untouched, and the partner independently agrees there's no real issue. Upgraded \ud83d\udfe1\u2192\ud83d\udfe2."
       },
       "name": "[P2] Intercom Incident : Stanleybet Romania Production",
       "channel_readable": true
@@ -959,7 +894,7 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784270015.693449",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "synthesis": {
         "summary": "Wiz security scan flagged a critical Log4Shell (CVE-2021-45046) finding on the kafka-ui container image (staging cluster, sortenabet namespace) -- runtime-validated, CISA KEV-listed, 100% EPSS. Gerard investigated, found contradictory exposure signals (ASG shows no internet exposure, but some instances open to 0.0.0.0/0), and per the runbook's own guidance ('a false escalation costs minutes, a missed P1 costs far more') escalated to security on-call. Paging misfired (Andrea's escalation expired, Giancarlo paged but silent) but Patrik acknowledged and joined directly, reviewed it personally, then handed the lead back to Gerard and downgraded P1->P3 with 'this can wait until tomorrow.'",
         "key_events": [
@@ -967,7 +902,7 @@
           "17 Jul 01:49 CEST Gerard raises P2->P1 and escalates per runbook guidance; Andrea's page expired, Giancarlo paged but didn't ack, Patrik acknowledges and joins",
           "17 Jul 02:20-02:21 CEST Patrik takes the lead briefly, downgrades P1->P3, hands lead back to Gerard: 'this can wait until tomorrow'",
           "Open item from the Wiz report: the affected kafka-ui workload (docker.io/provectuslabs/kafka-ui:0.0.9, EOL, no security context) has no assigned owner",
-          "17 Jul 07:10 CEST Incident Lead handed over Gérard -> Giancarlo Laferla, picking up the deferred remediation as planned",
+          "17 Jul 07:10 CEST Incident Lead handed over G\u00e9rard -> Giancarlo Laferla, picking up the deferred remediation as planned",
           "17 Jul 08:32-08:33 CEST Andrea directly asks Stephen Riolo ('the main person in Security not on vacation') to handle it; Stephen joins the channel, bot prompts for a summary"
         ],
         "partner": null,
@@ -977,7 +912,7 @@
         "open_breaches": [
           "B6: remediation ownership now assigned (Stephen Riolo, per Andrea) but the log4j-core upgrade itself and a formal summary are still not posted"
         ],
-        "why": "Andrea personally closed the ownership gap this morning by assigning Stephen -- ⚠ was unowned workload, now assigned; the CVE fix and incident.io summary are still pending Stephen's follow-through.",
+        "why": "Andrea personally closed the ownership gap this morning by assigning Stephen -- \u26a0 was unowned workload, now assigned; the CVE fix and incident.io summary are still pending Stephen's follow-through.",
         "suggested_action": "Stephen to post an incident.io summary and schedule the log4j-core upgrade (PR pending) now that he owns this."
       },
       "name": "Container using an image vulnerable to CVE-2021-45046",
@@ -991,14 +926,14 @@
       "intercom_conversation_id": null,
       "last_slack_ts_read": "1784273643.157009",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "name": "Shuffle Performance Dashboards Issue",
       "channel_readable": true,
       "synthesis": {
-        "summary": "Shuffle partner (Dylan) reported performance dashboards spinning endlessly when an activity is live / just after it ends. The partner himself flagged it as low urgency ('not a P1 or even p2, but I want it looked into'). Gérard agreed and said it would be investigated during office hours. Four more engineers (James, Joachim, Matteo, Nazareno) joined the channel in a bulk handover a minute later, but no investigation has visibly started since.",
+        "summary": "Shuffle partner (Dylan) reported performance dashboards spinning endlessly when an activity is live / just after it ends. The partner himself flagged it as low urgency ('not a P1 or even p2, but I want it looked into'). G\u00e9rard agreed and said it would be investigated during office hours. Four more engineers (James, Joachim, Matteo, Nazareno) joined the channel in a bulk handover a minute later, but no investigation has visibly started since.",
         "key_events": [
-          "17 Jul 02:21 CEST incident opened, Gérard as reporter+lead",
-          "17 Jul 04:22-04:23 CEST Gérard relays the partner's (Dylan/Shuffle) report and agrees it's low urgency, to be looked into 'during office hours'",
+          "17 Jul 02:21 CEST incident opened, G\u00e9rard as reporter+lead",
+          "17 Jul 04:22-04:23 CEST G\u00e9rard relays the partner's (Dylan/Shuffle) report and agrees it's low urgency, to be looked into 'during office hours'",
           "17 Jul 04:24 CEST James Hodgson, Joachim Farrugia, Matteo Rapisarda, Nazareno Scibilia all join the channel (bulk handover)",
           "No substantive activity since (bot 'add a summary?' nudge only at 04:29 CEST) -- now well into office hours (07:37 CEST) with no visible investigation yet",
           "17 Jul 09:06-09:34 CEST Joachim asks Cloud (Gustav/Soner) whether this is SRE's or another team's to fix; Soner asks who should look into it since it's not a P1 and suggests the partner re-raise via Intercom; Joachim: 'if you think that's the best route forward sure' -- no owner confirmed, no fix started"
@@ -1025,22 +960,26 @@
       "first_seen": "2026-07-17T08:14:46Z",
       "slack_channel_id": "C0BJ3UK7VL4",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784277574.234379",
+      "last_slack_ts_read": "1784280288.715529",
       "last_intercom_part_at": null,
-      "classification": "🟢",
+      "classification": "\ud83d\udfe1",
       "name": "OneCasino: no consumers on queue onecasino.activitymanager.lf-timeinstance (messages: 45, in: 0/s)",
       "channel_readable": true,
       "synthesis": {
-        "summary": "OneCasino activity-manager-lifecycles queue stopped consuming (45 messages). Joachim acknowledged and accepted within ~15 minutes, but found he has no access to OneCasino from his end and escalated to Giancarlo, who acknowledged and joined within a minute.",
+        "summary": "OneCasino no-consumers alert on queue onecasion.activitymanager.lf-timeinstance. Joachim informed the partner promptly, the underlying alert cleared at 11:09 CEST (queue drained), and Giancarlo has since found an application error (AMQP connection closed while evaluating segment 848 for activity 1389 \u2014 'invalid connection') that may point to the deeper root cause, still being chased even though the immediate backlog is gone.",
         "key_events": [
-          "17 Jul 08:14:46 UTC alert fires",
-          "17 Jul 08:14-08:29 CEST Joachim acknowledges, incident accepted (Triage->Investigating)",
-          "17 Jul 08:29-08:39 CEST Joachim: 'Hmm. Checking' then 'Cant access anything from Onecasino' -- escalates to Giancarlo, who acknowledges and joins within a minute"
+          "17 Jul 08:14 UTC alert fires, Giancarlo accepts, Joachim takes lead",
+          "10:53 CEST Joachim informs the partner channel",
+          "11:09 CEST attached alert auto-resolves (queue drained)",
+          "11:24 CEST Giancarlo posts an app error log ('invalid connection' during segment evaluation) \u2014 investigating the underlying cause even though volume cleared"
         ],
         "partner": null,
         "proposals": [],
-        "open_breaches": [],
-        "why": "Fast ack and a reasonable escalation once Joachim hit an access blocker -- too fresh (~25 min old) and well-handled so far to flag."
+        "open_breaches": [
+          "D15/C10: alert cleared but incident still open \u2014 no closing update yet confirming root cause or that recurrence risk is addressed"
+        ],
+        "why": "Fast partner comms and quick clearance, but the queue draining doesn't yet explain the underlying 'invalid connection' segment-evaluation error Giancarlo found afterward \u2014 worth a closing update once that's understood, otherwise it's simply progressing well.",
+        "suggested_action": "Have Giancarlo confirm whether the segment-evaluation error is a one-off or recurring before closing."
       }
     },
     "INC-14471": {
@@ -1051,7 +990,7 @@
       "intercom_conversation_id": "215561069035357",
       "last_slack_ts_read": "1784275439.474369",
       "last_intercom_part_at": "2026-07-17T08:32:10Z",
-      "classification": "🟡",
+      "classification": "\ud83d\udfe1",
       "name": "[P2] Intercom Incident : Rhino Production",
       "channel_readable": true,
       "synthesis": {
@@ -1081,15 +1020,16 @@
       "first_seen": "2026-07-17T08:39:55Z",
       "slack_channel_id": "C0BHYCKD8DU",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": null,
+      "last_slack_ts_read": "1784277623.384719",
       "last_intercom_part_at": null,
-      "classification": "🟢",
+      "classification": "\ud83d\udfe2",
       "name": "failed-actions-api crashing",
       "channel_readable": true,
       "synthesis": {
         "summary": "failed-actions-api crashing across multiple brands (betpipo, padisahbet, play, mb8, h2bet, betfast, betoffice, luckyriches, galabet). Reported by Giancarlo, lead assigned to Joachim immediately.",
         "key_events": [
-          "17 Jul 08:39:55 UTC incident opened, Incident Lead assigned (Joachim Farrugia) immediately"
+          "17 Jul 08:39:55 UTC incident opened, Incident Lead assigned (Joachim Farrugia) immediately",
+          "17 Jul 10:40 CEST: Incident Lead reassigned from Giancarlo (reporter) to Joachim Farrugia"
         ],
         "partner": null,
         "proposals": [],
@@ -1103,19 +1043,32 @@
       "first_seen": "2026-07-03T21:29:19Z",
       "slack_channel_id": "C0BEZMP6T1B",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": null,
+      "last_slack_ts_read": "1784272944.438649",
       "last_intercom_part_at": null,
-      "classification": "🔴",
+      "classification": "\ud83d\udea8",
       "name": "Exploitable Image found in Lottomart Privileged Kubernetes Container",
       "channel_readable": null,
       "private": true,
       "synthesis": {
-        "summary": "private — review directly",
-        "key_events": [],
+        "summary": "Wiz found a privileged, internet-facing Kubernetes container (ambassador) in Lottomart production with exploitable CVEs (vulnerable curl dependency). Root cause identified fast (04-06 Jul) and a fix (PR #20, replace curl with Python) was tested and rolled out to Lottomart by 06 Jul. Patrik explicitly asked that the fix be rolled out to all other brands too ('close those also if there are new ones and we release and update to all'). The last substantive update was 08 Jul ('rolling out the fixed image on this PV') \u2014 since then, 9 days of complete silence in the channel, still shown as P1/Investigating, with no confirmation the rollout ever reached brands beyond Lottomart.",
+        "key_events": [
+          "03 Jul 21:29 UTC incident opened from a Wiz finding, escalated same night, Joachim \u2192 Agust\u00edn as lead",
+          "06 Jul 06:25 UTC formal update: root cause (curl CVEs) confirmed, PR #20 opened, plan to test then roll out Lottomart-first then other brands",
+          "04 Jul: Patrik explicitly asks that once released, similar CVEs on other brands also get closed out as part of the same rollout",
+          "08 Jul 07:17-07:18 CEST: Agust\u00edn says the fixed image is being rolled out on 'this PV' (a stable-platform-version release train) \u2014 last substantive message",
+          "08 Jul 07:48/09:18 CEST: two automated check-ins asking if it can be marked resolved \u2014 no human reply",
+          "17 Jul 09:22 CEST: Andrea Azzopardi joins the channel (passive join only, no content) \u2014 first activity in 9 days"
+        ],
         "partner": null,
-        "proposals": [],
-        "open_breaches": [],
-        "why": "P1 security incident, first appearing in this run's tracking (created 03 Jul, not previously in the digest cache); incident.io's last written update was 06 Jul (fix PR #20 opened, plan to test then roll out) with no further written progress since despite ~11 days elapsed -- flagged 🔴 on metadata alone per the B6/private-content rule; content beyond reference+severity not surfaced here."
+        "proposals": [
+          "Replace curl with Python in Ambassador image (PR #20) \u2014 tested and deployed to Lottomart 08 Jul; rollout to remaining brands never confirmed"
+        ],
+        "open_breaches": [
+          "B6/A2: P1 security incident silent for 9 days with the incident.io record still 'Investigating' \u2014 no evidence the Lottomart-only fix was ever extended to other brands as Patrik asked",
+          "D15: the incident record itself only has 2 status updates (03 Jul, 06 Jul) and doesn't reflect the 08 Jul rollout message or current state at all \u2014 not understandable from the record alone"
+        ],
+        "why": "A genuine (not false-positive) P1 security exposure has gone silent for 9 days with no confirmation the fix was rolled out beyond Lottomart, despite Patrik explicitly asking for full-brand closure \u2014 this is exactly the B6/A2 pattern management wants surfaced, not left to quietly age.",
+        "suggested_action": "Get Agust\u00edn (or current owner \u2014 Andrea just joined the channel today) to confirm rollout status across all brands and post a closing update, or formally re-baseline the incident with current state."
       }
     },
     "INC-14476": {
@@ -1124,27 +1077,59 @@
       "first_seen": "2026-07-17T08:42:38Z",
       "slack_channel_id": "C0BJ44EGZS8",
       "intercom_conversation_id": "215561069966218",
-      "last_slack_ts_read": "1784278123.267889",
+      "last_slack_ts_read": "1784284295.792169",
       "last_intercom_part_at": null,
-      "classification": "🟢",
+      "classification": "\ud83d\udfe2",
       "name": "[P1] Intercom Incident : Mystake Production",
       "channel_readable": true,
       "synthesis": {
-        "summary": "Mystake partner reports players blocked on their (bookmaker) side still show as open/active in FT and continue receiving communications -- e.g. user 57381714 blocked on their side but open in FT. Joachim acknowledged and took the Incident Lead within seconds.",
+        "summary": "Cocobet (Mystake) blocked users appearing to 'unblock' themselves. Joachim ran a thorough data trace (event tables vs canonical snapshots) and confirmed the true root cause: Cocobet's daily reconciliation feed doesn't include users who should remain blocked, so FT's ~04:20 CEST recon job flips them back to unblocked. Sent the partner a clear, specific technical explanation and ask (check their recon feed setup); incident.io moved Investigating \u2192 Waiting on Partner.",
         "key_events": [
-          "17 Jul 08:42:38 UTC alert fires (P1, via Intercom); Joachim acknowledges and becomes Incident Lead within seconds",
-          "17 Jul 08:48:43 UTC Joachim posts the partner's report with a concrete example (user 57381714) to the channel"
+          "17 Jul 08:42 UTC incident opened (Intercom ticket), Joachim takes lead instantly",
+          "10:54-11:51 CEST Joachim traces block/unblock event history at the data level, rules out a CRM-side bug",
+          "12:18-12:19 CEST Joachim sends partner a precise technical writeup identifying the daily recon job (cron 04:20 CEST) as the mechanism and asks them to check their recon feed setup",
+          "12:31 CEST incident update posted, status \u2192 Waiting on Partner"
         ],
         "partner": {
           "first_reported": "2026-07-17T08:42:38Z",
           "last_partner_msg_at": null,
-          "answered": false,
-          "promises": []
+          "answered": true,
+          "promises": [
+            "root-cause explanation and recon-feed check request \u2014 delivered 12:18-12:19 CEST"
+          ]
         },
         "proposals": [],
         "open_breaches": [],
-        "why": "~8 minutes old at check time -- instant ack and lead assignment, too fresh to judge further; worth watching given the compliance angle (blocked players still receiving comms)."
+        "why": "Rigorous, fast root-cause work (P1, ~4h from open to a precise partner-side diagnosis) with clear, specific comms to the partner \u2014 no breaches, well handled.",
+        "suggested_action": null
       }
+    },
+    "INC-14486": {
+      "incident_id": "01KXQT8530YA3YNQT8AGCANEB3",
+      "severity": "P2",
+      "first_seen": "2026-07-17T10:34:12Z",
+      "slack_channel_id": "C0BJ4QT95J8",
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": "1784284530.214329",
+      "last_intercom_part_at": null,
+      "classification": "\ud83d\udfe1",
+      "synthesis": {
+        "summary": "AWS RDS CPU alert (>95% for 20+ min) on royal-reels. Joachim Farrugia acknowledged within seconds, took Incident Lead, and set to Monitoring, noting in-channel that this is a 'daily occurrence around this time'.",
+        "key_events": [
+          "17 Jul 10:34:12 UTC alert fires, Joachim acknowledges within ~13s",
+          "10:35:19 UTC Joachim: 'Daily occurance around this time. Monitoring' (with dashboard screenshot)",
+          "10:35:29 UTC status set to Monitoring"
+        ],
+        "partner": null,
+        "proposals": [],
+        "open_breaches": [
+          "A4: handler's own note flags this as a recurring daily pattern, not yet escalated for a long-term fix \u2014 but only 2 minutes old at check time"
+        ],
+        "why": "Fast, correct response mechanics (instant ack, lead assigned, Monitoring) \u2014 flagged \ud83d\udfe1 only because the handler's own comment surfaces a recurring daily pattern (A4) worth tracking across future runs, not because anything is currently mishandled.",
+        "suggested_action": "No action yet \u2014 watch across the next few digests for whether this royal-reels RDS CPU spike keeps recurring daily without a scaling/query fix."
+      },
+      "name": "[FIRING:1] AWS RDS CPU Above 95% (for more than 20 minutes) royal-reels aws.rds.cpu-royal-reels Alerting (true p2 aws-rds)",
+      "channel_readable": true
     }
   }
 }
