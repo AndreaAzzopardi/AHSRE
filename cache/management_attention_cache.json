@@ -1,34 +1,51 @@
 {
   "meta": {
-    "last_run_at": "2026-07-17T02:09:10Z",
-    "total_open": 32,
+    "last_run_at": "2026-07-17T05:37:14Z",
+    "total_open": 35,
     "last_digest": {
-      "generated_at": "2026-07-17T02:09:10Z",
-      "under_control": "No -- 1x 🚨 (INC-8064, long-running duplicate bonuses, unchanged) and 9x 🔴 need attention; three items escalated overnight from 🟡 to 🔴 purely from unaddressed comms/closure gaps sitting through the quiet hours (INC-14301 Star Casino NL, INC-14177 campeon callback queue, INC-14151 MeridianBet)",
-      "urgent_vs_smaller": "1 urgent (🚨), 9 need a nudge (🔴), 18 watch-level (🟡), 4 well-handled P1/P2 (🟢)",
-      "total_open_delta": "+0 vs last digest (32 vs 32) -- 2 new (INC-14423, INC-14418), 2 resolved (INC-14310, INC-14297)",
+      "generated_at": "2026-07-17T05:37:14Z",
+      "under_control": "No -- 1x 🚨 (INC-8064, H2Bet duplicate bonuses, unchanged 50+ days) and 9x 🔴 need attention; no incidents resolved since last digest, 3 new (all P3, 2 handled well)",
+      "urgent_vs_smaller": "1 urgent (🚨), 9 need a nudge (🔴), 20 watch-level (🟡), 5 well-handled P1/P2/P3 (🟢)",
+      "total_open_delta": "+3 vs last digest (35 vs 32) -- 3 new (INC-14443, INC-14440, INC-14437), 0 resolved",
       "new": [
         {
-          "ref": "INC-14423",
-          "note": "P3 Log4Shell CVE on staging kafka-ui image, briefly raised to P1 and escalated per runbook (paging misfired but Patrik joined directly), downgraded back to P3 -- deferred to tomorrow, kafka-ui workload still unowned"
+          "ref": "INC-14443",
+          "note": "P3 MeridianBet kafka-shovel queue growth, fast ack + root cause (internal migration) found, now Monitoring -- handled well"
         },
         {
-          "ref": "INC-14418",
-          "note": "P2 QBetCRM bonus-distributor backlog (429 rate-limit), root-caused and mitigated within the hour, partner informed -- well handled"
+          "ref": "INC-14440",
+          "note": "P3 Shuffle dashboards bug, correctly triaged as low-urgency with partner told of the office-hours plan, but 3h+ into office hours still no visible follow-up despite 4 engineers in the channel"
+        },
+        {
+          "ref": "INC-14437",
+          "note": "P3 Spinbet Terragon lag, monitored continuously, just accepted and already root-causing a stuck partition -- handled well"
         }
       ],
-      "resolved": [
+      "resolved": [],
+      "handover": [
         {
-          "ref": "INC-14297",
-          "note": "⚠ closed 17:02 CEST 16 Jul with the flagged D15 gap never fixed -- summary still just 'created by heartbeat-api', no closing explanation of what broke or what 'has been completed' meant"
+          "item": "Shuffle performance dashboards (Dylan report)",
+          "status": "tracked INC-14440, assigned to Gérard E. Pelayo ✅"
         },
         {
-          "ref": "INC-14310",
-          "note": "closed clean -- MeridianBet fleet-wide queue backlog (data migration + idempotency lock failures across 18 alerts), fully root-caused and resolved with a clear writeup"
+          "item": "QBetCRM bonus-distributor partner reply (rate-limit + batching ask)",
+          "status": "tracked INC-14418, assigned to Gérard E. Pelayo ✅ (partner's questions not yet answered)"
+        },
+        {
+          "item": "UpGaming employee 2FA lockout (Teams DM)",
+          "status": "no matching incident found ⚠ -- mentioned in 4 consecutive SOC handovers since 15 Jul 07:00 CEST, never converted to a tracked/assigned item (B8)"
+        },
+        {
+          "item": "Campeon callback queue (INC-14177)",
+          "status": "tracked INC-14177, assigned to Joachim Farrugia ✅ (already flagged 🔴, stagnant)"
+        },
+        {
+          "item": "Fusion API Spinbet Terragon (INC-13895)",
+          "status": "tracked INC-13895, assigned to Joachim Farrugia ✅ ('investigate tomorrow morning' repeated across 3 handovers running, already flagged 🔴)"
         }
       ],
       "not_assessed": [],
-      "green_note": "4x P1/P2 well-handled with no breaches: INC-14418 (QBetCRM, new, fast mitigation), INC-14346 (CF Threat Watch, confirmed false positive), INC-14303 (all-brands WorkOS login, fully resolved), INC-14168 (Rhino, WAF root cause found + PR up + partner informed)"
+      "green_note": "5x P1/P2/P3 well-handled with no breaches: INC-14346 (CF Threat Watch, confirmed false positive), INC-14303 (all-brands WorkOS login, fully resolved), INC-14168 (Rhino, WAF root cause + PR up), INC-14443 (MeridianBet queue growth, root-caused fast), INC-14437 (Spinbet Terragon lag, actively root-causing)"
     }
   },
   "incidents": {
@@ -1067,7 +1084,7 @@
       "first_seen": "2026-07-16T23:30:10Z",
       "slack_channel_id": "C0BHUEH8R7X",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784247912.342569",
+      "last_slack_ts_read": "1784265019.048139",
       "last_intercom_part_at": null,
       "classification": "🟡",
       "synthesis": {
@@ -1076,7 +1093,8 @@
           "16 Jul 23:30 UTC Wiz finding surfaces as an incident; Gerard investigates exposure signals (contradictory: ASG-level no exposure vs some instances open to 0.0.0.0/0)",
           "17 Jul 01:49 CEST Gerard raises P2->P1 and escalates per runbook guidance; Andrea's page expired, Giancarlo paged but didn't ack, Patrik acknowledges and joins",
           "17 Jul 02:20-02:21 CEST Patrik takes the lead briefly, downgrades P1->P3, hands lead back to Gerard: 'this can wait until tomorrow'",
-          "Open item from the Wiz report: the affected kafka-ui workload (docker.io/provectuslabs/kafka-ui:0.0.9, EOL, no security context) has no assigned owner"
+          "Open item from the Wiz report: the affected kafka-ui workload (docker.io/provectuslabs/kafka-ui:0.0.9, EOL, no security context) has no assigned owner",
+          "17 Jul 07:10 CEST Incident Lead handed over Gérard -> Giancarlo Laferla, picking up the deferred remediation as planned"
         ],
         "partner": null,
         "proposals": [
@@ -1085,7 +1103,7 @@
         "open_breaches": [
           "B6: real CVE finding correctly escalated, but remediation ownership for the kafka-ui workload is still unassigned, and severity review is deferred to 'tomorrow' with no firm owner/time yet"
         ],
-        "why": "Escalation mechanics were correct (B6) and Patrik personally made the call to defer -- flagged 🟡 only because the unowned workload and the CVE remediation itself are still open, pending tomorrow's follow-through.",
+        "why": "Escalation mechanics were correct (B6) and Patrik personally made the call to defer -- flagged 🟡 only because the unowned workload and the CVE remediation itself are still open, pending tomorrow's follow-through. Follow-through has started: Giancarlo now owns it as of 07:10 CEST per the deferred plan.",
         "suggested_action": "Assign an owner for the kafka-ui workload (Rewards or FT Staging project) and get the log4j-core upgrade scheduled when reviewed tomorrow."
       },
       "name": "Container using an image vulnerable to CVE-2021-45046",
@@ -1097,9 +1115,9 @@
       "first_seen": "2026-07-16T22:34:42Z",
       "slack_channel_id": "C0BHU76BRL5",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784252421.904669",
+      "last_slack_ts_read": "1784254811.876079",
       "last_intercom_part_at": null,
-      "classification": "🟢",
+      "classification": "🟡",
       "synthesis": {
         "summary": "QBetCRM bonus-distributor queue backlog (50,757 + 45,811 messages across 2 related alerts, merged from INC-14422). Gerard acknowledged instantly, root-caused it to 429 'Too many requests' errors on the pods, scaled pods to 1 to let processing continue ('running slow but moving'), and informed the partner via a separate Slack channel within the same hour. Both alerts have since resolved twice (auto-declined briefly when alerts first cleared, then reopened and re-resolved); status now Waiting on Partner.",
         "key_events": [
@@ -1107,7 +1125,9 @@
           "16 Jul 22:43 CEST Gerard root-causes 429 rate-limit errors, scales pods to 1, informs partner in a separate Slack channel",
           "16 Jul 22:49 CEST auto-declined once (alerts briefly cleared), re-triaged and accepted at 23:26-23:27 CEST",
           "17 Jul 01:27 CEST a second related incident (INC-14422) merged in",
-          "17 Jul 02:24 CEST all attached alerts resolved again; 03:40 CEST status moved to Waiting on Partner"
+          "17 Jul 02:24 CEST all attached alerts resolved again; 03:40 CEST status moved to Waiting on Partner",
+          "17 Jul 04:20 CEST partner replies: they added the rate limit themselves yesterday after seeing FT send 30+ req/sec, recommend retrying on 429s; per SOC handover they also asked whether FT can send user_id in batch for the same bonus_code",
+          "No response/action visible in-channel since (~3h15m as of this check) -- status still 'Waiting on Partner' though the partner has already answered"
         ],
         "partner": {
           "first_reported": null,
@@ -1120,11 +1140,100 @@
         "proposals": [
           "Scale pods to 1 to relieve 429 rate-limiting - applied, alerts have since cleared"
         ],
-        "open_breaches": [],
-        "why": "Fast root cause and mitigation, partner informed promptly -- too fresh and too well-handled to flag."
+        "open_breaches": [
+          "D15/D12: partner answered with actionable guidance (retry-on-429) and a follow-up question (batch user_id) at 04:20 CEST; ~3h15m later no acknowledgment, no retry-logic follow-up, and incident.io status still reads 'Waiting on Partner' though the ball is now on FT's side"
+        ],
+        "why": "Fast original mitigation and partner comms, but the partner has now answered with a concrete ask (implement retry-on-429, consider batching) and it has sat unactioned for 3h+ with the status left stale.",
+        "suggested_action": "Acknowledge the partner's reply, implement/track retry-on-429 handling, answer the batching question, and correct the incident.io status now that the partner has responded."
       },
       "name": "QBetCRM: no consumers on queue qbetcrm.actions.bonusdistributor (messages: 50757, in: 0/s)",
       "channel_readable": true
+    },
+    "INC-14443": {
+      "incident_id": "01KXQ0H4FBMXGKFJJR79BZ3RG7",
+      "severity": "P3",
+      "first_seen": "2026-07-17T03:04:43Z",
+      "slack_channel_id": "C0BJ2CVC89J",
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": "1784265898.381659",
+      "last_intercom_part_at": null,
+      "classification": "🟢",
+      "name": "MeridianBet: queue meridianbet.kafka-shovel is processing slow (messages: 1823389, in: 7145/s, delivery: 1408/s)",
+      "channel_readable": true,
+      "synthesis": {
+        "summary": "MeridianBet kafka-shovel/RabbitMQ queue growing (1.8M+ messages, inbound 7145/s > delivery 1408/s) plus two merged RabbitMQ volume alerts. Gérard acknowledged instantly and identified an early explanation (a large sendout created large queues across services, consuming at a fast ack rate); Joachim joined ~2h later and traced the underlying cause to a migration Ansh started that morning. Moved Investigating -> Waiting on Partner -> Monitoring within under a minute once accepted.",
+        "key_events": [
+          "17 Jul 03:04:43 UTC alert fires (queue growing, in 7145/s > delivery 1408/s), Gérard acknowledges within seconds",
+          "17 Jul 05:16:49 CEST Gérard: large sendout created large queues across services, consuming at fast ack rate",
+          "17 Jul 07:07:27 CEST Joachim joins; 07:21 CEST incident accepted (Triage->Investigating) and moved through to Monitoring within ~40 seconds; a second alert (INC-14444) merged in",
+          "17 Jul 07:24:58 CEST Joachim: 'Looks like Ansh started a migration this morning' -- root cause identified"
+        ],
+        "partner": null,
+        "proposals": [],
+        "open_breaches": [],
+        "why": "Fast ack and a clear, quickly-found explanation (large sendout, then a migration) within ~2.5h of the first alert, now Monitoring -- no breach."
+      }
+    },
+    "INC-14440": {
+      "incident_id": "01KXPY1R21MYTX89YFS95P81JX",
+      "severity": "P3",
+      "first_seen": "2026-07-17T02:21:21Z",
+      "slack_channel_id": "C0BJSRNK4QG",
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": "1784255374.089109",
+      "last_intercom_part_at": null,
+      "classification": "🟡",
+      "name": "Shuffle Performance Dashboards Issue",
+      "channel_readable": true,
+      "synthesis": {
+        "summary": "Shuffle partner (Dylan) reported performance dashboards spinning endlessly when an activity is live / just after it ends. The partner himself flagged it as low urgency ('not a P1 or even p2, but I want it looked into'). Gérard agreed and said it would be investigated during office hours. Four more engineers (James, Joachim, Matteo, Nazareno) joined the channel in a bulk handover a minute later, but no investigation has visibly started since.",
+        "key_events": [
+          "17 Jul 02:21 CEST incident opened, Gérard as reporter+lead",
+          "17 Jul 04:22-04:23 CEST Gérard relays the partner's (Dylan/Shuffle) report and agrees it's low urgency, to be looked into 'during office hours'",
+          "17 Jul 04:24 CEST James Hodgson, Joachim Farrugia, Matteo Rapisarda, Nazareno Scibilia all join the channel (bulk handover)",
+          "No substantive activity since (bot 'add a summary?' nudge only at 04:29 CEST) -- now well into office hours (07:37 CEST) with no visible investigation yet"
+        ],
+        "partner": {
+          "first_reported": null,
+          "last_partner_msg_at": null,
+          "answered": false,
+          "promises": [
+            "investigate during office hours - agreed 04:23 CEST, not yet started"
+          ]
+        },
+        "proposals": [],
+        "open_breaches": [
+          "B5/D12: agreed to investigate 'during office hours' but now ~3h+ into office hours (07:37 CEST) with zero visible follow-up despite 4 engineers having joined the channel"
+        ],
+        "why": "Correctly triaged as low-urgency with the partner told of the plan (D12) -- but the promised office-hours follow-up hasn't started even though office hours are now underway, despite 4 people joining the channel.",
+        "suggested_action": "Have one of the engineers already in the channel (James/Joachim/Matteo/Nazareno) pick this up now that office hours have started, and reply to Dylan with an ETA."
+      }
+    },
+    "INC-14437": {
+      "incident_id": "01KXPRXNGJ3AB325PWMJVQE1NX",
+      "severity": "P3",
+      "first_seen": "2026-07-17T00:51:45Z",
+      "slack_channel_id": "C0BHUR7HSLV",
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": "1784265965.328809",
+      "last_intercom_part_at": null,
+      "classification": "🟢",
+      "name": "Spinbet Terragon: topic spinbet-terragon.integration is processing slow (lag: 57964) group: crm-integration-consumer-spinbet-terragon",
+      "channel_readable": true,
+      "synthesis": {
+        "summary": "Spinbet Terragon integration-consumer lag alert (57,964 messages). Gérard acknowledged instantly and monitored for over 2 hours, confirming no stuck/flooding partitions and normal high-activity processing; the incident sat in Triage until Joachim joined and accepted it ~4.5h after the alert, immediately narrowing the lag to a stuck partition and actively investigating.",
+        "key_events": [
+          "17 Jul 02:51:47 CEST alert fires, Gérard acknowledges instantly and joins",
+          "17 Jul 05:05:51 CEST Gérard: 'Been monitoring, no stuck or flooding partitions detected. High activity is processing normally.'",
+          "17 Jul 05:36-05:37 CEST Gérard posts further diagnostic screenshots",
+          "17 Jul 07:25:22-07:25:34 CEST Joachim joins and accepts (Triage->Investigating)",
+          "17 Jul 07:25:56-07:26:05 CEST Joachim: 'Looks to be stuck on partition 57' -- active root-cause narrowing"
+        ],
+        "partner": null,
+        "proposals": [],
+        "open_breaches": [],
+        "why": "Instant ack and continuous monitoring throughout, now actively root-causing a specific stuck partition within minutes of acceptance -- no breach. (Sat in Triage, out of digest scope, from 00:51 to 07:25 CEST before entering the active list.)"
+      }
     }
   }
 }
