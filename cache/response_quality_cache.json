@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-16T22:20:00Z",
+ "generated": "2026-07-17T22:20:00Z",
  "method": {
   "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select — counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
   "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident — multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation ±1s). Author logged per entry (informer log).",
@@ -4323,37 +4323,21 @@
      "closed": 17,
      "open": 0,
      "median_h": 2.9,
-     "p90_h": 171.6
+     "p90_h": 284.69
     },
     "other": {
-     "closed": 18,
-     "open": 0,
-     "median_office_min": 459.4,
-     "p90_office_min": 2591.9
+     "closed": 16,
+     "open": 2,
+     "median_office_min": 489.37,
+     "p90_office_min": 2591.92
     },
     "items": [
      {
       "conv_id": "215561036272049",
       "is_p1": true,
       "start": 1782464896,
-      "close_or_null": 1782914841,
-      "duration_value": 124.98,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561034855180",
-      "is_p1": false,
-      "start": 1782389181,
-      "close_or_null": 1783930702,
-      "duration_value": 5573.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561036683020",
-      "is_p1": false,
-      "start": 1782483854,
-      "close_or_null": 1783330569,
-      "duration_value": 2591.9,
+      "close_or_null": 1784279236,
+      "duration_value": 503.98,
       "start_basis": "first_assignment_at"
      },
      {
@@ -4370,14 +4354,6 @@
       "start": 1782198722,
       "close_or_null": 1782816491,
       "duration_value": 171.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561034751757",
-      "is_p1": false,
-      "start": 1782382742,
-      "close_or_null": 1782806413,
-      "duration_value": 1361.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -4453,70 +4429,6 @@
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561036266985",
-      "is_p1": false,
-      "start": 1782464574,
-      "close_or_null": 1782467161,
-      "duration_value": 43.1,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561034684362",
-      "is_p1": false,
-      "start": 1782379070,
-      "close_or_null": 1782461765,
-      "duration_value": 462.2,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561030812911",
-      "is_p1": false,
-      "start": 1782143858,
-      "close_or_null": 1782459279,
-      "duration_value": 1502.4,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561033093071",
-      "is_p1": false,
-      "start": 1782299677,
-      "close_or_null": 1782384670,
-      "duration_value": 456.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561033139164",
-      "is_p1": false,
-      "start": 1782301974,
-      "close_or_null": 1782382864,
-      "duration_value": 388.2,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561031474781",
-      "is_p1": false,
-      "start": 1782203179,
-      "close_or_null": 1782369878,
-      "duration_value": 960.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561032953720",
-      "is_p1": false,
-      "start": 1782295064,
-      "close_or_null": 1782378423,
-      "duration_value": 429.3,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561034621338",
-      "is_p1": false,
-      "start": 1782375485,
-      "close_or_null": 1782375970,
-      "duration_value": 0.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
       "conv_id": "215561034525182",
       "is_p1": true,
       "start": 1782371417,
@@ -4533,43 +4445,11 @@
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561033263606",
-      "is_p1": false,
-      "start": 1782308222,
-      "close_or_null": 1782312610,
-      "duration_value": 73.1,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561031630431",
-      "is_p1": false,
-      "start": 1782212447,
-      "close_or_null": 1782308857,
-      "duration_value": 646.8,
-      "start_basis": "first_assignment_at"
-     },
-     {
       "conv_id": "215561032727853",
       "is_p1": true,
       "start": 1782284935,
       "close_or_null": 1782297482,
       "duration_value": 3.49,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561032810543",
-      "is_p1": false,
-      "start": 1782287375,
-      "close_or_null": 1782290249,
-      "duration_value": 0.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561030387760",
-      "is_p1": false,
-      "start": 1782116282,
-      "close_or_null": 1782285111,
-      "duration_value": 960.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -4589,11 +4469,131 @@
       "start_basis": "first_assignment_at"
      },
      {
+      "conv_id": "215561034855180",
+      "is_p1": false,
+      "start": 1782389181,
+      "close_or_null": 1783930702,
+      "duration_value": 5573.65,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561036683020",
+      "is_p1": false,
+      "start": 1782483854,
+      "close_or_null": 1783330569,
+      "duration_value": 2591.92,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561034751757",
+      "is_p1": false,
+      "start": 1782382742,
+      "close_or_null": 1782806413,
+      "duration_value": 1360.97,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561036266985",
+      "is_p1": false,
+      "start": 1782464574,
+      "close_or_null": 1782467161,
+      "duration_value": 43.12,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561034684362",
+      "is_p1": false,
+      "start": 1782379070,
+      "close_or_null": 1782461765,
+      "duration_value": 462.17,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561030812911",
+      "is_p1": false,
+      "start": 1782143858,
+      "close_or_null": 1782459279,
+      "duration_value": 1502.37,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561033093071",
+      "is_p1": false,
+      "start": 1782299677,
+      "close_or_null": 1782384670,
+      "duration_value": 456.55,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561033139164",
+      "is_p1": false,
+      "start": 1782301974,
+      "close_or_null": 1782382864,
+      "duration_value": 388.17,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561031474781",
+      "is_p1": false,
+      "start": 1782203179,
+      "close_or_null": 1782369878,
+      "duration_value": 960.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561032953720",
+      "is_p1": false,
+      "start": 1782295064,
+      "close_or_null": 1782378423,
+      "duration_value": 429.32,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561034621338",
+      "is_p1": false,
+      "start": 1782375484,
+      "close_or_null": null,
+      "duration_value": null,
+      "start_basis": "created_at"
+     },
+     {
+      "conv_id": "215561033263606",
+      "is_p1": false,
+      "start": 1782308222,
+      "close_or_null": 1782312610,
+      "duration_value": 73.13,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561031630431",
+      "is_p1": false,
+      "start": 1782212447,
+      "close_or_null": 1782308857,
+      "duration_value": 646.83,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561032810543",
+      "is_p1": false,
+      "start": 1782287375,
+      "close_or_null": null,
+      "duration_value": null,
+      "start_basis": "created_at"
+     },
+     {
+      "conv_id": "215561030387760",
+      "is_p1": false,
+      "start": 1782116282,
+      "close_or_null": 1782285111,
+      "duration_value": 960.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
       "conv_id": "215561030297530",
       "is_p1": false,
       "start": 1782111179,
       "close_or_null": 1782207394,
-      "duration_value": 516.6,
+      "duration_value": 516.57,
       "start_basis": "first_assignment_at"
      },
      {
@@ -4609,7 +4609,7 @@
       "is_p1": false,
       "start": 1782131361,
       "close_or_null": 1782135066,
-      "duration_value": 61.8,
+      "duration_value": 61.75,
       "start_basis": "first_assignment_at"
      }
     ]
@@ -4791,7 +4791,7 @@
     }
    ],
    "cause": {
-    "total": 192,
+    "total": 193,
     "causes": {
      "FT - Cloud Infra": {
       "count": 31,
@@ -4829,34 +4829,6 @@
        "INC-11281"
       ]
      },
-     "FT - General Release": {
-      "count": 23,
-      "refs": [
-       "INC-12397",
-       "INC-12206",
-       "INC-12196",
-       "INC-12168",
-       "INC-12073",
-       "INC-12072",
-       "INC-12071",
-       "INC-12070",
-       "INC-12069",
-       "INC-12068",
-       "INC-12051",
-       "INC-12038",
-       "INC-12035",
-       "INC-11853",
-       "INC-11746",
-       "INC-11737",
-       "INC-11716",
-       "INC-11700",
-       "INC-11687",
-       "INC-11685",
-       "INC-11554",
-       "INC-11485",
-       "INC-11448"
-      ]
-     },
      "FT - Slow Processing": {
       "count": 23,
       "refs": [
@@ -4885,11 +4857,40 @@
        "INC-11308"
       ]
      },
+     "FT - General Release": {
+      "count": 23,
+      "refs": [
+       "INC-12397",
+       "INC-12206",
+       "INC-12196",
+       "INC-12168",
+       "INC-12073",
+       "INC-12072",
+       "INC-12071",
+       "INC-12070",
+       "INC-12069",
+       "INC-12068",
+       "INC-12051",
+       "INC-12038",
+       "INC-12035",
+       "INC-11853",
+       "INC-11746",
+       "INC-11737",
+       "INC-11716",
+       "INC-11700",
+       "INC-11687",
+       "INC-11685",
+       "INC-11554",
+       "INC-11485",
+       "INC-11448"
+      ]
+     },
      "FT - Backend Code Defect": {
-      "count": 19,
+      "count": 20,
       "refs": [
        "INC-12206",
        "INC-12196",
+       "INC-12179",
        "INC-11978",
        "INC-11746",
        "INC-11723",
@@ -4988,11 +4989,22 @@
        "INC-11287"
       ]
      },
+     "FT - Security Incident": {
+      "count": 7,
+      "refs": [
+       "INC-12406",
+       "INC-12372",
+       "INC-12246",
+       "INC-12113",
+       "INC-11625",
+       "INC-11433",
+       "INC-11310"
+      ]
+     },
      "None": {
-      "count": 8,
+      "count": 7,
       "refs": [
        "INC-12204",
-       "INC-12179",
        "INC-12087",
        "INC-12047",
        "INC-12022",
@@ -5013,17 +5025,6 @@
        "INC-11331"
       ]
      },
-     "FT - Frontend Code Defect": {
-      "count": 6,
-      "refs": [
-       "INC-12297",
-       "INC-12198",
-       "INC-12189",
-       "INC-12168",
-       "INC-12007",
-       "INC-11737"
-      ]
-     },
      "FT - Unknown": {
       "count": 6,
       "refs": [
@@ -5033,17 +5034,6 @@
        "INC-11750",
        "INC-11639",
        "INC-11525"
-      ]
-     },
-     "FT - Security Incident": {
-      "count": 6,
-      "refs": [
-       "INC-12406",
-       "INC-12372",
-       "INC-12113",
-       "INC-11625",
-       "INC-11433",
-       "INC-11310"
       ]
      },
      "Partner - Large Sendout": {
@@ -5057,13 +5047,15 @@
        "INC-11300"
       ]
      },
-     "Partner - Data Migration": {
-      "count": 4,
+     "FT - Frontend Code Defect": {
+      "count": 6,
       "refs": [
-       "INC-12170",
-       "INC-11725",
-       "INC-11720",
-       "INC-11704"
+       "INC-12297",
+       "INC-12198",
+       "INC-12189",
+       "INC-12168",
+       "INC-12007",
+       "INC-11737"
       ]
      },
      "FT - Monitoring Failure": {
@@ -5073,6 +5065,15 @@
        "INC-11833",
        "INC-11647",
        "INC-11292"
+      ]
+     },
+     "Partner - Data Migration": {
+      "count": 4,
+      "refs": [
+       "INC-12170",
+       "INC-11725",
+       "INC-11720",
+       "INC-11704"
       ]
      },
      "AI : General Issue": {
@@ -5307,14 +5308,14 @@
     "p1": {
      "closed": 12,
      "open": 1,
-     "median_h": 15.93,
+     "median_h": 15.92,
      "p90_h": 83.7
     },
     "other": {
-     "closed": 22,
-     "open": 0,
-     "median_office_min": 1139.3,
-     "p90_office_min": 3190.6
+     "closed": 21,
+     "open": 1,
+     "median_office_min": 1118.58,
+     "p90_office_min": 3190.58
     },
     "items": [
      {
@@ -5334,70 +5335,6 @@
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561046574934",
-      "is_p1": false,
-      "start": 1783003124,
-      "close_or_null": 1784120819,
-      "duration_value": 4228.2,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561044802323",
-      "is_p1": false,
-      "start": 1782914381,
-      "close_or_null": 1783683736,
-      "duration_value": 3222.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561046342079",
-      "is_p1": false,
-      "start": 1782994258,
-      "close_or_null": 1783669616,
-      "duration_value": 2689.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561046220841",
-      "is_p1": false,
-      "start": 1782986417,
-      "close_or_null": 1783578182,
-      "duration_value": 2339.7,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561042455348",
-      "is_p1": false,
-      "start": 1782806895,
-      "close_or_null": 1783519835,
-      "duration_value": 3190.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561040792132",
-      "is_p1": false,
-      "start": 1782719378,
-      "close_or_null": 1783432013,
-      "duration_value": 3166.9,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561046360038",
-      "is_p1": false,
-      "start": 1782995503,
-      "close_or_null": 1783406546,
-      "duration_value": 1228.3,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561047509338",
-      "is_p1": false,
-      "start": 1783065220,
-      "close_or_null": 1783414557,
-      "duration_value": 960.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
       "conv_id": "215561048274264",
       "is_p1": true,
       "start": 1783108503,
@@ -5406,59 +5343,11 @@
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561047611998",
-      "is_p1": false,
-      "start": 1783070620,
-      "close_or_null": 1783340742,
-      "duration_value": 662.0,
-      "start_basis": "first_assignment_at"
-     },
-     {
       "conv_id": "215561049343182",
       "is_p1": true,
       "start": 1783164090,
       "close_or_null": 1783186486,
       "duration_value": 6.22,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561044506651",
-      "is_p1": false,
-      "start": 1782900874,
-      "close_or_null": 1783173884,
-      "duration_value": 1365.4,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561047595167",
-      "is_p1": false,
-      "start": 1783069560,
-      "close_or_null": 1783093488,
-      "duration_value": 398.8,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561047605497",
-      "is_p1": false,
-      "start": 1783070128,
-      "close_or_null": 1783089187,
-      "duration_value": 317.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561046425596",
-      "is_p1": false,
-      "start": 1782999856,
-      "close_or_null": 1783084046,
-      "duration_value": 443.2,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561044342147",
-      "is_p1": false,
-      "start": 1782894042,
-      "close_or_null": 1783081203,
-      "duration_value": 1160.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -5478,27 +5367,11 @@
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561042923093",
-      "is_p1": false,
-      "start": 1782829285,
-      "close_or_null": 1783026297,
-      "duration_value": 1118.6,
-      "start_basis": "first_assignment_at"
-     },
-     {
       "conv_id": "215561040923875",
       "is_p1": true,
       "start": 1782724892,
       "close_or_null": 1783026223,
       "duration_value": 83.7,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561044393217",
-      "is_p1": false,
-      "start": 1782895747,
-      "close_or_null": 1783025718,
-      "duration_value": 960.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -5515,38 +5388,6 @@
       "start": 1782863842,
       "close_or_null": 1783005291,
       "duration_value": 39.29,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561044800776",
-      "is_p1": false,
-      "start": 1782914300,
-      "close_or_null": 1782999795,
-      "duration_value": 464.9,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561041226471",
-      "is_p1": false,
-      "start": 1782734621,
-      "close_or_null": 1782999536,
-      "duration_value": 1535.2,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561041203775",
-      "is_p1": false,
-      "start": 1782733213,
-      "close_or_null": 1782928047,
-      "duration_value": 1279.8,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561042468705",
-      "is_p1": false,
-      "start": 1782807710,
-      "close_or_null": 1782888908,
-      "duration_value": 480.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -5582,11 +5423,171 @@
       "start_basis": "first_assignment_at"
      },
      {
+      "conv_id": "215561046574934",
+      "is_p1": false,
+      "start": 1783003124,
+      "close_or_null": 1784120819,
+      "duration_value": 4228.25,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561044802323",
+      "is_p1": false,
+      "start": 1782914381,
+      "close_or_null": 1783683736,
+      "duration_value": 3222.58,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561046342079",
+      "is_p1": false,
+      "start": 1782994257,
+      "close_or_null": null,
+      "duration_value": null,
+      "start_basis": "created_at"
+     },
+     {
+      "conv_id": "215561046220841",
+      "is_p1": false,
+      "start": 1782986417,
+      "close_or_null": 1783578182,
+      "duration_value": 2339.72,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561042455348",
+      "is_p1": false,
+      "start": 1782806895,
+      "close_or_null": 1783519835,
+      "duration_value": 3190.58,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561040792132",
+      "is_p1": false,
+      "start": 1782719378,
+      "close_or_null": 1783432013,
+      "duration_value": 3166.88,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561046360038",
+      "is_p1": false,
+      "start": 1782995503,
+      "close_or_null": 1783406546,
+      "duration_value": 1228.28,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561047509338",
+      "is_p1": false,
+      "start": 1783065220,
+      "close_or_null": 1783414557,
+      "duration_value": 960.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561047611998",
+      "is_p1": false,
+      "start": 1783070620,
+      "close_or_null": 1783340742,
+      "duration_value": 662.03,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561044506651",
+      "is_p1": false,
+      "start": 1782900874,
+      "close_or_null": 1783173884,
+      "duration_value": 1365.43,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561047595167",
+      "is_p1": false,
+      "start": 1783069560,
+      "close_or_null": 1783093488,
+      "duration_value": 398.8,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561047605497",
+      "is_p1": false,
+      "start": 1783070128,
+      "close_or_null": 1783089187,
+      "duration_value": 317.65,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561046425596",
+      "is_p1": false,
+      "start": 1782999856,
+      "close_or_null": 1783084046,
+      "duration_value": 443.17,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561044342147",
+      "is_p1": false,
+      "start": 1782894042,
+      "close_or_null": 1783081203,
+      "duration_value": 1160.05,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561042923093",
+      "is_p1": false,
+      "start": 1782829285,
+      "close_or_null": 1783026297,
+      "duration_value": 1118.58,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561044393217",
+      "is_p1": false,
+      "start": 1782895747,
+      "close_or_null": 1783025718,
+      "duration_value": 960.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561044800776",
+      "is_p1": false,
+      "start": 1782914300,
+      "close_or_null": 1782999795,
+      "duration_value": 464.92,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561041226471",
+      "is_p1": false,
+      "start": 1782734621,
+      "close_or_null": 1782999536,
+      "duration_value": 1535.25,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561041203775",
+      "is_p1": false,
+      "start": 1782733213,
+      "close_or_null": 1782928047,
+      "duration_value": 1279.78,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561042468705",
+      "is_p1": false,
+      "start": 1782807710,
+      "close_or_null": 1782888908,
+      "duration_value": 480.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
       "conv_id": "215561040899279",
       "is_p1": false,
       "start": 1782724602,
       "close_or_null": 1782812375,
-      "duration_value": 502.9,
+      "duration_value": 502.88,
       "start_basis": "first_assignment_at"
      },
      {
@@ -5594,7 +5595,7 @@
       "is_p1": false,
       "start": 1782741421,
       "close_or_null": 1782811295,
-      "duration_value": 204.6,
+      "duration_value": 204.57,
       "start_basis": "first_assignment_at"
      }
     ]
@@ -5675,44 +5676,8 @@
     }
    ],
    "cause": {
-    "total": 153,
+    "total": 142,
     "causes": {
-     "None": {
-      "count": 31,
-      "refs": [
-       "INC-13488",
-       "INC-13475",
-       "INC-13133",
-       "INC-13111",
-       "INC-13106",
-       "INC-13101",
-       "INC-13071",
-       "INC-13053",
-       "INC-13048",
-       "INC-12998",
-       "INC-12997",
-       "INC-12975",
-       "INC-12965",
-       "INC-12918",
-       "INC-12904",
-       "INC-12896",
-       "INC-12862",
-       "INC-12834",
-       "INC-12797",
-       "INC-12778",
-       "INC-12754",
-       "INC-12753",
-       "INC-12713",
-       "INC-12698",
-       "INC-12691",
-       "INC-12684",
-       "INC-12682",
-       "INC-12625",
-       "INC-12617",
-       "INC-12607",
-       "INC-12574"
-      ]
-     },
      "FT - Slow Processing": {
       "count": 21,
       "refs": [
@@ -5763,8 +5728,31 @@
        "INC-12430"
       ]
      },
+     "None": {
+      "count": 18,
+      "refs": [
+       "INC-13475",
+       "INC-13133",
+       "INC-13106",
+       "INC-13071",
+       "INC-13053",
+       "INC-13048",
+       "INC-12998",
+       "INC-12997",
+       "INC-12918",
+       "INC-12904",
+       "INC-12778",
+       "INC-12713",
+       "INC-12698",
+       "INC-12684",
+       "INC-12682",
+       "INC-12625",
+       "INC-12607",
+       "INC-12574"
+      ]
+     },
      "FT - Cloud Infra": {
-      "count": 15,
+      "count": 16,
       "refs": [
        "INC-13571",
        "INC-13559",
@@ -5775,6 +5763,7 @@
        "INC-12848",
        "INC-12824",
        "INC-12818",
+       "INC-12754",
        "INC-12718",
        "INC-12629",
        "INC-12626",
@@ -5855,6 +5844,16 @@
        "INC-12432"
       ]
      },
+     "FT - General Release": {
+      "count": 5,
+      "refs": [
+       "INC-13152",
+       "INC-12617",
+       "INC-12496",
+       "INC-12456",
+       "INC-12454"
+      ]
+     },
      "FT - Frontend Code Defect": {
       "count": 5,
       "refs": [
@@ -5863,15 +5862,6 @@
        "INC-12486",
        "INC-12441",
        "INC-12437"
-      ]
-     },
-     "FT - General Release": {
-      "count": 4,
-      "refs": [
-       "INC-13152",
-       "INC-12496",
-       "INC-12456",
-       "INC-12454"
       ]
      },
      "FT - Integration Managers": {
@@ -6175,74 +6165,18 @@
      "p90_h": 18.7
     },
     "other": {
-     "closed": 23,
-     "open": 0,
-     "median_office_min": 262.5,
-     "p90_office_min": 1706.5
+     "closed": 22,
+     "open": 1,
+     "median_office_min": 301.34,
+     "p90_office_min": 1706.55
     },
     "items": [
-     {
-      "conv_id": "215561060170736",
-      "is_p1": false,
-      "start": 1783795246,
-      "close_or_null": 1784208393,
-      "duration_value": 1706.5,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561055694766",
-      "is_p1": false,
-      "start": 1783515957,
-      "close_or_null": 1784115234,
-      "duration_value": 2307.9,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561056541403",
-      "is_p1": false,
-      "start": 1783590016,
-      "close_or_null": 1784109099,
-      "duration_value": 1931.4,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561056444210",
-      "is_p1": false,
-      "start": 1783585215,
-      "close_or_null": 1783940533,
-      "duration_value": 1082.2,
-      "start_basis": "first_assignment_at"
-     },
      {
       "conv_id": "215561057534299",
       "is_p1": true,
       "start": 1783624817,
       "close_or_null": 1783626508,
       "duration_value": 0.47,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561057985446",
-      "is_p1": false,
-      "start": 1783669603,
-      "close_or_null": 1783695799,
-      "duration_value": 363.3,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561057967765",
-      "is_p1": false,
-      "start": 1783668499,
-      "close_or_null": 1783684584,
-      "duration_value": 176.4,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561056371396",
-      "is_p1": false,
-      "start": 1783581826,
-      "close_or_null": 1783671768,
-      "duration_value": 480.0,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6262,6 +6196,70 @@
       "start_basis": "first_assignment_at"
      },
      {
+      "conv_id": "215561052821100",
+      "is_p1": true,
+      "start": 1783332962,
+      "close_or_null": 1783340795,
+      "duration_value": 2.18,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561060170736",
+      "is_p1": false,
+      "start": 1783795246,
+      "close_or_null": 1784208393,
+      "duration_value": 1706.55,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561055694766",
+      "is_p1": false,
+      "start": 1783515957,
+      "close_or_null": 1784115234,
+      "duration_value": 2307.95,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561056541403",
+      "is_p1": false,
+      "start": 1783590016,
+      "close_or_null": 1784109099,
+      "duration_value": 1931.38,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561056444210",
+      "is_p1": false,
+      "start": 1783585215,
+      "close_or_null": 1783940533,
+      "duration_value": 1082.22,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561057985446",
+      "is_p1": false,
+      "start": 1783669603,
+      "close_or_null": 1783695799,
+      "duration_value": 363.32,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561057967765",
+      "is_p1": false,
+      "start": 1783668499,
+      "close_or_null": null,
+      "duration_value": null,
+      "start_basis": "created_at"
+     },
+     {
+      "conv_id": "215561056371396",
+      "is_p1": false,
+      "start": 1783581826,
+      "close_or_null": 1783671768,
+      "duration_value": 480.0,
+      "start_basis": "first_assignment_at"
+     },
+     {
       "conv_id": "215561055298317",
       "is_p1": false,
       "start": 1783495727,
@@ -6274,7 +6272,7 @@
       "is_p1": false,
       "start": 1783335553,
       "close_or_null": 1783578163,
-      "duration_value": 1320.8,
+      "duration_value": 1320.78,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6282,7 +6280,7 @@
       "is_p1": false,
       "start": 1783518845,
       "close_or_null": 1783528719,
-      "duration_value": 164.6,
+      "duration_value": 164.57,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6290,7 +6288,7 @@
       "is_p1": false,
       "start": 1783520147,
       "close_or_null": 1783523259,
-      "duration_value": 51.9,
+      "duration_value": 51.87,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6306,7 +6304,7 @@
       "is_p1": false,
       "start": 1783415352,
       "close_or_null": 1783416857,
-      "duration_value": 25.1,
+      "duration_value": 25.08,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6314,7 +6312,7 @@
       "is_p1": false,
       "start": 1783351752,
       "close_or_null": 1783416779,
-      "duration_value": 123.8,
+      "duration_value": 123.78,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6338,7 +6336,7 @@
       "is_p1": false,
       "start": 1783345548,
       "close_or_null": 1783351289,
-      "duration_value": 95.7,
+      "duration_value": 95.68,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6346,7 +6344,7 @@
       "is_p1": false,
       "start": 1783333825,
       "close_or_null": 1783349577,
-      "duration_value": 262.5,
+      "duration_value": 262.53,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6354,15 +6352,7 @@
       "is_p1": false,
       "start": 1783321346,
       "close_or_null": 1783348809,
-      "duration_value": 340.1,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561052821100",
-      "is_p1": true,
-      "start": 1783332962,
-      "close_or_null": 1783340795,
-      "duration_value": 2.18,
+      "duration_value": 340.15,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6370,7 +6360,7 @@
       "is_p1": false,
       "start": 1783326302,
       "close_or_null": 1783339863,
-      "duration_value": 191.1,
+      "duration_value": 191.05,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6378,7 +6368,7 @@
       "is_p1": false,
       "start": 1783332558,
       "close_or_null": 1783336209,
-      "duration_value": 60.9,
+      "duration_value": 60.85,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6403,50 +6393,16 @@
   "2026-07-13": {
    "partial": true,
    "cause": {
-    "total": 117,
+    "total": 133,
     "causes": {
-     "None": {
-      "count": 34,
-      "refs": [
-       "INC-14412",
-       "INC-14406",
-       "INC-14386",
-       "INC-14376",
-       "INC-14351",
-       "INC-14346",
-       "INC-14331",
-       "INC-14308",
-       "INC-14301",
-       "INC-14296",
-       "INC-14295",
-       "INC-14294",
-       "INC-14293",
-       "INC-14292",
-       "INC-14291",
-       "INC-14288",
-       "INC-14284",
-       "INC-14283",
-       "INC-14282",
-       "INC-14241",
-       "INC-14177",
-       "INC-14168",
-       "INC-14164",
-       "INC-14151",
-       "INC-14105",
-       "INC-14079",
-       "INC-14050",
-       "INC-14039",
-       "INC-13917",
-       "INC-13895",
-       "INC-13889",
-       "INC-13757",
-       "INC-13738",
-       "INC-13636"
-      ]
-     },
      "FT - Slow Processing": {
-      "count": 22,
+      "count": 28,
       "refs": [
+       "INC-14534",
+       "INC-14513",
+       "INC-14494",
+       "INC-14483",
+       "INC-14474",
        "INC-14411",
        "INC-14409",
        "INC-14402",
@@ -6462,6 +6418,7 @@
        "INC-14095",
        "INC-13998",
        "INC-13925",
+       "INC-13917",
        "INC-13915",
        "INC-13910",
        "INC-13906",
@@ -6471,9 +6428,40 @@
        "INC-13608"
       ]
      },
-     "FT - Cloud Infra": {
-      "count": 18,
+     "None": {
+      "count": 23,
       "refs": [
+       "INC-14579",
+       "INC-14578",
+       "INC-14577",
+       "INC-14574",
+       "INC-14571",
+       "INC-14570",
+       "INC-14567",
+       "INC-14565",
+       "INC-14503",
+       "INC-14495",
+       "INC-14476",
+       "INC-14423",
+       "INC-14351",
+       "INC-14346",
+       "INC-14331",
+       "INC-14284",
+       "INC-14282",
+       "INC-14241",
+       "INC-14164",
+       "INC-14039",
+       "INC-13895",
+       "INC-13889",
+       "INC-13636"
+      ]
+     },
+     "FT - Cloud Infra": {
+      "count": 21,
+      "refs": [
+       "INC-14504",
+       "INC-14486",
+       "INC-14471",
        "INC-14217",
        "INC-14158",
        "INC-14112",
@@ -6495,13 +6483,15 @@
       ]
      },
      "Partner - Partner System Issues": {
-      "count": 10,
+      "count": 12,
       "refs": [
+       "INC-14418",
        "INC-14349",
        "INC-14342",
        "INC-14319",
        "INC-14307",
        "INC-14299",
+       "INC-14177",
        "INC-14146",
        "INC-14104",
        "INC-13931",
@@ -6509,9 +6499,26 @@
        "INC-13853"
       ]
      },
-     "Partner - Incorrect Setup": {
-      "count": 7,
+     "Partner - Large Sendout": {
+      "count": 10,
       "refs": [
+       "INC-14563",
+       "INC-14443",
+       "INC-14437",
+       "INC-14406",
+       "INC-14148",
+       "INC-14122",
+       "INC-14030",
+       "INC-13720",
+       "INC-13664",
+       "INC-13645"
+      ]
+     },
+     "Partner - Incorrect Setup": {
+      "count": 9,
+      "refs": [
+       "INC-14532",
+       "INC-14529",
        "INC-14345",
        "INC-14176",
        "INC-14163",
@@ -6521,20 +6528,22 @@
        "INC-13615"
       ]
      },
-     "Partner - Large Sendout": {
-      "count": 6,
+     "FT - Backend Code Defect": {
+      "count": 7,
       "refs": [
-       "INC-14148",
-       "INC-14122",
-       "INC-14030",
-       "INC-13720",
-       "INC-13664",
-       "INC-13645"
+       "INC-14328",
+       "INC-14173",
+       "INC-14151",
+       "INC-13893",
+       "INC-13757",
+       "INC-13738",
+       "INC-13638"
       ]
      },
      "Partner - 3rd Party Platform Issue": {
-      "count": 5,
+      "count": 6,
       "refs": [
+       "INC-14301",
        "INC-14165",
        "INC-14078",
        "INC-13784",
@@ -6542,28 +6551,31 @@
        "INC-13599"
       ]
      },
-     "FT - Backend Code Defect": {
-      "count": 4,
+     "FT - False Positive": {
+      "count": 5,
       "refs": [
-       "INC-14328",
-       "INC-14173",
-       "INC-13893",
-       "INC-13638"
+       "INC-14440",
+       "INC-14386",
+       "INC-13933",
+       "INC-13916",
+       "INC-13669"
       ]
      },
      "FT - Integration Managers": {
-      "count": 3,
+      "count": 4,
       "refs": [
+       "INC-14475",
        "INC-14359",
        "INC-13901",
        "INC-13638"
       ]
      },
-     "FT - False Positive": {
-      "count": 2,
+     "FT - General Release": {
+      "count": 3,
       "refs": [
-       "INC-13933",
-       "INC-13669"
+       "INC-14168",
+       "INC-14152",
+       "INC-13639"
       ]
      },
      "FT - Monitoring Failure": {
@@ -6573,11 +6585,11 @@
        "INC-13648"
       ]
      },
-     "FT - General Release": {
+     "Partner - Data Migration": {
       "count": 2,
       "refs": [
-       "INC-14152",
-       "INC-13639"
+       "INC-14443",
+       "INC-14069"
       ]
      },
      "FT - Planned Maintenance": {
@@ -6586,10 +6598,10 @@
        "INC-14335"
       ]
      },
-     "Partner - Data Migration": {
+     "FT - Security Incident": {
       "count": 1,
       "refs": [
-       "INC-14069"
+       "INC-14521"
       ]
      },
      "FT - Frontend Code Defect": {
@@ -6620,7 +6632,7 @@
      "status": "Closed",
      "reported_at": "2026-07-13T10:43:16Z",
      "identify_min": 14.5,
-     "fixed_min": 14.5,
+     "fixed_min": null,
      "resolve_min": 14.5
     },
     {
@@ -6630,16 +6642,48 @@
      "status": "Closed",
      "reported_at": "2026-07-14T05:46:31Z",
      "identify_min": 17.5,
-     "fixed_min": 1895.7,
+     "fixed_min": null,
      "resolve_min": 1895.7
     },
     {
      "ref": "INC-14303",
      "name": "All CRM Log In Not Available",
      "type": "Default",
-     "status": "Monitoring",
+     "status": "Closed",
      "reported_at": "2026-07-16T08:13:01Z",
-     "identify_min": 133.1
+     "identify_min": 133.1,
+     "fixed_min": null,
+     "resolve_min": 1331.0
+    },
+    {
+     "ref": "INC-14476",
+     "name": "[P1] Intercom Incident : Mystake Production",
+     "type": "IC Ticket",
+     "status": "Waiting on Partner",
+     "reported_at": "2026-07-17T08:42:38Z",
+     "identify_min": 109.0,
+     "fixed_min": null,
+     "resolve_min": null
+    },
+    {
+     "ref": "INC-14532",
+     "name": "[P1] Intercom Incident : Sisutech Production",
+     "type": "IC Ticket",
+     "status": "Closed",
+     "reported_at": "2026-07-17T16:07:49Z",
+     "identify_min": 215.7,
+     "fixed_min": null,
+     "resolve_min": 215.7
+    },
+    {
+     "ref": "INC-14565",
+     "name": "[P1] Intercom Incident : Segurobet Production",
+     "type": "IC Ticket",
+     "status": "Waiting on Partner",
+     "reported_at": "2026-07-17T20:10:12Z",
+     "identify_min": 21.8,
+     "fixed_min": 47.6,
+     "resolve_min": null
     }
    ],
    "inform": {
@@ -6814,88 +6858,83 @@
       "reported_at": "2026-07-16T08:29:41Z",
       "severity": "P2",
       "delay_min": 24.1
+     },
+     {
+      "inc": "INC-14418",
+      "channel": "ftcrm-qbet",
+      "author": "Gérard E. Pelayo",
+      "msg_ts": "2026-07-16T22:42:18.25Z",
+      "reported_at": "2026-07-16T22:34:42Z",
+      "severity": "P2",
+      "delay_min": 7.6
+     },
+     {
+      "inc": "INC-14442",
+      "channel": "ftcrm-meridianbet",
+      "author": "Gérard E. Pelayo",
+      "msg_ts": "2026-07-17T03:15:18.99Z",
+      "reported_at": "2026-07-17T03:04:43Z",
+      "severity": "P3",
+      "delay_min": 10.6
+     },
+     {
+      "inc": "INC-14474",
+      "channel": "ftcrm-one-casino",
+      "author": "Joachim Farrugia",
+      "msg_ts": "2026-07-17T08:53:40.35Z",
+      "reported_at": "2026-07-17T08:14:46Z",
+      "severity": "P2",
+      "delay_min": 38.91
      }
     ],
-    "informed": 19,
-    "median_min": 46.83,
-    "p90_min": 248.9
+    "informed": 22,
+    "median_min": 41.4,
+    "p90_min": 168.3
    },
    "mttr": {
     "p1": {
-     "closed": 1,
-     "open": 1,
+     "closed": 3,
+     "open": 2,
      "median_h": 24.46,
-     "p90_h": 24.46
+     "p90_h": 74.35
     },
     "other": {
-     "closed": 6,
-     "open": 2,
-     "median_office_min": 391.0,
-     "p90_office_min": 1393.9
+     "closed": 8,
+     "open": 1,
+     "median_office_min": 556.23,
+     "p90_office_min": 1393.87
     },
     "items": [
      {
-      "conv_id": "215561067225684",
-      "is_p1": false,
-      "start": 1784124306,
+      "conv_id": "215561070764925",
+      "is_p1": true,
+      "start": 1784318792,
       "close_or_null": null,
       "duration_value": null,
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561067169862",
-      "is_p1": false,
-      "start": 1784120811,
-      "close_or_null": null,
-      "duration_value": null,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561067049407",
-      "is_p1": false,
-      "start": 1784114553,
-      "close_or_null": 1784208218,
-      "duration_value": 601.1,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561063825667",
-      "is_p1": false,
-      "start": 1783935968,
-      "close_or_null": 1784188543,
-      "duration_value": 1393.9,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561067137564",
-      "is_p1": false,
-      "start": 1784118568,
-      "close_or_null": 1784187296,
-      "duration_value": 270.5,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "conv_id": "215561067080127",
-      "is_p1": false,
-      "start": 1784116588,
-      "close_or_null": 1784117368,
-      "duration_value": 13.0,
+      "conv_id": "215561070380601",
+      "is_p1": true,
+      "start": 1784304385,
+      "close_or_null": 1784304882,
+      "duration_value": 0.14,
       "start_basis": "first_assignment_at"
      },
      {
       "conv_id": "215561065527126",
       "is_p1": true,
       "start": 1784026160,
-      "close_or_null": null,
-      "duration_value": null,
+      "close_or_null": 1784293829,
+      "duration_value": 74.35,
       "start_basis": "first_assignment_at"
      },
      {
-      "conv_id": "215561066719704",
-      "is_p1": false,
-      "start": 1784096669,
-      "close_or_null": 1784110222,
-      "duration_value": 70.4,
+      "conv_id": "215561069966218",
+      "is_p1": true,
+      "start": 1784277161,
+      "close_or_null": null,
+      "duration_value": null,
       "start_basis": "first_assignment_at"
      },
      {
@@ -6907,11 +6946,75 @@
       "start_basis": "first_assignment_at"
      },
      {
+      "conv_id": "215561067080127",
+      "is_p1": false,
+      "start": 1784116588,
+      "close_or_null": 1784299070,
+      "duration_value": 1121.37,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561069035357",
+      "is_p1": false,
+      "start": 1784209192,
+      "close_or_null": 1784296406,
+      "duration_value": 493.57,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561067169862",
+      "is_p1": false,
+      "start": 1784120811,
+      "close_or_null": null,
+      "duration_value": null,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561067225684",
+      "is_p1": false,
+      "start": 1784124306,
+      "close_or_null": 1784277558,
+      "duration_value": 654.9,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561067049407",
+      "is_p1": false,
+      "start": 1784114553,
+      "close_or_null": 1784208218,
+      "duration_value": 601.08,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561063825667",
+      "is_p1": false,
+      "start": 1783935968,
+      "close_or_null": 1784188543,
+      "duration_value": 1393.87,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561067137564",
+      "is_p1": false,
+      "start": 1784118568,
+      "close_or_null": 1784187296,
+      "duration_value": 270.53,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "conv_id": "215561066719704",
+      "is_p1": false,
+      "start": 1784096669,
+      "close_or_null": 1784110222,
+      "duration_value": 70.37,
+      "start_basis": "first_assignment_at"
+     },
+     {
       "conv_id": "215561064288775",
       "is_p1": false,
       "start": 1783952749,
       "close_or_null": 1784041032,
-      "duration_value": 511.4,
+      "duration_value": 511.38,
       "start_basis": "first_assignment_at"
      }
     ]
