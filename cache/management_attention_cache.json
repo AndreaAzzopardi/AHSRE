@@ -1,54 +1,26 @@
 {
   "meta": {
-    "last_run_at": "2026-07-18T02:02:00Z",
-    "total_open": 17,
+    "last_run_at": "2026-07-18T05:36:00Z",
+    "total_open": 18,
     "last_digest": {
-      "generated_at": "2026-07-18T02:02:00Z",
-      "under_control": "Not yet — 1x 🚨 unchanged (INC-8064 H2Bet duplicate bonuses, now 53 days static, REW-176 still parked to mid-Aug, all three breaches unchanged) plus 2x 🔴 newly flagged this cycle (INC-14476 Mystake: True P1 partner silent ~7h+ after root-cause ask with only an internal mitigation and a stale incident.io record; INC-13895 Fusion API: partner silent ~2 days on a slug-confirmation ask with no re-chase sent). On the positive side: three long-standing record-hygiene/ownership gaps closed themselves out this cycle without a management sweep — INC-13889 and INC-10810 both got their Incident Lead field corrected (dropping to 🟢), and INC-12998's blank incident.io summary got filled in. Three long-runners quietly closed overnight with the same unresolved-work-at-closure pattern flagged before (INC-14177, INC-13917, INC-12179 — see resolved list).",
-      "urgent_vs_smaller": "1 urgent (🚨), 2 need a nudge (🔴), 10 watch-level (🟡), 4 well-handled (🟢)",
-      "total_open_delta": "-7 vs last digest (17 vs 24) -- 1 new, 8 resolved",
+      "generated_at": "2026-07-18T05:36:00Z",
+      "under_control": "Not yet — 1x 🚨 unchanged (INC-8064 H2Bet duplicate bonuses, now 53+ days static, REW-176 still parked to mid-Aug, all three breaches unchanged) plus 2x 🔴 unchanged and getting worse overnight (INC-14476 Mystake: True P1, partner silence now ~19h since the root-cause ask — SOC's 07:05 CEST handover confirms 'no feedback from partner as of yet', incident.io record still unrefreshed; INC-13895 Fusion API: partner silence now ~45h on the slug-confirmation ask, still no re-chase sent, incident now 4 days old). Otherwise a quiet night: zero incidents resolved, zero new Slack/Intercom activity across all 17 carried-over incidents, one new P2 (INC-14598 ElastiCache memory alert) opened and promptly worked this morning with no breach. Morning SOC handover (B8) checked clean — all 3 flagged items are tracked with an existing owner.",
+      "urgent_vs_smaller": "1 urgent (🚨), 2 need a nudge (🔴), 10 watch-level (🟡), 5 well-handled (🟢)",
+      "total_open_delta": "+1 vs last digest (18 vs 17) -- 1 new, 0 resolved",
       "new": [
         {
-          "ref": "INC-14565",
-          "note": "P1 Segurobet SMS/notification outage — fast, competent fix (partner ack within Oracle's 30-min P1 SLA, root cause found, partner confirmed resolved by 21:35 UTC), but incident.io was never updated after that confirmation and this is the 2nd same-day recurrence of the same capacity issue (C10/D15/A4)"
+          "ref": "INC-14598",
+          "note": "P2 ElastiCache memory-utilization alert on production-304-gen — Gérard acked within a minute, first working update within ~77min confirming instance already at max size (monitoring not upgrading), status moved to Fixing by 07:12 CEST; no breach, working normally"
         }
       ],
-      "resolved": [
-        {
-          "ref": "INC-14177",
-          "note": "⚠ campeon callback-consumer queue — closed with Joachim's promised partner push (~32h overdue at last check) never confirmed in-channel (C10)"
-        },
-        {
-          "ref": "INC-13917",
-          "note": "⚠ Campeon lifecycle credit-service delays — closed with the incident.io record never touched despite the matter being fully resolved and CSAT-rated on the partner side for 3+ days (D15)"
-        },
-        {
-          "ref": "INC-12179",
-          "note": "⚠ llm-agent Daytona cold-resume failures — closed with all 4 ranked follow-ups from the 04 Jul RCA still outstanding on a recurring failure class (A4/D14)"
-        },
-        {
-          "ref": "INC-10938",
-          "note": "INC-10938 (private) — resolved, review directly"
-        },
-        {
-          "ref": "INC-5630",
-          "note": "⚠ Coinbar SMS credit issue — closed while still awaiting the partner's disable-vs-wait decision Andrea had asked Gustav to chase, no confirmation of which path was taken (D12)"
-        },
-        {
-          "ref": "INC-12246",
-          "note": "Lottomart security P1 (privileged-container curl CVE) — Andrea confirmed the fix deployed and announced closure; resolved clean"
-        },
-        {
-          "ref": "INC-14513",
-          "note": "mrbit activity-manager queue backlog — fast ack despite a paging miss, effective mitigation within ~45min, resolved clean"
-        },
-        {
-          "ref": "INC-14521",
-          "note": "2nd CF Threat Watch alert of the day — correct, fast B6 security escalation with CTO and security team engaged, resolved clean"
-        }
+      "resolved": [],
+      "handover": [
+        {"item": "INC-14503 Meridianbet — no alerts triggered overnight, SRE to confirm if resolvable", "status": "tracked INC-14503, assigned to Giancarlo Laferla (existing Incident Lead) ✅"},
+        {"item": "INC-14476 Mystake — partner recon-feed misconfig, no feedback from partner yet", "status": "tracked INC-14476, assigned to Joachim Farrugia (existing Incident Lead) ✅"},
+        {"item": "INC-14598 ElastiCache memory alert — monitoring at 91%, upgrade only if necessary", "status": "tracked INC-14598, assigned to Gérard E. Pelayo (existing Incident Lead) ✅"}
       ],
       "not_assessed": [],
-      "green_note": "4x well-handled: INC-14423 (log4j CVE, Patrik personally deprioritized to next week with a tracked Linear ticket — a deliberate D12 call, not a silent close), INC-14351 (Stanleybet Romania false unsubscribe alarm, partner-agreed Monday fix test), INC-13889 (Calendars orphan door variations, ownership gap closed and fix shipped), INC-10810 (12play brands fire late, ownership gap closed, real fix already landed)"
+      "green_note": "5x well-handled: INC-14598 (ElastiCache memory alert, fresh P2 promptly acked and worked this morning), INC-14423 (log4j CVE, Patrik personally deprioritized to next week with a tracked Linear ticket — a deliberate D12 call, not a silent close), INC-14351 (Stanleybet Romania false unsubscribe alarm, partner-agreed Monday fix test, snoozed accordingly), INC-13889 (Calendars orphan door variations, ownership gap closed and fix shipped, stable), INC-10810 (12play brands fire late, ownership gap closed, real fix already landed, stable)"
     }
   },
   "incidents": {
@@ -71,9 +43,9 @@
         "partner": null,
         "proposals": [],
         "open_breaches": [
-          "D15: incident sitting in 'Investigating' ~41h with the conclusion settled and even the automated resolve-nudge left unactioned — record not formally closed despite no remaining work"
+          "D15: incident sitting in 'Investigating' ~43h+ with the conclusion settled and even the automated resolve-nudge left unactioned — record not formally closed despite no remaining work"
         ],
-        "why": "Handling itself was fast and correct (B6 escalation, false-positive determination), but the record has now gone unclosed long enough that incident.io's own bot flagged it for resolution on 17 Jul 23:42 CEST and nobody responded — a one-click closure sitting idle is a minor D15 record-hygiene gap worth a nudge to Stephen, not a live incident concern.",
+        "why": "Handling itself was fast and correct (B6 escalation, false-positive determination), but the record has now gone unclosed long enough that incident.io's own bot flagged it for resolution on 17 Jul 23:42 CEST and nobody responded — confirmed still untouched on the 18 Jul morning read (no new Slack activity) — a one-click closure sitting idle is a minor D15 record-hygiene gap worth a nudge to Stephen, not a live incident concern.",
         "suggested_action": "Stephen Riolo to click resolve/close now that the false-positive conclusion is settled."
       },
       "name": "CF Threat Watch: brute-force-suspect,login-success-after-fails on ft-crm.com (41.76.35.208)",
@@ -166,9 +138,9 @@
           "Confirm definitive brand slug with partner before changing FT config - still pending, unacknowledged"
         ],
         "open_breaches": [
-          "C10/D12: partner has not responded to the 16 Jul slug-confirmation ask for ~2 days and no re-chase has been sent; incident now 4 days old (since 14 Jul) with player notifications still blocked for Spinbet Terragon"
+          "C10/D12: partner has not responded to the 16 Jul slug-confirmation ask for ~45h and no re-chase has been sent; incident now 4+ days old (since 14 Jul) with player notifications still blocked for Spinbet Terragon"
         ],
-        "why": "P2, open since 14 Jul (4 days), no lead activity or incident.io update since 17 Jul; partner has been silent on a direct, correct technical ask for ~2 days with no re-chase attempted — passive waiting per D12, and this is the same recurrence pattern that the recently-closed INC-12617 was flagged (A4) for not addressing long-term.",
+        "why": "P2, open since 14 Jul (4+ days), no lead activity or incident.io update since 17 Jul — confirmed zero new Slack/incident.io activity again on the 18 Jul morning read; partner has been silent on a direct, correct technical ask for ~45h with no re-chase attempted — passive waiting per D12, and this is the same recurrence pattern that the recently-closed INC-12617 was flagged (A4) for not addressing long-term.",
         "suggested_action": "Have Incident Lead Joachim Farrugia send a direct re-chase to the partner today referencing the 16 Jul ask; if still no reply within 24h, escalate via the partner's account manager rather than continuing to wait silently."
       },
       "name": "[FIRING:1] Fusion API errors Alerting (spinbet-terragon: 401 @ /external/pusher/:brand true)",
@@ -312,9 +284,9 @@
           "deliver full partner report - cross-check inconclusive so far, now needs to incorporate the partner's broader-scope clarification"
         ],
         "open_breaches": [
-          "C10: impact cross-check still inconclusive, final report to partner not yet delivered; partner has now clarified the reported scope (all urls, not just unsubscribe) and that clarification is unanswered as of this run (~3.5h, overnight — within grace period, but worth a same-day reply)"
+          "C10: impact cross-check still inconclusive, final report to partner not yet delivered; partner's 22:35 UTC clarification (all urls affected, not just unsubscribe) remains unanswered as of this 18 Jul morning run (~7h now, no longer just overnight) — worth a same-day reply"
         ],
-        "why": "Per management note: solved as an incident, only the partner cross-check remains open — active work continuing (Giancarlo checked again today, partner added a clarifying comment this evening), not stalled. Held at 🟡 pending FT's reply to the partner's scope clarification.",
+        "why": "Per management note: solved as an incident, only the partner cross-check remains open — active work continuing (Giancarlo checked again 17 Jul, partner added a clarifying comment that evening), not stalled. No new Slack/Intercom activity confirmed this run. Held at 🟡 pending FT's reply to the partner's scope clarification, now due today.",
         "suggested_action": "Reply to the partner's 22:35 UTC clarification (all urls affected, not just unsubscribe) and fold it into the cross-check/report Estelarbet is waiting on."
       },
       "name": "Shortlinks Redirecting to \"Forbidden\" page",
@@ -353,9 +325,9 @@
           "notify partner + supply failing examples - done"
         ],
         "open_breaches": [
-          "External blocker: BetConstruct 'at a loss' — no ETA; Andrea's 16 Jul re-chase unanswered as of this read"
+          "External blocker: BetConstruct 'at a loss' — no ETA; Andrea's 16 Jul re-chase unanswered, confirmed still the last message in the partner thread as of this 18 Jul read (2 days now)"
         ],
-        "why": "Per management note (16 Jul): BetConstruct-side root cause, active correspondence in partner thread, blocked on vendor not FT inaction — classification held at 🟡 since no new evidence contradicts the note; BetConstruct still has not given an ETA and Andrea's latest chase (16 Jul) has gone unanswered.",
+        "why": "Per management note (16 Jul): BetConstruct-side root cause, active correspondence in partner thread, blocked on vendor not FT inaction — classification held at 🟡 since no new evidence contradicts the note; re-read the partner thread this cycle and confirmed BetConstruct still has not given an ETA and Andrea's latest chase (16 Jul) remains unanswered.",
         "suggested_action": "Consider an FT-side mitigation (locally suppress sends for failed opt-outs) to remove compliance exposure while waiting; consider a further partner escalation if the 16 Jul chase remains unanswered much longer."
       },
       "name": "segurobet: no consumers on queue segurobet.consentsmanager (messages: 1, in: 0/s)",
@@ -495,7 +467,7 @@
           "B5: still holds — zero evidence of any BetConstruct response or outreach progress since the 18 Jun follow-up note",
           "C10/D15: still holds — Intercom conversation remains closed (since 06 Jul) while incident.io stays open P1 with no incident.io-side explanation of the closure or REW-176 status; the explanation exists only in Andrea's management note, not in the incident record itself"
         ],
-        "why": "All three breaches behind the 🚨 flag (A2/A4, B5, C10/D15) still hold with no change this cycle — Slack, Intercom, and incident.io are all exactly as static as last run. This classification reflects the 16 Jul management note (H2Bet accepted the workaround; REW-176 opened 9 Jul is the correct read), but the note does not resolve the underlying breaches: REW-176 is still capacity-blocked until mid-Aug, BetConstruct has shown zero traction, and the incident.io record still does not self-containedly reflect the true state that only Intercom and the management note carry (D15).",
+        "why": "All three breaches behind the 🚨 flag (A2/A4, B5, C10/D15) still hold with no change this cycle — Slack, Intercom, and incident.io are all exactly as static as last run, re-confirmed again on the 18 Jul morning read (zero new messages anywhere). This classification reflects the 16 Jul management note (H2Bet accepted the workaround; REW-176 opened 9 Jul is the correct read), but the note does not resolve the underlying breaches: REW-176 is still capacity-blocked until mid-Aug, BetConstruct has shown zero traction, and the incident.io record still does not self-containedly reflect the true state that only Intercom and the management note carry (D15). Now 53+ days open.",
         "suggested_action": "Decide this week: pull REW-176 forward in Rewards' queue given ~300 duplicate grants/week of continuing leakage, or formally document risk-acceptance until mid-Aug; separately escalate the BetConstruct account-manager/root-cause gap to leadership, and add an incident.io status update reflecting the management note's true state so the record is self-contained per D15."
       },
       "name": "[P1] Intercom Incident : H2Bet Production",
@@ -601,10 +573,10 @@
           "Resync affected origin via user migration and blacklist Cocobet's origin from the daily recon job — applied and confirmed by Giancarlo ~19:47 CEST 17 Jul (~20k players on that origin)"
         ],
         "open_breaches": [
-          "C9/C10: partner has not replied since being given the root-cause explanation/ask at 12:18 CEST 17 Jul — confirmed unresponsive as of 19:07 CEST (~7h after the ask); for a True P1, this now warrants an active chase (account/partner manager), not further passive waiting",
-          "D15: incident.io record has not been refreshed since the 10:31 UTC update — it omits the internal mitigation applied ~19:09-19:47 CEST (origin resync + recon blacklist) and the shift handover to Matteo Rapisarda"
+          "C9/C10: partner has not replied since being given the root-cause explanation/ask at 12:18 CEST 17 Jul — silence now confirmed overnight via the 07:05 CEST 18 Jul SOC handover ('no feedback from partner as of yet'), ~19h after the ask; for a True P1, this now warrants an active chase (account/partner manager), not further passive waiting",
+          "D15: incident.io record has not been refreshed since the 10:31 UTC update — it still omits the internal mitigation applied ~19:09-19:47 CEST (origin resync + recon blacklist) and the shift handover to Matteo Rapisarda, now going on ~19h stale"
         ],
-        "why": "True P1, 'Waiting on Partner' for ~17h+, with partner silence acknowledged internally for 5-7h+ and no visible partner chase beyond an internal ping (C9/C10); incident.io record is stale relative to real Slack progress and doesn't reflect the applied mitigation or current owner (D15). Handling itself is competent (precise root cause, proactive internal workaround instead of just waiting) but these two gaps warrant management attention.",
+        "why": "True P1, 'Waiting on Partner' for ~19h+ as of the 18 Jul morning run (no new Slack/Intercom activity overnight; SOC handover explicitly confirms the partner is still silent), incident.io record still doesn't reflect the applied mitigation or current owner (D15). Handling itself is competent (precise root cause, proactive internal workaround instead of just waiting) but partner silence approaching a full day on a True P1 now warrants an active chase.",
         "suggested_action": "Have Joachim (Incident Lead) or the current owner (Matteo Rapisarda) escalate to Cocobet's account/partner manager to force a response on fixing the recon feed, and post an incident.io update capturing the applied mitigation (origin resync + recon blacklist) and current owner so the record is self-contained."
       }
     },
@@ -634,9 +606,37 @@
         "open_breaches": [
           "D15: incident.io 'Causes' field still 'Unknown' despite substantial mitigation already applied"
         ],
-        "why": "Fast, competent scaling response containing a wide multi-service alert storm, but the record doesn't yet explain what actually caused the migration/sendout backlog.",
+        "why": "Fast, competent scaling response containing a wide multi-service alert storm, but the record doesn't yet explain what actually caused the migration/sendout backlog. 18 Jul run: a 01:42 CEST bot nudge ('no activity, can this be resolved?') went unanswered overnight, and the 07:05 CEST SOC handover flags it again ('no alerts triggered during night shift, to be confirmed by SRE if this incident could be resolved') — quiet and stable, just needs someone to confirm closure or add the root cause.",
         "suggested_action": "Whoever holds the lead (Giancarlo) to add the root cause once identified, not just the mitigation steps."
       }
+    },
+    "INC-14598": {
+      "incident_id": "01KXSN6A1YFW6XTZ6JDABHRY59",
+      "severity": "P2",
+      "first_seen": "2026-07-18T03:44:17Z",
+      "slack_channel_id": "C0BJ8QK5FJ5",
+      "intercom_conversation_id": null,
+      "last_slack_ts_read": "1784351559.225609",
+      "last_intercom_part_at": null,
+      "classification": "🟢",
+      "synthesis": {
+        "summary": "ElastiCache memory-utilization alert for production-304-gen (aws-elasticache) fired at 03:44 UTC (05:44 CEST) 18 Jul; auto-escalation paged Gérard E. Pelayo, who acknowledged within a minute and was set as Incident Lead. First working update came ~77min later (07:01 CEST) confirming the instance is already at cache.r6g.4xlarge with memory holding ~90-91%, so monitoring rather than upgrading further. Joachim Farrugia then joined and ran a Redis key-cleaning pass on Galabet at 07:12 CEST, moving status Triage → Fixing.",
+        "key_events": [
+          "18 Jul 03:44 UTC alert fires, incident auto-created P2",
+          "18 Jul 05:44 CEST Gérard E. Pelayo acknowledges, set as Incident Lead",
+          "18 Jul 07:01 CEST Gérard reports memory holding ~90-91% on cache.r6g.4xlarge, monitoring rather than upgrading",
+          "18 Jul 07:12 CEST Joachim Farrugia runs Redis key cleaning on Galabet; status moved Triage → Fixing"
+        ],
+        "partner": null,
+        "proposals": [
+          "Monitor at current instance size (cache.r6g.4xlarge); upgrade only if necessary — in progress",
+          "Redis key cleaning on Galabet — applied 07:12 CEST 18 Jul"
+        ],
+        "open_breaches": [],
+        "why": "Fresh P2 infra alert with prompt escalation-ack and lead assigned instantly; first working update landed within normal grace (~77min) and status is progressing (Triage→Fixing). Also flagged in the 07:05 CEST SOC handover with an existing owner. No breach evident — flagged for deep-read only because P2 severity always warrants a look."
+      },
+      "name": "[FIRING:1] ElastiCache Memory Utilized alert Alerting production-304-gen (true p2 aws-elasticache)",
+      "channel_readable": true
     }
   }
 }
