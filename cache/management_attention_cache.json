@@ -1,56 +1,38 @@
 {
   "meta": {
-    "last_run_at": "2026-07-19T02:06:00Z",
-    "total_open": 18,
+    "last_run_at": "2026-07-19T05:34:00Z",
+    "total_open": 17,
     "last_digest": {
-      "generated_at": "2026-07-19T02:06:00Z",
-      "under_control": "Not yet — 1x 🚨 unchanged (INC-8064 H2Bet duplicate bonuses, now 54 days static, REW-176 still parked to mid-Aug) plus 3x 🔴: INC-14476 Mystake (True P1, partner silence now ~40h since the root-cause ask — a second lead handoff, Joachim→Giancarlo, happened overnight but no account-manager re-chase followed the last digest's suggested action), INC-13895 Fusion API (partner silence now ~66h on the slug-confirmation ask, second lead handoff Joachim→Matteo overnight, still no re-chase sent, incident now 5 days old), and INC-12022 Shortlinks (newly escalated from 🟡 — the partner's 17 Jul 22:35 UTC scope-clarification has now gone unanswered ~27h, well past a same-day reply). Otherwise a productive night: 3 new P2s opened and handled competently (H2Bet activity-manager backlog — merged a duplicate, live parameter tuning; Rewards wemalaysia JWT noise — root-caused to partner frontend, self-resolved, deferred to Monday; campeon webhook rate-limiting — explained to partner, self-clears), and 3 incidents resolved since last digest (ElastiCache closed clean; Meridianbet and Segurobet am-fire closed with D15/C10 record-hygiene gaps — incident.io never refreshed to reflect the true closing state).",
-      "urgent_vs_smaller": "1 urgent (🚨), 3 need a nudge (🔴), 8 watch-level (🟡), 6 well-handled (🟢)",
-      "total_open_delta": "+0 vs last digest (18 vs 18) -- 3 new, 3 resolved",
-      "new": [
-        {"ref": "INC-14671", "note": "P2 H2Bet activity-manager queue backlog, 63→315 messages overnight — James Hodgson live-tuned max_routines and merged a duplicate incident in; James noted 'seems to be a usual occurrence at night' (A4 watch, no long-term fix tasked yet)"},
-        {"ref": "INC-14640", "note": "P2 Rewards GraphQL/JWT errors for wemalaysia — root-caused to the partner's frontend sending a malformed JWT before a good one; errors self-stopped, plan to raise with Ryan Yu Monday — no breach"},
-        {"ref": "INC-14633", "note": "P2 campeon webhook 403s — partner-side rate limiting that clears eventually, Giancarlo already told the partner it's fine — no breach"}
-      ],
+      "generated_at": "2026-07-19T05:34:00Z",
+      "under_control": "No — 5 items need immediate attention (1 escalate-now, 4 needs-management-attention)",
+      "urgent_vs_smaller": "5 urgent, 6 need a nudge, 6 routine",
+      "total_open_delta": "-1 vs last digest (18 → 17)",
+      "new": [],
       "resolved": [
-        {"ref": "INC-14598", "note": "closed clean — ElastiCache memory alert, prompt ack and mitigation, no breach"},
-        {"ref": "INC-14503", "note": "⚠ closed with incident.io 'Causes' field still 'Unknown' despite the mitigation having worked for a day (D15)"},
-        {"ref": "INC-14565", "note": "⚠ closed without incident.io ever being updated to reflect the partner's Intercom resolution confirmation (C10/D15), and the same-day capacity recurrence's durable fix was never confirmed persisted (A4)"}
+        {
+          "ref": "INC-14671",
+          "note": "⚠ closed with A4 breach unaddressed — lead's own note that the H2Bet nightly queue pattern recurs was never routed for a long-term fix/trend review"
+        }
+      ],
+      "handover": [
+        {
+          "item": "INC-14476 Mystake — partner still hasn't fixed reconciliation feed, no feedback (23:00–08:00 handover)",
+          "status": "tracked INC-14476, assigned to Giancarlo Laferla ✅"
+        },
+        {
+          "item": "INC-14633 campeon — Gian spoke with partner, feedback expected Monday",
+          "status": "tracked INC-14633, assigned to James Hodgson ✅"
+        },
+        {
+          "item": "12play weekend follow-up (Giancarlo, 18 Jul 19:23 in #soc-handover thread) — evening loyalty-credit load strain flagged as recurring",
+          "status": "tracked INC-10810, assigned to Sam Lundborg ✅ (root cause is a known recurring evening load pattern — A4 watch item, not newly lost)"
+        }
       ],
       "not_assessed": [],
-      "green_note": "6x well-handled: INC-14640 (wemalaysia JWT noise, root-caused and self-resolved), INC-14633 (campeon rate-limiting, partner already informed), INC-14351 (Stanleybet Romania, snoozed to the jointly-agreed Monday test), INC-14423 (log4j CVE, Patrik's deliberate next-week deprioritization holding), INC-13889 (Calendars door variations, fix shipped and stable), INC-10810 (12play brands fire late, real fix landed and stable)"
+      "green_note": "6× 🟢 routine: campeon partner-side rate-limit (self-clearing), Stanleybet Romania email-scanner fix in review, CVE-2021-45046 base-image fix in progress, Rewards GraphQL alert quiet, Calendars door-variation fix shipped, H2Bet ClickHouse writer quiet this cycle."
     }
   },
   "incidents": {
-    "INC-14671": {
-      "incident_id": "01KXVGE762VSH8SB762Z18E10W",
-      "severity": "P2",
-      "first_seen": "2026-07-18T20:59:42Z",
-      "slack_channel_id": "C0BJ98GAFH8",
-      "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784426108.326719",
-      "last_intercom_part_at": null,
-      "classification": "🟡",
-      "synthesis": {
-        "summary": "H2Bet activity-manager time-instance queue alert fired 20:59 UTC 18 Jul (63 messages), then a duplicate (INC-14691, 315 messages/no consumers) merged in. Giancarlo Laferla acked within a minute; James Hodgson took over as lead at 23:47 CEST and live-tuned the consumer's max_routines config (20→10→25) while watching the queue build overnight. James noted this 'seems to be a usual occurrence at night' — a recurring pattern not yet formally tracked as one.",
-        "key_events": [
-          "18 Jul 20:59 UTC alert fires, P2, Giancarlo acks within a minute",
-          "18 Jul 21:47 CEST James Hodgson becomes Incident Lead, diagnoses AWS CloudWatch metric-reporting change and adjusts max_routines config live (20→10→25) while monitoring queue depth",
-          "19 Jul 01:55 CEST duplicate incident INC-14691 (same queue, no-consumers variant) merged in; James: 'seems to be a usual occurrence at night'"
-        ],
-        "partner": null,
-        "proposals": [
-          "max_routines config tuning (10→25) — applied live, queue behavior being watched"
-        ],
-        "open_breaches": [
-          "A4 (emerging): James's own comment flags this as a recurring nightly pattern, but no one has been tasked with a permanent fix or trend review yet"
-        ],
-        "why": "Fresh P2 with fast ack and active, competent live troubleshooting all night (merged duplicate, config tuning, root-cause leads followed) — no breach on response mechanics. Flagged 🟡 only because the incident lead's own note that this recurs nightly hasn't yet been escalated into an A4 trend-analysis/long-term-fix ask.",
-        "suggested_action": "Once queue is stable, ask James/Giancarlo whether this is the same recurring nightly pattern as other H2Bet queue incidents and, if so, route it for a long-term fix rather than nightly manual tuning."
-      },
-      "name": "H2Bet: h2bet.activitymanager.timeinstance — 63 messages",
-      "channel_readable": true
-    },
     "INC-14640": {
       "incident_id": "01KXV1TH04KSF1Z0ZFHSMZQM5Y",
       "severity": "P2",
@@ -84,7 +66,7 @@
       "first_seen": "2026-07-18T16:30:24Z",
       "slack_channel_id": "C0BJ2CW8W59",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784412561.123859",
+      "last_slack_ts_read": "1784438310.903019",
       "last_intercom_part_at": null,
       "classification": "🟢",
       "synthesis": {
@@ -337,14 +319,15 @@
       "first_seen": "2026-06-27T08:16:36Z",
       "slack_channel_id": "C0BD4LMUSMV",
       "intercom_conversation_id": null,
-      "last_slack_ts_read": "1784199268.468279",
+      "last_slack_ts_read": "1784428235.309119",
       "last_intercom_part_at": null,
-      "classification": "🟡",
+      "classification": "🔴",
       "synthesis": {
-        "summary": "Segurobet Consent Manager remains stalled since 27 Jun on partner (BetConstruct) Operator API 500s. Per management note, the live track is the partner thread, not this incident channel. No new activity in either this cycle — Andrea's 16 Jul re-chase to Eduardo Nunes (BetConstruct) remains unanswered, now ~3 days.",
+        "summary": "Segurobet Consent Manager remains stalled since 27 Jun on partner (BetConstruct) Operator API 500s. Per management note, the live track is the partner thread, not this incident channel. No reply there since Andrea's 16 Jul re-chase to Eduardo Nunes (BetConstruct) — now ~9 days unanswered (partner's last message was 9 Jul). New this cycle: James Hodgson left the incident Slack channel (19 Jul 04:30 CEST).",
         "key_events": [
           "No new activity in the main incident channel or the partner thread this cycle",
-          "16 Jul 12:54 CEST: Andrea's re-chase to Eduardo Nunes (BetConstruct) — still unanswered, now ~3 days"
+          "16 Jul 12:54 CEST: Andrea's re-chase to Eduardo Nunes (BetConstruct) — still unanswered",
+          "19 Jul 04:30 CEST: James Hodgson left the incident channel"
         ],
         "partner": {
           "first_reported": "2026-06-27T08:36:15+02:00",
@@ -358,10 +341,10 @@
           "notify partner + supply failing examples - done"
         ],
         "open_breaches": [
-          "External blocker: BetConstruct 'at a loss' — no ETA; Andrea's 16 Jul re-chase now unanswered for ~3 days"
+          "C9/C10: BetConstruct has not responded to Andrea's 16 Jul chase — now ~9 days of partner silence on an unresolved P2 open since 27 Jun (22 days); no FT-side mitigation applied in the meantime"
         ],
-        "why": "Per management note (16 Jul): BetConstruct-side root cause, blocked on vendor not FT inaction — held at 🟡, but Andrea's chase has now gone unanswered long enough (~3 days) that the note's own suggestion of 'further escalation if it remains unanswered much longer' is starting to apply.",
-        "suggested_action": "Consider an FT-side mitigation (locally suppress sends for failed opt-outs) and a further partner/account-manager escalation given the chase has now gone 3 days unanswered."
+        "why": "Management note (16 Jul) held this at 🟡 as a BetConstruct-side blocker with active chasing, and said further escalation applies 'if it remains unanswered much longer' — that condition is now met: the 16 Jul chase has had zero partner reply for ~9 days, on a P2 open 22 days with no FT-side mitigation attempted. Escalating to 🔴 per the note's own contingency, note preserved.",
+        "suggested_action": "Escalate via BetConstruct account manager (not just the engineering contact) given 9 days of silence; in parallel, consider an FT-side mitigation (locally suppress sends for failed opt-outs) rather than waiting further."
       },
       "name": "segurobet: no consumers on queue segurobet.consentsmanager (messages: 1, in: 0/s)",
       "channel_readable": true,
