@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-18",
+  "generated": "2026-07-19",
   "method": {
     "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
     "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
@@ -280,19 +280,19 @@
     "2026-06-22": {
       "total": 174,
       "leads": {
-        "Gérard E. Pelayo": 11,
-        "Simon Grenefalk": 7,
+        "Joachim Farrugia": 48,
         "James Hodgson": 36,
         "Nazareno": 28,
-        "Matteo Rapisarda": 22,
-        "Joachim Farrugia": 48,
+        "Matteo Rapisarda": 23,
+        "Gérard E. Pelayo": 11,
+        "Simon Grenefalk": 7,
+        "Simon Brown": 6,
+        "Jason": 4,
         "Jeremy": 3,
-        "Simon Brown": 7,
-        "Andrea Azzopardi": 2,
         "stephen.riolo": 3,
-        "Daniel Lindengren": 1,
+        "Andrea Azzopardi": 2,
         "Giancarlo Laferla": 2,
-        "Jason": 4
+        "Sam Lundborg": 1
       },
       "escalations": {
         "explicit_sre_path": 13,
@@ -654,26 +654,26 @@
       }
     },
     "2026-07-13": {
-      "total": 140,
+      "total": 160,
       "partial": true,
       "leads": {
-        "Joachim Farrugia": 35,
+        "Joachim Farrugia": 38,
         "James Hodgson": 33,
+        "Giancarlo Laferla": 24,
         "Matteo Rapisarda": 18,
-        "Giancarlo Laferla": 17,
+        "Gérard E. Pelayo": 13,
         "Nazareno": 13,
-        "Gérard E. Pelayo": 8,
-        "Jeremy Curmi": 6,
+        "Jeremy": 7,
+        "NO LEAD": 5,
+        "Sam Lundborg": 3,
         "stephen.riolo": 3,
         "Andrea Azzopardi": 2,
-        "Sam Lundborg": 2,
-        "Daniel Lindengren (Vacation. Back 26-08-10)": 1,
-        "NO LEAD": 2
+        "Daniel Lindengren": 1
       },
       "handoffs": {
         "sre": {
           "night": 1,
-          "day": 4,
+          "day": 5,
           "evening": 2
         },
         "other": {
@@ -683,9 +683,9 @@
         }
       },
       "escalations": {
-        "explicit_sre_path": 7,
-        "ladder_climbs": 13,
-        "sre_l1_cover": 107,
+        "explicit_sre_path": 8,
+        "ladder_climbs": 14,
+        "sre_l1_cover": 151,
         "classified": {
           "01KXG5K137YX77M9TTY1P3DEKD": "cover",
           "01KXG5HWW9MY90JCY8Z5PS55HD": "cover",
@@ -806,7 +806,52 @@
           "01KXTSE974W29Z2AH8QZVA9FYK": "cover",
           "01KXTRJQNRECGY0BZ28PNW3QRT": "cover",
           "01KXTR0ET7JAJ7RNSVYRDGTN2Z": "cover",
-          "01KXTNE30MRZFRZW14VFGZ3RH1": "cover"
+          "01KXTNE30MRZFRZW14VFGZ3RH1": "cover",
+          "01KXY2V8YH0SVJ1GGK0895J3XJ": "cover",
+          "01KXY28JMKF4ABY4H08YVA467N": "cover",
+          "01KXY1GM0PWFVZPGMB2YRC07WX": "cover",
+          "01KXXZP89ZW02A4Q0SFGKT5TMB": "cover",
+          "01KXXXP43H2E3W6F6NDDP3CBM9": "cover",
+          "01KXXWVTKX08GFV6HDJXH8P1AF": "cover",
+          "01KXXWHM3ZQB20YKB090Y33SYC": "cover",
+          "01KXXW8D6EECFYF4SKS8X1743X": "cover",
+          "01KXXVQBJEK43M1BNMENH22QT2": "cover",
+          "01KXXV55QKDMZ012NNPH2YZ8E5": "cover",
+          "01KXXSRN89T41PV1JF02WPVHS7": "cover",
+          "01KXXS77E8ZEC2WXM56N05J1VF": "cover",
+          "01KXXS3M1TZBR5NR5CQAXY83HB": "cover",
+          "01KXXPMT06QMMVD68ES9WT5CYB": "cover",
+          "01KXXPMSPQMM1XD40WT1N6MHWZ": "cover",
+          "01KXXPMSJ9ZBKDT1167SV943AT": "cover",
+          "01KXXPMSEVK8F4S3DKNZX9JJ76": "cover",
+          "01KXXPMS1BFVBBX5Q2QP3KHX4W": "cover",
+          "01KXXPMRMBGSPD7PJKXMGRWDK7": "cover",
+          "01KXXPMRBKFRQX7QF61P4W75K9": "cover",
+          "01KXXP83JR5WDFHRA27RM4ERS7": "cover",
+          "01KXXP817VZJMT3VA92DFMMGQV": "cover",
+          "01KXXNBSAC577YEP03PCTP026E": "cover",
+          "01KXXM9AZM5ESD1EZF1YXCDNSN": "cover",
+          "01KXXKYVZCEFHC249P0XCY37TR": "cover",
+          "01KXXKNT71HX1NSTVWVKJAYRNS": "cover",
+          "01KXXKBFB99CFEJ739HGQKQFAW": "cover",
+          "01KXXJSFCPS37PQFARBEMA5STD": "cover",
+          "01KXXJH6TBY1Y4NVSGRHSZW23Q": "cover",
+          "01KXXJH56V0Z6F686C0TS6R88C": "cover",
+          "01KXXJ2J18KC6KP2G7NYTGXEWB": "cover",
+          "01KXXF86CYHC7Q43BKTKHJ3RSV": "cover",
+          "01KXXEXSVP63WJG53C6DJ921N5": "cover",
+          "01KXXDYKS3N0S8DGCBZWD6YRNA": "cover",
+          "01KXXDC9Z80C2ZHVQ2AWX7X2C2": "cover",
+          "01KXXDC9T9Z8JGDBT4TCF7KQ7J": "cover",
+          "01KXXD33ZKSJ6DSFJP08YWHMRN": "cover",
+          "01KXXC7N5299DN09MHA53RF5RZ": "cover",
+          "01KXXBHRRBGDMFTGQVCWE6D9TW": "cover",
+          "01KXX94GQTEHQXK14CVFEJWPXW": "cover",
+          "01KXX94EJRHJ258EHGE35395KK": "cover",
+          "01KXX87EQGRXTQ0HFT0CCTS58G": "cover",
+          "01KXX7TR8ZWHS9F3C94WSE3E0H": "cover",
+          "01KXX7DKQS4SVZABERSST6CV42": "cover",
+          "01KXX1FC132EC9TSKADECG4X77": "climb"
         }
       }
     }
