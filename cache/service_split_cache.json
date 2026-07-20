@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-19",
+  "generated": "2026-07-20",
   "method": {
     "servicing": "Incident Lead role per incident (incident_list include roles, reported_at bucketed, private excluded), person mapped to team via roster",
     "explicit": "escalations on the dedicated SRE path EP010 (human-created hand-offs), escalation_stats group_by week",
@@ -654,20 +654,18 @@
       }
     },
     "2026-07-13": {
-      "total": 160,
-      "partial": true,
+      "total": 141,
       "leads": {
         "Joachim Farrugia": 38,
         "James Hodgson": 33,
-        "Giancarlo Laferla": 24,
+        "Giancarlo Laferla": 19,
         "Matteo Rapisarda": 18,
-        "Gérard E. Pelayo": 13,
         "Nazareno": 13,
-        "Jeremy": 7,
-        "NO LEAD": 5,
-        "Sam Lundborg": 3,
+        "Gérard E. Pelayo": 10,
         "stephen.riolo": 3,
+        "Jeremy": 2,
         "Andrea Azzopardi": 2,
+        "Sam Lundborg": 2,
         "Daniel Lindengren": 1
       },
       "handoffs": {
@@ -852,6 +850,59 @@
           "01KXX7TR8ZWHS9F3C94WSE3E0H": "cover",
           "01KXX7DKQS4SVZABERSST6CV42": "cover",
           "01KXX1FC132EC9TSKADECG4X77": "climb"
+        }
+      }
+    },
+    "2026-07-20": {
+      "total": 19,
+      "leads": {
+        "Simon Brown": 7,
+        "James Hodgson": 6,
+        "Matteo Rapisarda": 2,
+        "Gérard E. Pelayo": 2,
+        "Jeremy": 1,
+        "Giancarlo Laferla": 1
+      },
+      "partial": true,
+      "escalations": {
+        "explicit_sre_path": 1,
+        "ladder_climbs": 1,
+        "sre_l1_cover": 21,
+        "classified": {
+          "01KY07FCW6NP7ZZMPRGQ866TX4": "cover",
+          "01KY06E5EZKVB49CD31YEYKJF1": "cover",
+          "01KY061JZ4DXTGM7Z232G1B5SZ": "cover",
+          "01KY05VVGKGKVA4MWBKFA94KSA": "cover",
+          "01KY04X3EFW4CKX49SZSFGT6AG": "cover",
+          "01KY04KSB691T9YE128SSXWH37": "cover",
+          "01KY046HWN0KRC1Z0RRMVJAXPR": "cover",
+          "01KY0447F9PKQR0V8Y8XECN373": "cover",
+          "01KY043M42TM7SPWVAR24TCVM4": "cover",
+          "01KY0362BPTP3XX85TZBSBXZ28": "cover",
+          "01KY02WWAYSH6NFSNF6EV05FWT": "cover",
+          "01KY02M8WZXS55N7V1X4DVWAZX": "cover",
+          "01KY02AHZQJEZ84NKP1Q96P4Z3": "cover",
+          "01KY024MGFAR7VT74YE7MZN2Q4": "cover",
+          "01KY01P9GBBQN67E98QP2DHP5F": "cover",
+          "01KY01G33AH8AA7J3MTFCZZEG7": "cover",
+          "01KY01G1R4DM45VNYCEX4Y90AE": "cover",
+          "01KY01G1NP59GE6KHTNHQMWJD8": "cover",
+          "01KY01B9ZEB1ND4SNGE34R0NSY": "cover",
+          "01KY00WRH496ZEGW1PZ0FK849A": "cover",
+          "01KY00WN84W28ST6BR27MVWQ9S": "cover",
+          "01KXZTWH8S7PPRP39D60WC1F8R": "climb"
+        }
+      },
+      "handoffs": {
+        "sre": {
+          "night": 0,
+          "day": 0,
+          "evening": 1
+        },
+        "other": {
+          "night": 0,
+          "day": 0,
+          "evening": 0
         }
       }
     }
