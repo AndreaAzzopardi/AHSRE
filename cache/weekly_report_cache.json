@@ -5108,10 +5108,10 @@
       {
         "reference": "INC-12856",
         "name": "MemoryDB 274 Reached 90% Threshold",
-        "status": "Documenting",
+        "status": "Closed",
         "reported_at": "2026-07-09T03:55:26Z",
         "permalink": "https://app.incident.io/fasttrack-solutions/incidents/12856",
-        "summary": "Problem: MemoryDB 274 reached 90% memory usage and became stuck mid-upgrade during an AWS-side scaling stall, which halted processing of scheduled actions.\n\nImpact: Scheduled actions were delayed for 21 affected brands while the database could not process queued work in time.\n\nCause: AWS indicated the scaling stall was likely a service-level issue, with shards or new hosts getting stuck during host creation while MemoryDB 274 was scaling up.\n\nActions Taken: We completed scaling MemoryDB 274 up to db.r6gd.4xlarge, validated key-count consistency post-cutover (~5.43M keys), and re-enabled scheduled actions. We raised a support ticket with AWS and escalated to their MemoryDB team for an official root-cause analysis. The incident is now in the Documenting stage as the write-up is finalized."
+        "summary": "Problem: MemoryDB 274 reached 90% memory usage and became stuck mid-upgrade during an AWS-side scaling stall, which halted processing of scheduled actions.\n\nImpact: Scheduled actions were delayed for 21 affected brands while the database could not process queued work in time.\n\nCause: AWS indicated the scaling stall was likely a service-level issue, with shards or new hosts getting stuck during host creation while MemoryDB 274 was scaling up.\n\nActions Taken: We completed scaling MemoryDB 274 up to db.r6gd.4xlarge, validated key-count consistency post-cutover (~5.43M keys), and re-enabled scheduled actions. We raised a support ticket with AWS and escalated to their MemoryDB team for an official root-cause analysis. The incident has since been closed."
       }
     ],
     "engineer_workload": {
@@ -5382,54 +5382,72 @@
       "unclassified": 1
     },
     "incident_volume": {
-      "total": 133,
-      "P1": 6,
-      "P2": 65,
-      "P3": 58,
-      "P4": 4,
-      "ic_ticket_count": 19
+      "total": 141,
+      "P1": 7,
+      "P2": 75,
+      "P3": 54,
+      "P4": 5
     },
     "alert_volume": {
-      "total": 1267,
+      "total": 1588,
       "by_source": {
         "Cloudflare AI Loop": 1,
         "Cloudflare Security Scanner": 5,
-        "Dead Man's Snitch": 71,
-        "Grafana SOC alerts": 216,
-        "Grafana alerts": 233,
-        "HTTP alerts": 719,
-        "Intercom": 20,
+        "Dead Man's Snitch": 105,
+        "Grafana SOC alerts": 254,
+        "Grafana alerts": 244,
+        "HTTP alerts": 956,
+        "Intercom": 21,
         "Unknown": 2
       }
     },
-    "true_p1_incidents": [],
+    "true_p1_incidents": [
+      {
+        "reference": "INC-14303",
+        "name": "All CRM Log In Not Available",
+        "status": "Closed",
+        "reported_at": "2026-07-16T08:13:01Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/14303",
+        "summary": "Problem: CRM login was unavailable across all brands.\n\nImpact: Users on the CRM landing page could not log in across all brands for part of the incident; users who were already logged in were not affected unless they logged out.\n\nCause: Third-party login provider WorkOS experienced elevated platform errors on its side.\n\nActions Taken: We sent an in-app banner warning already logged-in users not to log out while the issue was ongoing. WorkOS identified the cause, implemented a fix, and error rates decreased. Client communications were sent confirming login was working again, and the incident is now closed."
+      },
+      {
+        "reference": "INC-14476",
+        "name": "[P1] Intercom Incident : Mystake Production",
+        "status": "Waiting on Partner",
+        "reported_at": "2026-07-17T08:42:38Z",
+        "permalink": "https://app.incident.io/fasttrack-solutions/incidents/14476",
+        "summary": "Problem: Blocked users for Cocobet were incorrectly being shown as unblocked after the daily reconciliation job.\n\nImpact: Blocked users could appear to disappear from the system after the daily reconciliation run. Two users were confirmed to still be blocked, while other users, including a reported example, were flipped back to unblocked.\n\nCause: Cocobet is not sending the expected daily list of blocked and unblocked users to the reconciliation service, so the recon job (running daily at approximately 04:20 CEST) treats missing users as unblocked.\n\nActions Taken: We confirmed the root cause is a partner-side data and configuration issue and identified the specific affected user accounts. Cocobet still needs to fix their reconciliation feed to include the full blocked and unblocked user list each day; the incident remains open in Waiting on Partner status pending that fix."
+      }
+    ],
     "p1_frt_sla": {
-      "total": 6,
-      "hit": 6,
+      "total": 7,
+      "hit": 7,
       "missed": 0,
       "hit_rate": 100.0,
-      "median_frt_min": 5.2,
-      "mean_frt_min": 5.0,
+      "median_frt_min": 6.5,
+      "mean_frt_min": 5.4,
       "frt_seconds": [
+        475,
+        389,
         548,
         41,
         83,
-        389,
         498,
         233
       ]
     },
     "p1_brands": {
+      "Pokerklas": 1,
+      "Mystake ": 1,
       "Seguro Bet": 1,
       "Sisutech": 1,
       "Brazil Bet": 1,
-      "Mystake": 1,
       "Rhino Entertainment": 1
     },
     "p1_frt_breaches": [],
     "mtta": {
       "P1": {
-        "n": 5,
+        "n": 7,
         "n_acked": 0,
         "ack_rate": 0.0,
         "mtta_minutes": [],
@@ -5437,9 +5455,9 @@
         "mean_mtta_min": null
       },
       "P2": {
-        "n": 65,
-        "n_acked": 50,
-        "ack_rate": 0.77,
+        "n": 75,
+        "n_acked": 61,
+        "ack_rate": 0.81,
         "mtta_minutes": [
           1.12,
           1.28,
@@ -5460,45 +5478,56 @@
           15.78,
           15.87,
           16.98,
+          18.05,
           22.05,
           22.32,
+          23.48,
           24.42,
+          25.22,
           26.57,
           27.63,
           30.2,
           30.57,
           31.07,
           32.5,
+          33.32,
           35.4,
           40.57,
           41.63,
           41.7,
+          42.42,
           44.08,
           47.33,
           50.7,
           52.53,
+          52.82,
+          52.9,
           54.5,
           58.0,
           70.28,
           71.23,
+          76.8,
           79.0,
+          88.35,
           88.43,
           103.13,
           138.53,
           153.23,
           224.5,
           237.97,
+          276.78,
           286.85,
           297.55,
+          304.92,
           377.87
         ],
-        "median_mtta_min": 30.38,
-        "mean_mtta_min": 60.1
+        "median_mtta_min": 32.5,
+        "mean_mtta_min": 65.6
       },
       "P3": {
-        "n": 68,
-        "n_acked": 35,
-        "ack_rate": 0.51,
+        "n": 54,
+        "n_acked": 43,
+        "ack_rate": 0.8,
         "mtta_minutes": [
           1.03,
           1.22,
@@ -5510,51 +5539,61 @@
           4.48,
           4.55,
           4.63,
+          5.02,
           5.48,
           6.37,
           6.53,
           9.05,
           9.72,
           10.43,
+          10.43,
           11.67,
           13.45,
+          14.52,
           14.93,
           18.98,
           20.07,
           20.25,
+          24.25,
           26.77,
           33.1,
           33.78,
           59.18,
           60.02,
           60.35,
+          67.1,
           76.4,
           136.47,
           136.52,
           154.87,
           185.23,
           273.82,
-          334.27
+          284.77,
+          334.27,
+          372.45,
+          422.33
         ],
-        "median_mtta_min": 13.45,
-        "mean_mtta_min": 50.0
+        "median_mtta_min": 14.9,
+        "mean_mtta_min": 68.6
       },
       "P4": {
-        "n": 4,
-        "n_acked": 0,
-        "ack_rate": 0.0,
-        "mtta_minutes": [],
-        "median_mtta_min": null,
-        "mean_mtta_min": null
+        "n": 5,
+        "n_acked": 1,
+        "ack_rate": 0.2,
+        "mtta_minutes": [
+          3568.08
+        ],
+        "median_mtta_min": 3568.1,
+        "mean_mtta_min": 3568.1
       }
     },
     "csat": {
-      "total": 14,
+      "total": 16,
       "rated": 4,
       "avg_score": 5.0,
       "pct_positive": 100.0,
       "pct_perfect": 100.0,
-      "response_rate": 28.6,
+      "response_rate": 25.0,
       "score_dist": {
         "5": 4,
         "4": 0,
@@ -5565,23 +5604,25 @@
     },
     "csat_low_scores": [],
     "partner_tickets": {
-      "p1_responded": 5,
-      "p2_responded": 5,
+      "p1_responded": 6,
+      "p2_responded": 6,
       "p3_responded": 4,
       "p1_open": 0,
       "p2_open": 0,
       "p3_open": 0,
-      "total_count": 14,
-      "avg_response_min": 90.9,
+      "total_count": 16,
+      "avg_response_min": 82.4,
       "median_response_min": 9.8,
       "response_times_s": [
+        2312,
+        475,
+        625,
+        389,
         548,
         41,
         2531,
         409,
         83,
-        625,
-        389,
         59184,
         3393,
         448,
@@ -5592,21 +5633,22 @@
       ]
     },
     "p2p3_frt_sla": {
-      "hit": 8,
+      "hit": 9,
       "missed": 1,
-      "total": 9,
-      "hit_rate": 88.9,
-      "mean_response_min": 139.0,
-      "median_response_min": 14.1,
+      "total": 10,
+      "hit_rate": 90.0,
+      "mean_response_min": 128.9,
+      "median_response_min": 26.3,
       "response_times_s": [
+        2312,
+        625,
         2531,
         409,
-        625,
         59184,
-        720,
         3393,
         448,
         848,
+        720,
         6886
       ]
     },
@@ -5624,12 +5666,20 @@
     "engineer_workload": {
       "tickets": [
         {
+          "reference": "INC-14728",
+          "lead": "Giancarlo Laferla",
+          "severity": "P1",
+          "reported_at": "2026-07-19T11:32:35Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
           "reference": "INC-14565",
           "lead": "Matteo Rapisarda",
           "severity": "P1",
           "reported_at": "2026-07-17T20:10:12Z",
-          "resolved_at": null,
-          "closed": false
+          "resolved_at": "2026-07-18T08:34:59Z",
+          "closed": true
         },
         {
           "reference": "INC-14532",
@@ -5641,7 +5691,7 @@
         },
         {
           "reference": "INC-14476",
-          "lead": "Joachim Farrugia",
+          "lead": "Giancarlo Laferla",
           "severity": "P1",
           "reported_at": "2026-07-17T08:42:38Z",
           "resolved_at": null,
@@ -5783,6 +5833,146 @@
       "true_p1": 0,
       "false_p1": 0,
       "unclassified": 0
-    }
+    },
+    "incident_volume": {
+      "total": 15,
+      "P1": 0,
+      "P2": 7,
+      "P3": 6,
+      "P4": 2,
+      "ic_ticket_count": 4
+    },
+    "alert_volume": {
+      "total": 182,
+      "by_source": {
+        "Dead Man's Snitch": 6,
+        "Grafana SOC alerts": 36,
+        "Grafana alerts": 5,
+        "HTTP alerts": 131,
+        "Intercom": 4
+      }
+    },
+    "mtta": {
+      "P2": {
+        "n": 7,
+        "n_acked": 3,
+        "ack_rate": 0.43,
+        "mtta_minutes": [
+          17.8,
+          27.72,
+          46.82
+        ],
+        "median_mtta_min": 27.7,
+        "mean_mtta_min": 30.8
+      },
+      "P3": {
+        "n": 6,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      },
+      "P4": {
+        "n": 2,
+        "n_acked": 0,
+        "ack_rate": 0.0,
+        "mtta_minutes": [],
+        "median_mtta_min": null,
+        "mean_mtta_min": null
+      }
+    },
+    "true_p1_incidents": [],
+    "engineer_workload": {
+      "tickets": [
+        {
+          "reference": "INC-14855",
+          "lead": "Matteo Rapisarda",
+          "severity": "P3",
+          "reported_at": "2026-07-20T13:33:43Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-14845",
+          "lead": "Matteo Rapisarda",
+          "severity": "P2",
+          "reported_at": "2026-07-20T12:55:55Z",
+          "resolved_at": null,
+          "closed": false
+        },
+        {
+          "reference": "INC-14839",
+          "lead": "Simon Brown",
+          "severity": "P3",
+          "reported_at": "2026-07-20T10:17:24Z",
+          "resolved_at": "2026-07-20T11:04:51Z",
+          "closed": true
+        },
+        {
+          "reference": "INC-14835",
+          "lead": "Simon Brown",
+          "severity": "P2",
+          "reported_at": "2026-07-20T08:59:54Z",
+          "resolved_at": "2026-07-20T10:25:36Z",
+          "closed": true
+        }
+      ]
+    },
+    "p1_frt_sla": {
+      "total": 0,
+      "hit": 0,
+      "missed": 0,
+      "hit_rate": 0.0,
+      "median_frt_min": null,
+      "mean_frt_min": null,
+      "frt_seconds": []
+    },
+    "p1_brands": {},
+    "p1_frt_breaches": [],
+    "csat": {
+      "total": 2,
+      "rated": 0,
+      "avg_score": null,
+      "pct_positive": 0.0,
+      "pct_perfect": 0.0,
+      "response_rate": 0.0,
+      "score_dist": {
+        "5": 0,
+        "4": 0,
+        "3": 0,
+        "2": 0,
+        "1": 0
+      }
+    },
+    "csat_low_scores": [],
+    "partner_tickets": {
+      "p1_responded": 0,
+      "p2_responded": 1,
+      "p3_responded": 1,
+      "p1_open": 0,
+      "p2_open": 0,
+      "p3_open": 0,
+      "total_count": 2,
+      "avg_response_min": 31.4,
+      "median_response_min": 31.4,
+      "response_times_s": [
+        3578,
+        194
+      ]
+    },
+    "p2p3_frt_sla": {
+      "hit": 2,
+      "missed": 0,
+      "total": 2,
+      "hit_rate": 100.0,
+      "mean_response_min": 31.4,
+      "median_response_min": 31.4,
+      "response_times_s": [
+        3578,
+        194
+      ]
+    },
+    "p2p3_frt_breaches": []
   }
 }

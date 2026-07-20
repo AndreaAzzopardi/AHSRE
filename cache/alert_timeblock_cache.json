@@ -360,41 +360,77 @@
     }
   },
   "2026-07-13": {
-    "days_in_week": 4,
-    "partial": true,
-    "note": "Partial week — only 13 Jul to 16 Jul data available (Monday to Thursday)",
+    "days_in_week": 7,
     "blocks": {
       "day": {
         "label": "08:00-16:00 UTC",
-        "total": 400,
-        "declined": 58,
-        "accepted": 342,
-        "waste_pct": 14.5
+        "total": 531,
+        "declined": 74,
+        "accepted": 457,
+        "waste_pct": 13.9
       },
       "evening": {
         "label": "16:00-00:00 UTC",
-        "total": 317,
-        "declined": 17,
-        "accepted": 300,
-        "waste_pct": 5.4
+        "total": 505,
+        "declined": 52,
+        "accepted": 453,
+        "waste_pct": 10.3
       },
       "night": {
         "label": "00:00-08:00 UTC",
-        "total": 388,
-        "declined": 106,
-        "accepted": 282,
-        "waste_pct": 27.3
+        "total": 552,
+        "declined": 131,
+        "accepted": 421,
+        "waste_pct": 23.7
       }
     },
-    "total": 1105,
-    "total_declined": 181,
-    "total_accepted": 924,
-    "overall_waste_pct": 16.4,
+    "total": 1588,
+    "total_declined": 257,
+    "total_accepted": 1331,
+    "overall_waste_pct": 16.2,
     "incident_blocks": {
-      "day": 59,
-      "evening": 26,
-      "night": 33,
-      "total": 118
+      "day": 75,
+      "evening": 37,
+      "night": 29,
+      "total": 141
+    }
+  },
+  "2026-07-20": {
+    "days_in_week": 0,
+    "partial": true,
+    "note": "Partial week — no fully-elapsed UTC calendar days available yet (2026-07-20 in progress)",
+    "blocks": {
+      "day": {
+        "label": "08:00-16:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      },
+      "evening": {
+        "label": "16:00-00:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      },
+      "night": {
+        "label": "00:00-08:00 UTC",
+        "total": 0,
+        "declined": 0,
+        "accepted": 0,
+        "waste_pct": 0.0
+      }
+    },
+    "total": 0,
+    "total_declined": 0,
+    "total_accepted": 0,
+    "overall_waste_pct": 0.0,
+    "incident_blocks": {
+      "day": 0,
+      "evening": 0,
+      "night": 0,
+      "total": 0
     }
   }
 }
