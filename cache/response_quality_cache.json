@@ -1,5 +1,5 @@
 {
- "generated": "2026-07-20",
+ "generated": "2026-07-23",
  "method": {
   "cause": "incident_stats grouped by custom_field:01KQC810AEHE7YEQ9MG04376QF ('Cause of Incident', multi-select — counts can sum above total) per week (created_after=Mon, created_before=Sun INCLUSIVE), mode standard+retrospective, status triage/active/post-incident/closed/paused, sample_ids kept as refs (cap 250/group). 'None' = cause not set (spikes on the in-progress week until triage catches up).",
   "inform": "Slack message search ('FT Incident for internal reference' + variants, after:window) filtered to channels starting 'ftcrm' ONLY (golive-* are not partner comms). Earliest mention per incident — multi-brand incidents count ONCE. delay_min vs incident.io reported_at (== incident channel creation ±1s). Author logged per entry (informer log).",
@@ -5282,10 +5282,10 @@
    },
    "mttr": {
     "p1": {
-     "closed": 12,
-     "open": 1,
-     "median_h": 15.92,
-     "p90_h": 83.7
+     "closed": 13,
+     "open": 0,
+     "median_h": 25.63,
+     "p90_h": 269.43
     },
     "other": {
      "closed": 21,
@@ -5295,82 +5295,12 @@
     },
     "items": [
      {
-      "id": "215561046412156",
+      "id": "215561049343182",
       "is_p1": true,
-      "start": "2026-07-02T13:29:38+00:00",
-      "close": null,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "id": "215561047627727",
-      "is_p1": true,
-      "start": "2026-07-03T09:43:10+00:00",
-      "close": "2026-07-14T15:08:58+00:00",
+      "start": "2026-07-04T11:21:30+00:00",
+      "close": "2026-07-04T17:34:46+00:00",
       "start_basis": "first_assignment_at",
-      "duration_h": 269.43
-     },
-     {
-      "id": "215561046574934",
-      "is_p1": false,
-      "start": "2026-07-02T14:38:44+00:00",
-      "close": "2026-07-15T13:06:59+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 4228.25
-     },
-     {
-      "id": "215561044802323",
-      "is_p1": false,
-      "start": "2026-07-01T13:59:41+00:00",
-      "close": "2026-07-10T11:42:16+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 3222.58
-     },
-     {
-      "id": "215561046342079",
-      "is_p1": false,
-      "start": "2026-07-02T12:10:57+00:00",
-      "close": null,
-      "start_basis": "created_at"
-     },
-     {
-      "id": "215561046220841",
-      "is_p1": false,
-      "start": "2026-07-02T10:00:17+00:00",
-      "close": "2026-07-09T06:23:02+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 2339.72
-     },
-     {
-      "id": "215561042455348",
-      "is_p1": false,
-      "start": "2026-06-30T08:08:15+00:00",
-      "close": "2026-07-08T14:10:35+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 3190.58
-     },
-     {
-      "id": "215561040792132",
-      "is_p1": false,
-      "start": "2026-06-29T07:49:38+00:00",
-      "close": "2026-07-07T13:46:53+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 3166.88
-     },
-     {
-      "id": "215561046360038",
-      "is_p1": false,
-      "start": "2026-07-02T12:31:43+00:00",
-      "close": "2026-07-07T06:42:26+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 1228.28
-     },
-     {
-      "id": "215561047509338",
-      "is_p1": false,
-      "start": "2026-07-03T07:53:40+00:00",
-      "close": "2026-07-07T08:55:57+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 960.0
+      "duration_h": 6.22
      },
      {
       "id": "215561048274264",
@@ -5381,36 +5311,20 @@
       "duration_h": 60.7
      },
      {
+      "id": "215561047627727",
+      "is_p1": true,
+      "start": "2026-07-03T09:43:10+00:00",
+      "close": "2026-07-14T15:08:58+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 269.43
+     },
+     {
       "id": "215561047611998",
       "is_p1": false,
       "start": "2026-07-03T09:23:40+00:00",
       "close": "2026-07-06T12:25:42+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 662.03
-     },
-     {
-      "id": "215561049343182",
-      "is_p1": true,
-      "start": "2026-07-04T11:21:30+00:00",
-      "close": "2026-07-04T17:34:46+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 6.22
-     },
-     {
-      "id": "215561044506651",
-      "is_p1": false,
-      "start": "2026-07-01T10:14:34+00:00",
-      "close": "2026-07-04T14:04:44+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 1365.43
-     },
-     {
-      "id": "215561047595167",
-      "is_p1": false,
-      "start": "2026-07-03T09:06:00+00:00",
-      "close": "2026-07-03T15:44:48+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 398.8
      },
      {
       "id": "215561047605497",
@@ -5421,6 +5335,38 @@
       "duration_office_min": 317.65
      },
      {
+      "id": "215561047596443",
+      "is_p1": true,
+      "start": "2026-07-03T09:07:16+00:00",
+      "close": "2026-07-03T11:49:01+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 2.7
+     },
+     {
+      "id": "215561047595167",
+      "is_p1": false,
+      "start": "2026-07-03T09:06:00+00:00",
+      "close": "2026-07-03T15:44:48+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 398.8
+     },
+     {
+      "id": "215561047509338",
+      "is_p1": false,
+      "start": "2026-07-03T07:53:40+00:00",
+      "close": "2026-07-07T08:55:57+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 960.0
+     },
+     {
+      "id": "215561046574934",
+      "is_p1": false,
+      "start": "2026-07-02T14:38:44+00:00",
+      "close": "2026-07-15T13:06:59+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 4228.25
+     },
+     {
       "id": "215561046425596",
       "is_p1": false,
       "start": "2026-07-02T13:44:16+00:00",
@@ -5429,20 +5375,27 @@
       "duration_office_min": 443.17
      },
      {
-      "id": "215561044342147",
-      "is_p1": false,
-      "start": "2026-07-01T08:20:42+00:00",
-      "close": "2026-07-03T12:20:03+00:00",
+      "id": "215561046412156",
+      "is_p1": true,
+      "start": "2026-07-02T13:29:38+00:00",
+      "close": "2026-07-23T10:27:45+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 1160.05
+      "duration_h": 500.97
      },
      {
-      "id": "215561047596443",
-      "is_p1": true,
-      "start": "2026-07-03T09:07:16+00:00",
-      "close": "2026-07-03T11:49:01+00:00",
+      "id": "215561046360038",
+      "is_p1": false,
+      "start": "2026-07-02T12:31:43+00:00",
+      "close": "2026-07-07T06:42:26+00:00",
       "start_basis": "first_assignment_at",
-      "duration_h": 2.7
+      "duration_office_min": 1228.28
+     },
+     {
+      "id": "215561046342079",
+      "is_p1": false,
+      "start": "2026-07-02T12:10:57+00:00",
+      "close": null,
+      "start_basis": "created_at"
      },
      {
       "id": "215561046228307",
@@ -5453,20 +5406,36 @@
       "duration_h": 25.63
      },
      {
-      "id": "215561042923093",
+      "id": "215561046220841",
       "is_p1": false,
-      "start": "2026-06-30T14:21:25+00:00",
-      "close": "2026-07-02T21:04:57+00:00",
+      "start": "2026-07-02T10:00:17+00:00",
+      "close": "2026-07-09T06:23:02+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 1118.58
+      "duration_office_min": 2339.72
      },
      {
-      "id": "215561040923875",
-      "is_p1": true,
-      "start": "2026-06-29T09:21:32+00:00",
-      "close": "2026-07-02T21:03:43+00:00",
+      "id": "215561044802323",
+      "is_p1": false,
+      "start": "2026-07-01T13:59:41+00:00",
+      "close": "2026-07-10T11:42:16+00:00",
       "start_basis": "first_assignment_at",
-      "duration_h": 83.7
+      "duration_office_min": 3222.58
+     },
+     {
+      "id": "215561044800776",
+      "is_p1": false,
+      "start": "2026-07-01T13:58:20+00:00",
+      "close": "2026-07-02T13:43:15+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 464.92
+     },
+     {
+      "id": "215561044506651",
+      "is_p1": false,
+      "start": "2026-07-01T10:14:34+00:00",
+      "close": "2026-07-04T14:04:44+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 1365.43
      },
      {
       "id": "215561044393217",
@@ -5477,12 +5446,12 @@
       "duration_office_min": 960.0
      },
      {
-      "id": "215561042714654",
-      "is_p1": true,
-      "start": "2026-06-30T11:14:17+00:00",
-      "close": "2026-07-02T20:32:07+00:00",
+      "id": "215561044342147",
+      "is_p1": false,
+      "start": "2026-07-01T08:20:42+00:00",
+      "close": "2026-07-03T12:20:03+00:00",
       "start_basis": "first_assignment_at",
-      "duration_h": 57.3
+      "duration_office_min": 1160.05
      },
      {
       "id": "215561043799819",
@@ -5493,12 +5462,76 @@
       "duration_h": 39.29
      },
      {
-      "id": "215561044800776",
-      "is_p1": false,
-      "start": "2026-07-01T13:58:20+00:00",
-      "close": "2026-07-02T13:43:15+00:00",
+      "id": "215561043415858",
+      "is_p1": true,
+      "start": "2026-06-30T19:46:10+00:00",
+      "close": "2026-06-30T20:33:12+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 464.92
+      "duration_h": 0.78
+     },
+     {
+      "id": "215561043138962",
+      "is_p1": true,
+      "start": "2026-06-30T17:27:37+00:00",
+      "close": "2026-06-30T18:07:50+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 0.67
+     },
+     {
+      "id": "215561043073880",
+      "is_p1": true,
+      "start": "2026-06-30T16:06:22+00:00",
+      "close": "2026-06-30T18:16:47+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 2.17
+     },
+     {
+      "id": "215561042923093",
+      "is_p1": false,
+      "start": "2026-06-30T14:21:25+00:00",
+      "close": "2026-07-02T21:04:57+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 1118.58
+     },
+     {
+      "id": "215561042714654",
+      "is_p1": true,
+      "start": "2026-06-30T11:14:17+00:00",
+      "close": "2026-07-02T20:32:07+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 57.3
+     },
+     {
+      "id": "215561042583189",
+      "is_p1": true,
+      "start": "2026-06-30T09:35:00+00:00",
+      "close": "2026-06-30T11:10:00+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 1.58
+     },
+     {
+      "id": "215561042468705",
+      "is_p1": false,
+      "start": "2026-06-30T08:21:50+00:00",
+      "close": "2026-07-01T06:55:08+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 480.0
+     },
+     {
+      "id": "215561042455348",
+      "is_p1": false,
+      "start": "2026-06-30T08:08:15+00:00",
+      "close": "2026-07-08T14:10:35+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 3190.58
+     },
+     {
+      "id": "215561041371047",
+      "is_p1": false,
+      "start": "2026-06-29T13:57:01+00:00",
+      "close": "2026-06-30T09:21:35+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 204.57
      },
      {
       "id": "215561041226471",
@@ -5517,44 +5550,12 @@
       "duration_office_min": 1279.78
      },
      {
-      "id": "215561042468705",
-      "is_p1": false,
-      "start": "2026-06-30T08:21:50+00:00",
-      "close": "2026-07-01T06:55:08+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 480.0
-     },
-     {
-      "id": "215561043415858",
+      "id": "215561040923875",
       "is_p1": true,
-      "start": "2026-06-30T19:46:10+00:00",
-      "close": "2026-06-30T20:33:12+00:00",
+      "start": "2026-06-29T09:21:32+00:00",
+      "close": "2026-07-02T21:03:43+00:00",
       "start_basis": "first_assignment_at",
-      "duration_h": 0.78
-     },
-     {
-      "id": "215561043073880",
-      "is_p1": true,
-      "start": "2026-06-30T16:06:22+00:00",
-      "close": "2026-06-30T18:16:47+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 2.17
-     },
-     {
-      "id": "215561043138962",
-      "is_p1": true,
-      "start": "2026-06-30T17:27:37+00:00",
-      "close": "2026-06-30T18:07:50+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 0.67
-     },
-     {
-      "id": "215561042583189",
-      "is_p1": true,
-      "start": "2026-06-30T09:35:00+00:00",
-      "close": "2026-06-30T11:10:00+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 1.58
+      "duration_h": 83.7
      },
      {
       "id": "215561040899279",
@@ -5565,12 +5566,12 @@
       "duration_office_min": 502.88
      },
      {
-      "id": "215561041371047",
+      "id": "215561040792132",
       "is_p1": false,
-      "start": "2026-06-29T13:57:01+00:00",
-      "close": "2026-06-30T09:21:35+00:00",
+      "start": "2026-06-29T07:49:38+00:00",
+      "close": "2026-07-07T13:46:53+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 204.57
+      "duration_office_min": 3166.88
      }
     ]
    }
@@ -6142,12 +6143,27 @@
       "duration_office_min": 1706.55
      },
      {
-      "id": "215561055694766",
+      "id": "215561057985446",
       "is_p1": false,
-      "start": "2026-07-08T13:05:57+00:00",
-      "close": "2026-07-15T11:33:54+00:00",
+      "start": "2026-07-10T07:46:43+00:00",
+      "close": "2026-07-10T15:03:19+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 2307.95
+      "duration_office_min": 363.32
+     },
+     {
+      "id": "215561057967765",
+      "is_p1": false,
+      "start": "2026-07-10T07:28:19+00:00",
+      "close": null,
+      "start_basis": "created_at"
+     },
+     {
+      "id": "215561057534299",
+      "is_p1": true,
+      "start": "2026-07-09T19:20:17+00:00",
+      "close": "2026-07-09T19:48:28+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 0.47
      },
      {
       "id": "215561056541403",
@@ -6166,43 +6182,12 @@
       "duration_office_min": 1082.22
      },
      {
-      "id": "215561057534299",
-      "is_p1": true,
-      "start": "2026-07-09T19:20:17+00:00",
-      "close": "2026-07-09T19:48:28+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 0.47
-     },
-     {
-      "id": "215561057985446",
-      "is_p1": false,
-      "start": "2026-07-10T07:46:43+00:00",
-      "close": "2026-07-10T15:03:19+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 363.32
-     },
-     {
-      "id": "215561057967765",
-      "is_p1": false,
-      "start": "2026-07-10T07:28:19+00:00",
-      "close": null,
-      "start_basis": "created_at"
-     },
-     {
       "id": "215561056371396",
       "is_p1": false,
       "start": "2026-07-09T07:23:46+00:00",
       "close": "2026-07-10T08:22:48+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 480.0
-     },
-     {
-      "id": "215561055828772",
-      "is_p1": true,
-      "start": "2026-07-08T14:37:30+00:00",
-      "close": "2026-07-09T09:19:26+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 18.7
      },
      {
       "id": "215561055843262",
@@ -6213,28 +6198,12 @@
       "duration_h": 17.2
      },
      {
-      "id": "215561055298317",
-      "is_p1": false,
-      "start": "2026-07-08T07:28:47+00:00",
-      "close": "2026-07-09T07:54:45+00:00",
+      "id": "215561055828772",
+      "is_p1": true,
+      "start": "2026-07-08T14:37:30+00:00",
+      "close": "2026-07-09T09:19:26+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 480.0
-     },
-     {
-      "id": "215561052871860",
-      "is_p1": false,
-      "start": "2026-07-06T10:59:13+00:00",
-      "close": "2026-07-09T06:22:43+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 1320.78
-     },
-     {
-      "id": "215561055751916",
-      "is_p1": false,
-      "start": "2026-07-08T13:54:05+00:00",
-      "close": "2026-07-08T16:38:39+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 164.57
+      "duration_h": 18.7
      },
      {
       "id": "215561055769530",
@@ -6245,12 +6214,28 @@
       "duration_office_min": 51.87
      },
      {
-      "id": "215561053962820",
+      "id": "215561055751916",
       "is_p1": false,
-      "start": "2026-07-07T08:09:29+00:00",
-      "close": "2026-07-07T12:21:54+00:00",
+      "start": "2026-07-08T13:54:05+00:00",
+      "close": "2026-07-08T16:38:39+00:00",
       "start_basis": "first_assignment_at",
-      "duration_office_min": 201.9
+      "duration_office_min": 164.57
+     },
+     {
+      "id": "215561055694766",
+      "is_p1": false,
+      "start": "2026-07-08T13:05:57+00:00",
+      "close": "2026-07-15T11:33:54+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 2307.95
+     },
+     {
+      "id": "215561055298317",
+      "is_p1": false,
+      "start": "2026-07-08T07:28:47+00:00",
+      "close": "2026-07-09T07:54:45+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 480.0
      },
      {
       "id": "215561054076397",
@@ -6261,28 +6246,20 @@
       "duration_office_min": 25.08
      },
      {
+      "id": "215561053962820",
+      "is_p1": false,
+      "start": "2026-07-07T08:09:29+00:00",
+      "close": "2026-07-07T12:21:54+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 201.9
+     },
+     {
       "id": "215561053103569",
       "is_p1": false,
       "start": "2026-07-06T15:29:12+00:00",
       "close": "2026-07-07T09:32:59+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 123.78
-     },
-     {
-      "id": "215561052614658",
-      "is_p1": false,
-      "start": "2026-07-06T07:45:52+00:00",
-      "close": "2026-07-07T08:56:24+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 480.0
-     },
-     {
-      "id": "215561052151666",
-      "is_p1": false,
-      "start": "2026-07-06T03:30:20+00:00",
-      "close": "2026-07-07T06:07:33+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 480.0
      },
      {
       "id": "215561053023530",
@@ -6293,20 +6270,20 @@
       "duration_office_min": 95.68
      },
      {
+      "id": "215561052871860",
+      "is_p1": false,
+      "start": "2026-07-06T10:59:13+00:00",
+      "close": "2026-07-09T06:22:43+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 1320.78
+     },
+     {
       "id": "215561052843032",
       "is_p1": false,
       "start": "2026-07-06T10:30:25+00:00",
       "close": "2026-07-06T14:52:57+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 262.53
-     },
-     {
-      "id": "215561052506723",
-      "is_p1": false,
-      "start": "2026-07-06T07:02:26+00:00",
-      "close": "2026-07-06T14:40:09+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 340.15
      },
      {
       "id": "215561052821100",
@@ -6317,20 +6294,20 @@
       "duration_h": 2.18
      },
      {
-      "id": "215561052687700",
-      "is_p1": false,
-      "start": "2026-07-06T08:25:02+00:00",
-      "close": "2026-07-06T12:11:03+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 191.05
-     },
-     {
       "id": "215561052812568",
       "is_p1": false,
       "start": "2026-07-06T10:09:18+00:00",
       "close": "2026-07-06T11:10:09+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 60.85
+     },
+     {
+      "id": "215561052687700",
+      "is_p1": false,
+      "start": "2026-07-06T08:25:02+00:00",
+      "close": "2026-07-06T12:11:03+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 191.05
      },
      {
       "id": "215561052678294",
@@ -6341,12 +6318,36 @@
       "duration_office_min": 4.1
      },
      {
+      "id": "215561052614658",
+      "is_p1": false,
+      "start": "2026-07-06T07:45:52+00:00",
+      "close": "2026-07-07T08:56:24+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 480.0
+     },
+     {
       "id": "215561052520068",
       "is_p1": false,
       "start": "2026-07-06T07:06:57+00:00",
       "close": "2026-07-06T07:44:47+00:00",
       "start_basis": "created_at",
       "duration_office_min": 0.0
+     },
+     {
+      "id": "215561052506723",
+      "is_p1": false,
+      "start": "2026-07-06T07:02:26+00:00",
+      "close": "2026-07-06T14:40:09+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 340.15
+     },
+     {
+      "id": "215561052151666",
+      "is_p1": false,
+      "start": "2026-07-06T03:30:20+00:00",
+      "close": "2026-07-07T06:07:33+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 480.0
      }
     ]
    }
@@ -6882,36 +6883,14 @@
     "other": {
      "closed": 9,
      "open": 1,
-     "median_office_min": 511.38,
-     "p90_office_min": 1393.87
+     "median_office_min": 601.08,
+     "p90_office_min": 2373.25
     },
     "items": [
-     {
-      "id": "215561066992655",
-      "is_p1": false,
-      "start": "2026-07-15T10:29:22+00:00",
-      "close": "2026-07-15T10:58:14+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 28.87
-     },
      {
       "id": "215561073653332",
       "is_p1": true,
       "start": "2026-07-19T11:30:03+00:00",
-      "close": null,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "id": "215561067169862",
-      "is_p1": false,
-      "start": "2026-07-15T13:06:51+00:00",
-      "close": null,
-      "start_basis": "first_assignment_at"
-     },
-     {
-      "id": "215561069966218",
-      "is_p1": true,
-      "start": "2026-07-17T08:32:41+00:00",
       "close": null,
       "start_basis": "first_assignment_at"
      },
@@ -6932,12 +6911,11 @@
       "duration_h": 0.14
      },
      {
-      "id": "215561067080127",
-      "is_p1": false,
-      "start": "2026-07-15T11:56:28+00:00",
-      "close": "2026-07-17T14:37:50+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 1121.37
+      "id": "215561069966218",
+      "is_p1": true,
+      "start": "2026-07-17T08:32:41+00:00",
+      "close": null,
+      "start_basis": "first_assignment_at"
      },
      {
       "id": "215561069035357",
@@ -6948,14 +6926,6 @@
       "duration_office_min": 493.57
      },
      {
-      "id": "215561065527126",
-      "is_p1": true,
-      "start": "2026-07-14T10:49:20+00:00",
-      "close": "2026-07-17T13:10:29+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_h": 74.35
-     },
-     {
       "id": "215561067225684",
       "is_p1": false,
       "start": "2026-07-15T14:05:06+00:00",
@@ -6964,20 +6934,11 @@
       "duration_office_min": 654.9
      },
      {
-      "id": "215561067049407",
+      "id": "215561067169862",
       "is_p1": false,
-      "start": "2026-07-15T11:22:33+00:00",
-      "close": "2026-07-16T13:23:38+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 601.08
-     },
-     {
-      "id": "215561063825667",
-      "is_p1": false,
-      "start": "2026-07-13T09:46:08+00:00",
-      "close": "2026-07-16T07:55:43+00:00",
-      "start_basis": "first_assignment_at",
-      "duration_office_min": 1393.87
+      "start": "2026-07-15T13:06:51+00:00",
+      "close": null,
+      "start_basis": "first_assignment_at"
      },
      {
       "id": "215561067137564",
@@ -6988,12 +6949,44 @@
       "duration_office_min": 270.53
      },
      {
+      "id": "215561067080127",
+      "is_p1": false,
+      "start": "2026-07-15T11:56:28+00:00",
+      "close": "2026-07-17T14:37:50+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 1121.37
+     },
+     {
+      "id": "215561067049407",
+      "is_p1": false,
+      "start": "2026-07-15T11:22:33+00:00",
+      "close": "2026-07-16T13:23:38+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 601.08
+     },
+     {
+      "id": "215561066992655",
+      "is_p1": false,
+      "start": "2026-07-15T10:29:22+00:00",
+      "close": "2026-07-22T10:02:37+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 2373.25
+     },
+     {
       "id": "215561066719704",
       "is_p1": false,
       "start": "2026-07-15T06:24:29+00:00",
       "close": "2026-07-15T10:10:22+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 70.37
+     },
+     {
+      "id": "215561065527126",
+      "is_p1": true,
+      "start": "2026-07-14T10:49:20+00:00",
+      "close": "2026-07-17T13:10:29+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 74.35
      },
      {
       "id": "215561065268870",
@@ -7010,6 +7003,14 @@
       "close": "2026-07-14T14:57:12+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 511.38
+     },
+     {
+      "id": "215561063825667",
+      "is_p1": false,
+      "start": "2026-07-13T09:46:08+00:00",
+      "close": "2026-07-16T07:55:43+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 1393.87
      }
     ]
    }
@@ -7138,24 +7139,87 @@
    },
    "mttr": {
     "p1": {
-     "closed": 0,
+     "closed": 1,
      "open": 0,
-     "median_h": null,
-     "p90_h": null
+     "median_h": 27.93,
+     "p90_h": 27.93
     },
     "other": {
-     "closed": 1,
-     "open": 1,
-     "median_office_min": 84.43,
-     "p90_office_min": 84.43
+     "closed": 8,
+     "open": 2,
+     "median_office_min": 232.51,
+     "p90_office_min": 480.0
     },
     "items": [
      {
-      "id": "215561076056673",
+      "id": "215561082254707",
       "is_p1": false,
-      "start": "2026-07-20T08:23:11+00:00",
+      "start": "2026-07-23T13:03:18+00:00",
+      "close": "2026-07-23T14:34:36+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 91.3
+     },
+     {
+      "id": "215561081840823",
+      "is_p1": false,
+      "start": "2026-07-23T08:16:36+00:00",
       "close": null,
       "start_basis": "first_assignment_at"
+     },
+     {
+      "id": "215561080459591",
+      "is_p1": true,
+      "start": "2026-07-22T14:16:54+00:00",
+      "close": "2026-07-23T18:12:41+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_h": 27.93
+     },
+     {
+      "id": "215561080141494",
+      "is_p1": false,
+      "start": "2026-07-22T08:49:15+00:00",
+      "close": null,
+      "start_basis": "first_assignment_at"
+     },
+     {
+      "id": "215561080033517",
+      "is_p1": false,
+      "start": "2026-07-22T07:44:29+00:00",
+      "close": "2026-07-22T13:55:47+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 295.78
+     },
+     {
+      "id": "215561078240954",
+      "is_p1": false,
+      "start": "2026-07-21T13:25:37+00:00",
+      "close": "2026-07-22T06:33:09+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 214.38
+     },
+     {
+      "id": "215561078204499",
+      "is_p1": false,
+      "start": "2026-07-21T12:49:21+00:00",
+      "close": "2026-07-22T06:32:34+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 250.65
+     },
+     {
+      "id": "215561077636580",
+      "is_p1": false,
+      "start": "2026-07-21T07:17:35+00:00",
+      "close": "2026-07-21T11:06:29+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 126.48
+     },
+     {
+      "id": "215561077575891",
+      "is_p1": false,
+      "start": "2026-07-21T06:22:22+00:00",
+      "close": "2026-07-21T13:35:01+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 275.02
      },
      {
       "id": "215561076070345",
@@ -7164,6 +7228,14 @@
       "close": "2026-07-20T10:24:26+00:00",
       "start_basis": "first_assignment_at",
       "duration_office_min": 84.43
+     },
+     {
+      "id": "215561076056673",
+      "is_p1": false,
+      "start": "2026-07-20T08:23:11+00:00",
+      "close": "2026-07-21T08:20:56+00:00",
+      "start_basis": "first_assignment_at",
+      "duration_office_min": 480.0
      }
     ]
    },
